@@ -12,26 +12,21 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import Navigation from './src/navigation/navigation';
+import GlobalStyleProvider from './src/providers/theme/GlobalStyleProvider';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <GluestackUIProvider mode="light"><SafeAreaProvider>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <AppContent />
-      </SafeAreaProvider></GluestackUIProvider>
-  );
-}
+    <GluestackUIProvider mode="light">
+      <SafeAreaProvider>
+        <GlobalStyleProvider>
+          <Navigation />
+        </GlobalStyleProvider>
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View>
-      <Text className="text-red-500">Hello world</Text>
-      
-    </View>
+      </SafeAreaProvider>
+    </GluestackUIProvider>
   );
 }
 

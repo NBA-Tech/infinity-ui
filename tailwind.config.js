@@ -6,7 +6,8 @@ module.exports = {
   content: [
     "App.{tsx,jsx,ts,js}",
     "index.{tsx,jsx,ts,js}",
-    "components/**/*.{tsx,jsx,ts,js}"
+    "components/**/*.{tsx,jsx,ts,js}",
+     "./src/styles/**/*.css"
   ],
   presets: [require('nativewind/preset')],
   safelist: [
@@ -172,12 +173,14 @@ module.exports = {
           info: 'rgb(var(--color-indicator-info)/<alpha-value>)',
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
+        purpleTextColor: '#8B5CF6',
       },
       fontFamily: {
         heading: undefined,
         body: undefined,
         mono: undefined,
         roboto: ['Roboto', 'sans-serif'],
+        inter: ['Inter-Medium', 'sans-serif'],
       },
       fontWeight: {
         extrablack: '950',
@@ -199,4 +202,7 @@ module.exports = {
     },
   },
   plugins: [gluestackPlugin],
+  components: {
+    LinearGradient: "react-native-linear-gradient",
+  },
 };
