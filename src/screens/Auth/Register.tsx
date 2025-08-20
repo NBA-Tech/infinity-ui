@@ -59,7 +59,7 @@ const Register = () => {
                             <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>{field?.label}</FormControlLabelText>
 
                         </FormControlLabel>
-                        <Input>
+                        <Input size='lg'>
                             <InputSlot style={{ paddingLeft: wp('2%') }}>
                                 <Feather name={field?.icon} size={wp('5%')} color="#000" />
 

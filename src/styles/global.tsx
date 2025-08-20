@@ -18,6 +18,15 @@ const createGlobalStyle = (isDark = false) => StyleSheet.create({
   normalTextColor:{
     color:"#4B5563"
   },
+  whiteTextColor:{
+    color:"#fff"
+  },
+  greyTextColor:{
+    color:"#d1d5db"
+  },
+  blackTextColor:{
+    color:"#000"
+  },
 
   //text styles
   headingText:{
@@ -33,8 +42,8 @@ const createGlobalStyle = (isDark = false) => StyleSheet.create({
     fontFamily:"Inter-Medium"
   },
   buttonText:{
-    fontSize:scaleFont("2.5%"),
-    fontFamily:"Poppins-SemiBold"
+    fontSize:scaleFont("2%"),
+    fontFamily:"Poppins-Regular"
   },
   underscoreText:{
     fontSize:scaleFont("2%"),
@@ -46,7 +55,13 @@ const createGlobalStyle = (isDark = false) => StyleSheet.create({
   purpleBackground:{
     backgroundColor:"#8B5CF6",
     borderRadius:wp("2%")
-  }
+  },
+  transparentBackground:{
+    backgroundColor:"#fff",
+    borderRadius:wp("2%"),
+    borderWidth:wp("0.5%"),
+    borderColor:"#d1d5db"
+  },
 
 })
 

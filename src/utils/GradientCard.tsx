@@ -12,14 +12,14 @@ const styles = StyleSheet.create({
 })
 const GradientCard: React.FC<GradientCardProps> = ({
     children,
-    className = "rounded-2xl p-4 mb-4",
+    className = "rounded-2xl p-2 mb-4",
     colors = ["#3B82F6", "#8B5CF6", "#EC4899"], 
     style={},
 }) => {
     return (
         <LinearGradient
             className={className}
-            style={styles.roundedCard}
+            style={[styles.roundedCard,style]}
             colors={colors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}

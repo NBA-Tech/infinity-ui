@@ -40,7 +40,7 @@ const inputStyle = tva({
        data-[focus=true]:hover:border-[#4F46E5] 
        data-[disabled=true]:opacity-40 
        data-[disabled=true]:hover:border-background-300 
-       rounded-lg px-3 h-12 bg-white
+       rounded-lg px-3 h-16 bg-white
        font-inter`,
 
 
