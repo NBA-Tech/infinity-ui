@@ -17,7 +17,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
     registerCardContainer: {
-        margin: hp("2%"),
+        borderTopLeftRadius: wp("8%"),
         borderRadius: wp('2%'),
     }
 
@@ -53,10 +53,10 @@ const Register = () => {
         },
     ]
     return (
-        <View className='flex-1'>
+        <View>
             <Card style={[styles.registerCardContainer,globalStyles.cardShadowEffect]}>
                 {formFields.map((field, index) => (
-                    <FormControl style={{ marginVertical: hp("1%") }}>
+                    <FormControl key={index} style={{ marginVertical: hp("1%") }}>
                         <FormControlLabel className='gap-2'>
                             <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>{field?.label}</FormControlLabelText>
 

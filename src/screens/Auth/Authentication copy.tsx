@@ -50,7 +50,7 @@ const Authentication = () => {
 
                 {/* Login Card - Aligned to bottom */}
                 <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                    <UserOnBoarding />
+                    <Register />
                 </View>
             </View>
         )
@@ -93,7 +93,7 @@ const Authentication = () => {
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
-            <OnBoarding />
+            {<UserAuth />}
 
 
         </SafeAreaView>
