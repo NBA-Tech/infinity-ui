@@ -1,5 +1,5 @@
 import GradientCard from '@/src/utils/GradientCard';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
@@ -11,7 +11,11 @@ import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Button, ButtonText } from '@/components/ui/button';
 import { FormFields } from '@/src/types/common';
-import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
+import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
+import { ChevronDownIcon } from "@/components/ui/icon"
+import { BUSINESSTYPE } from '@/src/constant/Constants';
+import { Country, IState, State } from "country-state-city";
+
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -54,8 +58,11 @@ const styles = StyleSheet.create({
 
 const UserOnBoarding = () => {
     const globalStyles = useContext(StyleContext);
-    const [currStep, setCurrStep] = useState(0);
+    const [currStep, setCurrStep] = useState(2);
     const [headings, setHeadings] = useState(["Company Profile (Basic Info)", "Business Address & Tax Info", "Preferences & Accounting Setup"]);
+    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+    const [states, setStates] = useState<IState[]>([]);
+    const countries = Country.getAllCountries();
 
     const openGallery = () => {
         launchImageLibrary({ mediaType: 'photo' }, response => {
@@ -77,8 +84,12 @@ const UserOnBoarding = () => {
                 label: 'Business Type*',
                 type: 'select',
                 placeholder: 'Select Business Type',
-                values: ['IT', 'Automotive', 'Others'],
                 icon: "briefcase",
+                renderItems: () => (
+                    BUSINESSTYPE.map((type, index) => (
+                        <SelectItem key={index} label={type} value={type} />
+                    ))
+                ),
             },
             {
                 label: 'Business Phone Number*',
@@ -114,15 +125,26 @@ const UserOnBoarding = () => {
             },
             {
                 label: 'Country',
-                type: 'text',
-                placeholder: 'Eg : India',
+                type: 'select',
                 icon: 'globe',
+                renderItems: () => (
+                    countries.map((country, index) => (
+                        <SelectItem key={index} label={country.name} value={country.isoCode} />
+                    ))
+                ),
+                onChange: (value: string) => {
+                    setSelectedCountry(value);
+                }
             },
             {
                 label: 'State',
-                type: 'text',
-                placeholder: 'Eg : Maharashtra',
+                type: 'select',
                 icon: 'map-pin',
+                renderItems: () => (
+                    states.map((state, index) => (
+                        <SelectItem key={index} label={state.name} value={state.isoCode} />
+                    ))
+                ),
             },
             {
                 label: 'City',
@@ -149,22 +171,38 @@ const UserOnBoarding = () => {
                 type: 'text',
                 placeholder: 'Eg : INR',
                 icon: 'dollar-sign',
+                value: Country.getCountryByCode(selectedCountry || "IN")?.currency || "INR",
+                isDisabled: true
             },
             {
                 label: 'Notification Preference',
-                type: 'text',
-                placeholder: 'Eg : Email',
-                icon: 'bell'
+                type: 'select',
+                icon: 'bell',
+                renderItems: () => (
+                    ["Email", "Push Notification"].map((method, index) => (
+                        <SelectItem key={index} label={method} value={method} />
+                    ))
+                ),
             },
             {
                 label: 'Theme',
-                type: 'text',
-                placeholder: 'Eg : Light',
-                icon: 'sun'
+                type: 'select',
+                icon: 'sun',
+                renderItems: () => (
+                    ["Light", "Dark", "System Default"].map((theme, index) => (
+                        <SelectItem key={index} label={theme} value={theme} />
+                    ))
+                )
             }
 
         ]
     };
+
+    useEffect(() => {
+        if (selectedCountry) {
+            setStates(State.getStatesOfCountry(selectedCountry));
+        }
+    }, [selectedCountry]);
 
     return (
         <View className="flex-1">
@@ -232,37 +270,38 @@ const UserOnBoarding = () => {
 
                     {formFields[currStep].map((field, index) => (
                         <FormControl style={{ marginVertical: hp("1%") }} key={index}>
-                            <FormControlLabel>
+                            <FormControlLabel className='gap-2'>
+                                <Feather name={field?.icon} size={wp("5%")} color="#000" />
+
                                 <FormControlLabelText
                                     style={[globalStyles.normalTextColor, globalStyles.labelText]}
                                 >
                                     {field?.label}
                                 </FormControlLabelText>
+
                             </FormControlLabel>
                             {field?.type == "select" ? (
-                                <Select>
+                                <Select onValueChange={(value) => field.onChange?.(value)}>
                                     <SelectTrigger>
                                         <SelectInput placeholder="Select option" className="flex-1" />
+                                        <SelectIcon as={ChevronDownIcon}>
+                                        </SelectIcon>
                                     </SelectTrigger>
-                                    <SelectPortal>
+                                    <SelectPortal preventScroll={false}>
                                         <SelectBackdrop />
                                         <SelectContent>
                                             <SelectDragIndicatorWrapper>
                                                 <SelectDragIndicator />
                                             </SelectDragIndicatorWrapper>
-                                            <SelectItem label="Red" value="red" />
-                                            <SelectItem label="Blue" value="blue" />
-                                            <SelectItem label="Black" value="black" />
-                                            <SelectItem label="Pink" value="pink" isDisabled={true} />
-                                            <SelectItem label="Green" value="green" />
+                                            <ScrollView showsVerticalScrollIndicator={false} className='justify-items-start'>
+                                                {field?.renderItems?.()}
+                                            </ScrollView>
+
                                         </SelectContent>
                                     </SelectPortal>
                                 </Select>
                             ) : (
                                 <Input size="lg">
-                                    <InputSlot style={{ paddingLeft: wp("2%") }}>
-                                        <Feather name={field?.icon} size={wp("5%")} color="#000" />
-                                    </InputSlot>
                                     <InputField
                                         type={field?.type}
                                         placeholder={field?.placeholder}
@@ -273,7 +312,9 @@ const UserOnBoarding = () => {
                                                     ? "email-address"
                                                     : "default"
                                         }
+                                        readOnly={field?.isDisabled || false}
                                         secureTextEntry={field?.type === "password"}
+                                        value={field?.value || undefined}
                                     />
                                 </Input>
                             )

@@ -6,8 +6,11 @@ import GradientCard from '@/src/utils/GradientCard';
 import {Image} from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import UserOnBoarding from './UserOnBoarding';
+import Login from './Login';
+import Register from './Register';
+import OneTimePassword from './OneTimePassword';
 
 const styles=StyleSheet.create({
     headingContainer:{
@@ -21,18 +24,16 @@ const styles=StyleSheet.create({
 const Authentication = () => {
     const globalStyles = useContext(StyleContext);
     return (
-        <SafeAreaView className="flex-1 bg-gray-100">
+        <SafeAreaView style={globalStyles.appBackground}>
             <View style={styles.body}>
                 {/* Header */}
                 <View style={styles.headingContainer}>
                     <View className="justify-center items-center">
-                        <GradientCard>
-                            <Card size='md' variant='ghost'>
+                            <Card size='xs' variant='ghost'>
                                 <View className='flex justify-center items-center'>
-                                    <Image size='xs' source={Logo} />
+                                    <Image size='lg' source={Logo} />
                                 </View>
                             </Card>
-                        </GradientCard>
                         <Text style={[globalStyles.purpleTextColor, globalStyles.headingText, styles.headingContainer]}>
                             INFINITY COLORLAB
                         </Text>

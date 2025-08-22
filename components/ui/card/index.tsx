@@ -1,16 +1,20 @@
-import React from 'react';
-import type { VariantProps } from '@gluestack-ui/nativewind-utils';
+// Card.tsx
+import React, { useContext } from 'react';
 import { View, ViewProps } from 'react-native';
-import { cardStyle } from './styles';
+import type { VariantProps } from '@gluestack-ui/nativewind-utils';
+import { createCardStyle } from './styles';
+import { ThemeToggleContext } from '@/src/providers/theme/GlobalStyleProvider';
 
 type ICardProps = ViewProps &
-  VariantProps<typeof cardStyle> & { className?: string };
+  VariantProps<ReturnType<typeof createCardStyle>> & {
+    className?: string;
+  };
 
 const Card = React.forwardRef<React.ComponentRef<typeof View>, ICardProps>(
-  function Card(
-    { className, size = 'md', variant = 'elevated', ...props },
-    ref
-  ) {
+  function Card({ className, size = 'md', variant = 'elevated', ...props }, ref) {
+    const { isDark } = useContext(ThemeToggleContext);
+    const cardStyle = createCardStyle(isDark);
+
     return (
       <View
         className={cardStyle({ size, variant, class: className })}

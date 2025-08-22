@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 import { createInput } from '@gluestack-ui/input';
 import { View, Pressable, TextInput } from 'react-native';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
@@ -10,6 +10,7 @@ import {
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
+import { ThemeToggleContext } from '@/src/providers/theme/GlobalStyleProvider';
 
 const SCOPE = 'INPUT';
 
@@ -51,7 +52,10 @@ const inputStyle = tva({
       md: 'h-10',
       sm: 'h-9',
     },
-
+    isDark:{
+      true: 'bg-[#1f2937] text-[#ffffff] placeholder:text-[#aaa]',
+      false: 'bg-white text-black placeholder:text-[#595959]',
+    },
     variant: {
       underlined:
         'rounded-none border-b data-[invalid=true]:border-b-2 data-[invalid=true]:border-error-700 data-[invalid=true]:hover:border-error-700 data-[invalid=true]:data-[focus=true]:border-error-700 data-[invalid=true]:data-[focus=true]:hover:border-error-700 data-[invalid=true]:data-[disabled=true]:hover:border-error-700',
@@ -85,6 +89,12 @@ const inputSlotStyle = tva({
 
 const inputFieldStyle = tva({
   base: 'flex-1 text-typography-900 py-0 px-3 placeholder:text-typography-500 h-full ios:leading-[0px] web:cursor-text web:data-[disabled=true]:cursor-not-allowed font-inter',
+  variants: {
+    isDark: {
+      true: 'text-[#ffffff] placeholder:text-[#aaa] bg-[#1f2937]',
+      false: 'text-black placeholder:text-[#595959] bg-white',
+    },
+  },
 
   parentVariants: {
     variant: {
@@ -110,18 +120,20 @@ const inputFieldStyle = tva({
 });
 
 type IInputProps = React.ComponentProps<typeof UIInput> &
-  VariantProps<typeof inputStyle> & { className?: string };
+  VariantProps<typeof inputStyle> & { className?: string};
 const Input = React.forwardRef<React.ComponentRef<typeof UIInput>, IInputProps>(
   function Input(
     { className, variant = 'outline', size = 'md', ...props },
     ref
   ) {
+    const themeContext = useContext(ThemeToggleContext) || {};
+    const isDark = themeContext.isDark ?? false;
     return (
       <UIInput
         ref={ref}
         {...props}
         className={inputStyle({ variant, size, class: className })}
-        context={{ variant, size }}
+        context={{ variant, size, isDark }}
       />
     );
   }
@@ -200,6 +212,8 @@ const InputField = React.forwardRef<
   React.ComponentRef<typeof UIInput.Input>,
   IInputFieldProps
 >(function InputField({ className, ...props }, ref) {
+  const themeContext = useContext(ThemeToggleContext) || {};
+  const isDark = themeContext.isDark ?? false;
   const { variant: parentVariant, size: parentSize } = useStyleContext(SCOPE);
 
   return (
@@ -207,6 +221,7 @@ const InputField = React.forwardRef<
       ref={ref}
       {...props}
       className={inputFieldStyle({
+        isDark,
         parentVariants: {
           variant: parentVariant,
           size: parentSize,

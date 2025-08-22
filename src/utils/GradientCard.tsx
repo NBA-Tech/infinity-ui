@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
 })
 const GradientCard: React.FC<GradientCardProps> = ({
     children,
-    className = "rounded-2xl p-2 mb-4",
+    className = "rounded-2xl mb-1",
     colors = ["#3B82F6", "#8B5CF6", "#EC4899"], 
     style={},
 }) => {

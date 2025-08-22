@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import { View, StyleSheet,Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
@@ -26,14 +26,14 @@ const Login = () => {
         {
             label: 'Password',
             type: 'password',
-            placeholder: 'Password',
+            placeholder: '********',
             icon: "lock"
         },
     ]
 
     return (
         <View className='flex-1'>
-            <Card style={styles.loginContainer}>
+            <Card style={[styles.loginContainer,globalStyles.cardShadowEffect]}>
                 {formFields.map((field, index) => (
                     <FormControl style={{ marginVertical: hp("1%") }}>
                         <FormControlLabel>
@@ -57,23 +57,32 @@ const Login = () => {
                                 secureTextEntry={field?.type === "password"}
 
                             />
+                            {field?.type === 'password' && (
+                                <InputSlot>
+                                    <Feather name={'eye'} size={wp('5%')} color="#000" />
+                                </InputSlot>
+                            )
+
+                            }
 
                         </Input>
                     </FormControl>
                 ))
 
                 }
-                <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground}>
-                    <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
-                </Button>
-                <View className='flex-row justify-center items-center'>
-                    <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
+                <View style={{ marginVertical: hp("3%") }}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground}>
+                        <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
+                    </Button>
+                    <View className='flex-row justify-center items-center'>
+                        <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
 
+                    </View>
+                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }}>
+                        <FontAwesome name="google" size={wp('5%')} color="#fff" />
+                        <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
+                    </Button>
                 </View>
-                <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }}>
-                    <FontAwesome name="google" size={wp('5%')} color="#fff" />
-                    <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
-                </Button>
 
 
             </Card>

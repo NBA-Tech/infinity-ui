@@ -8,9 +8,12 @@ export interface GradientCardProps {
 interface FormField {
     label: string;
     type: string;
-    placeholder: string;
+    placeholder?: string;
     icon?: string;
-    values?: string[]; // Optional array of values
+    isDisabled?: boolean; // Optional disabled state
+    value?:string; // Optional array of values
+    renderItems?: () => React.ReactNode; // Optional function to render items
+    onChange?: (value: string) => void; // Optional change handler
 }
 export interface FormFields {
   [key: number]: FormField[];
