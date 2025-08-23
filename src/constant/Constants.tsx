@@ -55,3 +55,4 @@ export const BUSINESSTYPE = [
   "Wholesale Trade",
   "Other"
 ];
+export const EVENRSTATUS = ["Pending", "Approved", "Rejected", "Cancelled"];

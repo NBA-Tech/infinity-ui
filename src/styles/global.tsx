@@ -38,6 +38,10 @@ const createGlobalStyle = (isDark = false) =>
       fontSize: scaleFont("3%"),
       fontFamily: "Poppins-Bold",
     },
+    heading3Text: {
+      fontSize: scaleFont("2.3%"),
+      fontFamily: "Poppins-SemiBold",
+    },
     subHeadingText: {
       fontSize: scaleFont("2.5%"),
       fontFamily: "Poppins-Bold",
@@ -56,6 +60,11 @@ const createGlobalStyle = (isDark = false) =>
       fontFamily: "Inter-Medium",
       textDecorationLine: "underline",
       color: isDark ? "#E5E7EB" : "#374151",
+    },
+    smallText:{
+      fontSize: scaleFont("1.5%"),
+      fontFamily: "Inter-Regular",
+      color: isDark ? "#D1D5DB" : "#6B7280",
     },
 
     // background

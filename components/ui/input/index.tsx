@@ -92,7 +92,7 @@ const inputFieldStyle = tva({
   variants: {
     isDark: {
       true: 'text-[#ffffff] placeholder:text-[#aaa] bg-[#1f2937]',
-      false: 'text-black placeholder:text-[#595959] bg-white',
+      false: 'text-black placeholder:text-[#808080] bg-white',
     },
   },
 

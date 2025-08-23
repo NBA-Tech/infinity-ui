@@ -14,18 +14,21 @@ import {
 } from 'react-native-safe-area-context';
 import Navigation from './src/navigation/navigation';
 import GlobalStyleProvider from './src/providers/theme/GlobalStyleProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <GluestackUIProvider mode="light">
-      <SafeAreaProvider>
-        <GlobalStyleProvider>
-          <Navigation />
-        </GlobalStyleProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <GlobalStyleProvider>
+            <Navigation />
+          </GlobalStyleProvider>
 
-      </SafeAreaProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
     </GluestackUIProvider>
   );
 }
