@@ -34,6 +34,10 @@ const createGlobalStyle = (isDark = false) =>
       fontSize: scaleFont("3.5%"),
       fontFamily: "Poppins-Bold",
     },
+    heading2Text: {
+      fontSize: scaleFont("3%"),
+      fontFamily: "Poppins-Bold",
+    },
     subHeadingText: {
       fontSize: scaleFont("2.5%"),
       fontFamily: "Poppins-Bold",
