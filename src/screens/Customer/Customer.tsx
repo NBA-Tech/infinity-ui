@@ -61,56 +61,56 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         gap: wp('3%'),
     },
-    actionButtons:{
+    actionButtons: {
         flexDirection: 'row',
         alignItems: 'flex-start',
     }
 })
 const Customer = () => {
-    const globalStyle = useContext(StyleContext);
+    const globalStyles = useContext(StyleContext);
 
 
 
     const CustomerCardComponent = () => {
         return (
-            <Card style={[styles.cardContainer, globalStyle.cardShadowEffect]}>
+            <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                 <View>
                     <View style={styles.cardContent}>
                         {/* Left Side (Avatar + Details) */}
                         <View style={styles.leftSection}>
                             <Avatar style={{ backgroundColor: '#8B5CF6', transform: [{ scale: 1.2 }] }}>
-                                <AvatarFallbackText style={globalStyle.whiteTextColor}>
+                                <AvatarFallbackText style={globalStyles.whiteTextColor}>
                                     Arlene McCoy
                                 </AvatarFallbackText>
                             </Avatar>
 
                             <View style={styles.details}>
-                                <Text style={[globalStyle.heading3Text]}>Arlene McCoy</Text>
+                                <Text style={[globalStyles.heading3Text]}>Arlene McCoy</Text>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="event" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyle.normalTextColor, globalStyle.labelText]}>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                         Event Name : Wedding
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="date-range" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyle.normalTextColor, globalStyle.labelText]}>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                         Event Date : 25/7/2023
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyle.normalTextColor, globalStyle.labelText]}>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                         Total Package : ₹ 2023
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyle.normalTextColor, globalStyle.labelText]}>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                         Balance : ₹ 2023
                                     </Text>
                                 </View>
@@ -119,7 +119,7 @@ const Customer = () => {
 
                         <View style={styles.statusContainer}>
                             <View style={styles.status}>
-                                <Text style={[globalStyle.whiteTextColor, globalStyle.labelText]}>
+                                <Text style={[globalStyles.whiteTextColor, globalStyles.labelText]}>
                                     Pending
                                 </Text>
                             </View>
@@ -136,11 +136,11 @@ const Customer = () => {
                             >
                                 <MenuItem key="Community" textValue="Edit" className='gap-2'>
                                     <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={globalStyle.labelText} >Edit</MenuItemLabel>
+                                    <MenuItemLabel style={globalStyles.labelText} >Edit</MenuItemLabel>
                                 </MenuItem>
                                 <MenuItem key="Plugins" textValue="Delete" className='gap-2'>
                                     <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                    <MenuItemLabel style={globalStyle.labelText}>Delete</MenuItemLabel>
+                                    <MenuItemLabel style={globalStyles.labelText}>Delete</MenuItemLabel>
                                 </MenuItem>
                             </Menu>
                         </View>
@@ -158,17 +158,25 @@ const Customer = () => {
     }
 
     return (
-        <SafeAreaView style={globalStyle.appBackground}>
+        <SafeAreaView style={globalStyles.appBackground}>
             <Header />
 
             <View>
                 <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
-                    <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                        <Text style={[globalStyle.heading2Text]}>Customers</Text>
-                        <GradientCard style={{ width: wp('25%') }}>
-                            <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
-                        </GradientCard>
-                        <Text style={[globalStyle.normalTextColor, globalStyle.labelText]}>8 customers found</Text>
+                    <View className='flex-row justify-between items-center'>
+                        <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
+                            <Text style={[globalStyles.heading2Text]}>Customers</Text>
+                            <GradientCard style={{ width: wp('25%') }}>
+                                <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
+                            </GradientCard>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>8 customers found</Text>
+                        </View>
+                        <View>
+                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
+                                <Feather name="plus" size={wp('5%')} color="#fff" />
+                                <ButtonText style={globalStyles.buttonText}>Create New</ButtonText>
+                            </Button>
+                        </View>
                     </View>
                     {/* Customer Search is here */}
                     <View

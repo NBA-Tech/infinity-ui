@@ -17,7 +17,7 @@ function TabNavigator() {
             tabBar={props => <Footer {...props} />} // inject custom footer
         >
             <Tab.Screen name="home" component={Home} />
-            <Tab.Screen name="customer" component={CreateCustomer} />
+            <Tab.Screen name="customer" component={Customer} />
             <Tab.Screen name="invoice" component={Invoice} />
             <Tab.Screen name="quotation" component={Quotation} />
             <Tab.Screen name="profile" component={Profile} />

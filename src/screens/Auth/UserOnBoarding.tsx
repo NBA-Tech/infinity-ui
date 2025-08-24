@@ -14,7 +14,7 @@ import { FormFields } from '@/src/types/common';
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { BUSINESSTYPE } from '@/src/constant/Constants';
-import { Country, IState, State } from "country-state-city";
+import { getCountries, getStates } from '@/src/utils/Utils';
 
 
 const styles = StyleSheet.create({
@@ -61,8 +61,6 @@ const UserOnBoarding = () => {
     const [currStep, setCurrStep] = useState(2);
     const [headings, setHeadings] = useState(["Company Profile (Basic Info)", "Business Address & Tax Info", "Preferences & Accounting Setup"]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-    const [states, setStates] = useState<IState[]>([]);
-    const countries = Country.getAllCountries();
 
     const openGallery = () => {
         launchImageLibrary({ mediaType: 'photo' }, response => {
@@ -128,7 +126,7 @@ const UserOnBoarding = () => {
                 type: 'select',
                 icon: 'globe',
                 renderItems: () => (
-                    countries.map((country, index) => (
+                    getCountries().map((country, index) => (
                         <SelectItem key={index} label={country.name} value={country.isoCode} />
                     ))
                 ),
@@ -141,7 +139,7 @@ const UserOnBoarding = () => {
                 type: 'select',
                 icon: 'map-pin',
                 renderItems: () => (
-                    states.map((state, index) => (
+                    getStates(selectedCountry || "IN").map((state, index) => (
                         <SelectItem key={index} label={state.name} value={state.isoCode} />
                     ))
                 ),
@@ -197,12 +195,6 @@ const UserOnBoarding = () => {
 
         ]
     };
-
-    useEffect(() => {
-        if (selectedCountry) {
-            setStates(State.getStatesOfCountry(selectedCountry));
-        }
-    }, [selectedCountry]);
 
     return (
         <View className="flex-1">
