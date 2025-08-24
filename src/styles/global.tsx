@@ -50,6 +50,14 @@ const createGlobalStyle = (isDark = false) =>
       fontSize: scaleFont("2%"),
       fontFamily: "Inter-Medium",
     },
+    normalText: {
+      fontSize: scaleFont("2%"),
+      fontFamily: "Inter-Regular",
+    },
+    normalBoldText: {
+      fontSize: scaleFont("1.8%"),
+      fontFamily: "Poppins-Bold",
+    },
     buttonText: {
       fontSize: scaleFont("2%"),
       fontFamily: "Poppins-Regular",
@@ -64,7 +72,6 @@ const createGlobalStyle = (isDark = false) =>
     smallText:{
       fontSize: scaleFont("1.5%"),
       fontFamily: "Inter-Regular",
-      color: isDark ? "#D1D5DB" : "#6B7280",
     },
 
     // background
