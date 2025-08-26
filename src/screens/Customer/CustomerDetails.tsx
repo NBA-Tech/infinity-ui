@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider } from "@/components/ui/divider";
 import { GeneralInfo } from "./GeneralInfo";
 import ProjectInfo from "./ProjectInfo";
+import InvoiceInfo from "./InvoiceInfo";
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -31,13 +32,6 @@ const styles = StyleSheet.create({
 })
 
 
-
-const InvoicesRoute = () => (
-    <ScrollView style={styles.scene} contentContainerStyle={{ padding: 16 }}>
-        <Text >Invoices</Text>
-    </ScrollView>
-);
-
 const DeliverablesRoute = () => (
     <ScrollView style={styles.scene} contentContainerStyle={{ padding: 16 }}>
         <Text>Deliverables</Text>
@@ -47,7 +41,7 @@ const DeliverablesRoute = () => (
 const renderScene = SceneMap({
     general: GeneralInfo,
     projects: ProjectInfo,
-    invoices: InvoicesRoute,
+    invoices: InvoiceInfo,
     deliverables: DeliverablesRoute,
 });
 

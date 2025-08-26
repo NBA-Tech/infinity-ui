@@ -16,9 +16,6 @@ import { ThemeToggleContext,StyleContext } from "../providers/theme/GlobalStyleP
 import { BasicInfo, BasicInfoFields, BillingInfo } from "../screens/Customer/Types";
 
 
-type Props = {
-    infoFields: BasicInfo | BillingInfo;
-}
 
 const styles = StyleSheet.create({
 
@@ -36,7 +33,7 @@ const styles = StyleSheet.create({
     },
 })
 
-export const CustomFieldsComponent = ({ infoFields }: Props) => {
+export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<string, BasicInfoFields> }) => {
     const fieldsArray = Object.values(infoFields);
     const rows: JSX.Element[] = [];
     const globalStyles = useContext(StyleContext);

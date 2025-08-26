@@ -5,3 +5,4 @@ export { default as Quotation } from './Quotation/Quotation';
 export { default as Profile } from './Profile/Profile';
 export { default as CreateCustomer } from './Customer/CreateCustomer';
 export { default as CustomerDetails } from './Customer/CustomerDetails';
+export { default as CreateOrder } from './Orders/CreateOrder';
