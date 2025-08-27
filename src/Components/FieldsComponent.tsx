@@ -5,8 +5,8 @@ import {
     FormControlHelper,
     FormControlHelperText,
 } from "@/components/ui/form-control"
-import { JSX,useContext } from "react";
-import { View,Text,StyleSheet } from "react-native";
+import { JSX,useContext, useState } from "react";
+import { View,Text,StyleSheet, TouchableOpacity } from "react-native";
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon";
 import { Input, InputField, InputSlot } from "@/components/ui/input";
@@ -31,7 +31,23 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: hp('1%'),
     },
+    checkContainer:{
+        padding:hp('1%'),
+        borderRadius:wp('2%'),
+        borderColor:'#d1d5db',
+        borderWidth:wp('0.4%'),
+        minHeight:hp('6%'),
+        justifyContent:'center',
+        paddingHorizontal:wp('2%'),
+        width:'auto'
+    },
 })
+
+type CustomCheckBoxProps={
+    children:JSX.Element[]
+    selectedStyle?:Object
+    styles?:Object
+}
 
 export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<string, BasicInfoFields> }) => {
     const fieldsArray = Object.values(infoFields);
@@ -200,3 +216,21 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
 
     return <Card style={styles.cardContainer}>{rows}</Card>;
 };
+
+export const CustomCheckBox=(props:CustomCheckBoxProps)=>{
+    const [selected, setSelected] = useState(false);
+
+    const handleSelect = () => {
+        setSelected(!selected);
+    };
+
+    return(
+        <TouchableOpacity style={[styles.checkContainer, selected && (props.selectedStyle ||{backgroundColor:'#FDF2F8',borderColor:'#8B5CF6'}),props.styles ]} onPress={handleSelect}>
+            <View>
+                {props.children}
+            </View>
+
+        </TouchableOpacity>
+    )
+
+}

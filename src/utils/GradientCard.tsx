@@ -8,6 +8,7 @@ import { heightPercentageToDP as hp,widthPercentageToDP as wp } from "react-nati
 const styles = StyleSheet.create({
     roundedCard:{
         borderRadius: wp("2%"),
+        overflow: "hidden",
     }
 })
 const GradientCard: React.FC<GradientCardProps> = ({

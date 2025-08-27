@@ -18,7 +18,6 @@ interface FooterProps {
 
 
 const Footer = (props: FooterProps) => {
-    return null;
     const insets = useSafeAreaInsets();
     const { isDark } = useContext(ThemeToggleContext);
     const globalStyle = useContext(StyleContext);

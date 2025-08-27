@@ -14,7 +14,7 @@ import { StyleContext } from "@/src/providers/theme/GlobalStyleProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider } from "@/components/ui/divider";
 import { GeneralInfo } from "./GeneralInfo";
-import ProjectInfo from "./ProjectInfo";
+import ProjectInfo from "./OrderInfo";
 import InvoiceInfo from "./InvoiceInfo";
 
 const styles = StyleSheet.create({
