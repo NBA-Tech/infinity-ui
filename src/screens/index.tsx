@@ -7,3 +7,4 @@ export { default as CreateCustomer } from './Customer/CreateCustomer';
 export { default as CustomerDetails } from './Customer/CustomerDetails';
 export { default as CreateOrder } from './Orders/CreateOrder';
 export { default as Orders } from './Orders/Orders';
+export { default as InvoiceGenerator } from './Invoice/InvoiceGenerator';

@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/Auth/Authentication';
 import Footer from '../Components/Footer';
-import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders } from '../screens';
+import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator } from '../screens';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,7 +18,7 @@ function TabNavigator() {
         >
             <Tab.Screen name="quotation" component={CreateOrder} />
             <Tab.Screen name="home" component={Home} />
-            <Tab.Screen name="customer" component={Customer} />
+            <Tab.Screen name="customer" component={InvoiceGenerator} />
             <Tab.Screen name="invoice" component={Orders} />
             <Tab.Screen name="profile" component={Profile} />
         </Tab.Navigator>
