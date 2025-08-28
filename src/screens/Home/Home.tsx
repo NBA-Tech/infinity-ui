@@ -12,6 +12,11 @@ import { GeneralStatInfoModel } from './types/HomeType';
 import { StatInfo } from './components/StatInfo';
 import HomeLineChart from './components/HomeLineChart';
 import EventDateKeeper from './components/EventDateKeeper';
+import Activity from './components/Activity';
+import Popularity from './components/Popularity';
+import DeadLines from './components/DeadLines';
+import HeatmapYear from './components/HeatMapYear';
+import TopClient from './components/TopClient';
 
 const styles = StyleSheet.create({
     scrollContainer: {
@@ -84,6 +89,23 @@ const Home = () => {
                         </View>
                         <View>
                             <EventDateKeeper />
+                        </View>
+                        
+                        <View>
+                            <Popularity />
+                        </View>
+                        <View>
+                            <DeadLines />
+
+                        </View>
+                        <View>
+                            <TopClient />
+                        </View>
+                        <View>
+                            <Activity />
+                        </View>
+                        <View>
+                            <HeatmapYear />
                         </View>
                     </View>
                 </View>

@@ -32,7 +32,7 @@ const RevenueTrendChart = () => {
         <Card style={{ padding: wp('4%'), borderRadius: wp('2%'), backgroundColor: '#ffffffcc',marginVertical:hp('2%') }}>
             <View style={{ marginBottom: 8 }}>
                 <Text style={globalStyles.heading3Text}>Revenue Trend</Text>
-                <Text style={globalStyles.normalBoldText}>Monthly revenue over time</Text>
+                <Text style={globalStyles.smallText}>Monthly revenue over time</Text>
             </View>
             {/* Add Dropdown component for the year */}
 
