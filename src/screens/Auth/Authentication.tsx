@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import Register from './Register';
 import OneTimePassword from './OneTimePassword';
 import Background from '../../assets/images/Background.png'
 import { Divider } from '@/components/ui/divider';
+import { configureGoogleSignin } from '@/src/services/auth/authService';
 const styles = StyleSheet.create({
     headingContainer: {
         marginVertical: hp("0.1%")
@@ -27,6 +28,13 @@ const styles = StyleSheet.create({
 
 const Authentication = () => {
     const globalStyles = useContext(StyleContext);
+
+    useEffect(() => {
+        configureGoogleSignin();
+        return () => { 
+        };
+    }, []);
+
 
     const OnBoarding = () => {
         return (
@@ -93,7 +101,7 @@ const Authentication = () => {
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
-            <OnBoarding />
+            <UserAuth />
 
 
         </SafeAreaView>

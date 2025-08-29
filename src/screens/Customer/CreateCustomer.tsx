@@ -1,7 +1,7 @@
 import React, { JSX, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import Header from '@/src/Components/Header';
+import Header from '@/src/components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientCard from '@/src/utils/GradientCard';
 import { Divider } from '@/components/ui/divider';
@@ -19,7 +19,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { getCountries, getStates } from '@/src/utils/Utils';
 import { Button,ButtonText } from '@/components/ui/button';
-import { CustomFieldsComponent } from '@/src/Components/FieldsComponent';
+import { CustomFieldsComponent } from '@/src/components/FieldsComponent';
 import { BasicInfo, BillingInfo,BasicInfoFields } from './Types';
 import { SelectItem } from '@/components/ui/select';
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import Header from '@/src/Components/Header';
+import Header from '@/src/components/Header';
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

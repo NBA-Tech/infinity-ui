@@ -14,6 +14,7 @@ import { Input, InputField, InputSlot } from "@/components/ui/input";
 import Feather from 'react-native-vector-icons/Feather';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { loginWithGoogle } from '@/src/services/auth/authService';
 
 const styles = StyleSheet.create({
     registerCardContainer: {
@@ -97,7 +98,7 @@ const Register = () => {
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
 
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }}>
+                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={loginWithGoogle}>
                         <FontAwesome name="google" size={wp('5%')} color="#fff" />
                         <ButtonText style={globalStyles.buttonText}>Sign Up with Google</ButtonText>
                     </Button>

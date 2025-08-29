@@ -9,7 +9,7 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import Feather from "react-native-vector-icons/Feather";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { Avatar, AvatarFallbackText } from "@/components/ui/avatar";
-import BackHeader from "@/src/Components/BackHeader";
+import BackHeader from "@/src/components/BackHeader";
 import { StyleContext } from "@/src/providers/theme/GlobalStyleProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider } from "@/components/ui/divider";

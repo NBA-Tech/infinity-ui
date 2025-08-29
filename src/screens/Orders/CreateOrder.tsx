@@ -1,4 +1,4 @@
-import BackHeader from '@/src/Components/BackHeader';
+import BackHeader from '@/src/components/BackHeader';
 import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
@@ -9,7 +9,7 @@ import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
 import { BasicInfoFields } from '../Customer/Types';
-import { CustomCheckBox, CustomFieldsComponent } from '@/src/Components/FieldsComponent';
+import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/FieldsComponent';
 import { Button, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const styles = StyleSheet.create({

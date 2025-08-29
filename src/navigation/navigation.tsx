@@ -3,7 +3,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/Auth/Authentication';
-import Footer from '../Components/Footer';
+import Footer from '../components/Footer';
 import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator } from '../screens';
 
 const Stack = createNativeStackNavigator();
@@ -43,7 +43,7 @@ function UnauthStack() {
 const Navigation = () => {
     return (
         <NavigationContainer>
-            <AuthStack />
+            <UnauthStack />
 
         </NavigationContainer>
     );

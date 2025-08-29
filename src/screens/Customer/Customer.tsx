@@ -2,7 +2,7 @@ import React, { act, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import Header from '@/src/Components/Header';
+import Header from '@/src/components/Header';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import GradientCard from '@/src/utils/GradientCard';
 import { Divider } from '@/components/ui/divider';
