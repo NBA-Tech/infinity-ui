@@ -7,14 +7,36 @@ type FetchWithTimeoutParams = {
   timeout?: number;
   maxRetries?: number;
 };
-export const getCountries = ():ICountry[] => {
-    return Country.getAllCountries();
+export const getCountries = (): ICountry[] => {
+  return Country.getAllCountries();
 }
 
-export const getStates = (countryCode: string):IState[] => {
-    return State.getStatesOfCountry(countryCode);
+export const getStates = (countryCode: string): IState[] => {
+  return State.getStatesOfCountry(countryCode);
 }
 
+
+
+export const checkValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return !emailRegex.test(email);
+}
+
+export const checkPasswordStrength = (password: string) => {
+  const issues = [];
+
+  if (password.length < 8) issues.push("at least 8 characters");
+  if (!/[A-Z]/.test(password)) issues.push("1 uppercase letter");
+  if (!/[a-z]/.test(password)) issues.push("1 lowercase letter");
+  if (!/\d/.test(password)) issues.push("1 digit");
+  if (!/[@$!%*?&]/.test(password)) issues.push("1 symbol");
+
+  if (issues.length === 0) {
+    return "Strong password";
+  }
+
+  return `Password must contain ${issues.join(", ")}`;
+};
 
 
 
@@ -44,7 +66,7 @@ export const fetchWithTimeout = async ({
         return {
           json: async () => ({
             success: false,
-            message: `HTTP Error: ${response.statusText}`,
+            message: `HTTP Error: We are facing some issues. Please try again.`,
             status_code: response.status,
           }),
         };

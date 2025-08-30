@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -8,16 +8,19 @@ import {
     FormControlLabelText,
     FormControlHelper,
     FormControlHelperText,
+    FormControlError,
+    FormControlErrorText,
 } from "@/components/ui/form-control"
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import Feather from 'react-native-vector-icons/Feather';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { registerUser } from '@/src/api/auth/auth-api-service';
+import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 
 const styles = StyleSheet.create({
     registerCardContainer: {
@@ -26,120 +29,278 @@ const styles = StyleSheet.create({
     }
 
 })
+
+type FormKeys = "username" | "email" | "password" | "confirmPassword";
+
+type Errors = {
+    email: boolean;
+    password: boolean;
+    confirmPassword: boolean;
+};
+
 const Register = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
-    const showToast  = useToastMessage();
-    const [loading,setLoading]=useState(false)
+    const showToast = useToastMessage();
 
-    const formFields = [
-        {
-            label: 'Username',
-            type: 'text',
-            placeholder: 'Eg :John Doe',
-            icon: "user"
-        },
-        {
-            label: 'Email',
-            type: 'email',
-            placeholder: 'Eg :YJy0g@example.com',
-            icon: "mail"
-        },
-        {
-            label: 'Password',
-            type: 'password',
-            placeholder: '********',
-            icon: "lock"
-        },
-        {
-            label: 'Confirm Password',
-            type: 'password',
-            placeholder: '********',
-            icon: "lock"
-        },
-    ]
+    const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
 
-    const handleRegister: (payload: AuthModel) => void=async ()=>{
-        const register:AuthResponse=await registerUser(payload);
-        if(!register?.success){
-            showToast({type:"error",title:"Error",message:register?.message ?? "Something went wrong"})
+    // 🔧 Fix 1: Strongly type the ref values
+    const userRegisterRefs = useRef<Record<FormKeys, string>>({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const [errors, setErrors] = useState<Errors>({
+        email: false,
+        password: false,
+        confirmPassword: false,
+    });
+
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState<Record<"password" | "confirmPassword", boolean>>({
+        password: false,
+        confirmPassword: false,
+    });
+
+    const formFields: {
+        label: string;
+        type: "text" | "email" | "password";
+        placeholder: string;
+        icon: string;
+        key: FormKeys;
+    }[] = [
+            {
+                label: "Username",
+                type: "text",
+                placeholder: "Eg :John Doe",
+                icon: "user",
+                key: "username",
+            },
+            {
+                label: "Email",
+                type: "email",
+                placeholder: "Eg :YJy0g@example.com",
+                icon: "mail",
+                key: "email",
+            },
+            {
+                label: "Password",
+                type: "password",
+                placeholder: "********",
+                icon: "lock",
+                key: "password",
+            },
+            {
+                label: "Confirm Password",
+                type: "password",
+                placeholder: "********",
+                icon: "lock",
+                key: "confirmPassword",
+            },
+        ];
+
+    const validateInputs = (inputType: FormKeys) => {
+        if (inputType === "email") {
+            setErrors((prev) => ({
+                ...prev,
+                email: !checkValidEmail(userRegisterRefs.current.email),
+            }));
+        } else if (inputType === "password") {
+            const result = checkPasswordStrength(userRegisterRefs.current.password);
+            setErrorMessage(result);
+            setErrors((prev) => ({
+                ...prev,
+                password: result !== "Strong password",
+            }));
+        } else if (inputType === "confirmPassword") {
+            setErrors((prev) => ({
+                ...prev,
+                confirmPassword:
+                    userRegisterRefs.current.password !==
+                    userRegisterRefs.current.confirmPassword,
+            }));
         }
-        else{
-            showToast({type:"success",title:"Success",message:register?.message ??"Successfully registered"})
+    };
+
+    const handleRegister = async (payload: AuthModel) => {
+        const register: AuthResponse = await registerUser(payload);
+        if (!register?.success) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: register?.message ?? "Something went wrong",
+            });
+        } else {
+            showToast({
+                type: "success",
+                title: "Success",
+                message: register?.message ?? "Successfully registered",
+            });
+        }
+    };
+
+    const handleEmailRegister = () => {
+        setLoadingProvider("email");
+        console.log(userRegisterRefs.current); // ✅ will now show updated values
+        // TODO: call handleRegister with email payload
+        setLoadingProvider(null);
+    };
+
+    const handleGoogleRegister = async () => {
+        setLoadingProvider("google");
+        const authResults: AuthResult = await loginWithGoogle();
+
+        if (authResults.error) {
+            setLoadingProvider(null);
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: authResults.error,
+            });
         }
 
-    }
-
-    const handleGoogleRegister=async ()=>{
-        setLoading(true)
-        const authResults:AuthResult=await loginWithGoogle();
-        
-        if(authResults.error){
-            setLoading(false)
-            return showToast({type:"error",title:"Error",message:authResults.error})
-        }
-
-        const payload:AuthModel={
-            username:authResults?.user?.displayName ?? "",
-            email:authResults?.user?.email ?? "",
-            firebaseIdToken:authResults.token,
-            authType:"GOOGLE"
-        }
+        const payload: AuthModel = {
+            username: authResults?.user?.displayName ?? "",
+            email: authResults?.user?.email ?? "",
+            firebaseIdToken: authResults.token,
+            authType: "GOOGLE",
+        };
         handleRegister(payload);
+        setLoadingProvider(null);
+    };
 
-        // showToast({type:"success",title:"Success",message:"Successfully registered with google"});
-    }
     return (
         <View>
-            <Card style={[styles.registerCardContainer,globalStyles.cardShadowEffect]}>
+            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect]}>
                 {formFields.map((field, index) => (
-                    <FormControl key={index} style={{ marginVertical: hp("1%") }}>
-                        <FormControlLabel className='gap-2'>
-                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>{field?.label}</FormControlLabelText>
-
+                    <FormControl
+                        key={index}
+                        style={{ marginVertical: hp("1%") }}
+                        isInvalid={!!errors[field.key as keyof Errors]}
+                    >
+                        <FormControlLabel className="gap-2">
+                            <FormControlLabelText
+                                style={[globalStyles.normalTextColor, globalStyles.labelText]}
+                            >
+                                {field.label}
+                            </FormControlLabelText>
                         </FormControlLabel>
-                        <Input size='lg'>
+
+                        <Input size="lg">
                             <InputSlot>
-                                <Feather name={field?.icon} size={wp('5%')} color="#000" />
+                                <Feather name={field.icon} size={wp("5%")} color="#000" />
                             </InputSlot>
 
                             <InputField
-                                type={field?.type}
-                                placeholder={field?.placeholder}
+                                type={field.type}
+                                onChangeText={(text) => {
+                                    userRegisterRefs.current[field.key] = text;
+                                }}
+                                onBlur={() => validateInputs(field.key)}
+                                placeholder={field.placeholder}
                                 keyboardType={
-                                    field?.type === "number" ? "numeric" :
-                                        field?.type === "email" ? "email-address" :
-                                            "default"
+                                    field.type === "number"
+                                        ? "numeric"
+                                        : field.type === "email"
+                                            ? "email-address"
+                                            : "default"
                                 }
-                                secureTextEntry={field?.type === "password"}
-
+                                secureTextEntry={
+                                    field.type === "password" &&
+                                    !showPassword[field.key as "password" | "confirmPassword"]
+                                }
                             />
-                            {field?.type === 'password' && (
-                                <InputSlot>
-                                    <Feather name={'eye'} size={wp('5%')} color="#000" />
+
+                            {field.type === "password" && (
+                                <InputSlot
+                                    onPress={() =>
+                                        setShowPassword((prev) => ({
+                                            ...prev,
+                                            [field.key]:
+                                                !prev[field.key as "password" | "confirmPassword"],
+                                        }))
+                                    }
+                                >
+                                    <Feather
+                                        name={
+                                            showPassword[field.key as "password" | "confirmPassword"]
+                                                ? "eye-off"
+                                                : "eye"
+                                        }
+                                        size={wp("5%")}
+                                        color="#000"
+                                    />
                                 </InputSlot>
-                            )
-
-                            }
+                            )}
                         </Input>
+
+                        {errors[field.key as keyof Errors] && (
+                            <FormControlError style={globalStyles.errorContainer}>
+                                <Feather name="alert-triangle" size={20} color="#D32F2F" />
+                                <FormControlErrorText style={globalStyles.errorText}>
+                                    {field.type === "email"
+                                        ? "Please enter valid email"
+                                        : errorMessage}
+                                </FormControlErrorText>
+                            </FormControlError>
+                        )}
                     </FormControl>
-                ))
+                ))}
 
-                }
+                {/* buttons */}
                 <View style={{ marginVertical: hp("3%") }}>
-                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground}>
-                        <ButtonText style={globalStyles.buttonText}>Register</ButtonText>
+                    <Button
+                        size="lg"
+                        variant="solid"
+                        action="primary"
+                        style={globalStyles.purpleBackground}
+                        onPress={handleEmailRegister}
+                        disabled={loadingProvider != null}
+                    >
+                        {loadingProvider === "email" && (
+                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )}
+                        <FontAwesome name="envelope" size={wp("5%")} color="#fff" />
+                        <ButtonText style={globalStyles.buttonText}>
+                            {loadingProvider === "email"
+                                ? "Signing Up...."
+                                : "Sign Up with Email"}
+                        </ButtonText>
                     </Button>
-                    <View className='flex-row justify-center items-center'>
-                        <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
 
+                    <View className="flex-row justify-center items-center">
+                        <Text
+                            style={[
+                                globalStyles.normalTextColor,
+                                { marginVertical: hp("2%") },
+                            ]}
+                        >
+                            ────── OR ──────
+                        </Text>
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleRegister}>
-                        <FontAwesome name="google" size={wp('5%')} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>Sign Up with Google</ButtonText>
+
+                    <Button
+                        size="lg"
+                        variant="solid"
+                        action="primary"
+                        style={{ backgroundColor: "#DB4437", borderRadius: wp("2%") }}
+                        onPress={handleGoogleRegister}
+                        isDisabled={loadingProvider != null}
+                    >
+                        {loadingProvider === "google" && (
+                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )}
+                        <FontAwesome name="google" size={wp("5%")} color="#fff" />
+                        <ButtonText style={globalStyles.buttonText}>
+                            {loadingProvider === "google"
+                                ? "Signing Up...."
+                                : "Sign Up with Google"}
+                        </ButtonText>
                     </Button>
                 </View>
-
             </Card>
         </View>
     );

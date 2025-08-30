@@ -28,6 +28,9 @@ const createGlobalStyle = (isDark = false) =>
     blackTextColor: {
       color: isDark ? "#fff" : "#000", // inverted
     },
+    errorText: {
+      color: '#ff0000',
+    },
 
     // text styles
     headingText: {
@@ -69,7 +72,7 @@ const createGlobalStyle = (isDark = false) =>
       textDecorationLine: "underline",
       color: isDark ? "#E5E7EB" : "#374151",
     },
-    smallText:{
+    smallText: {
       fontSize: scaleFont("1.5%"),
       fontFamily: "Inter-Regular",
     },
@@ -113,6 +116,12 @@ const createGlobalStyle = (isDark = false) =>
       color: isDark ? "#fff" : "#2a2a2a",
       width: wp('80%'),
       fontFamily: "Gilroy-normal",
+    },
+
+    //containers
+    errorContainer: {
+      marginHorizontal: wp('2%'),
+      marginVertical: hp('2%'),
     },
 
   });
