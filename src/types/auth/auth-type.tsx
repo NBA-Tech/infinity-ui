@@ -6,3 +6,8 @@ export interface AuthModel {
     authType: "EMAIL_PASSWORD"| "GOOGLE";
 
 }
+export interface AuthResponse{
+    status:number;
+    success:boolean;
+    message:string;
+}

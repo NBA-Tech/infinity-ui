@@ -1,0 +1,1 @@
+export const API_BASE_URI="https://1pmtsgzl-8000.inc1.devtunnels.ms/api/v1";

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -16,7 +16,8 @@ import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { AuthModel } from '@/src/types/auth/auth-type';
+import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
+import { registerUser } from '@/src/api/auth/auth-api-service';
 
 const styles = StyleSheet.create({
     registerCardContainer: {
@@ -29,6 +30,7 @@ const Register = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const showToast  = useToastMessage();
+    const [loading,setLoading]=useState(false)
 
     const formFields = [
         {
@@ -57,14 +59,25 @@ const Register = () => {
         },
     ]
 
-    const handleRegister: (payload: AuthModel) => void=()=>{
+    const handleRegister: (payload: AuthModel) => void=async ()=>{
+        const register:AuthResponse=await registerUser(payload);
+        if(!register?.success){
+            showToast({type:"error",title:"Error",message:register?.message ?? "Something went wrong"})
+        }
+        else{
+            showToast({type:"success",title:"Success",message:register?.message ??"Successfully registered"})
+        }
 
     }
 
     const handleGoogleRegister=async ()=>{
+        setLoading(true)
         const authResults:AuthResult=await loginWithGoogle();
         
-        if(authResults.error){return showToast({type:"error",title:"Error",message:authResults.error})}
+        if(authResults.error){
+            setLoading(false)
+            return showToast({type:"error",title:"Error",message:authResults.error})
+        }
 
         const payload:AuthModel={
             username:authResults?.user?.displayName ?? "",
