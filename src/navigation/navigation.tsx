@@ -2,8 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Authentication from '../screens/Auth/Authentication';
-import Footer from '../components/Footer';
+import Authentication from '../screens/auth/authentication';
+import Footer from '../components/footer';
 import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator } from '../screens';
 
 const Stack = createNativeStackNavigator();

@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { StyleContext } from "@/src/providers/theme/GlobalStyleProvider";
+import { StyleContext } from "@/src/providers/theme/global-style-provider";
 import { Card } from "@/components/ui/card";
 
 

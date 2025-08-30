@@ -2,9 +2,10 @@
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
-interface AuthResult {
-  user: FirebaseAuthTypes.User;
-  token: string;
+export interface AuthResult {
+  user?: FirebaseAuthTypes.User;
+  token?: string;
+  error?: string;
 }
 
 const GOOGLE_SIGNIN_CONFIG = {
@@ -38,27 +39,18 @@ export async function loginWithGoogle(): Promise<AuthResult> {
     const userCredential = await auth().signInWithCredential(googleCredential);
 
     const firebaseIdToken = await userCredential.user.getIdToken();
-    console.log(userCredential)
 
     return {
       user: userCredential.user,
       token: firebaseIdToken,
+      error: ""
     };
   } catch (error: any) {
-    if (error.code) {
-      switch (error.code) {
-        case statusCodes.SIGN_IN_CANCELLED:
-          throw new Error('Google Sign-in cancelled by user');
-        case statusCodes.IN_PROGRESS:
-          throw new Error('Google Sign-in already in progress');
-        case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-          throw new Error('Google Play Services not available');
-        default:
-          throw new Error(`Google Sign-in failed: ${error.message}`);
-      }
+    return{
+      token: "",
+      user: undefined,
+      error:"Something went wrong! Please try again."
     }
-    console.error('Google login failed:', error);
-    throw error;
   }
 }
 

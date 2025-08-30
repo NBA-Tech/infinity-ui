@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { useRoute } from '@react-navigation/native';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { WaveHandIcon } from '@/src/assets/Icons/SvgIcons';
 const styles = StyleSheet.create({
     otpBodyContainer: {

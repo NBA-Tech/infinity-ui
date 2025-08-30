@@ -1,22 +1,22 @@
-import Header from '@/src/components/Header';
+import Header from '@/src/components/header';
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import { BarChart } from 'react-native-chart-kit';
-import { GeneralStatInfoModel } from './types/HomeType';
-import { StatInfo } from './components/StatInfo';
-import HomeLineChart from './components/HomeLineChart';
-import EventDateKeeper from './components/EventDateKeeper';
-import Activity from './components/Activity';
-import Popularity from './components/Popularity';
-import DeadLines from './components/DeadLines';
-import HeatmapYear from './components/HeatMapYear';
-import TopClient from './components/TopClient';
+import { GeneralStatInfoModel } from './types/home-type';
+import { StatInfo } from './components/stat-info';
+import HomeLineChart from './components/home-line-chart';
+import EventDateKeeper from './components/event-date-keeper';
+import Activity from './components/activity';
+import Popularity from './components/popularity';
+import DeadLines from './components/dead-lines';
+import HeatmapYear from './components/heat-map-year';
+import TopClient from './components/top-client';
 
 const styles = StyleSheet.create({
     scrollContainer: {

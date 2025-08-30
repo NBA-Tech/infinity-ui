@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text } from 'react-native';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';

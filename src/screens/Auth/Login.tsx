@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { View, StyleSheet, Text } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';

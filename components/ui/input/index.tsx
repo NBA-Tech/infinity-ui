@@ -10,7 +10,7 @@ import {
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
-import { ThemeToggleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 
 const SCOPE = 'INPUT';
 

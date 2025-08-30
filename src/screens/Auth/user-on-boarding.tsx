@@ -1,8 +1,8 @@
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Divider } from '@/components/ui/divider';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
@@ -13,8 +13,8 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { FormFields } from '@/src/types/common';
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
-import { BUSINESSTYPE } from '@/src/constant/Constants';
-import { getCountries, getStates } from '@/src/utils/Utils';
+import { BUSINESSTYPE } from '@/src/constant/constants';
+import { getCountries, getStates } from '@/src/utils/utils';
 
 
 const styles = StyleSheet.create({

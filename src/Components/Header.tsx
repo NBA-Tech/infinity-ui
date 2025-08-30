@@ -16,7 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Button } from "@/components/ui/button"
 import { useNavigation } from '@react-navigation/native';
-import { ThemeToggleContext, StyleContext } from '../providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '../providers/theme/global-style-provider';
 import { NotificationIcon } from '../assets/Icons/SvgIcons';
 import Logo from '../assets/images/logo.png'
 const styles = StyleSheet.create({

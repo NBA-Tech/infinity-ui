@@ -12,8 +12,8 @@ import { ChevronDownIcon } from "@/components/ui/icon";
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp,widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { ThemeToggleContext,StyleContext } from "../providers/theme/GlobalStyleProvider";
-import { BasicInfo, BasicInfoFields, BillingInfo } from "../screens/Customer/Types";
+import { ThemeToggleContext,StyleContext } from "../providers/theme/global-style-provider";
+import { BasicInfo, BasicInfoFields, BillingInfo } from "../screens/customer/types";
 
 
 

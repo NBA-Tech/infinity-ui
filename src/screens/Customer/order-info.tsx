@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Progress, ProgressFilledTrack } from "@/components/ui/progress"
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
-import OrderCard from '../Orders/components/OrderCard';
+import OrderCard from '../Orders/components/order-card';
 
 const styles = StyleSheet.create({
     projectContainer: {

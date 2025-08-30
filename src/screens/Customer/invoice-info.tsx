@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';

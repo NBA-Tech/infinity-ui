@@ -1,9 +1,9 @@
 import React, { JSX, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import Header from '@/src/components/Header';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
+import Header from '@/src/components/header';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import {
     Accordion,
@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { getCountries, getStates } from '@/src/utils/Utils';
+import { getCountries, getStates } from '@/src/utils/utils';
 import { Button,ButtonText } from '@/components/ui/button';
-import { CustomFieldsComponent } from '@/src/components/FieldsComponent';
-import { BasicInfo, BillingInfo,BasicInfoFields } from './Types';
+import { CustomFieldsComponent } from '@/src/components/fields-component';
+import { BasicInfo, BillingInfo,BasicInfoFields } from './types';
 import { SelectItem } from '@/components/ui/select';
 const styles = StyleSheet.create({
 

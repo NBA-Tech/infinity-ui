@@ -3,7 +3,7 @@ import { View, Text, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card'; // assuming you have a Card component
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 // Temporary revenue data
 const revenueData = [
     { month: 'Jan', value: 5000 },

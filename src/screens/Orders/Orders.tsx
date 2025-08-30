@@ -1,16 +1,16 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
-import Header from '@/src/components/Header';
-import GradientCard from '@/src/utils/GradientCard';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
+import Header from '@/src/components/header';
+import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonText } from '@/components/ui/button';
 import Feather from 'react-native-vector-icons/Feather';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { Fab } from '@/components/ui/fab';
-import OrderCard from './components/OrderCard';
+import OrderCard from './components/order-card';
 
 
 

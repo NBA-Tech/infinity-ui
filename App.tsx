@@ -13,7 +13,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import Navigation from './src/navigation/navigation';
-import GlobalStyleProvider from './src/providers/theme/GlobalStyleProvider';
+import GlobalStyleProvider from './src/providers/theme/global-style-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App() {

@@ -9,13 +9,13 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import Feather from "react-native-vector-icons/Feather";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { Avatar, AvatarFallbackText } from "@/components/ui/avatar";
-import BackHeader from "@/src/components/BackHeader";
-import { StyleContext } from "@/src/providers/theme/GlobalStyleProvider";
+import BackHeader from "@/src/components/back-header";
+import { StyleContext } from "@/src/providers/theme/global-style-provider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider } from "@/components/ui/divider";
-import { GeneralInfo } from "./GeneralInfo";
-import ProjectInfo from "./OrderInfo";
-import InvoiceInfo from "./InvoiceInfo";
+import { GeneralInfo } from "./genera-iInfo";
+import ProjectInfo from "./order-info";
+import InvoiceInfo from "./invoice-info";
 
 const styles = StyleSheet.create({
     cardContainer: {

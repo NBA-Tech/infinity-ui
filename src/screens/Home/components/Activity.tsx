@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';

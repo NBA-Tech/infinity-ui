@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';

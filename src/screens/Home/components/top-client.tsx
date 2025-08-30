@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/card';
 import React, { useContext } from 'react';
 import { View, StyleSheet, Text, FlatList } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';

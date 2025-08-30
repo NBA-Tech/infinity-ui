@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import { Card } from '@/components/ui/card';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { GeneralCardModel } from '../types/HomeType';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { GeneralCardModel } from '../types/home-type';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 
 const styles = StyleSheet.create({
   cardContainer: {

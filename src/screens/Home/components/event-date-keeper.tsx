@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({

@@ -2,18 +2,18 @@ import React, { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import UserOnBoarding from './UserOnBoarding';
-import Login from './Login';
-import Register from './Register';
-import OneTimePassword from './OneTimePassword';
+import UserOnBoarding from './user-on-boarding';
+import Login from './login';
+import Register from './register';
+import OneTimePassword from './one-time-password';
 import Background from '../../assets/images/Background.png'
 import { Divider } from '@/components/ui/divider';
-import { configureGoogleSignin } from '@/src/services/auth/authService';
+import { configureGoogleSignin } from '@/src/services/auth/auth-service';
 const styles = StyleSheet.create({
     headingContainer: {
         marginVertical: hp("0.1%")

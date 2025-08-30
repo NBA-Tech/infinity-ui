@@ -1,15 +1,15 @@
-import BackHeader from '@/src/components/BackHeader';
-import { StyleContext } from '@/src/providers/theme/GlobalStyleProvider';
+import BackHeader from '@/src/components/back-header';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import GradientCard from '@/src/utils/GradientCard';
+import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
-import { BasicInfoFields } from '../Customer/Types';
-import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/FieldsComponent';
+import { BasicInfoFields } from '../customer/types';
+import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const styles = StyleSheet.create({
