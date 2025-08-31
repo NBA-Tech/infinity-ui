@@ -10,4 +10,5 @@ export interface AuthResponse{
     status:number;
     success:boolean;
     message:string;
+    userId?:string
 }

@@ -15,6 +15,7 @@ import {
 import Navigation from './src/navigation/navigation';
 import GlobalStyleProvider from './src/providers/theme/global-style-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { DataStoreProvider } from './src/providers/data-store/data-store-provider';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -23,10 +24,11 @@ function App() {
     <GluestackUIProvider mode="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
-          <GlobalStyleProvider>
-            <Navigation />
-          </GlobalStyleProvider>
-
+          <DataStoreProvider>
+            <GlobalStyleProvider>
+              <Navigation />
+            </GlobalStyleProvider>
+          </DataStoreProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </GluestackUIProvider>

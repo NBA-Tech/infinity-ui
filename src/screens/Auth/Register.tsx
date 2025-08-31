@@ -21,6 +21,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { registerUser } from '@/src/api/auth/auth-api-service';
 import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 
 const styles = StyleSheet.create({
     registerCardContainer: {
@@ -42,6 +43,7 @@ const Register = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
+    const {setItem} = useDataStore();
 
     const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
 
@@ -139,6 +141,7 @@ const Register = () => {
                 title: "Success",
                 message: register?.message ?? "Successfully registered",
             });
+            setItem("USERID", register?.userId);
         }
     };
 
@@ -146,6 +149,23 @@ const Register = () => {
         setLoadingProvider("email");
         console.log(userRegisterRefs.current); // ✅ will now show updated values
         // TODO: call handleRegister with email payload
+        const hasError = Object.values(errors).some(Boolean);
+
+        if(hasError){
+            setLoadingProvider(null);
+            return showToast({
+                type: "warning",
+                title: "Oops!",
+                message: "Please resolve the errors",
+            })
+        }
+        const payload:AuthModel={
+            username:userRegisterRefs.current.username,
+            email:userRegisterRefs.current.email,
+            password:userRegisterRefs.current.password,
+            authType:"EMAIL_PASSWORD"
+        }
+        handleRegister(payload);
         setLoadingProvider(null);
     };
 

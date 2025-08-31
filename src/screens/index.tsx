@@ -8,3 +8,4 @@ export { default as CustomerDetails } from './customer/customer-details';
 export { default as CreateOrder } from './Orders/create-order';
 export { default as Orders } from './Orders/orders';
 export { default as InvoiceGenerator } from './invoice/invoice-generator';
+export { default as UserOnBoarding } from './auth/user-on-boarding';

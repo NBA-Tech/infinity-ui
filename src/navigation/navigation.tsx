@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator } from '../screens';
+import { Customer, Home, Invoice, Quotation,Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding } from '../screens';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,6 +36,7 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="useronboarding" component={UserOnBoarding} />
             <Stack.Screen name="authentication" component={Authentication} />
         </Stack.Navigator>
     )

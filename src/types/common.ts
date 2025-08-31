@@ -6,6 +6,7 @@ export interface GradientCardProps {
 }
 
 interface FormField {
+    key?:string;
     label: string;
     type: string;
     placeholder?: string;
