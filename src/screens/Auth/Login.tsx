@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     }
 })
 
-const Login = () => {
+const Login = ({setCurrScreen}:any) => {
     const globalStyles = useContext(StyleContext);
     const formFields = [
         {
@@ -83,7 +83,9 @@ const Login = () => {
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
                         <Text style={[globalStyles.labelText]}>Don't have an account? </Text>
+                        <TouchableOpacity onPress={() => setCurrScreen('signup')}>
                         <Text style={[globalStyles.underscoreText]}>Sign Up</Text>
+                        </TouchableOpacity>
 
                     </View>
                 </View>

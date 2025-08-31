@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import Register from './register';
 import OneTimePassword from './one-time-password';
 import Background from '../../assets/images/Background.png'
 import { Divider } from '@/components/ui/divider';
+import { configureGoogleSignin } from '@/src/services/auth/auth-service';
 const styles = StyleSheet.create({
     headingContainer: {
         marginVertical: hp("0.1%")
@@ -27,12 +28,20 @@ const styles = StyleSheet.create({
 
 const Authentication = () => {
     const globalStyles = useContext(StyleContext);
+    const [currScreen, setCurrScreen] = useState('login');
+
+    useEffect(() => {
+        configureGoogleSignin();
+        return () => { 
+        };
+    }, []);
+
 
     const UserAuth = () => {
         return (
             <ImageBackground
-                source={Background}              
-                resizeMode="cover"       
+                source={Background}
+                resizeMode="cover"
                 style={{ flex: 1 }}>
                 <View style={styles.body}>
                     {/* Header */}
@@ -55,7 +64,13 @@ const Authentication = () => {
 
                     {/* Login Card - Aligned to bottom */}
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        <Register />
+                        {currScreen === 'login' ? (
+                            <Login setCurrScreen={setCurrScreen}/>
+                        ) : (
+                            <Register setCurrScreen={setCurrScreen}/>
+                        )
+
+                        }
                     </View>
                 </View>
             </ImageBackground>

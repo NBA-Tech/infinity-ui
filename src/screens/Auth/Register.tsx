@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import {
@@ -22,7 +22,8 @@ import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { registerUser } from '@/src/api/auth/auth-api-service';
 import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
-
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@/src/types/common';
 const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
@@ -39,11 +40,12 @@ type Errors = {
     confirmPassword: boolean;
 };
 
-const Register = () => {
+const Register = ({ setCurrScreen }: any) => {
     const globalStyles = useContext(StyleContext);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
-    const {setItem} = useDataStore();
+    const { setItem } = useDataStore();
+    const navigation = useNavigation<NavigationProp>();
 
     const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
 
@@ -130,7 +132,7 @@ const Register = () => {
     const handleRegister = async (payload: AuthModel) => {
         const register: AuthResponse = await registerUser(payload);
         if (!register?.success) {
-            showToast({
+            return showToast({
                 type: "error",
                 title: "Error",
                 message: register?.message ?? "Something went wrong",
@@ -143,6 +145,19 @@ const Register = () => {
             });
             setItem("USERID", register?.userId);
         }
+        if (payload.authType === "EMAIL_PASSWORD") {
+            setTimeout(() => {
+                navigation.navigate("onetimepassword");
+
+            }, 2000);
+        }
+        else {
+            setTimeout(() => {
+                navigation.navigate("useronboarding");
+
+            }, 2000);
+        }
+
     };
 
     const handleEmailRegister = () => {
@@ -151,7 +166,7 @@ const Register = () => {
         // TODO: call handleRegister with email payload
         const hasError = Object.values(errors).some(Boolean);
 
-        if(hasError){
+        if (hasError) {
             setLoadingProvider(null);
             return showToast({
                 type: "warning",
@@ -159,11 +174,11 @@ const Register = () => {
                 message: "Please resolve the errors",
             })
         }
-        const payload:AuthModel={
-            username:userRegisterRefs.current.username,
-            email:userRegisterRefs.current.email,
-            password:userRegisterRefs.current.password,
-            authType:"EMAIL_PASSWORD"
+        const payload: AuthModel = {
+            username: userRegisterRefs.current.username,
+            email: userRegisterRefs.current.email,
+            password: userRegisterRefs.current.password,
+            authType: "EMAIL_PASSWORD"
         }
         handleRegister(payload);
         setLoadingProvider(null);
@@ -172,6 +187,7 @@ const Register = () => {
     const handleGoogleRegister = async () => {
         setLoadingProvider("google");
         const authResults: AuthResult = await loginWithGoogle();
+        console.log(authResults)
 
         if (authResults.error) {
             setLoadingProvider(null);
@@ -320,6 +336,13 @@ const Register = () => {
                                 : "Sign Up with Google"}
                         </ButtonText>
                     </Button>
+                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
+                        <Text style={[globalStyles.labelText]}>Already have an account? </Text>
+                        <TouchableOpacity onPress={() => setCurrScreen('login')}>
+                            <Text style={[globalStyles.underscoreText]}>Sign In</Text>
+                        </TouchableOpacity>
+
+                    </View>
                 </View>
             </Card>
         </View>

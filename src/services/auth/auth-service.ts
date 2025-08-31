@@ -46,6 +46,7 @@ export async function loginWithGoogle(): Promise<AuthResult> {
       error: ""
     };
   } catch (error: any) {
+    console.log('Error logging in with Google:', error);
     return{
       token: "",
       user: undefined,
