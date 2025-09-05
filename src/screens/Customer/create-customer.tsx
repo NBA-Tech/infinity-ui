@@ -20,9 +20,9 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { getCountries, getStates } from '@/src/utils/utils';
 import { Button, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { BasicInfo, BillingInfo, BasicInfoFields } from './types';
 import { SelectItem } from '@/components/ui/select';
-import { GENDER, LEADSOURCE } from '@/src/types/customer/customer-type';
+import { CustomerBasicInfo, CustomerBillingInfo, CustomerModel, GENDER, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
+import { FormFields } from '@/src/types/common';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -44,7 +44,21 @@ const styles = StyleSheet.create({
 
 const CreateCustomer = () => {
     const globalStyles = useContext(StyleContext);
-    const basicInfoFields: BasicInfo = {
+    const [customerDetails, setCustomerDetails] = React.useState<CustomerModel>({
+        customerID: "",
+        userId: "",
+        createdDate: new Date(),
+        status: STATUS.ACTIVE,
+        leadSource: LEADSOURCE.REFERRAL,
+        gender: GENDER.MALE,
+        customerBasicInfo: {} as CustomerBasicInfo,
+        customerBillingInfo: {} as CustomerBillingInfo
+
+    } as CustomerModel);
+
+
+
+    const basicInfoFields: FormFields = {
         firstName: {
             label: "First Name",
             placeholder: "Enter First Name",
@@ -53,6 +67,9 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBasicInfo', 'firstName', value)
+            }
         },
         lastName: {
             label: "Last Name",
@@ -62,6 +79,9 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBasicInfo', 'lastName', value)
+            }
         },
         mobileNumber: {
             label: "Mobile Number",
@@ -69,8 +89,11 @@ const CreateCustomer = () => {
             icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
             type: "number",
             style: "w-1/2",
-            isRequired: false,
+            isRequired: true,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBasicInfo', 'mobileNumber', value)
+            }
         },
         email: {
             label: "Email",
@@ -78,8 +101,11 @@ const CreateCustomer = () => {
             icon: <Feather name="mail" size={wp('5%')} color="#8B5CF6" />,
             type: "email",
             style: "w-1/2",
-            isRequired: false,
+            isRequired: true,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBasicInfo', 'email', value)
+            }
         },
         gender: {
             label: "Gender",
@@ -90,8 +116,8 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             dropDownItems: Object.values(GENDER).map((gender) => ({
-                label: gender.charAt(0) + gender.slice(1).toLowerCase(), // "Male", "Female", "Other"
-                value: gender, // actual enum value
+                label: gender.charAt(0) + gender.slice(1).toLowerCase(),
+                value: gender,
             }))
         },
         leadSource: {
@@ -102,12 +128,12 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
-            renderItems: () => {
-                return Object.values(LEADSOURCE).map((lead, index) => (
-                    <SelectItem key={index} label={lead} value={lead}>
-                        {lead}
-                    </SelectItem>
-                ));
+            dropDownItems: Object.values(LEADSOURCE).map((lead) => ({
+                label: lead,
+                value: lead,
+            })),
+            onChange: (value: string) => {
+                patchState("",'leadSource', value)
             }
         },
         notes: {
@@ -119,10 +145,13 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
+            onChange: (value: string) => {
+                patchState('customerBasicInfo', 'notes', value)
+            }
         }
     }
 
-    const billingInfoFields: BillingInfo = {
+    const billingInfoFields: FormFields = {
         street: {
             label: "Street/Landmark",
             placeholder: "Enter Street",
@@ -131,6 +160,10 @@ const CreateCustomer = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBillingInfo', 'street', value)
+            }
+
         },
         city: {
             label: "City",
@@ -140,6 +173,9 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBillingInfo', 'city', value)
+            }
         },
         country: {
             label: "Country",
@@ -155,6 +191,9 @@ const CreateCustomer = () => {
                         {country.name}
                     </SelectItem>
                 ));
+            },
+            onChange: (value: string) => {
+                patchState('customerBillingInfo', 'country', value)
             }
         },
         state: {
@@ -169,6 +208,9 @@ const CreateCustomer = () => {
                 return getStates("IN").map((state, index) => (
                     <SelectItem key={index} label={state.name} value={state.isoCode} />
                 ));
+            },
+            onChange: (value: string) => {
+                patchState('customerBillingInfo', 'state', value)
             }
         },
         zipCode: {
@@ -179,9 +221,42 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            onChange: (value: string) => {
+                patchState('customerBillingInfo', 'zipCode', value)
+            }
         },
 
     }
+
+    const patchState = (
+        section: string,
+        key: string | null,
+        value: string
+    ) => {
+        setCustomerDetails((prev) => {
+            if (key === null) {
+                // direct scalar update
+                return {
+                    ...prev,
+                    [section]: value as any,
+                };
+            }
+
+            // nested object update
+            return {
+                ...prev,
+                [section]: {
+                    ...prev[section],
+                    [key]: value,
+                },
+            };
+        });
+    };
+
+    const handleSubmit=()=>{
+        console.log(customerDetails)
+    }
+
 
 
     return (
@@ -201,7 +276,7 @@ const CreateCustomer = () => {
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit}>
                             <Feather name="save" size={wp('5%')} color="#fff" />
                             <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
                         </Button>
@@ -213,14 +288,15 @@ const CreateCustomer = () => {
                             size="md"
                             variant="filled"
                             type="single"
+                            defaultValue={["basicInfo"]}
                             isCollapsible={true}
                             isDisabled={false}
                             className="m-5 w-[90%] border border-outline-200"
                         >
-                            <AccordionItem value="a">
+                            <AccordionItem value="basicInfo">
                                 <AccordionHeader style={styles.accordionHeader}>
                                     <AccordionTrigger>
-                                        {({ isExpanded }: { isExpanded: boolean }) => {
+                                        {({ isExpanded = true }: { isExpanded: boolean }) => {
                                             return (
                                                 <>
                                                     <View className='flex flex-row  items-center justify-center'>
@@ -243,7 +319,7 @@ const CreateCustomer = () => {
                                 </AccordionContent>
                             </AccordionItem>
                             <Divider />
-                            <AccordionItem value="b">
+                            <AccordionItem value="billingInfo">
                                 <AccordionHeader style={styles.accordionHeader}>
                                     <AccordionTrigger>
                                         {({ isExpanded }: { isExpanded: boolean }) => {

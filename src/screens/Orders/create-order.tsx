@@ -8,7 +8,7 @@ import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
-import { BasicInfoFields } from '../customer/types';
+import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';

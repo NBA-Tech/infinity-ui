@@ -4,18 +4,18 @@ import {
     FormControlLabelText,
     FormControlHelper,
     FormControlHelperText,
+    FormControlError,
+    FormControlErrorText,
 } from "@/components/ui/form-control"
 import { JSX, useContext, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
-import { ChevronDownIcon } from "@/components/ui/icon";
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { ThemeToggleContext, StyleContext } from "../providers/theme/global-style-provider";
-import { BasicInfo, BasicInfoFields, BillingInfo } from "../screens/customer/types";
 import { Dropdown } from "react-native-element-dropdown";
-
+import { FormField } from "../types/common";
+import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
 
@@ -48,6 +48,9 @@ const styles = StyleSheet.create({
         borderRadius: wp('1%'),
         paddingHorizontal: wp('2%'),
     },
+    dropdownContainer: {
+        paddingHorizontal: wp('2%'),
+    }
 })
 
 type CustomCheckBoxProps = {
@@ -56,24 +59,24 @@ type CustomCheckBoxProps = {
     styles?: Object
 }
 
-export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<string, BasicInfoFields> }) => {
+export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Record<string, any>, errors?: Record<string, any> }) => {
     const fieldsArray = Object.values(infoFields);
     const rows: JSX.Element[] = [];
     const globalStyles = useContext(StyleContext);
 
     let i = 0;
     while (i < fieldsArray.length) {
-        const field: BasicInfoFields = fieldsArray[i];
+        const field: FormField = fieldsArray[i];
 
         // Case 1: Pair w-1/2 fields together
         if (field.style === "w-1/2" && i < fieldsArray.length - 1) {
-            const nextField: BasicInfoFields = fieldsArray[i + 1];
+            const nextField: FormField = fieldsArray[i + 1];
             if (nextField.style === "w-1/2") {
                 rows.push(
                     <View key={i} style={styles.row}>
                         {/* First Half Field */}
-                        <FormControl style={{ width: wp("40%"), marginRight: wp("2%") }}>
-                            <FormControlLabel className="gap-2">
+                        <FormControl style={{ width: wp("43%"), marginRight: wp("2%") }} isInvalid={field?.isInvalid}>
+                            <FormControlLabel>
                                 <FormControlLabelText
                                     style={[globalStyles.normalTextColor, globalStyles.labelText]}
                                 >
@@ -86,15 +89,19 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                     style={styles.dropdown}
                                     data={field?.dropDownItems || []}
                                     search
+                                    placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
+                                    inputSearchStyle={globalStyles.labelText}
+                                    itemTextStyle={globalStyles.labelText}
+                                    selectedTextStyle={globalStyles.labelText}
                                     maxHeight={300}
                                     labelField="label"
                                     valueField="value"
                                     placeholder={field?.placeholder}
                                     searchPlaceholder="Search..."
-                                    onChange={() => { }}
+                                    onChange={(value) => field?.onChange?.(value?.value)}
                                     renderItem={(item, isSelected) => {
                                         return (
-                                            <Text style={{ padding: 12, backgroundColor: isSelected ? "#eee" : "white" }}>
+                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
                                                 {item.label}
                                             </Text>
                                         )
@@ -109,6 +116,7 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                             type={field?.type}
                                             placeholder={field?.placeholder}
                                             keyboardType={field?.type === "number" ? "numeric" : "default"}
+                                            onChangeText={(value) => field?.onChange?.(value)}
                                         />
                                     </Input>
                                 )}
@@ -120,6 +128,9 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                         This field is required
                                     </FormControlHelperText>
                                 </FormControlHelper>
+                            )}
+                            {field?.isInvalid && (
+                                <></>
                             )}
                         </FormControl>
 
@@ -136,18 +147,29 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                 </FormControlLabelText>
                             </FormControlLabel>
                             {nextField?.type === "select" ? (
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectInput placeholder={nextField?.placeholder} />
-                                        <SelectIcon as={ChevronDownIcon} />
-                                    </SelectTrigger>
-                                    <SelectPortal>
-                                        <SelectBackdrop />
-                                        <SelectContent>
-                                            {nextField?.renderItems && nextField.renderItems()}
-                                        </SelectContent>
-                                    </SelectPortal>
-                                </Select>
+                                <Dropdown
+                                    style={styles.dropdown}
+                                    data={nextField?.dropDownItems || []}
+                                    search
+                                    placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
+                                    inputSearchStyle={globalStyles.labelText}
+                                    itemTextStyle={globalStyles.labelText}
+                                    selectedTextStyle={globalStyles.labelText}
+                                    maxHeight={300}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder={nextField?.placeholder}
+                                    searchPlaceholder="Search..."
+                                    onChange={(value) => field?.onChange?.(value?.value)}
+                                    renderItem={(item, isSelected) => {
+                                        return (
+                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
+                                                {item.label}
+                                            </Text>
+                                        )
+
+                                    }}
+                                />
                             ) : (
                                 <Input size="lg" isDisabled={nextField?.isDisabled}>
                                     <InputSlot>{nextField?.icon}</InputSlot>
@@ -157,6 +179,7 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                         keyboardType={
                                             nextField?.type === "number" ? "numeric" : "default"
                                         }
+                                        onChangeText={(value) => field?.onChange?.(value)}
                                     />
                                 </Input>
                             )}
@@ -180,8 +203,8 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
         // Case 2: Render full-width field
         if (field.style === "w-full") {
             rows.push(
-                <FormControl key={i}>
-                    <FormControlLabel className="gap-2">
+                <FormControl key={i} isInvalid={errors?.[field?.key]}>
+                    <FormControlLabel>
                         <FormControlLabelText
                             style={[globalStyles.normalTextColor, globalStyles.labelText]}
                         >
@@ -190,18 +213,30 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                         </FormControlLabelText>
                     </FormControlLabel>
                     {field?.type === "select" ? (
-                        <Select>
-                            <SelectTrigger className="w-full">
-                                <SelectInput placeholder={field?.placeholder} />
-                                <SelectIcon as={ChevronDownIcon} />
-                            </SelectTrigger>
-                            <SelectPortal>
-                                <SelectBackdrop />
-                                <SelectContent>
-                                    {field?.renderItems && field.renderItems()}
-                                </SelectContent>
-                            </SelectPortal>
-                        </Select>
+                        <Dropdown
+                            style={styles.dropdown}
+                            data={field?.dropDownItems || []}
+                            search
+                            containerStyle={styles.dropdownContainer}
+                            placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
+                            inputSearchStyle={globalStyles.labelText}
+                            itemTextStyle={globalStyles.labelText}
+                            selectedTextStyle={globalStyles.labelText}
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={field?.placeholder}
+                            searchPlaceholder="Search..."
+                            onChange={(value) => field?.onChange?.(value?.value)}
+                            renderItem={(item, isSelected) => {
+                                return (
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
+                                        {item.label}
+                                    </Text>
+                                )
+
+                            }}
+                        />
                     ) : (
                         <Input size="lg" isDisabled={field?.isDisabled} style={field?.extraStyles}>
                             <InputSlot>{field?.icon}</InputSlot>
@@ -209,10 +244,12 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                 type={field?.type}
                                 placeholder={field?.placeholder}
                                 keyboardType={field?.type === "number" ? "numeric" : "default"}
+                                onChangeText={(value) => field?.onChange?.(value)}
+                                onBlur={()=>field?.onBlur && field?.onBlur(field?.parentKey, field?.key)}
                             />
                         </Input>
                     )}
-                    {field?.isRequired && (
+                    {field?.isRequired && !errors?.[field.key] && (
                         <FormControlHelper>
                             <FormControlHelperText
                                 style={[globalStyles.greyTextColor, globalStyles.smallText]}
@@ -221,6 +258,16 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                             </FormControlHelperText>
                         </FormControlHelper>
                     )}
+                    {errors?.[field.key] && (
+                        <FormControlError style={globalStyles.errorContainer}>
+                            <Feather name="alert-triangle" size={20} color="#D32F2F" />
+                            <FormControlErrorText style={globalStyles.errorText}>
+                                {errors[field.key]}
+                            </FormControlErrorText>
+                        </FormControlError>
+                    )}
+
+
                 </FormControl>
             );
         }
@@ -228,7 +275,7 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
         i++; // Move to next field
     }
 
-    return <Card style={styles.cardContainer}>{rows}</Card>;
+    return <Card style={[styles.cardContainer, { padding: 0 }]} >{rows}</Card>;
 };
 
 export const CustomCheckBox = (props: CustomCheckBoxProps) => {

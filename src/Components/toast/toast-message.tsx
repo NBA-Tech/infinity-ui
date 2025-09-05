@@ -47,7 +47,7 @@ export const useToastMessage = () => {
     message = "Something went wrong.",
   }) => {
     if (currentToastIdRef.current) {
-      toast.hide(currentToastIdRef.current);
+      toast?.close(currentToastIdRef.current);
       currentToastIdRef.current = null;
     }
 

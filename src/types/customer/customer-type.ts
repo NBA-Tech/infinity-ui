@@ -22,7 +22,7 @@ export enum LEADSOURCE {
 export interface CustomerBasicInfo {
   firstName: string;
   lastName: string;
-  mobileNumber?: string;
+  mobileNumber: string;
   email: string;
   notes?: string;
 }

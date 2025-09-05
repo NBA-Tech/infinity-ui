@@ -9,6 +9,7 @@ export interface BasicInfoFields {
     extraStyles?: object;
     dropDownItems?: Record<string, string>[];
     renderItems?: () => React.ReactNode;
+    onChange?: (value: string) => void
 }
 export interface BasicInfo {
     firstName: BasicInfoFields;

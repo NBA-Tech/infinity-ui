@@ -22,18 +22,23 @@ export interface RootStackParamList extends ParamListBase {
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 
-interface FormField {
+export interface FormField {
   parentKey?: string;
-  key?: string;
+  key: string;
+  style?: string;
   label: string;
   type: string;
   placeholder?: string;
-  icon?: string;
+  icon?: React.ReactNode;
   isDisabled?: boolean; // Optional disabled state
   value?: string; // Optional array of values
+  isRequired?: boolean;
+  dropDownItems?: Record<string, string>[];
+  extraStyles?: object,
+  isInvalid?: boolean;
+  errorMessage?: string;
   renderItems?: () => React.ReactNode; // Optional function to render items
   onChange?: (value: string) => void; // Optional change handler
+  onBlur?: (parentKey?:string,childKey?:string) => void;
 }
-export interface FormFields {
-  [key: number]: FormField[];
-}
+export type FormFields = Record<string, FormField>;
