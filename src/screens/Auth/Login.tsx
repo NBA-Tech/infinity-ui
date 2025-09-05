@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
@@ -8,34 +8,109 @@ import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { Button, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-
+import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
+import { loginUser } from '@/src/api/auth/auth-api-service';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@/src/types/common';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
         paddingBottom: hp("2%"),
     },
-    forgotPasswordContainer:{
+    forgotPasswordContainer: {
         alignItems: 'flex-end',
         marginVertical: hp("1.5%")
     }
 })
 
-const Login = ({setCurrScreen}:any) => {
+const Login = ({ setCurrScreen }: any) => {
     const globalStyles = useContext(StyleContext);
+    const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
+    const showToast = useToastMessage();
+    const navigation = useNavigation<NavigationProp>();
+    const [showPassword, setShowPassword] = useState(false);
+    const { getItem } = useDataStore();
+    const userLoginRefs = useRef<Record<string, string>>({
+        email: "",
+        password: ""
+    });
     const formFields = [
         {
             label: 'Email',
+            key: 'email',
             type: 'email',
             placeholder: 'Eg :YJy0g@example.com',
-            icon: "mail"
+            icon: "mail",
         },
         {
             label: 'Password',
+            key: 'password',
             type: 'password',
             placeholder: '********',
             icon: "lock"
         },
     ]
+
+    const handleLogin = async (payload: AuthModel) => {
+        const login: AuthResponse = await loginUser(payload);
+
+        if (!login?.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: login?.message ?? "Something went wrong"
+            })
+        }
+        else {
+            showToast({
+                type: "success",
+                title: "Success",
+                message: login?.message ?? "Successfully logged in"
+            })
+        }
+        setLoadingProvider(null);
+        const isOnBoarded = getItem("ISONBOARDED");
+        if (isOnBoarded) {
+            //navigate to home
+        }
+        else {
+            navigation.navigate("useronboarding");
+        }
+
+    }
+
+    const handleGoogleLogin = async () => {
+        setLoadingProvider("google")
+        const authResults: AuthResult = await loginWithGoogle();
+        if (authResults.error) {
+            setLoadingProvider(null);
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: authResults.error
+            })
+        }
+        const payload: AuthModel = {
+            username: authResults?.user?.displayName ?? "",
+            email: authResults?.user?.email ?? "",
+            firebaseIdToken: authResults.token,
+            authType: "GOOGLE",
+        }
+        handleLogin(payload);
+
+    }
+
+    const handleEmailLogin = async () => {
+        setLoadingProvider("email");
+        const payload: AuthModel = {
+            email: "",
+            authType: "EMAIL_PASSWORD",
+        }
+        handleLogin(payload);
+    }
 
     return (
         <View>
@@ -50,24 +125,29 @@ const Login = ({setCurrScreen}:any) => {
                                 <Feather name={field?.icon} size={wp('5%')} color="#000" />
                             </InputSlot>
                             <InputField
+                                onChangeText={(text) => userLoginRefs.current[field?.key] = text}
                                 type={field?.type}
                                 placeholder={field?.placeholder}
                                 keyboardType={
-                                    field?.type === "number" ? "numeric" :
-                                        field?.type === "email" ? "email-address" :
-                                            "default"
+                                    field?.type === "number"
+                                        ? "numeric"
+                                        : field?.type === "email"
+                                            ? "email-address"
+                                            : field?.type === "password"
+                                                ? (showPassword ? "default" : "default") // keyboardType stays same
+                                                : "default"
                                 }
-                                secureTextEntry={field?.type === "password"}
+                                secureTextEntry={field?.type === "password" && !showPassword}
                             />
                             {field?.type === 'password' && (
-                                <InputSlot>
-                                    <Feather name={'eye'} size={wp('5%')} color="#000" />
+                                <InputSlot onPress={() => setShowPassword(!showPassword)}>
+                                    <Feather name={showPassword ? "eye-off" : "eye"} size={wp('5%')} color="#000" />
                                 </InputSlot>
                             )}
                         </Input>
                     </FormControl>
                 ))}
-                <View  style={styles.forgotPasswordContainer}>
+                <View style={styles.forgotPasswordContainer}>
                     <Text style={[globalStyles.underscoreText]}>Forgot Password?</Text>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
@@ -84,7 +164,7 @@ const Login = ({setCurrScreen}:any) => {
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
                         <Text style={[globalStyles.labelText]}>Don't have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('signup')}>
-                        <Text style={[globalStyles.underscoreText]}>Sign Up</Text>
+                            <Text style={[globalStyles.underscoreText]}>Sign Up</Text>
                         </TouchableOpacity>
 
                     </View>

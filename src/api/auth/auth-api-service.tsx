@@ -16,3 +16,18 @@ export const registerUser=async (payload:AuthModel):Promise<AuthResponse>=>{
     const registerUserResponse=await registerUserRequest.json();
     return registerUserResponse
 }
+
+export const loginUser=async(payload:AuthModel):Promise<AuthResponse>=>{
+    const loginUserRequest=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/login_user`,
+        options: {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }
+    });
+    const loginUserResponse=await loginUserRequest.json();
+    return loginUserResponse
+}

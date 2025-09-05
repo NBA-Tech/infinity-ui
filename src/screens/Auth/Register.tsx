@@ -144,6 +144,7 @@ const Register = ({ setCurrScreen }: any) => {
                 message: register?.message ?? "Successfully registered",
             });
             setItem("USERID", register?.userId);
+            setItem("ISONBOARDED",false)
         }
         if (payload.authType === "EMAIL_PASSWORD") {
             setTimeout(() => {

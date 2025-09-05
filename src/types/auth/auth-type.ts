@@ -1,5 +1,5 @@
 export interface AuthModel {
-    username: string;
+    username?: string;
     email: string;
     password?: string;
     firebaseIdToken?: string
