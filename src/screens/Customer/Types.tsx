@@ -7,6 +7,7 @@ export interface BasicInfoFields {
     isRequired: boolean;
     isDisabled: boolean;
     extraStyles?: object;
+    dropDownItems?: Record<string, string>[];
     renderItems?: () => React.ReactNode;
 }
 export interface BasicInfo {
@@ -15,6 +16,8 @@ export interface BasicInfo {
     mobileNumber: BasicInfoFields;
     email: BasicInfoFields;
     notes: BasicInfoFields;
+    gender: BasicInfoFields;
+    leadSource: BasicInfoFields;
 
 }
 

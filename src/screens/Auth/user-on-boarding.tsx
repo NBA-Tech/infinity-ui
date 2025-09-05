@@ -23,6 +23,9 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { UserModel } from '@/src/types/user/user-type';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { updateBusinessDetailsApi } from '@/src/services/user/user-service';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@/src/types/common';
+import { useAuth } from '@/src/context/auth-context/auth-context';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("1%"),
@@ -80,6 +83,8 @@ const UserOnBoarding = () => {
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
+    const navigation = useNavigation<NavigationProp>();
+    const { login } = useAuth()
     const [loading, setLoading] = useState<boolean>(false);
     const [businessDetails, setBusinessDetails] = useState<UserModel>({
         userId: "",
@@ -341,8 +346,8 @@ const UserOnBoarding = () => {
     };
 
     const handleSubmit = async () => {
-        const userId = getItem("userId")
-        if (false) {
+        const userId = getItem("USERID")
+        if (!userId) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -350,8 +355,9 @@ const UserOnBoarding = () => {
             })
         }
         setLoading(true);
-        setBusinessDetails((prev) => ({ ...prev, userId: userId }));
-        const updateBusinessDetails = await updateBusinessDetailsApi(businessDetails);
+        const updatedDetails = { ...businessDetails, userId };
+        setBusinessDetails(updatedDetails);
+        const updateBusinessDetails = await updateBusinessDetailsApi(updatedDetails);
         if (!updateBusinessDetails.success) {
             setLoading(false);
 
@@ -368,7 +374,7 @@ const UserOnBoarding = () => {
             title: "Success",
             message: updateBusinessDetails.message ?? "Successfully registered",
         })
-        console.log(businessDetails);
+        login()
     }
 
 

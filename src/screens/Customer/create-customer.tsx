@@ -18,10 +18,11 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { getCountries, getStates } from '@/src/utils/utils';
-import { Button,ButtonText } from '@/components/ui/button';
+import { Button, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { BasicInfo, BillingInfo,BasicInfoFields } from './types';
+import { BasicInfo, BillingInfo, BasicInfoFields } from './types';
 import { SelectItem } from '@/components/ui/select';
+import { GENDER, LEADSOURCE } from '@/src/types/customer/customer-type';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -62,7 +63,7 @@ const CreateCustomer = () => {
             isRequired: true,
             isDisabled: false,
         },
-         mobileNumber: {
+        mobileNumber: {
             label: "Mobile Number",
             placeholder: "Enter Mobile Number",
             icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
@@ -79,6 +80,35 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+        },
+        gender: {
+            label: "Gender",
+            placeholder: "Enter Gender",
+            icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
+            type: "select",
+            style: "w-1/2",
+            isRequired: false,
+            isDisabled: false,
+            dropDownItems: Object.values(GENDER).map((gender) => ({
+                label: gender.charAt(0) + gender.slice(1).toLowerCase(), // "Male", "Female", "Other"
+                value: gender, // actual enum value
+            }))
+        },
+        leadSource: {
+            label: "LeadSource",
+            placeholder: "Enter leadSource",
+            icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
+            type: "select",
+            style: "w-1/2",
+            isRequired: false,
+            isDisabled: false,
+            renderItems: () => {
+                return Object.values(LEADSOURCE).map((lead, index) => (
+                    <SelectItem key={index} label={lead} value={lead}>
+                        {lead}
+                    </SelectItem>
+                ));
+            }
         },
         notes: {
             label: "Notes",
@@ -171,7 +201,7 @@ const CreateCustomer = () => {
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
                         </View>
-                        <Button size="lg" variant="solid" action="primary"  style={[globalStyles.purpleBackground,{marginHorizontal:wp('2%')}]}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
                             <Feather name="save" size={wp('5%')} color="#fff" />
                             <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
                         </Button>
@@ -237,7 +267,7 @@ const CreateCustomer = () => {
                                 <AccordionContent>
                                     <CustomFieldsComponent infoFields={billingInfoFields} />
                                 </AccordionContent>
-                                </AccordionItem>
+                            </AccordionItem>
                         </Accordion>
 
 

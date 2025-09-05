@@ -5,16 +5,16 @@ import {
     FormControlHelper,
     FormControlHelperText,
 } from "@/components/ui/form-control"
-import { JSX,useContext, useState } from "react";
-import { View,Text,StyleSheet, TouchableOpacity } from "react-native";
+import { JSX, useContext, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon";
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { heightPercentageToDP as hp,widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { ThemeToggleContext,StyleContext } from "../providers/theme/global-style-provider";
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { ThemeToggleContext, StyleContext } from "../providers/theme/global-style-provider";
 import { BasicInfo, BasicInfoFields, BillingInfo } from "../screens/customer/types";
-
+import { Dropdown } from "react-native-element-dropdown";
 
 
 const styles = StyleSheet.create({
@@ -31,22 +31,29 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: hp('1%'),
     },
-    checkContainer:{
-        padding:hp('1%'),
-        borderRadius:wp('2%'),
-        borderColor:'#d1d5db',
-        borderWidth:wp('0.4%'),
-        minHeight:hp('6%'),
-        justifyContent:'center',
-        paddingHorizontal:wp('2%'),
-        width:'auto'
+    checkContainer: {
+        padding: hp('1%'),
+        borderRadius: wp('2%'),
+        borderColor: '#d1d5db',
+        borderWidth: wp('0.4%'),
+        minHeight: hp('6%'),
+        justifyContent: 'center',
+        paddingHorizontal: wp('2%'),
+        width: 'auto'
+    },
+    dropdown: {
+        height: hp('4.5%'),
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: wp('1%'),
+        paddingHorizontal: wp('2%'),
     },
 })
 
-type CustomCheckBoxProps={
-    children:JSX.Element[]
-    selectedStyle?:Object
-    styles?:Object
+type CustomCheckBoxProps = {
+    children: JSX.Element[]
+    selectedStyle?: Object
+    styles?: Object
 }
 
 export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<string, BasicInfoFields> }) => {
@@ -75,18 +82,25 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
                                 </FormControlLabelText>
                             </FormControlLabel>
                             {field?.type === "select" ? (
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectInput placeholder={field?.placeholder} className="flex-1" />
-                                        <SelectIcon as={ChevronDownIcon} />
-                                    </SelectTrigger>
-                                    <SelectPortal>
-                                        <SelectBackdrop />
-                                        <SelectContent>
-                                            {field?.renderItems && field.renderItems()}
-                                        </SelectContent>
-                                    </SelectPortal>
-                                </Select>
+                                <Dropdown
+                                    style={styles.dropdown}
+                                    data={field?.dropDownItems || []}
+                                    search
+                                    maxHeight={300}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder={field?.placeholder}
+                                    searchPlaceholder="Search..."
+                                    onChange={() => { }}
+                                    renderItem={(item, isSelected) => {
+                                        return (
+                                            <Text style={{ padding: 12, backgroundColor: isSelected ? "#eee" : "white" }}>
+                                                {item.label}
+                                            </Text>
+                                        )
+
+                                    }}
+                                />
                             ) :
                                 (
                                     <Input size="lg" isDisabled={field?.isDisabled}>
@@ -217,15 +231,15 @@ export const CustomFieldsComponent = ({ infoFields }: { infoFields: Record<strin
     return <Card style={styles.cardContainer}>{rows}</Card>;
 };
 
-export const CustomCheckBox=(props:CustomCheckBoxProps)=>{
+export const CustomCheckBox = (props: CustomCheckBoxProps) => {
     const [selected, setSelected] = useState(false);
 
     const handleSelect = () => {
         setSelected(!selected);
     };
 
-    return(
-        <TouchableOpacity style={[styles.checkContainer, selected && (props.selectedStyle ||{backgroundColor:'#FDF2F8',borderColor:'#8B5CF6'}),props.styles ]} onPress={handleSelect}>
+    return (
+        <TouchableOpacity style={[styles.checkContainer, selected && (props.selectedStyle || { backgroundColor: '#FDF2F8', borderColor: '#8B5CF6' }), props.styles]} onPress={handleSelect}>
             <View>
                 {props.children}
             </View>

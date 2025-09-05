@@ -1,6 +1,14 @@
+
+export interface UserApiResponse{
+  message: string;
+  status: number;
+  success: boolean;
+  userInfo: UserModel
+}
+
 export interface UserModel {
   userId?: string;
-  isOnboarded?: boolean;
+  onboarded?: boolean;
   userBusinessInfo?: UserBusinessInfo;
   userBillingInfo?: UserBillingInfo;
   userSettingInfo?: UserSettingInfo;

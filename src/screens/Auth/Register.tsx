@@ -143,28 +143,25 @@ const Register = ({ setCurrScreen }: any) => {
                 title: "Success",
                 message: register?.message ?? "Successfully registered",
             });
-            setItem("USERID", register?.userId);
-            setItem("ISONBOARDED",false)
+            await setItem("USERID", register?.userId);
         }
         if (payload.authType === "EMAIL_PASSWORD") {
             setTimeout(() => {
                 navigation.navigate("onetimepassword");
 
-            }, 2000);
+            }, 1000);
         }
         else {
             setTimeout(() => {
                 navigation.navigate("useronboarding");
 
-            }, 2000);
+            }, 1000);
         }
 
     };
 
     const handleEmailRegister = () => {
         setLoadingProvider("email");
-        console.log(userRegisterRefs.current); // ✅ will now show updated values
-        // TODO: call handleRegister with email payload
         const hasError = Object.values(errors).some(Boolean);
 
         if (hasError) {

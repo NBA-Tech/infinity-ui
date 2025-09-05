@@ -15,6 +15,8 @@ import { loginUser } from '@/src/api/auth/auth-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
+import { UserApiResponse } from '@/src/types/user/user-type';
+import { useAuth } from '@/src/context/auth-context/auth-context';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
@@ -32,7 +34,8 @@ const Login = ({ setCurrScreen }: any) => {
     const showToast = useToastMessage();
     const navigation = useNavigation<NavigationProp>();
     const [showPassword, setShowPassword] = useState(false);
-    const { getItem } = useDataStore();
+    const {login}=useAuth()
+    const { getItem,setItem } = useDataStore();
     const userLoginRefs = useRef<Record<string, string>>({
         email: "",
         password: ""
@@ -55,26 +58,31 @@ const Login = ({ setCurrScreen }: any) => {
     ]
 
     const handleLogin = async (payload: AuthModel) => {
-        const login: AuthResponse = await loginUser(payload);
+        const loginResponse: UserApiResponse = await loginUser(payload);
 
-        if (!login?.success) {
+        if (!loginResponse?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
-                message: login?.message ?? "Something went wrong"
+                message: loginResponse?.message ?? "Something went wrong"
             })
         }
         else {
             showToast({
                 type: "success",
                 title: "Success",
-                message: login?.message ?? "Successfully logged in"
+                message: loginResponse?.message ?? "Successfully logged in"
             })
         }
         setLoadingProvider(null);
-        const isOnBoarded = getItem("ISONBOARDED");
+        const isOnBoarded = loginResponse?.userInfo?.onboarded;
+        console.log(loginResponse);
+        setItem("USERID", loginResponse?.userInfo?.userId);
+        setItem("EXPIRESAT",new Date());
         if (isOnBoarded) {
             //navigate to home
+            login()
+            
         }
         else {
             navigation.navigate("useronboarding");
@@ -104,9 +112,11 @@ const Login = ({ setCurrScreen }: any) => {
     }
 
     const handleEmailLogin = async () => {
+        if(!userLoginRefs.current.email || !userLoginRefs.current.password) return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
         setLoadingProvider("email");
         const payload: AuthModel = {
-            email: "",
+            email: userLoginRefs.current.email,
+            password: userLoginRefs.current.password,
             authType: "EMAIL_PASSWORD",
         }
         handleLogin(payload);
@@ -151,13 +161,13 @@ const Login = ({ setCurrScreen }: any) => {
                     <Text style={[globalStyles.underscoreText]}>Forgot Password?</Text>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
-                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin}>
                         <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center'>
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }}>
+                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin}>
                         <FontAwesome name="google" size={wp('5%')} color="#fff" />
                         <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
                     </Button>
