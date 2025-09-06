@@ -1,4 +1,4 @@
-import React, { JSX, useContext } from 'react';
+import React, { JSX, useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
@@ -17,12 +17,15 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { getCountries, getStates } from '@/src/utils/utils';
-import { Button, ButtonText } from '@/components/ui/button';
+import { getCountries, getStates, patchState } from '@/src/utils/utils';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
 import { CustomerBasicInfo, CustomerBillingInfo, CustomerModel, GENDER, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
-import { FormFields } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields } from '@/src/types/common';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { addNewCustomerAPI } from '@/src/api/customer/customer-api-service';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -45,21 +48,23 @@ const styles = StyleSheet.create({
 const CreateCustomer = () => {
     const globalStyles = useContext(StyleContext);
     const [customerDetails, setCustomerDetails] = React.useState<CustomerModel>({
-        customerID: "",
         userId: "",
-        createdDate: new Date(),
-        status: STATUS.ACTIVE,
-        leadSource: LEADSOURCE.REFERRAL,
-        gender: GENDER.MALE,
+        leadSource: undefined,
         customerBasicInfo: {} as CustomerBasicInfo,
         customerBillingInfo: {} as CustomerBillingInfo
 
     } as CustomerModel);
+    const { getItem } = useDataStore();
+    const showToast = useToastMessage();
+    const [loading,setLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
 
 
     const basicInfoFields: FormFields = {
         firstName: {
+            parentKey: "customerBasicInfo",
+            key: "firstName",
             label: "First Name",
             placeholder: "Enter First Name",
             icon: <Feather name="user" size={wp('5%')} color="#8B5CF6" />,
@@ -68,10 +73,11 @@ const CreateCustomer = () => {
             isRequired: true,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'firstName', value)
+                patchState('customerBasicInfo', 'firstName', value, true, setCustomerDetails, setErrors)
             }
         },
         lastName: {
+            key: "lastName",
             label: "Last Name",
             placeholder: "Enter Last Name",
             icon: <Feather name="camera" size={wp('5%')} color="#8B5CF6" />,
@@ -80,10 +86,11 @@ const CreateCustomer = () => {
             isRequired: true,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'lastName', value)
+                patchState('customerBasicInfo', 'lastName', value, true, setCustomerDetails, setErrors)
             }
         },
         mobileNumber: {
+            key: "mobileNumber",
             label: "Mobile Number",
             placeholder: "Enter Mobile Number",
             icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
@@ -92,10 +99,11 @@ const CreateCustomer = () => {
             isRequired: true,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'mobileNumber', value)
+                patchState('customerBasicInfo', 'mobileNumber', value, true, setCustomerDetails, setErrors)
             }
         },
         email: {
+            key: "email",
             label: "Email",
             placeholder: "Enter Email",
             icon: <Feather name="mail" size={wp('5%')} color="#8B5CF6" />,
@@ -104,10 +112,11 @@ const CreateCustomer = () => {
             isRequired: true,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'email', value)
+                patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
             }
         },
         gender: {
+            key: "gender",
             label: "Gender",
             placeholder: "Enter Gender",
             icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
@@ -116,11 +125,17 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             dropDownItems: Object.values(GENDER).map((gender) => ({
-                label: gender.charAt(0) + gender.slice(1).toLowerCase(),
-                value: gender,
-            }))
+                label: gender,
+                value: gender as GENDER,
+            })),
+            value: customerDetails.customerBasicInfo.gender,
+            onChange: (value: GENDER) => {
+                console.log(value)
+                patchState('customerBasicInfo', 'gender', value, false, setCustomerDetails, setErrors)
+            }
         },
         leadSource: {
+            key: "leadSource",
             label: "LeadSource",
             placeholder: "Enter leadSource",
             icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
@@ -130,13 +145,15 @@ const CreateCustomer = () => {
             isDisabled: false,
             dropDownItems: Object.values(LEADSOURCE).map((lead) => ({
                 label: lead,
-                value: lead,
+                value: lead as LEADSOURCE,
             })),
-            onChange: (value: string) => {
-                patchState("",'leadSource', value)
+            value: customerDetails.leadSource,
+            onChange: (value: LEADSOURCE) => {
+                patchState("", 'leadSource', value, false, setCustomerDetails, setErrors)
             }
         },
         notes: {
+            key: "notes",
             label: "Notes",
             placeholder: "Enter Notes",
             icon: <Feather name="file-text" size={wp('5%')} color="#8B5CF6" />,
@@ -146,13 +163,14 @@ const CreateCustomer = () => {
             isDisabled: false,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'notes', value)
+                patchState('customerBasicInfo', 'notes', value, false,setCustomerDetails,setErrors)
             }
         }
     }
 
     const billingInfoFields: FormFields = {
         street: {
+            key: "street",
             label: "Street/Landmark",
             placeholder: "Enter Street",
             icon: <Feather name="home" size={wp('5%')} color="#8B5CF6" />,
@@ -161,11 +179,12 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBillingInfo', 'street', value)
+                patchState('customerBillingInfo', 'street', value, false, setCustomerDetails, setErrors)
             }
 
         },
         city: {
+            key: "city",
             label: "City",
             placeholder: "Enter City",
             icon: <Feather name="map-pin" size={wp('5%')} color="#8B5CF6" />,
@@ -174,10 +193,11 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBillingInfo', 'city', value)
+                patchState('customerBillingInfo', 'city', value, false, setCustomerDetails, setErrors)
             }
         },
         country: {
+            key: "country",
             label: "Country",
             placeholder: "Enter Country",
             icon: <Feather name="map-pin" size={wp('5%')} color="#8B5CF6" />,
@@ -185,18 +205,17 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
-            renderItems: () => {
-                return getCountries().map((country, index) => (
-                    <SelectItem key={index} label={country.name} value={country.isoCode}>
-                        {country.name}
-                    </SelectItem>
-                ));
-            },
+            value: customerDetails.customerBillingInfo.country,
+            dropDownItems: getCountries().map((country, index) => ({
+                label: country.name,
+                value: country.isoCode
+            })),
             onChange: (value: string) => {
-                patchState('customerBillingInfo', 'country', value)
+                patchState('customerBillingInfo', 'country', value, false, setCustomerDetails, setErrors)
             }
         },
         state: {
+            key: 'state',
             label: "State",
             placeholder: "Enter State",
             icon: <Feather name="map-pin" size={wp('5%')} color="#8B5CF6" />,
@@ -204,16 +223,17 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
-            renderItems: () => {
-                return getStates("IN").map((state, index) => (
-                    <SelectItem key={index} label={state.name} value={state.isoCode} />
-                ));
-            },
+            value: customerDetails.customerBillingInfo.state,
+            dropDownItems: getStates("IN").map((state, index) => ({
+                label: state.name,
+                value: state.isoCode
+            })),
             onChange: (value: string) => {
-                patchState('customerBillingInfo', 'state', value)
+                patchState('customerBillingInfo', 'state', value, false, setCustomerDetails, setErrors)
             }
         },
         zipCode: {
+            key: "zipCode",
             label: "Zip Code",
             placeholder: "Enter Zip Code",
             icon: <Feather name="map-pin" size={wp('5%')} color="#8B5CF6" />,
@@ -222,41 +242,47 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             onChange: (value: string) => {
-                patchState('customerBillingInfo', 'zipCode', value)
+                patchState('customerBillingInfo', 'zipCode', value, false, setCustomerDetails, setErrors)
             }
         },
 
     }
 
-    const patchState = (
-        section: string,
-        key: string | null,
-        value: string
-    ) => {
-        setCustomerDetails((prev) => {
-            if (key === null) {
-                // direct scalar update
-                return {
-                    ...prev,
-                    [section]: value as any,
-                };
-            }
-
-            // nested object update
-            return {
-                ...prev,
-                [section]: {
-                    ...prev[section],
-                    [key]: value,
-                },
-            };
-        });
-    };
-
-    const handleSubmit=()=>{
+    useEffect(() => {
         console.log(customerDetails)
-    }
+    }, [customerDetails])
 
+    
+
+
+    const handleSubmit = async () => {
+        setLoading(true)
+        const userId = getItem("USERID")
+        if(!userId){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found Please Logout and Login again",
+            })
+        }
+        customerDetails.userId = userId;
+        const addNewCustomerResponse : ApiGeneralRespose=await addNewCustomerAPI(customerDetails)
+        if(!addNewCustomerResponse?.success){
+            showToast({
+                type: "error",
+                title: "Error",
+                message: addNewCustomerResponse?.message ?? "Something went wrong",
+            })
+        }
+        else{
+            showToast({
+                type: "success",
+                title: "Success",
+                message: addNewCustomerResponse?.message ?? "Successfully created customer",
+            })
+        }
+        setLoading(false)
+    }
 
 
     return (
@@ -276,9 +302,13 @@ const CreateCustomer = () => {
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} disabled={loading || Object.keys(errors).length > 0}>
+                            {loading &&(
+                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                            )
+                            }
                             <Feather name="save" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
+                            <ButtonText style={globalStyles.buttonText}>{loading ? "Saving..." : "Save"}</ButtonText>
                         </Button>
 
                     </View>
@@ -315,7 +345,7 @@ const CreateCustomer = () => {
                                     </AccordionTrigger>
                                 </AccordionHeader>
                                 <AccordionContent>
-                                    <CustomFieldsComponent infoFields={basicInfoFields} />
+                                    <CustomFieldsComponent infoFields={basicInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
                                 </AccordionContent>
                             </AccordionItem>
                             <Divider />
@@ -341,7 +371,7 @@ const CreateCustomer = () => {
                                     </AccordionTrigger>
                                 </AccordionHeader>
                                 <AccordionContent>
-                                    <CustomFieldsComponent infoFields={billingInfoFields} />
+                                    <CustomFieldsComponent infoFields={billingInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>

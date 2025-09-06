@@ -25,6 +25,7 @@ export interface CustomerBasicInfo {
   mobileNumber: string;
   email: string;
   notes?: string;
+  gender?: GENDER;
 }
 
 export interface CustomerBillingInfo {
@@ -41,7 +42,13 @@ export interface CustomerModel {
   createdDate?: Date;
   status?: STATUS;
   leadSource?: LEADSOURCE;
-  gender?: GENDER;
-  customerBasicInfo: CustomerBasicInfo;
-  customerBillingInfo: CustomerBillingInfo;
+  customerBasicInfo?: CustomerBasicInfo;
+  customerBillingInfo?: CustomerBillingInfo;
+}
+
+export interface CustomerApiResponse{
+  status: number;
+  success: boolean;
+  message: string;
+  customerList: CustomerModel
 }

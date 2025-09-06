@@ -37,15 +37,19 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="useronboarding" component={UserOnBoarding} />
             <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
+            <Stack.Screen name="useronboarding" component={UserOnBoarding} />
 
         </Stack.Navigator>
     )
 }
 const Navigation = () => {
     const { isAuthenticated, login, logout } = useAuth()
+
+    if (isAuthenticated === null) {
+        return null; // Or `return null;`
+    }
 
     return (
         <NavigationContainer>

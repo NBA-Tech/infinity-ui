@@ -25,13 +25,13 @@ function App() {
     <GluestackUIProvider mode="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
-          <AuthProvider>
-            <DataStoreProvider>
+          <DataStoreProvider>
+            <AuthProvider>
               <GlobalStyleProvider>
                 <Navigation />
               </GlobalStyleProvider>
-            </DataStoreProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </DataStoreProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </GluestackUIProvider>

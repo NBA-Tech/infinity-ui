@@ -1,6 +1,6 @@
 import BackHeader from '@/src/components/back-header';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -12,6 +12,9 @@ import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { FormFields, SearchQueryRequest } from '@/src/types/common';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -24,14 +27,22 @@ const styles = StyleSheet.create({
         width: wp("10%"),
         height: hp("0.5%"),
     },
+    bottomCard: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+    }
 });
 
 
 const CreateOrder = () => {
     const globalStyles = useContext(StyleContext);
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
+    const { getItem } = useDataStore()
+    const [customerList, setCustomerList] = useState([]);
 
-    const userInfo: Record<string, BasicInfoFields> = {
+    const userInfo: FormFields = {
         fullName: {
             label: "Choose Customer",
             placeholder: "Enter Customer Name",
@@ -136,6 +147,20 @@ const CreateOrder = () => {
         },
     };
 
+    const getCustomerNameList=async()=>{
+        const userId=getItem("USERID");
+        const payload:SearchQueryRequest={
+            filters:{userId:userId},
+            getAll:true,
+            requiredFields:["customerBasicInfo.firstName","customerBasicInfo.lastName","_id"]
+        }
+        const customerListResponse=await getCustomerDetails(payload);
+    }
+
+    useEffect(()=>{  
+        getCustomerNameList()
+    },[])
+
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
             <BackHeader screenName="Create Order" />
@@ -171,7 +196,7 @@ const CreateOrder = () => {
                         </View>
                     </View>
 
-                    {false && (
+                    {true && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
                             {/* Header */}
                             <View style={{ backgroundColor: "#ECFEFF", padding: hp("2%") }}>
@@ -186,7 +211,7 @@ const CreateOrder = () => {
                             </View>
 
                             {/* Body */}
-                            <CustomFieldsComponent infoFields={userInfo} />
+                            <CustomFieldsComponent infoFields={userInfo} cardStyle={{ padding: wp("2%") }} />
 
                             {/* Footer */}
                             <View
@@ -270,7 +295,7 @@ const CreateOrder = () => {
 
                     }
 
-                    {true && (
+                    {false && (
                         <View>
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
                                 {/* Header */}
@@ -372,30 +397,28 @@ const CreateOrder = () => {
 
                     }
                 </View>
+            </ScrollView>
+            <Card style={[globalStyles.cardShadowEffect, styles.bottomCard]}>
+                <View style={{ margin: hp("2%") }}>
+                    <View className='flex flex-row justify-between items-center'>
+                        <View className='flex flex-col'>
+                            <View className='flex flex-row gap-3'>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>SubTotal : ₹1000</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Taz : ₹1000</Text>
 
-                {/* Sticky footer without absolute */}
-                <Card style={[globalStyles.cardShadowEffect]}>
-                    <View style={{ margin: hp("2%") }}>
-                        <View className='flex flex-row justify-between items-center'>
-                            <View className='flex flex-col'>
-                                <View className='flex flex-row gap-3'>
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>SubTotal : ₹1000</Text>
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Taz : ₹1000</Text>
-
-                                </View>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Total Price: ₹1000</Text>
                             </View>
-                            <View>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>1 service selected</Text>
-                            </View>
-
-
-
+                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Total Price: ₹1000</Text>
+                        </View>
+                        <View>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>1 service selected</Text>
                         </View>
 
+
+
                     </View>
-                </Card>
-            </ScrollView>
+
+                </View>
+            </Card>
         </SafeAreaView>
 
     );

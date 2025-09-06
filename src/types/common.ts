@@ -14,6 +14,24 @@ export interface ApiGeneralRespose {
   message: string
 }
 
+export enum SORT_ORDER {
+  ASC = "ASC",
+  DESC = "DESC"
+}
+
+export interface SearchQueryRequest{
+  filters?:Object;
+  page?:number;
+  pageSize?:number;
+  searchQuery?:string;
+  searchField?:string;
+  requiredFields?:string[];
+  sortField?:string;
+  sortOrder?:SORT_ORDER
+  getAll?:boolean
+
+}
+
 export interface RootStackParamList extends ParamListBase {
   onetimepassword: undefined;
   useronboarding: undefined;
@@ -38,7 +56,7 @@ export interface FormField {
   isInvalid?: boolean;
   errorMessage?: string;
   renderItems?: () => React.ReactNode; // Optional function to render items
-  onChange?: (value: string) => void; // Optional change handler
+  onChange?: (value: any) => void; // Optional change handler
   onBlur?: (parentKey?:string,childKey?:string) => void;
 }
 export type FormFields = Record<string, FormField>;

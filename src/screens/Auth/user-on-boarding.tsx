@@ -122,7 +122,6 @@ const UserOnBoarding = () => {
                     [key]: value,
                 },
             };
-            console.log("updated", updated)
 
             // validate right here on the updated value
             if (value === "") {
@@ -141,7 +140,7 @@ const UserOnBoarding = () => {
         });
     };
 
-    
+
 
     const businessInfoFields: FormFields = {
         companyName: {
@@ -278,7 +277,7 @@ const UserOnBoarding = () => {
             icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
-            isRequired: true,
+            isRequired: false,
             isDisabled: false,
             dropDownItems: getStates(selectedCountry as string).map((state) => ({
                 label: state.name,
@@ -373,11 +372,11 @@ const UserOnBoarding = () => {
     const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
 
     const handleNext = () => {
-        let isError:boolean=false
+        let isError: boolean = false
         Object.keys(formFields[currStep]).forEach((key) => {
-            if(isError) return
+            if (isError) return
             if (formFields[currStep][key].isRequired && !businessDetails[formFields[currStep][key].parentKey as string][formFields[currStep][key].key]) {
-                isError=true
+                isError = true
                 showToast({
                     message: `Please enter ${formFields[currStep][key].label}`,
                     type: "warning",
@@ -386,7 +385,7 @@ const UserOnBoarding = () => {
                 return
             }
         })
-        if(!isError) setCurrStep(currStep + 1);
+        if (!isError) setCurrStep(currStep + 1);
 
     }
 
@@ -461,7 +460,9 @@ const UserOnBoarding = () => {
             title: "Success",
             message: updateBusinessDetails.message ?? "Successfully registered",
         })
-        login()
+        setTimeout(() => {
+            login()
+        }, 2000);
     }
 
 

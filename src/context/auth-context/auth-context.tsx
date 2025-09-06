@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 // 1️⃣ Create context with default value
 const AuthContext = createContext({
     isAuthenticated: false,
@@ -13,12 +13,15 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }: any) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
+    const { isInitialized,getItem, setItem,removeItem } = useDataStore();
 
     useEffect(() => {
         const loadAuthState = async () => {
+            if(!isInitialized) return;
             try {
-                const storedAuth = await AsyncStorage.getItem('isAuthenticated');
-                const createdAt = await AsyncStorage.getItem('CREATEDAT');
+                const storedAuth = getItem('isAuthenticated');
+                const createdAt = getItem("CREATEDAT");
+                console.log("storedAuth", storedAuth, createdAt)
 
                 if (storedAuth === 'true' && createdAt) {
                     const now = new Date();
@@ -43,19 +46,19 @@ export const AuthProvider = ({ children }: any) => {
             }
         };
         loadAuthState();
-    }, []);
+    }, [isInitialized]);
 
 
     // Login function
     const login = async () => {
         setIsAuthenticated(true);
-        await AsyncStorage.setItem('isAuthenticated', 'true');
+        await setItem('isAuthenticated', 'true');
     };
 
     // Logout function
     const logout = async () => {
         setIsAuthenticated(false);
-        await AsyncStorage.removeItem('isAuthenticated');
+        await removeItem('isAuthenticated');
     };
 
     if (loading) {

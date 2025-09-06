@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         width: 'auto'
     },
     dropdown: {
-        height: hp('4.5%'),
+        height: hp('5%'),
         borderColor: "#ccc",
         borderWidth: 1,
         borderRadius: wp('1%'),
@@ -59,7 +59,7 @@ type CustomCheckBoxProps = {
     styles?: Object
 }
 
-export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Record<string, any>, errors?: Record<string, any> }) => {
+export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: { infoFields: Record<string, any>, errors?: Record<string, any>, cardStyle?: object }) => {
     const fieldsArray = Object.values(infoFields);
     const rows: JSX.Element[] = [];
     const globalStyles = useContext(StyleContext);
@@ -75,7 +75,10 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                 rows.push(
                     <View key={i} style={styles.row}>
                         {/* First Half Field */}
-                        <FormControl style={{ width: wp("43%"), marginRight: wp("2%") }} isInvalid={field?.isInvalid}>
+                        <FormControl
+                            style={{ width: wp("43%"), marginRight: wp("2%") }}
+                            isInvalid={!!errors?.[field.key]}
+                        >
                             <FormControlLabel>
                                 <FormControlLabelText
                                     style={[globalStyles.normalTextColor, globalStyles.labelText]}
@@ -84,11 +87,14 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                     {field?.isRequired && <Text style={{ color: "red" }}>*</Text>}
                                 </FormControlLabelText>
                             </FormControlLabel>
+
                             {field?.type === "select" ? (
                                 <Dropdown
                                     style={styles.dropdown}
+                                    containerStyle={styles.dropdownContainer}
                                     data={field?.dropDownItems || []}
                                     search
+                                    value={field?.value}
                                     placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
                                     inputSearchStyle={globalStyles.labelText}
                                     itemTextStyle={globalStyles.labelText}
@@ -99,28 +105,34 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                     placeholder={field?.placeholder}
                                     searchPlaceholder="Search..."
                                     onChange={(value) => field?.onChange?.(value?.value)}
-                                    renderItem={(item, isSelected) => {
-                                        return (
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
-                                                {item.label}
-                                            </Text>
-                                        )
-
-                                    }}
+                                    renderItem={(item) => (
+                                        <Text
+                                            style={[
+                                                globalStyles.normalTextColor,
+                                                globalStyles.labelText,
+                                                { paddingVertical: hp("0.5%") },
+                                            ]}
+                                        >
+                                            {item.label}
+                                        </Text>
+                                    )}
                                 />
-                            ) :
-                                (
-                                    <Input size="lg" isDisabled={field?.isDisabled}>
-                                        <InputSlot>{field?.icon}</InputSlot>
-                                        <InputField
-                                            type={field?.type}
-                                            placeholder={field?.placeholder}
-                                            keyboardType={field?.type === "number" ? "numeric" : "default"}
-                                            onChangeText={(value) => field?.onChange?.(value)}
-                                        />
-                                    </Input>
-                                )}
-                            {field?.isRequired && (
+                            ) : (
+                                <Input size="lg" isDisabled={field?.isDisabled}>
+                                    <InputSlot>{field?.icon}</InputSlot>
+                                    <InputField
+                                        type={field?.type}
+                                        placeholder={field?.placeholder}
+                                        keyboardType={field?.type === "number" ? "numeric" : "default"}
+                                        onChangeText={(value) => field?.onChange?.(value)}
+                                        onBlur={() =>
+                                            field?.onBlur && field?.onBlur(field?.parentKey, field?.key)
+                                        }
+                                    />
+                                </Input>
+                            )}
+
+                            {field?.isRequired && !errors?.[field.key] && (
                                 <FormControlHelper>
                                     <FormControlHelperText
                                         style={[globalStyles.greyTextColor, globalStyles.smallText]}
@@ -129,28 +141,37 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                     </FormControlHelperText>
                                 </FormControlHelper>
                             )}
-                            {field?.isInvalid && (
-                                <></>
+                            {errors?.[field.key] && (
+                                <FormControlError style={globalStyles.errorContainer}>
+                                    <Feather name="alert-triangle" size={20} color="#D32F2F" />
+                                    <FormControlErrorText style={globalStyles.errorText}>
+                                        {errors[field.key]}
+                                    </FormControlErrorText>
+                                </FormControlError>
                             )}
                         </FormControl>
 
                         {/* Second Half Field */}
-                        <FormControl style={{ width: wp("50%") }}>
+                        <FormControl
+                            style={{ width: wp("50%") }}
+                            isInvalid={!!errors?.[nextField.key]}
+                        >
                             <FormControlLabel className="gap-2">
                                 <FormControlLabelText
                                     style={[globalStyles.normalTextColor, globalStyles.labelText]}
                                 >
                                     {nextField?.label}
-                                    {nextField?.isRequired && (
-                                        <Text style={{ color: "red" }}>*</Text>
-                                    )}
+                                    {nextField?.isRequired && <Text style={{ color: "red" }}>*</Text>}
                                 </FormControlLabelText>
                             </FormControlLabel>
+
                             {nextField?.type === "select" ? (
                                 <Dropdown
                                     style={styles.dropdown}
+                                    containerStyle={styles.dropdownContainer}
                                     data={nextField?.dropDownItems || []}
                                     search
+                                    value={nextField?.value}
                                     placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
                                     inputSearchStyle={globalStyles.labelText}
                                     itemTextStyle={globalStyles.labelText}
@@ -160,15 +181,18 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                     valueField="value"
                                     placeholder={nextField?.placeholder}
                                     searchPlaceholder="Search..."
-                                    onChange={(value) => field?.onChange?.(value?.value)}
-                                    renderItem={(item, isSelected) => {
-                                        return (
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
-                                                {item.label}
-                                            </Text>
-                                        )
-
-                                    }}
+                                    onChange={(value) => nextField?.onChange?.(value?.value)}
+                                    renderItem={(item) => (
+                                        <Text
+                                            style={[
+                                                globalStyles.normalTextColor,
+                                                globalStyles.labelText,
+                                                { paddingVertical: hp("0.5%") },
+                                            ]}
+                                        >
+                                            {item.label}
+                                        </Text>
+                                    )}
                                 />
                             ) : (
                                 <Input size="lg" isDisabled={nextField?.isDisabled}>
@@ -179,11 +203,16 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                         keyboardType={
                                             nextField?.type === "number" ? "numeric" : "default"
                                         }
-                                        onChangeText={(value) => field?.onChange?.(value)}
+                                        onChangeText={(value) => nextField?.onChange?.(value)}
+                                        onBlur={() =>
+                                            nextField?.onBlur &&
+                                            nextField?.onBlur(nextField?.parentKey, nextField?.key)
+                                        }
                                     />
                                 </Input>
                             )}
-                            {nextField?.isRequired && (
+
+                            {nextField?.isRequired && !errors?.[nextField.key] && (
                                 <FormControlHelper>
                                     <FormControlHelperText
                                         style={[globalStyles.greyTextColor, globalStyles.smallText]}
@@ -191,6 +220,14 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                                         This field is required
                                     </FormControlHelperText>
                                 </FormControlHelper>
+                            )}
+                            {errors?.[nextField.key] && (
+                                <FormControlError style={globalStyles.errorContainer}>
+                                    <Feather name="alert-triangle" size={20} color="#D32F2F" />
+                                    <FormControlErrorText style={globalStyles.errorText}>
+                                        {errors[nextField.key]}
+                                    </FormControlErrorText>
+                                </FormControlError>
                             )}
                         </FormControl>
                     </View>
@@ -203,7 +240,7 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
         // Case 2: Render full-width field
         if (field.style === "w-full") {
             rows.push(
-                <FormControl key={i} isInvalid={errors?.[field?.key]}>
+                <FormControl key={i} isInvalid={!!errors?.[field.key]}>
                     <FormControlLabel>
                         <FormControlLabelText
                             style={[globalStyles.normalTextColor, globalStyles.labelText]}
@@ -212,11 +249,13 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                             {field?.isRequired && <Text style={{ color: "red" }}>*</Text>}
                         </FormControlLabelText>
                     </FormControlLabel>
+
                     {field?.type === "select" ? (
                         <Dropdown
                             style={styles.dropdown}
                             data={field?.dropDownItems || []}
                             search
+                            value={field?.value}
                             containerStyle={styles.dropdownContainer}
                             placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
                             inputSearchStyle={globalStyles.labelText}
@@ -228,27 +267,37 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                             placeholder={field?.placeholder}
                             searchPlaceholder="Search..."
                             onChange={(value) => field?.onChange?.(value?.value)}
-                            renderItem={(item, isSelected) => {
-                                return (
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp('0.5%') }]}>
-                                        {item.label}
-                                    </Text>
-                                )
-
-                            }}
+                            renderItem={(item) => (
+                                <Text
+                                    style={[
+                                        globalStyles.normalTextColor,
+                                        globalStyles.labelText,
+                                        { paddingVertical: hp("0.5%") },
+                                    ]}
+                                >
+                                    {item.label}
+                                </Text>
+                            )}
                         />
                     ) : (
-                        <Input size="lg" isDisabled={field?.isDisabled} style={field?.extraStyles}>
+                        <Input
+                            size="lg"
+                            isDisabled={field?.isDisabled}
+                            style={field?.extraStyles}
+                        >
                             <InputSlot>{field?.icon}</InputSlot>
                             <InputField
                                 type={field?.type}
                                 placeholder={field?.placeholder}
                                 keyboardType={field?.type === "number" ? "numeric" : "default"}
                                 onChangeText={(value) => field?.onChange?.(value)}
-                                onBlur={()=>field?.onBlur && field?.onBlur(field?.parentKey, field?.key)}
+                                onBlur={() =>
+                                    field?.onBlur && field?.onBlur(field?.parentKey, field?.key)
+                                }
                             />
                         </Input>
                     )}
+
                     {field?.isRequired && !errors?.[field.key] && (
                         <FormControlHelper>
                             <FormControlHelperText
@@ -266,8 +315,6 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
                             </FormControlErrorText>
                         </FormControlError>
                     )}
-
-
                 </FormControl>
             );
         }
@@ -275,7 +322,8 @@ export const CustomFieldsComponent = ({ infoFields, errors }: { infoFields: Reco
         i++; // Move to next field
     }
 
-    return <Card style={[styles.cardContainer, { padding: 0 }]} >{rows}</Card>;
+
+    return <Card style={[styles.cardContainer, { padding: 0 }, cardStyle]} >{rows}</Card>;
 };
 
 export const CustomCheckBox = (props: CustomCheckBoxProps) => {

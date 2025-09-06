@@ -76,9 +76,8 @@ const Login = ({ setCurrScreen }: any) => {
         }
         setLoadingProvider(null);
         const isOnBoarded = loginResponse?.userInfo?.onboarded;
-        console.log(loginResponse);
         setItem("USERID", loginResponse?.userInfo?.userId);
-        setItem("EXPIRESAT",new Date());
+        setItem("CREATEDAT",new Date().toISOString());
         if (isOnBoarded) {
             //navigate to home
             login()

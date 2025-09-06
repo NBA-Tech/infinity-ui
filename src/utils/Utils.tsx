@@ -109,3 +109,51 @@ export const fetchWithTimeout = async ({
   };
 };
 
+export const patchState = (
+        section: string,
+        key: string,
+        value: string,
+        isRequired: boolean = true,
+        setState: React.Dispatch<React.SetStateAction<any>>,
+        setErrors: React.Dispatch<React.SetStateAction<any>>,
+        errorMessage: string="This field is required"
+    ) => {
+        setState((prev:any) => {
+            let updated;
+
+            if (section === "") {
+                // direct scalar update
+                updated = {
+                    ...prev,
+                    [key]: value as any,
+                };
+            } else {
+                // nested object update
+                updated = {
+                    ...prev,
+                    [section]: {
+                        ...prev[section],
+                        [key]: value,
+                    },
+                };
+            }
+
+            // --- Validation ---
+            if (key && isRequired) {
+                if (value === "") {
+                    setErrors((prevErrors:any) => ({
+                        ...prevErrors,
+                        [key]: errorMessage,
+                    }));
+                } else {
+                    setErrors((prevErrors:any) => {
+                        const { [key]: _, ...rest } = prevErrors;
+                        return rest;
+                    });
+                }
+            }
+
+            return updated;
+        });
+    };
+
