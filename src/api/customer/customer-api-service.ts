@@ -15,7 +15,6 @@ export const addNewCustomerAPI=async(payload:CustomerModel):Promise<ApiGeneralRe
         }
     })
     const addNewCustomerResponse=await addNewCustomer.json();
-    console.log(addNewCustomerResponse)
     return addNewCustomerResponse
     
 }
@@ -32,7 +31,6 @@ export const getCustomerDetails=async(payload:SearchQueryRequest):Promise<Custom
         }
     })
     const getCustomerDetailsResponse=await getCustomerDetails.json();
-    console.log(getCustomerDetailsResponse)
     return getCustomerDetailsResponse
     
 

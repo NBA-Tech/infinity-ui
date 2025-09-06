@@ -50,5 +50,12 @@ export interface CustomerApiResponse{
   status: number;
   success: boolean;
   message: string;
-  customerList: CustomerModel
+  customerList: CustomerModel[]
+}
+
+
+//store data
+export interface CustomerMetaModel extends CustomerBasicInfo{
+  customerID?: string;
+  userId?: string;
 }

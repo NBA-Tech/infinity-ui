@@ -1,6 +1,6 @@
 import BackHeader from '@/src/components/back-header';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -15,6 +15,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FormFields, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
+import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
+import { useFocusEffect } from '@react-navigation/native';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -34,13 +39,18 @@ const styles = StyleSheet.create({
         right: 0,
     }
 });
-
+interface CustomerOption {
+    label: string;
+    value: string;
+}
 
 const CreateOrder = () => {
     const globalStyles = useContext(StyleContext);
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
-    const [customerList, setCustomerList] = useState([]);
+    const [customerList, setCustomerList] = useState<CustomerOption[]>();
+    const showToast = useToastMessage();
+    const { getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
 
     const userInfo: FormFields = {
         fullName: {
@@ -147,19 +157,58 @@ const CreateOrder = () => {
         },
     };
 
-    const getCustomerNameList=async()=>{
-        const userId=getItem("USERID");
-        const payload:SearchQueryRequest={
-            filters:{userId:userId},
-            getAll:true,
-            requiredFields:["customerBasicInfo.firstName","customerBasicInfo.lastName","_id"]
-        }
-        const customerListResponse=await getCustomerDetails(payload);
-    }
+    const getCustomerNameList = async () => {
+        const customerMetaData = getCustomerMetaInfoList();
+        console.log(customerMetaData)
 
-    useEffect(()=>{  
-        getCustomerNameList()
-    },[])
+        if (customerMetaData?.length > 0) {
+            const filterData: CustomerOption[] = customerMetaData.map((customer) => ({
+                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+                value: customer.customerID ?? "",
+            }));
+            setCustomerList(filterData);
+            return;
+        }
+
+        const userId = getItem("USERID");
+        const payload: SearchQueryRequest = {
+            filters: { userId },
+            getAll: true,
+            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id"],
+        };
+
+        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
+
+        if (!customerListResponse?.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: customerListResponse?.message ?? "Something went wrong",
+            });
+        }
+
+        if (customerListResponse?.customerList?.length === 0) return;
+
+        const metaList = toCustomerMetaModelList(customerListResponse.customerList);
+        const filterData: CustomerOption[] = metaList.map((customer) => ({
+            label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+            value: customer.customerID ?? "",
+        }));
+
+        setCustomerMetaInfoList(metaList);
+        setCustomerList(filterData);
+    };
+
+
+    useFocusEffect(
+        useCallback(() => {
+            getCustomerNameList();
+
+            return () => {
+               setCustomerList([]);
+            };
+        }, [])
+    );
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>

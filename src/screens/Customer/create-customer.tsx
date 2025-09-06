@@ -26,6 +26,8 @@ import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { addNewCustomerAPI } from '@/src/api/customer/customer-api-service';
+import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
 
 const CreateCustomer = () => {
     const globalStyles = useContext(StyleContext);
-    const [customerDetails, setCustomerDetails] = React.useState<CustomerModel>({
+    const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
         userId: "",
         leadSource: undefined,
         customerBasicInfo: {} as CustomerBasicInfo,
@@ -58,7 +60,7 @@ const CreateCustomer = () => {
     const showToast = useToastMessage();
     const [loading,setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-
+    const {addCustomerDetailsInfo,updateCustomerMetaInfoList} = useCustomerStore();
 
 
     const basicInfoFields: FormFields = {
@@ -130,7 +132,6 @@ const CreateCustomer = () => {
             })),
             value: customerDetails.customerBasicInfo.gender,
             onChange: (value: GENDER) => {
-                console.log(value)
                 patchState('customerBasicInfo', 'gender', value, false, setCustomerDetails, setErrors)
             }
         },
@@ -248,10 +249,6 @@ const CreateCustomer = () => {
 
     }
 
-    useEffect(() => {
-        console.log(customerDetails)
-    }, [customerDetails])
-
     
 
 
@@ -280,6 +277,9 @@ const CreateCustomer = () => {
                 title: "Success",
                 message: addNewCustomerResponse?.message ?? "Successfully created customer",
             })
+            customerDetails.customerID = addNewCustomerResponse.data
+            addCustomerDetailsInfo(customerDetails)
+            updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
         }
         setLoading(false)
     }

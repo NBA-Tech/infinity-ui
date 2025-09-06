@@ -11,7 +11,8 @@ export interface GradientCardProps {
 export interface ApiGeneralRespose {
   status: number,
   success: boolean,
-  message: string
+  message: string,
+  data?: any
 }
 
 export enum SORT_ORDER {
