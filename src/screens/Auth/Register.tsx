@@ -292,7 +292,7 @@ const Register = ({ setCurrScreen }: any) => {
                         action="primary"
                         style={globalStyles.purpleBackground}
                         onPress={handleEmailRegister}
-                        disabled={loadingProvider != null}
+                        isDisabled={loadingProvider != null}
                     >
                         {loadingProvider === "email" && (
                             <ButtonSpinner color={"#fff"} size={wp("4%")} />

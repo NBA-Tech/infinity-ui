@@ -302,7 +302,7 @@ const CreateCustomer = () => {
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} disabled={loading || Object.keys(errors).length > 0}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={loading || Object.keys(errors).length > 0}>
                             {loading &&(
                                  <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )

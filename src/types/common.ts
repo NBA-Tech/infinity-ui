@@ -56,8 +56,10 @@ export interface FormField {
   extraStyles?: object,
   isInvalid?: boolean;
   errorMessage?: string;
+  isOpen?: boolean;
   renderItems?: () => React.ReactNode; // Optional function to render items
   onChange?: (value: any) => void; // Optional change handler
   onBlur?: (parentKey?:string,childKey?:string) => void;
+  setIsOpen?: (value: boolean) => void;
 }
 export type FormFields = Record<string, FormField>;

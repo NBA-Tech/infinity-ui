@@ -20,9 +20,9 @@ export interface EventInfo {
 // Order Model
 export interface OrderModel {
   userId: string;
-  orderId: string;
-  createdDate: Date;
-  updatedDate: Date;
+  orderId?: string;
+  createdDate?: Date;
+  updatedDate?: Date;
   orderBasicInfo: OrderBasicInfo;
   eventInfo: EventInfo;
 }

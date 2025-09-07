@@ -112,7 +112,7 @@ export const fetchWithTimeout = async ({
 export const patchState = (
         section: string,
         key: string,
-        value: string,
+        value: any,
         isRequired: boolean = true,
         setState: React.Dispatch<React.SetStateAction<any>>,
         setErrors: React.Dispatch<React.SetStateAction<any>>,
