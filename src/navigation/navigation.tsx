@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword } from '../screens';
+import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword, TemplateEditor } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 
 const Stack = createNativeStackNavigator();
@@ -37,6 +37,7 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="templateeditor" component={TemplateEditor} />
             <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
             <Stack.Screen name="useronboarding" component={UserOnBoarding} />
@@ -53,7 +54,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {isAuthenticated ? (
+            {false ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />

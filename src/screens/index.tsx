@@ -10,3 +10,4 @@ export { default as Orders } from './Orders/orders';
 export { default as InvoiceGenerator } from './invoice/invoice-generator';
 export { default as UserOnBoarding } from './auth/user-on-boarding';
 export { default as OneTimePassword } from './auth/one-time-password';
+export { default as TemplateEditor } from './template-editor/template-editor';

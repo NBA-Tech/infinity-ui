@@ -1,7 +1,7 @@
 import BackHeader from '@/src/components/back-header';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import GradientCard from '@/src/utils/gradient-gard';
@@ -39,6 +39,15 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
+    },
+    packageContainer: {
+        borderRadius: wp("2%"),
+        borderWidth: wp("0.4%"),
+        borderColor: "#E5E5E5",
+        padding: wp("2%"),
+        width: wp('50%'),
+        height: hp('30%'),
+        marginHorizontal: wp("2%"),
     }
 });
 interface CustomerOption {
@@ -59,7 +68,7 @@ const CreateOrder = () => {
         eventInfo: {} as EventInfo
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [currStep, setCurrStep] = useState(1);
+    const [currStep, setCurrStep] = useState(2);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState({
         date: false,
@@ -246,38 +255,44 @@ const CreateOrder = () => {
         },
     }), [isOpen, orderDetails]);
 
-    const eventTypes = {
+    const eventTypes = useMemo(() => ({
         wedding: {
-            value:"wedding",
+            value: "wedding",
             icon: <Feather name="heart" size={wp("5%")} color="#8B5CF6" />,
             label: "Wedding",
+            selected: orderDetails?.eventInfo?.eventType === "wedding"
         },
         birthday: {
-            value:"birthday",
+            value: "birthday",
             icon: <Feather name="gift" size={wp("5%")} color="#8B5CF6" />,
             label: "Birthday",
+            selected: orderDetails?.eventInfo?.eventType === "birthday"
         },
         corporateEvent: {
-            value:"corporateEvent",
+            value: "corporateEvent",
             icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
             label: "Corporate Event",
+            selected: orderDetails?.eventInfo?.eventType === "corporateEvent"
         },
         portraitSession: {
-            value:"portraitSession",
+            value: "portraitSession",
             icon: <Feather name="camera" size={wp("5%")} color="#8B5CF6" />,
             label: "Portrait Session",
+            selected: orderDetails?.eventInfo?.eventType === "portraitSession"
         },
         babyShoot: {
-            value:"babyShoot",
+            value: "babyShoot",
             icon: <Feather name="smile" size={wp("5%")} color="#8B5CF6" />,
             label: "Baby Shoot",
+            selected: orderDetails?.eventInfo?.eventType === "babyShoot"
         },
         customEvent: {
-            value:"customEvent",
+            value: "customEvent",
             icon: <Feather name="star" size={wp("5%")} color="#8B5CF6" />,
             label: "Custom Event",
+            selected: orderDetails?.eventInfo?.eventType === "customEvent"
         },
-    };
+    }), [orderDetails]);
     const formOrders = [userInfo, eventInfo, eventTypes]
 
     const handleNext = () => {
@@ -299,8 +314,8 @@ const CreateOrder = () => {
 
     }
 
-    const handleEventChange=(value:any,isSelected:boolean)=>{
-        console.log(value,isSelected)
+    const handleEventChange = (value: any, isSelected: boolean) => {
+        patchState('eventInfo', 'eventType', value, true, setOrderDetails, setErrors)
     }
 
 
@@ -317,6 +332,46 @@ const CreateOrder = () => {
     useEffect(() => {
         console.log(orderDetails)
     }, [orderDetails])
+
+    const PackageCard = () => (
+        <View style={styles.packageContainer}>
+            <View>
+                <View className='flex flex-col items-center justify-center'>
+                    <GradientCard
+                        colors={["#9CA3AF", "#9CA3AF", "#9CA3AF"]}
+                        style={{
+                            padding: wp("2%"),
+                            minWidth: wp("9%"),
+                            minHeight: wp("9%"),
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Feather name="star" size={wp("5%")} color="white" />
+                    </GradientCard>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Basic</Text>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText, { flexWrap: 'wrap' }]}>Essentails services and their cost are the things you need to know</Text>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText, { color: 'green' }]}>Rs. 1000</Text>
+
+                </View>
+                <View className="flex flex-col items-start justify-start gap-2">
+                    <View className="flex flex-row items-center gap-2">
+                        <Feather name="check-circle" size={wp("3%")} color="#06B6D4" />
+                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                            Pre-Wedding PhotoShoot
+                        </Text>
+                    </View>
+                    <View className="flex flex-row items-center gap-2">
+                        <Feather name="check-circle" size={wp("3%")} color="#06B6D4" />
+                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                            Pre-Wedding PhotoShoot
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+        </View>
+    )
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
@@ -406,7 +461,7 @@ const CreateOrder = () => {
 
                                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%') }}>
                                     {Object.values(eventTypes).map((eventType, index) => (
-                                        <CustomCheckBox key={index} onPress={handleEventChange} value={eventType.value}>
+                                        <CustomCheckBox key={index} onPress={handleEventChange} value={eventType.value} selected={eventType.selected}>
                                             <View className='flex flex-row items-center gap-2'>
                                                 {eventType.icon}
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{eventType.label}</Text>
@@ -425,6 +480,43 @@ const CreateOrder = () => {
 
                     {currStep == 2 && (
                         <View>
+                            <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
+                                <View style={{ backgroundColor: "#ECFDF5", padding: hp("2%") }}>
+                                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Text
+                                            style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
+                                        >
+                                            Choose Package
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View>
+                                    <View className='flex flex-row justify-between items-center p-4'>
+                                        <FlatList
+                                            horizontal
+                                            data={[1, 2, 3]}
+                                            renderItem={({ item }) => <PackageCard />}
+                                            showsHorizontalScrollIndicator={false}
+                                            contentContainerStyle={{ paddingBottom: hp('2%') }}
+                                            style={{
+                                                maxHeight: hp('30%'), 
+                                                marginVertical: hp('2%'),
+                                            }}
+                                        />
+
+
+                                    </View>
+                                </View>
+
+                            </Card>
+                            <View className='flex flex-row items-center' style={{ marginVertical: hp('2%') }}>
+                                <Divider style={{ width: wp('45%') }} />
+                                <Text style={globalStyles.normalTextColor}>OR</Text>
+                                <Divider />
+                            </View>
+
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                                 {/* Header */}
                                 <View style={{ backgroundColor: "#ECFDF5", padding: hp("2%") }}>

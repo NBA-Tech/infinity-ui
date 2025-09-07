@@ -30,6 +30,7 @@ interface CustomCheckBoxProps {
     selectedStyle?: object;
     styles?: object;
     value: any;
+    selected: boolean;
     onPress: (value: any,isSelected: boolean) => void;
 }
 // Styles (unchanged)
@@ -223,11 +224,8 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
 };
 
 // CustomCheckBox Component (unchanged)
-export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value }: CustomCheckBoxProps) => {
-    const [selected, setSelected] = useState(false);
-
+export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value,selected }: CustomCheckBoxProps) => {
     const handleSelect = () => {
-        setSelected(!selected);
         onPress(value,!selected);
     };
 
