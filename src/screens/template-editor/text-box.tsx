@@ -80,8 +80,9 @@ const TextBox = () => {
     const globalStyles = useContext(StyleContext);
     const [showModal, setShowModal] = useState(false);
     const [layout, setLayout] = useState({
-        width: wp("50%"),
-        height: hp("12%"),
+        width: 150,
+        height: 120,
+        colorCode: "#000000",
     });
     const [selected, setSelected] = useState(null);
 
@@ -91,20 +92,34 @@ const TextBox = () => {
             label: "Width",
             placeholder: "Eg : 100%",
             icon: <FontAwesome name="text-width" size={wp("5%")} color="#8B5CF6" />,
-            type: "text",
+            type: "number",
             style: "w-full",
+            value: String(layout.width),
             isRequired: false,
             isDisabled: false,
+            onChange: (value: number) => {
+                setLayout({
+                    ...layout,
+                    width: value,
+                });
+            }
         },
         height: {
             key: "height",
             label: "Height",
             placeholder: "Eg : 100%",
             icon: <FontAwesome name="text-width" size={wp("5%")} color="#8B5CF6" />,
-            type: "text",
+            type: "number",
             style: "w-full",
+            value: String(layout.height),
             isRequired: false,
             isDisabled: false,
+            onChange: (value: number) => {
+                setLayout({
+                    ...layout,
+                    height: value,
+                });
+            }
         },
         colorCode: {
             key: "colorCode",
@@ -114,14 +129,21 @@ const TextBox = () => {
             type: "text",
             style: "w-full",
             isRequired: false,
+            value: layout.colorCode,
             isDisabled: false,
+            onChange: (value: string) => {
+                setLayout({
+                    ...layout,
+                    colorCode: value,
+                });
+            }
         }
     };
 
     return (
         <View>
             {/* Modal */}
-            <Modal visible={true} transparent animationType="slide">
+            <Modal visible={showModal} transparent animationType="slide">
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContent}>
                         <Pressable style={styles.closeButton} onPress={() => setShowModal(false)}>
@@ -131,19 +153,6 @@ const TextBox = () => {
                             TextBox Settings
                         </Text>
                         <CustomFieldsComponent infoFields={formFields} />
-                        <View className="flex flex-row items-center justify-between" style={{marginTop: hp("2%")}}>
-                            <View>
-                                <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground}>
-                                    <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>Cancel</ButtonText>
-                                </Button>
-                            </View>
-                            <View>
-                                <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground}>
-                                    <ButtonText style={[globalStyles.buttonText, globalStyles.whiteTextColor]}>Save</ButtonText>
-                                </Button>
-                            </View>
-
-                        </View>
                     </View>
 
                 </View>
