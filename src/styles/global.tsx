@@ -41,6 +41,10 @@ const createGlobalStyle = (isDark = false) =>
       fontSize: scaleFont("3%"),
       fontFamily: "Poppins-Bold",
     },
+    sideHeading:{
+      fontSize: scaleFont("2.2%"),
+      fontFamily: "Poppins-Bold",
+    },
     heading3Text: {
       fontSize: scaleFont("2.3%"),
       fontFamily: "Poppins-SemiBold",

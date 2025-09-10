@@ -75,8 +75,12 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
 });
-
-const TextBox = () => {
+type TextBoxProps = {
+    id: string;
+    dataList: any[];
+    updateElementState: (id: string, data: any) => void;
+};
+const TextBox = (props: TextBoxProps) => {
     const globalStyles = useContext(StyleContext);
     const [showModal, setShowModal] = useState(false);
     const [layout, setLayout] = useState({
@@ -102,6 +106,7 @@ const TextBox = () => {
                     ...layout,
                     width: value,
                 });
+                props?.updateElementState(props.id, {width: value});
             }
         },
         height: {
@@ -119,6 +124,7 @@ const TextBox = () => {
                     ...layout,
                     height: value,
                 });
+                props?.updateElementState(props.id, {height: value});
             }
         },
         colorCode: {
@@ -136,6 +142,7 @@ const TextBox = () => {
                     ...layout,
                     colorCode: value,
                 });
+                props?.updateElementState(props.id, {colorCode: value});
             }
         }
     };
@@ -168,15 +175,14 @@ const TextBox = () => {
                         <Dropdown
                             style={styles.dropdown}
                             containerStyle={styles.dropdownContainer}
-                            data={[
-                                { label: "Heading", value: "heading" },
-                                { label: "Address", value: "address" },
-                                { label: "Normal", value: "normal" },
-                            ]}
+                            data={props.dataList}
                             labelField="label"
                             valueField="value"
                             value={selected}
-                            onChange={(item) => setSelected(item.value)}
+                            onChange={(item) => {
+                                setSelected(item.value);
+                                props?.updateElementState(props.id, {fieldKey: item.value});
+                            }}
                             placeholder="Select type"
                             placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
                             selectedTextStyle={globalStyles.labelText}

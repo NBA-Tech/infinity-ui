@@ -56,3 +56,29 @@ export const BUSINESSTYPE = [
   "Other"
 ];
 export const WORKSTATUS = ["Pending", "Approved", "Rejected", "Cancelled"];
+
+export const QUOTATION_FIELDS = [
+  // Company Information
+  { label: "Company Title", value: "companyTitle", type: "text" },
+  { label: "Company Logo", value: "companyLogo", type: "file" },
+  { label: "Company Description", value: "companyDescription", type: "text" },
+  { label: "Company Info (address,email,website,phone)", value: "companyInfo", type: "text" },
+
+  // Client Information
+  { label: "Client Info(name,email,phone,address)", value: "clientInfo", type: "text" },
+
+  // Quotation Details
+  { label: "Quotation Number", value: "quotationNumber", type: "text" },
+  { label: "Quotation Date", value: "quotationDate", type: "date" },
+  { label: "Valid Until", value: "validUntil", type: "date" },
+
+  // Services Table (line items)
+  { label: "Service Info(serviceId,name,description,cost)", value: "serviceInfo", type: "text" },
+
+  // Additional Notes
+  { label: "Terms & Conditions", value: "terms", type: "text" },
+  { label: "Special Notes", value: "notes", type: "text" },
+
+  // Signature
+  { label: "Digital Signature", value: "digitalSignature", type: "file" },
+];
