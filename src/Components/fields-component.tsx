@@ -7,16 +7,17 @@ import {
     FormControlError,
     FormControlErrorText,
 } from "@/components/ui/form-control";
-import { JSX, useContext, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from "react-native";
+import { JSX, useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Switch } from "react-native";
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { ThemeToggleContext, StyleContext } from "../providers/theme/global-style-provider";
-import { Dropdown } from "react-native-element-dropdown";
+import { StyleContext } from "../providers/theme/global-style-provider";
+import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import Feather from "react-native-vector-icons/Feather";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { FormField } from "../types/common";
+import { Chips } from "react-native-material-chips";
 
 // Define interfaces for type safety
 interface CustomFieldsProps {
@@ -31,9 +32,10 @@ interface CustomCheckBoxProps {
     styles?: object;
     value: any;
     selected: boolean;
-    onPress: (value: any,isSelected: boolean) => void;
+    onPress: (value: any, isSelected: boolean) => void;
 }
-// Styles (unchanged)
+
+// Styles
 const styles = StyleSheet.create({
     accordionHeader: {
         backgroundColor: "#EFF6FF",
@@ -41,6 +43,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         borderRadius: wp("2%"),
+        gap: wp("2%"),
     },
     row: {
         flexDirection: "row",
@@ -76,13 +79,17 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
             style={field.style === "w-1/2" ? { width: wp("43%"), marginRight: wp("2%") } : undefined}
             isInvalid={!!errors?.[field.key]}
         >
-            <FormControlLabel>
-                <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                    {field.label}
-                    {field.isRequired && <Text style={{ color: "red" }}>*</Text>}
-                </FormControlLabelText>
-            </FormControlLabel>
+            {field.type != "switch" && (
+                <FormControlLabel>
+                    <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                        {field.label}
+                        {field.isRequired && <Text style={{ color: "red" }}>*</Text>}
+                    </FormControlLabelText>
+                </FormControlLabel>
+            )}
 
+
+            {/* Single Select */}
             {field.type === "select" ? (
                 <Dropdown
                     style={styles.dropdown}
@@ -102,21 +109,51 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onChange={(item) => field.onChange?.(item.value)}
                     renderItem={(item) => (
                         <Text
-                            style={[globalStyles.normalTextColor, globalStyles.labelText, { paddingVertical: hp("0.5%") }]}
+                            style={[
+                                globalStyles.normalTextColor,
+                                globalStyles.labelText,
+                                { paddingVertical: hp("0.5%") },
+                            ]}
                         >
                             {item.label}
                         </Text>
                     )}
                 />
+            ) : field.type === "multi-select" ? (
+                <MultiSelect
+                    style={styles.dropdown}
+                    placeholderStyle={{ color: "#808080" }}
+                    selectedTextStyle={{ color: "#000", fontSize: 14 }}
+                    inputSearchStyle={{ color: "#000", fontSize: 14 }}
+                    iconStyle={{ width: 20, height: 20 }}
+                    search
+                    data={field.dropDownItems || []}
+                    value={field.value || []}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={field.placeholder || "Select items"}
+                    searchPlaceholder="Search..."
+                    onChange={(items) => field.onChange?.(items)}
+                    renderLeftIcon={() => field.icon}
+                    selectedStyle={{
+                        borderRadius: 12,
+                        backgroundColor: "#EDE9FE",
+                        padding: 4,
+                    }}
+                />
             ) : field.type === "date" || field.type === "time" ? (
                 <TouchableOpacity
                     onPress={() => field.setIsOpen?.(true)}
-                    style={[styles.dropdown, { justifyContent: "center" }, field.isDisabled && { backgroundColor: "#f5f5f5" }]}
+                    style={[
+                        styles.dropdown,
+                        { justifyContent: "center" },
+                        field.isDisabled && { backgroundColor: "#f5f5f5" },
+                    ]}
                 >
                     <Text
                         style={[
                             globalStyles.labelText,
-                            !field.value && { color: "grey" }
+                            !field.value && { color: "grey" },
                         ]}
                     >
                         {field.value
@@ -127,7 +164,6 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                                     minute: "2-digit",
                                 })
                             : field.placeholder || `Select ${field.type}`}
-
                     </Text>
 
                     {field.isOpen && (
@@ -135,8 +171,8 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                             value={
                                 field.value
                                     ? field.type === "date"
-                                        ? new Date(field.value + "T00:00:00") // date only
-                                        : new Date(`1970-01-01T${field.value}:00`) // time only
+                                        ? new Date(field.value + "T00:00:00")
+                                        : new Date(`1970-01-01T${field.value}:00`)
                                     : new Date()
                             }
                             mode={field.type}
@@ -146,11 +182,9 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
 
                                 if (event.type === "set" && selectedDate) {
                                     if (field.type === "date") {
-                                        // YYYY-MM-DD (local date part)
                                         const onlyDate = selectedDate.toISOString().split("T")[0];
                                         field.onChange?.(onlyDate);
                                     } else if (field.type === "time") {
-                                        // HH:mm (local time part)
                                         const hours = String(selectedDate.getHours()).padStart(2, "0");
                                         const minutes = String(selectedDate.getMinutes()).padStart(2, "0");
                                         const onlyTime = `${hours}:${minutes}`;
@@ -159,11 +193,54 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                                 }
                             }}
                         />
-
                     )}
-
                 </TouchableOpacity>
-            ) : (
+            ) : field.type === "switch" ? (
+                <View
+                    style={[
+                        { flexDirection: "row", alignItems: "center" },
+                        field.style === "w-full"
+                            ? { justifyContent: "space-between" }
+                            : { justifyContent: "flex-start", gap: wp("2%") },
+                    ]}
+                >
+                    <FormControlLabel>
+                        <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                            {field.label}
+                            {field.isRequired && <Text style={{ color: "red" }}>*</Text>}
+                        </FormControlLabelText>
+                    </FormControlLabel>
+
+                    <Switch
+                        disabled={field.isDisabled}
+                        trackColor={{ false: "#d4d4d4", true: "#525252" }}
+                        thumbColor="#fafafa"
+                        ios_backgroundColor="#d4d4d4"
+                        value={!!field.value}
+                        onValueChange={(val) => field.onChange?.(val)}
+                    />
+                </View>
+            ) : field.type === "custom" ? (
+                <View style={field.extraStyles}>
+                    {field.customComponent}
+                </View>
+            ) : field.type === "chips" ? (
+                <Chips
+                    value={field.value || []}
+                    onChangeChips={(chips) => field.onChange?.(chips)}
+                    items={field.dropDownItems || []}
+                    chipStyle={{
+                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                    }}
+                    valueStyle={{ fontSize: 14 }}
+                    labelStyle={{ color: "#000" }}
+                    initialChips={(field.dropDownItems || []).map((item) => item.label)}
+                    alertRequired={false}
+                />) : (
                 <Input size="lg" isDisabled={field.isDisabled} style={field.extraStyles}>
                     <InputSlot>{field.icon}</InputSlot>
                     <InputField
@@ -177,6 +254,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                 </Input>
             )}
 
+            {/* Validation */}
             {field.isRequired && !errors?.[field.key] && (
                 <FormControlHelper>
                     <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText]}>
@@ -187,7 +265,9 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
             {errors?.[field.key] && (
                 <FormControlError style={globalStyles.errorContainer}>
                     <Feather name="alert-triangle" size={20} color="#D32F2F" />
-                    <FormControlErrorText style={globalStyles.errorText}>{errors[field.key]}</FormControlErrorText>
+                    <FormControlErrorText style={globalStyles.errorText}>
+                        {errors[field.key]}
+                    </FormControlErrorText>
                 </FormControlError>
             )}
         </FormControl>
@@ -203,19 +283,23 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
     const rows: JSX.Element[] = [];
     let i = 0;
     while (i < fieldsArray.length) {
-        const field = fieldsArray[i];
+        let field = fieldsArray[i];
+        field.isVisible = field.isVisible !== undefined ? field.isVisible : true;
+        if (field.isVisible === false) {
+            i++;
+            continue
+        }
+
 
         if (field.style === "w-1/2" && i < fieldsArray.length - 1 && fieldsArray[i + 1].style === "w-1/2") {
-            // Pair two w-1/2 fields in a row
             rows.push(
                 <View key={field.key} style={styles.row}>
                     <RenderField field={field} errors={errors} globalStyles={globalStyles} />
                     <RenderField field={fieldsArray[i + 1]} errors={errors} globalStyles={globalStyles} />
                 </View>
             );
-            i += 2; // Skip the next field
+            i += 2;
         } else {
-            // Render full-width field
             rows.push(<RenderField key={field.key} field={field} errors={errors} globalStyles={globalStyles} />);
             i++;
         }
@@ -224,15 +308,19 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
     return <Card style={[styles.cardContainer, { padding: 0 }, cardStyle]}>{rows}</Card>;
 };
 
-// CustomCheckBox Component (unchanged)
-export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value,selected }: CustomCheckBoxProps) => {
+// CustomCheckBox Component
+export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value, selected }: CustomCheckBoxProps) => {
     const handleSelect = () => {
-        onPress(value,!selected);
+        onPress(value, !selected);
     };
 
     return (
         <TouchableOpacity
-            style={[styles.checkContainer, selected && (selectedStyle || { backgroundColor: "#FDF2F8", borderColor: "#8B5CF6" }), customStyles]}
+            style={[
+                styles.checkContainer,
+                selected && (selectedStyle || { backgroundColor: "#FDF2F8", borderColor: "#8B5CF6" }),
+                customStyles,
+            ]}
             onPress={handleSelect}
         >
             <View>{children}</View>

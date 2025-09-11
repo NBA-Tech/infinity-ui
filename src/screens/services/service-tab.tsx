@@ -160,18 +160,6 @@ const ServiceTab = () => {
     return (
         <View style={{ margin: wp('2%') }}>
             <View>
-                <View className='flex flex-row justify-between items-center'>
-                    <View>
-                        <Text style={[globalStyles.sideHeading]}>Services(5)</Text>
-                    </View>
-                    <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
-                            <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Add Services</ButtonText>
-                        </Button>
-                    </View>
-
-                </View>
                     <FlatList
                         data={services}
                         keyExtractor={(item) => item.id}

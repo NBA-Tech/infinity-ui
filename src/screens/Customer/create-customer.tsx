@@ -58,9 +58,9 @@ const CreateCustomer = () => {
     } as CustomerModel);
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
-    const [loading,setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const {addCustomerDetailsInfo,updateCustomerMetaInfoList} = useCustomerStore();
+    const { addCustomerDetailsInfo, updateCustomerMetaInfoList } = useCustomerStore();
 
 
     const basicInfoFields: FormFields = {
@@ -164,9 +164,9 @@ const CreateCustomer = () => {
             isDisabled: false,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'notes', value, false,setCustomerDetails,setErrors)
+                patchState('customerBasicInfo', 'notes', value, false, setCustomerDetails, setErrors)
             }
-        }
+        },
     }
 
     const billingInfoFields: FormFields = {
@@ -249,13 +249,13 @@ const CreateCustomer = () => {
 
     }
 
-    
+
 
 
     const handleSubmit = async () => {
         setLoading(true)
         const userId = getItem("USERID")
-        if(!userId){
+        if (!userId) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -263,15 +263,15 @@ const CreateCustomer = () => {
             })
         }
         customerDetails.userId = userId;
-        const addNewCustomerResponse : ApiGeneralRespose=await addNewCustomerAPI(customerDetails)
-        if(!addNewCustomerResponse?.success){
+        const addNewCustomerResponse: ApiGeneralRespose = await addNewCustomerAPI(customerDetails)
+        if (!addNewCustomerResponse?.success) {
             showToast({
                 type: "error",
                 title: "Error",
                 message: addNewCustomerResponse?.message ?? "Something went wrong",
             })
         }
-        else{
+        else {
             showToast({
                 type: "success",
                 title: "Success",
@@ -303,8 +303,8 @@ const CreateCustomer = () => {
                             </GradientCard>
                         </View>
                         <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={loading || Object.keys(errors).length > 0}>
-                            {loading &&(
-                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                            {loading && (
+                                <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )
                             }
                             <Feather name="save" size={wp('5%')} color="#fff" />

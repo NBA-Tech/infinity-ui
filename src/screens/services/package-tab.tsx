@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { FlatList, StyleSheet, Text, View,Image } from 'react-native';
+import React, { useCallback, useContext, useRef } from 'react';
+import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -106,6 +106,20 @@ const styles = StyleSheet.create({
 const PackageTab = () => {
     const globalStyles = useContext(StyleContext);
 
+    const colorCodes = [
+        "#7C3AED", // Purple
+        "#3B82F6", // Blue
+        "#10B981", // Emerald Green
+        "#F59E0B", // Amber/Orange
+        "#EF4444", // Red
+        "#6366F1", // Indigo
+        "#14B8A6", // Teal
+        "#F43F5E", // Rose
+        "#22C55E", // Green
+        "#8B5CF6", // Violet
+    ];
+
+
     const packages = [
         {
             id: '1',
@@ -138,13 +152,20 @@ const PackageTab = () => {
         { id: 's3', name: 'Birthday Photoshoot' },
     ];
 
-    const createNewPackage = () => {
-        console.log('Create new package clicked');
-    };
+   
 
     const PackageCard = ({ pkg }: { pkg: typeof packages[0] }) => {
         return (
-            <Card style={[styles.card, globalStyles.cardShadowEffect]}>
+            <Card
+                style={[
+                    styles.card,
+                    globalStyles.cardShadowEffect,
+                    {
+                        borderLeftWidth: 4,
+                        borderLeftColor: colorCodes[Math.floor(Math.random() * colorCodes.length)],
+                    },
+                ]}
+            >
                 <View style={styles.headerRow}>
                     <Text style={[globalStyles.heading3Text, styles.title]} numberOfLines={1}>
                         {pkg.name}
@@ -205,30 +226,19 @@ const PackageTab = () => {
     return (
         <View style={{ margin: wp('2%') }}>
             <View>
-                <View className='flex flex-row justify-between items-center'>
-                    <View>
-                        <Text style={[globalStyles.sideHeading]}>Services(5)</Text>
-                    </View>
-                    <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
-                            <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Add Services</ButtonText>
-                        </Button>
-                    </View>
-
-                </View>
-                    <FlatList
-                        data={packages}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <View style={{ gap: wp('0.5%') }}>
-                                <PackageCard pkg ={item} />
-                            </View>
-                        )}
-                        showsVerticalScrollIndicator={false}
-                    />
+                <FlatList
+                    data={packages}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <View style={{ gap: wp('0.5%') }}>
+                            <PackageCard pkg={item} />
+                        </View>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                />
 
             </View>
+           
         </View>
     );
 };

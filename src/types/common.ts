@@ -57,6 +57,8 @@ export interface FormField {
   isInvalid?: boolean;
   errorMessage?: string;
   isOpen?: boolean;
+  isVisible?: boolean;
+  customComponent?: React.ReactNode;
   renderItems?: () => React.ReactNode; // Optional function to render items
   onChange?: (value: any) => void; // Optional change handler
   onBlur?: (parentKey?:string,childKey?:string) => void;
