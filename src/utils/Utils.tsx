@@ -1,4 +1,5 @@
 import { Country, ICountry, IState, State } from "country-state-city";
+import { FormFields } from "../types/common";
 
 
 type FetchWithTimeoutParams = {
@@ -49,6 +50,32 @@ export const generateRandomString = (length: number) => {
   return result;
 }
 
+export const validateValues = (values: any, formFields: FormFields) => {
+  for (const key in formFields) {
+    const field = formFields[key];
+
+    if (field.isRequired) {
+      const value = values[field.key];
+
+      // Handle empty string, null, undefined, 0, empty array
+      const isEmpty =
+        value === null ||
+        value === undefined ||
+        (typeof value === "string" && value.trim() === "") ||
+        (Array.isArray(value) && value.length === 0)||
+        Number.isNaN(value) || value === 0;
+
+      if (isEmpty) {
+        return {
+          success: false,
+          message: `Please enter ${field.label}`,
+        };
+      }
+    }
+  }
+
+  return { success: true };
+};
 
 
 export const fetchWithTimeout = async ({
@@ -120,50 +147,51 @@ export const fetchWithTimeout = async ({
 };
 
 export const patchState = (
-        section: string,
-        key: string,
-        value: any,
-        isRequired: boolean = true,
-        setState: React.Dispatch<React.SetStateAction<any>>,
-        setErrors: React.Dispatch<React.SetStateAction<any>>,
-        errorMessage: string="This field is required"
-    ) => {
-        setState((prev:any) => {
-            let updated;
+  section: string,
+  key: string,
+  value: any,
+  isRequired: boolean = true,
+  setState: React.Dispatch<React.SetStateAction<any>>,
+  setErrors: React.Dispatch<React.SetStateAction<any>>,
+  errorMessage: string = "This field is required"
+) => {
+  setState((prev: any) => {
+    let updated;
 
-            if (section === "") {
-                // direct scalar update
-                updated = {
-                    ...prev,
-                    [key]: value as any,
-                };
-            } else {
-                // nested object update
-                updated = {
-                    ...prev,
-                    [section]: {
-                        ...prev[section],
-                        [key]: value,
-                    },
-                };
-            }
+    if (section === "") {
+      // direct scalar update
+      updated = {
+        ...prev,
+        [key]: value as any,
+      };
+    } else {
+      // nested object update
+      updated = {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [key]: value,
+        },
+      };
+    }
 
-            // --- Validation ---
-            if (key && isRequired) {
-                if (value === "") {
-                    setErrors((prevErrors:any) => ({
-                        ...prevErrors,
-                        [key]: errorMessage,
-                    }));
-                } else {
-                    setErrors((prevErrors:any) => {
-                        const { [key]: _, ...rest } = prevErrors;
-                        return rest;
-                    });
-                }
-            }
-
-            return updated;
+    // --- Validation ---
+    if (key && isRequired) {
+      console.log(value)
+      if (value === "" || value === null || value === undefined || Number.isNaN(value) || value <= 0) {
+        setErrors((prevErrors: any) => ({
+          ...prevErrors,
+          [key]: errorMessage,
+        }));
+      } else {
+        setErrors((prevErrors: any) => {
+          const { [key]: _, ...rest } = prevErrors;
+          return rest;
         });
-    };
+      }
+    }
+
+    return updated;
+  });
+};
 

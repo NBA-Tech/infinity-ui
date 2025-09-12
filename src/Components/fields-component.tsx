@@ -77,7 +77,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
     return (
         <FormControl
             style={field.style === "w-1/2" ? { width: wp("43%"), marginRight: wp("2%") } : undefined}
-            isInvalid={!!errors?.[field.key]}
+            isInvalid={field.isRequired && !!errors?.[field.key] }
         >
             {field.type != "switch" && (
                 <FormControlLabel>
@@ -226,20 +226,14 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                 </View>
             ) : field.type === "chips" ? (
                 <Chips
-                    value={field.value || []}
-                    onChangeChips={(chips) => field.onChange?.(chips)}
+                    type="filter"
+                    selectedValues={field.value || []}
                     items={field.dropDownItems || []}
-                    chipStyle={{
-                        borderRadius: 16,
-                        borderWidth: 1,
-                        borderColor: "#ccc",
-                        paddingHorizontal: 12,
-                        paddingVertical: 6,
-                    }}
+                    itemContainerStyle={{backgroundColor:"transparent",borderColor:"#EDE9FE",borderWidth:wp("0.4%"),borderRadius:wp("4%"),padding:wp("2%")}}
                     valueStyle={{ fontSize: 14 }}
                     labelStyle={{ color: "#000" }}
-                    initialChips={(field.dropDownItems || []).map((item) => item.label)}
                     alertRequired={false}
+                    setSelectedValues={field.onChange}
                 />) : (
                 <Input size="lg" isDisabled={field.isDisabled} style={field.extraStyles}>
                     <InputSlot>{field.icon}</InputSlot>
@@ -248,7 +242,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         placeholder={field.placeholder}
                         value={field.value}
                         keyboardType={field.type === "number" ? "numeric" : "default"}
-                        onChangeText={(value) => field.onChange?.(value)}
+                        onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
                         onBlur={() => field.onBlur?.(field.parentKey || "", field.key)}
                     />
                 </Input>
@@ -262,7 +256,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     </FormControlHelperText>
                 </FormControlHelper>
             )}
-            {errors?.[field.key] && (
+            {field.isRequired &&errors?.[field.key] && (
                 <FormControlError style={globalStyles.errorContainer}>
                     <Feather name="alert-triangle" size={20} color="#D32F2F" />
                     <FormControlErrorText style={globalStyles.errorText}>

@@ -50,7 +50,7 @@ export interface FormField {
   placeholder?: string;
   icon?: React.ReactNode;
   isDisabled?: boolean; // Optional disabled state
-  value?: string; // Optional array of values
+  value?: any; // Optional array of values
   isRequired?: boolean;
   dropDownItems?: Record<string, string>[];
   extraStyles?: object,

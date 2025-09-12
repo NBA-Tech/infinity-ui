@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, Switch, ScrollView } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,10 +11,15 @@ import Feather from 'react-native-vector-icons/Feather';
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import ServiceTab from './service-tab';
 import PackageTab from './package-tab';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import { FormFields } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
+import { OFFERINGTYPE, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import { patchState, validateValues } from '@/src/utils/utils';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { addNewServiceAPI } from '@/src/api/offering/offering-service';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -45,6 +50,20 @@ const services = () => {
     const globalStyles = useContext(StyleContext);
     const [activeTab, setActiveTab] = useState('services');
     const bottomSheetRef = useRef<BottomSheet>(null);
+    const { getItem } = useDataStore();
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const showToast = useToastMessage();
+    const [loadingProvider, setloadingProvider] = useState<"service" | "package" | null>(null)
+    const [servieDetails, setServiceDetails] = useState<ServiceModel>({
+        customerID: getItem("USERID") as string,
+        status: STATUS.ACTIVE,
+        type: OFFERINGTYPE.SERVICE,
+        serviceName: "",
+        description: "",
+        price: 0,
+        icon: "",
+        tags: [],
+    })
 
     const handleOpenSheet = useCallback(() => {
         if (bottomSheetRef.current) {
@@ -188,38 +207,47 @@ const services = () => {
 
     const serviceInfoFields: FormFields = {
         serviceName: {
-            parentKey: "serviceBasicInfo",
             key: "serviceName",
             label: "Service Name",
             placeholder: "Enter Service Name",
             icon: <Feather name="edit" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
+            value: servieDetails.serviceName,
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            onChange(value: string) {
+                patchState("", 'serviceName', value, true, setServiceDetails, setErrors)
+            },
         },
         description: {
-            parentKey: "serviceBasicInfo",
             key: "description",
             label: "Description",
             placeholder: "Enter Description",
             icon: <Feather name="file-text" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
+            value: servieDetails.description,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
+            onChange(value: string) {
+                patchState("", 'description', value, true, setServiceDetails, setErrors)
+            }
         },
         price: {
-            parentKey: "serviceBasicInfo",
             key: "price",
             label: "Price",
             placeholder: "Enter Price",
             icon: <Feather name="dollar-sign" size={wp('5%')} color="#8B5CF6" />,
             type: "number",
             style: "w-full",
+            value: servieDetails.price,
             isRequired: true,
             isDisabled: false,
+            onChange(value: number) {
+                patchState("", 'price', value, true, setServiceDetails, setErrors, servieDetails.price <= 0 ? "Please enter valid price" : "This field is required")
+            }
         },
         serviceIcon: {
             key: "serviceIcon",
@@ -230,33 +258,78 @@ const services = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            value: servieDetails.icon,
             dropDownItems: [
                 { label: "Email", value: "email" },
                 { label: "Phone", value: "phone" },
                 { label: "Website", value: "website" },
             ],
+            onChange(value: string) {
+                patchState("", 'icon', value, true, setServiceDetails, setErrors)
+            }
         },
         tags: {
             key: "tags",
             type: "chips",
             label: "Select Tags",
-            value: [],
+            value: servieDetails.tags,
             dropDownItems: [
                 { label: "React Native", value: "rn" },
                 { label: "Java", value: "java" },
                 { label: "AI", value: "ai" },
             ],
-            onChange: (chips) => console.log("Selected chips:", chips),
+            onChange(value: string[]) {
+                patchState("", 'tags', value, true, setServiceDetails, setErrors)
+            },
         },
         isActive: {
             key: "isActive",
             label: "Active Status",
             type: "switch",
             style: "w-full",
-            value: true,
-            onChange: (val) => console.log("Active Status:", val),
+            value: servieDetails.status === STATUS.ACTIVE,
+            onChange(value: boolean) {
+                patchState("", 'status', value ? STATUS.ACTIVE : STATUS.INACTIVE, false, setServiceDetails, setErrors)
+            },
         },
     };
+
+    const handleSaveService = async () => {
+        const validateInput=validateValues(servieDetails,serviceInfoFields)
+        if (!validateInput.success) {
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: validateInput.message ?? "Something went wrong",
+            })
+        }
+        if (!servieDetails?.customerID) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found Please Logout and Login again",
+            })
+            return
+        }
+        setloadingProvider("service")
+        const addNewServiceResponse: ApiGeneralRespose = await addNewServiceAPI(servieDetails)
+        if (!addNewServiceResponse?.success) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: addNewServiceResponse?.message ?? "Something went wrong",
+            })
+        }
+        else {
+            showToast({
+                type: "success",
+                title: "Success",
+                message: addNewServiceResponse?.message ?? "Successfully created service",
+            })
+        }
+        setloadingProvider(null)
+        console.log(servieDetails)
+    }
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
@@ -346,15 +419,15 @@ const services = () => {
                         <Text
                             style={[globalStyles.blackTextColor, globalStyles.subHeadingText]}
                         >
-                            Create new Package
+                            {activeTab === 'services' ? 'Add Services' : 'Add Package'}
                         </Text>
                         <Text style={[globalStyles.blackTextColor, globalStyles.normalText]}>
-                            Bundle services together into a package
+                            {activeTab === 'services' ? 'Create Services Details' : 'Create Package Details'}
                         </Text>
                     </View>
 
                     <View style={{ marginVertical: hp('1%') }}>
-                        <CustomFieldsComponent infoFields={packageInfoFields} />
+                        <CustomFieldsComponent infoFields={activeTab === 'services' ? serviceInfoFields : packageInfoFields} errors={errors} />
                     </View>
 
                     <View
@@ -377,7 +450,14 @@ const services = () => {
                             variant="solid"
                             action="primary"
                             style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}
+                            onPress={handleSaveService}
+                            isDisabled={Object.keys(errors).length > 0 || loadingProvider !== null}
                         >
+                            {
+                                loadingProvider!==null && (
+                                    <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                                )
+                            }
                             <Feather name="save" size={wp('5%')} color="#fff" />
                             <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
                         </Button>
