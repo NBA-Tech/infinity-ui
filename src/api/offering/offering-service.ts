@@ -1,11 +1,11 @@
 import { API_BASE_URI } from "@/src/config/app-config";
 import { ApiGeneralRespose } from "@/src/types/common"
-import { ServiceModel } from "@/src/types/offering/offering-type"
+import { PackageModel, ServiceModel } from "@/src/types/offering/offering-type"
 import { fetchWithTimeout } from "@/src/utils/utils";
 
 
 
-export const addNewServiceAPI=async(payload:ServiceModel):Promise<ApiGeneralRespose>=>{
+export const addNewServiceAPI=async(payload:ServiceModel | PackageModel):Promise<ApiGeneralRespose>=>{
     const addNewService=await fetchWithTimeout({
         url:`${API_BASE_URI}/offerings/create_new_offering`,
         options: {

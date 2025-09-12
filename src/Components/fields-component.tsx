@@ -213,7 +213,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
 
                     <Switch
                         disabled={field.isDisabled}
-                        trackColor={{ false: "#d4d4d4", true: "#525252" }}
+                        trackColor={{ false: "#d4d4d4", true: "#8B5CF6" }}
                         thumbColor="#fafafa"
                         ios_backgroundColor="#d4d4d4"
                         value={!!field.value}

@@ -26,6 +26,7 @@ export interface PackageModel extends OfferingModel{
     packageName:string;
     description:string;
     price:number;
+    calculatedPrice:boolean;
     additionalNotes?:string;
     serviceList:string[];
     icon?:string;

@@ -8,14 +8,13 @@ import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import Feather from 'react-native-vector-icons/Feather';
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import ServiceTab from './service-tab';
 import PackageTab from './package-tab';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { OFFERINGTYPE, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import { OFFERINGTYPE, PackageModel, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
 import { patchState, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -49,7 +48,7 @@ const styles = StyleSheet.create({
 const services = () => {
     const globalStyles = useContext(StyleContext);
     const [activeTab, setActiveTab] = useState('services');
-    const bottomSheetRef = useRef<BottomSheet>(null);
+    const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const showToast = useToastMessage();
@@ -64,77 +63,106 @@ const services = () => {
         icon: "",
         tags: [],
     })
+    const [packageDetails, setPackageDetails] = useState<PackageModel>({
+        customerID: getItem("USERID") as string,
+        status: STATUS.ACTIVE,
+        type: OFFERINGTYPE.OFFERING,
+        packageName: "",
+        description: "",
+        calculatedPrice: false,
+        price: 0,
+        additionalNotes: "",
+        serviceList: [],
+        icon: "",
+        tags: [],
+    })
 
-    const handleOpenSheet = useCallback(() => {
-        if (bottomSheetRef.current) {
-            try {
-                bottomSheetRef.current.snapToIndex(0);
-            } catch (e) {
-                console.warn("BottomSheet not ready yet", e);
-            }
-        }
-    }, []);
+    const CustomFieldWithSwitch = () => {
 
+        return (
+            <View>
+                <View className='flex flex-col'>
+                    <View className='flex flex-row justify-between items-center'>
+                        <View>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Custom Price</Text>
 
-    const CustomFieldWithSwitch = () => (
-        <View>
-            <View className='flex flex-col'>
-                <View className='flex flex-row justify-between items-center'>
-                    <View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Custom Price</Text>
+                        </View>
+                        <View className='flex flex-row items-center'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Use calculated price</Text>
+                            <Switch
+                                trackColor={{ false: "#d4d4d4", true: "#8B5CF6" }}
+                                thumbColor="#fafafa"
+                                value={packageDetails.calculatedPrice}
+                                ios_backgroundColor="#d4d4d4"
+                                onValueChange={(value) =>
+                                    setPackageDetails((prev) => ({
+                                        ...prev,
+                                        calculatedPrice: value,
+                                    }))
+                                }
+                            />
+                        </View>
 
                     </View>
-                    <View className='flex flex-row items-center'>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Use calculated price</Text>
-                        <Switch
-                            trackColor={{ false: "#d4d4d4", true: "#525252" }}
-                            thumbColor="#fafafa"
-                            ios_backgroundColor="#d4d4d4"
-                        />
-                    </View>
+                    {!packageDetails.calculatedPrice && (
+                        <View>
+                            <Input size="lg">
+                                <InputSlot>
+                                    <Feather name="dollar-sign" size={wp('5%')} color="#8B5CF6" />
+                                </InputSlot>
+                                <InputField
+                                    type="text"
+                                    placeholder={"Enter Price"}
+                                    value={"0"}
+                                    keyboardType="numeric"
+                                    onChangeText={(value) => {
+                                        setPackageDetails((prev) => ({
+                                            ...prev,
+                                            price: parseFloat(value),
+                                        }))
+                                    }}
+                                />
+                            </Input>
+
+                        </View>
+                    )
+
+                    }
 
                 </View>
-                <View>
-                    <Input size="lg">
-                        <InputSlot>
-                            <Feather name="dollar-sign" size={wp('5%')} color="#8B5CF6" />
-                        </InputSlot>
-                        <InputField
-                            type="text"
-                            placeholder={"Enter Price"}
-                            value={"0"}
-                            keyboardType="numeric"
-                        />
-                    </Input>
 
-                </View>
             </View>
-
-        </View>
-    )
+        )
+    }
     const packageInfoFields: FormFields = {
         packageName: {
-            parentKey: "customerBasicInfo",
             key: "packageName",
             label: "Package Name",
             placeholder: "Enter Package Name",
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
+            value: packageDetails.packageName,
             isRequired: true,
             isDisabled: false,
+            onChange(value: string) {
+                patchState("", 'packageName', value, true, setPackageDetails, setErrors)
+            },
         },
         description: {
-            parentKey: "customerBasicInfo",
             key: "description",
             label: "Description",
             placeholder: "Enter Description",
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
+            value: packageDetails.description,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: true,
             isDisabled: false,
+            onChange(value: string) {
+                patchState("", 'description', value, true, setPackageDetails, setErrors)
+            }
         },
         serviceList: {
             key: "serviceList",
@@ -148,6 +176,7 @@ const services = () => {
                 { label: "Gaming", value: "gaming" },
                 { label: "Music", value: "music" },
             ],
+            value: packageDetails.serviceList,
             isRequired: true,
             isDisabled: false,
             onChange: (val) => console.log("Selected:", val),
@@ -159,15 +188,22 @@ const services = () => {
             icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
+            value: packageDetails.icon,
             isRequired: false,
             isDisabled: false,
             dropDownItems: [
                 { label: "Email", value: "email" },
                 { label: "Phone", value: "phone" },
                 { label: "Website", value: "website" },
-            ]
+            ],
+            onChange(value: string) {
+                patchState("", 'icon', value, true, setPackageDetails, setErrors)
+            }
         },
-        notifications: {
+        price: {
+            key: "price",
+            label: "",
+            isRequired: true,
             type: "custom",
             customComponent: <CustomFieldWithSwitch />
         },
@@ -178,30 +214,38 @@ const services = () => {
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
+            value: packageDetails.additionalNotes,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
+            onChange(value: string) {
+                patchState("", 'additionalNotes', value, true, setPackageDetails, setErrors)
+            }
 
         },
         tags: {
             key: "tags",
             type: "chips",
             label: "Select Tags",
-            value: [],
+            value: packageDetails.tags,
             dropDownItems: [
                 { label: "React Native", value: "rn" },
                 { label: "Java", value: "java" },
                 { label: "AI", value: "ai" },
             ],
-            onChange: (chips) => console.log("Selected chips:", chips),
+            onChange(value: string[]) {
+                patchState("", 'tags', value, true, setPackageDetails, setErrors)
+            },
         },
-        isActive: {
-            key: "isActive",
+        status: {
+            key: "status",
             label: "Active Status",
             type: "switch",
             style: "w-full",
-            value: true,
-            onChange: (val) => console.log("Active Status:", val),
+            value: packageDetails.status === STATUS.ACTIVE,
+            onChange(value: boolean) {
+                patchState("", 'status', value ? STATUS.ACTIVE : STATUS.INACTIVE, false, setPackageDetails, setErrors)
+            },
         },
     }
 
@@ -282,8 +326,8 @@ const services = () => {
                 patchState("", 'tags', value, true, setServiceDetails, setErrors)
             },
         },
-        isActive: {
-            key: "isActive",
+        status: {
+            key: "status",
             label: "Active Status",
             type: "switch",
             style: "w-full",
@@ -295,7 +339,14 @@ const services = () => {
     };
 
     const handleSaveService = async () => {
-        const validateInput=validateValues(servieDetails,serviceInfoFields)
+        const currDetails = activeTab === "services" ? servieDetails : packageDetails
+        const currFields = activeTab === "services" ? serviceInfoFields : packageInfoFields
+        let addNewServiceResponse: ApiGeneralRespose;
+
+        console.log(currDetails, currFields)
+        return;
+
+        const validateInput = validateValues(currDetails, currFields)
         if (!validateInput.success) {
             return showToast({
                 type: "warning",
@@ -303,7 +354,7 @@ const services = () => {
                 message: validateInput.message ?? "Something went wrong",
             })
         }
-        if (!servieDetails?.customerID) {
+        if (!currDetails?.customerID) {
             showToast({
                 type: "error",
                 title: "Error",
@@ -311,8 +362,14 @@ const services = () => {
             })
             return
         }
-        setloadingProvider("service")
-        const addNewServiceResponse: ApiGeneralRespose = await addNewServiceAPI(servieDetails)
+        setloadingProvider(activeTab)
+        if (activeTab == "services") {
+            addNewServiceResponse = await addNewServiceAPI(servieDetails)
+        }
+        else {
+            addNewServiceResponse = await addNewServiceAPI(packageDetails)
+        }
+
         if (!addNewServiceResponse?.success) {
             showToast({
                 type: "error",
@@ -380,12 +437,12 @@ const services = () => {
                 </View>
                 <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
                     <View>
-                        <Text style={[globalStyles.sideHeading]}>Services(5)</Text>
+                        <Text style={[globalStyles.sideHeading]}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}(5)</Text>
                     </View>
                     <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleOpenSheet}>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => setIsOpen(true)}>
                             <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Add Services</ButtonText>
+                            <ButtonText style={globalStyles.buttonText}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
                         </Button>
                     </View>
 
@@ -394,77 +451,69 @@ const services = () => {
                 {activeTab === 'services' && <ServiceTab />}
                 {activeTab === 'packages' && <PackageTab />}
             </View>
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={-1}
-                enablePanDownToClose={true}
-                backdropComponent={(props) => (
-                    <BottomSheetBackdrop
-                        {...props}
-                        appearsOnIndex={0}
-                        disappearsOnIndex={-1}
-                        pressBehavior="close"
-                    />
-                )}
-                backgroundStyle={{ backgroundColor: globalStyles.themeBackground }}
-                handleIndicatorStyle={{
-                    backgroundColor: globalStyles.isDark ? "#fff" : "#000",
-                }}
+            <Modal
+                isVisible={isOpen}
+                onBackdropPress={() => setIsOpen(false)}
+                onBackButtonPress={() => setIsOpen(false)}
             >
-
-                <BottomSheetView
-                    style={styles.sheetContent}
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: hp("2%") }}
                 >
-                    <View className="flex flex-col items-start">
-                        <Text
-                            style={[globalStyles.blackTextColor, globalStyles.subHeadingText]}
-                        >
-                            {activeTab === 'services' ? 'Add Services' : 'Add Package'}
-                        </Text>
-                        <Text style={[globalStyles.blackTextColor, globalStyles.normalText]}>
-                            {activeTab === 'services' ? 'Create Services Details' : 'Create Package Details'}
-                        </Text>
-                    </View>
+                    <View className="rounded-t-2xl bg-white max-h-[85%] p-4">
+                        {/* Header */}
+                        <View className="flex flex-col items-start mb-4">
+                            <Text style={[globalStyles.blackTextColor, globalStyles.subHeadingText]}>
+                                {activeTab === "services" ? "Add Services" : "Add Package"}
+                            </Text>
+                            <Text style={[globalStyles.blackTextColor, globalStyles.normalText]}>
+                                {activeTab === "services"
+                                    ? "Create Services Details"
+                                    : "Create Package Details"}
+                            </Text>
+                        </View>
 
-                    <View style={{ marginVertical: hp('1%') }}>
-                        <CustomFieldsComponent infoFields={activeTab === 'services' ? serviceInfoFields : packageInfoFields} errors={errors} />
-                    </View>
 
-                    <View
-                        className="flex flex-row justify-end items-center"
-                        style={{ marginBottom: hp('3%') }}
-                    >
-                        <Button
-                            size="lg"
-                            variant="solid"
-                            action="primary"
-                            style={[globalStyles.transparentBackground, { marginHorizontal: wp('2%') }]}
-                        >
-                            <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>
-                                Cancel
-                            </ButtonText>
-                        </Button>
+                        <View style={{ marginVertical: hp("1%") }}>
+                            <CustomFieldsComponent
+                                infoFields={activeTab === "services" ? serviceInfoFields : packageInfoFields}
+                                errors={errors}
+                            />
+                        </View>
 
-                        <Button
-                            size="lg"
-                            variant="solid"
-                            action="primary"
-                            style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}
-                            onPress={handleSaveService}
-                            isDisabled={Object.keys(errors).length > 0 || loadingProvider !== null}
-                        >
-                            {
-                                loadingProvider!==null && (
+                        {/* Footer */}
+                        <View className="flex flex-row justify-end items-center mt-4">
+                            <Button
+                                size="lg"
+                                variant="solid"
+                                action="primary"
+                                style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
+                                onPress={() => setIsOpen(false)}
+                            >
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>
+                                    Cancel
+                                </ButtonText>
+                            </Button>
+
+                            <Button
+                                size="lg"
+                                variant="solid"
+                                action="primary"
+                                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%") }]}
+                                onPress={handleSaveService}
+                                isDisabled={Object.keys(errors).length > 0 || loadingProvider !== null}
+                            >
+                                {loadingProvider !== null && (
                                     <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                                )
-                            }
-                            <Feather name="save" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
-                        </Button>
+                                )}
+                                <Feather name="save" size={wp("5%")} color="#fff" />
+                                <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
+                            </Button>
+                        </View>
                     </View>
-                </BottomSheetView>
+                </ScrollView>
 
-            </BottomSheet>
+            </Modal>
         </SafeAreaView >
     );
 };
