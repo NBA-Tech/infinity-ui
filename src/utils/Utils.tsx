@@ -67,6 +67,7 @@ export const validateValues = (values: any, formFields: FormFields) => {
         Number.isNaN(value) || value === 0;
 
       if (isEmpty) {
+        console.log(field)
         return {
           success: false,
           message: `Please enter ${field.label}`,
@@ -84,10 +85,8 @@ export const fetchWithTimeout = async ({
   options = {},
   timeout = 20000,
   maxRetries = 5,
-}: FetchWithTimeoutParams) => {
-  console.log(url)
+}: FetchWithTimeoutParams): Promise<any> => {
   let attempt = 0;
-  console.log(options)
 
   while (attempt < maxRetries) {
     try {
@@ -100,35 +99,21 @@ export const fetchWithTimeout = async ({
       });
       clearTimeout(timer);
 
-      // Check if the HTTP status is OK (2xx)
-      if (!response.ok) {
-        let errorMessage = `HTTP Error: We are facing some issues. Please try again.`;
-
-        try {
-          // Try to parse JSON error body
-          const data = await response.json();
-          if (data?.message) {
-            errorMessage = data.message;
-          }
-        } catch (e) {
-          // fallback: keep default errorMessage
-        }
-
-        return {
-          json: async () => ({
-            success: false,
-            message: errorMessage,
-            status_code: response.status,
-          }),
-        };
+      // Parse JSON safely
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
       }
 
+      if (!response.ok) {
+        return data;
+      }
 
-      // Return actual response if all goes well
-      return response;
-
-    } catch (error) {
-      const isTimeout = error?.name === 'AbortError';
+      return data;
+    } catch (error: any) {
+      const isTimeout = error?.name === "AbortError";
 
       if (isTimeout && attempt < maxRetries - 1) {
         console.warn(`Timeout attempt ${attempt + 1}, retrying...`);
@@ -136,28 +121,21 @@ export const fetchWithTimeout = async ({
         continue;
       }
 
-      console.log("Fetch error:", error);
-
       return {
-        json: async () => ({
-          success: false,
-          message: isTimeout
-            ? 'Request timed out. Please try again.'
-            : error?.message || 'Network or server error',
-          status_code: isTimeout ? 408 : 500,
-          isTimeout,
-        }),
+        success: false,
+        message: isTimeout
+          ? "Request timed out. Please try again."
+          : error?.message || "Network or server error",
+        status_code: isTimeout ? 408 : 500,
+        isTimeout,
       };
     }
   }
 
-  // Shouldn't reach here, but just in case
   return {
-    json: async () => ({
-      success: false,
-      message: 'Unknown error occurred',
-      status_code: 500,
-    }),
+    success: false,
+    message: "Unknown error occurred",
+    status_code: 500,
   };
 };
 

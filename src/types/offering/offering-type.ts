@@ -17,6 +17,11 @@ export enum SERVICECATEGORY {
     SPECIALIZED="SPECIALIZED",
     OTHER="OTHER"
 }
+export interface ServiceInfo{
+    id:string;
+    name:string;
+    value:number;
+}
 export interface OfferingModel {
     id?: string;
     customerID: string;
@@ -38,7 +43,7 @@ export interface PackageModel extends OfferingModel {
     price: number;
     calculatedPrice: boolean;
     additionalNotes?: string;
-    serviceList: string[];
+    serviceList: ServiceInfo[];
     icon?: string;
     tags?: string[];
 }

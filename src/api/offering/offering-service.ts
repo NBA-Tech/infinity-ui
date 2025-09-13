@@ -15,8 +15,7 @@ export const addNewServiceAPI=async(payload:ServiceModel | PackageModel,headers?
             body: JSON.stringify(payload)
         }
     })
-    const addNewServiceResponse=await addNewService.json();
-    return addNewServiceResponse
+    return addNewService
 }
 
 export const getOfferingListAPI=async(customerID:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
@@ -27,6 +26,16 @@ export const getOfferingListAPI=async(customerID:string,headers?:Record<string,a
             headers
         }
     })
-    const getOfferingListResponse=await getOfferingList.json();
-    return getOfferingListResponse
+    return getOfferingList
+}
+
+export const deleteOfferingApi=async(offeringID:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const deleteOffering=await fetchWithTimeout({
+        url:`${API_BASE_URI}/offerings/delete_offering?offeringID=${offeringID}`,
+        options: {
+            method: 'DELETE',
+            headers
+        }
+    })
+    return deleteOffering
 }

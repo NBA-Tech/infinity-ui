@@ -21,6 +21,8 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { addNewServiceAPI, getOfferingListAPI } from '@/src/api/offering/offering-service';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useOfferingStore } from '@/src/store/offering/offering-store';
+import { Dropdown } from 'react-native-element-dropdown';
+import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -45,16 +47,26 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: wp("8%"),
         borderTopRightRadius: wp("8%"),
     },
+    dropdown: {
+        height: hp("5%"),
+        width: wp("40%"),
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: wp("1%"),
+        paddingHorizontal: wp("2%"),
+    },
+    dropdownContainer: {
+        paddingHorizontal: wp("2%"),
+    },
 
 })
 const services = () => {
     const globalStyles = useContext(StyleContext);
-    const { setOfferingList, getOfferingList, addOfferingDetailsInfo } = useOfferingStore();
+    const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo } = useOfferingStore();
     const [activeTab, setActiveTab] = useState('services');
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [offeringData, setOfferingData] = useState<ServiceModel[] | PackageModel[]>()
     const showToast = useToastMessage();
     const [loadingProvider, setloadingProvider] = useState<"service" | "package" | null>(null)
     const [servieDetails, setServiceDetails] = useState<ServiceModel>({
@@ -71,7 +83,7 @@ const services = () => {
     const [packageDetails, setPackageDetails] = useState<PackageModel>({
         customerID: getItem("USERID") as string,
         status: STATUS.ACTIVE,
-        type: OFFERINGTYPE.OFFERING,
+        type: OFFERINGTYPE.PACKAGE,
         packageName: "",
         description: "",
         calculatedPrice: false,
@@ -98,7 +110,26 @@ const services = () => {
         }
     };
 
+    const handleEdit = (id: string) => {
+        if (id == "") return;
 
+        const filteredData: ServiceModel | PackageModel = offeringList?.filter((item) => item.id === id)?.[0];
+
+        if (filteredData.type === OFFERINGTYPE.SERVICE) {
+            setServiceDetails(filteredData);
+        } else {
+            setPackageDetails(filteredData);
+        }
+        setIsOpen(true);
+
+    }
+
+    const handleServiceChange = (data: any) => {
+        setPackageDetails((prev) => ({
+            ...prev,
+            serviceList: data
+        }))
+    }
 
     const CustomFieldWithSwitch = () => {
 
@@ -190,19 +221,9 @@ const services = () => {
         serviceList: {
             key: "serviceList",
             label: "Choose Services",
-            type: "multi-select", // 👈 New type
-            placeholder: "Select Services",
-            icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
-            dropDownItems: [
-                { label: "Reading", value: "reading" },
-                { label: "Traveling", value: "traveling" },
-                { label: "Gaming", value: "gaming" },
-                { label: "Music", value: "music" },
-            ],
-            value: packageDetails.serviceList,
+            type: "custom",
             isRequired: true,
-            isDisabled: false,
-            onChange: (val) => console.log("Selected:", val),
+            customComponent: <CustomServiceAddComponent serviceList={offeringList} onChange={handleServiceChange} />
         },
         packageIcon: {
             key: "packageIcon",
@@ -215,9 +236,12 @@ const services = () => {
             isRequired: false,
             isDisabled: false,
             dropDownItems: [
-                { label: "Email", value: "email" },
-                { label: "Phone", value: "phone" },
-                { label: "Website", value: "website" },
+                { label: "People / Portrait", value: "account-multiple-outline" },
+                { label: "Events / Weddings", value: "calendar-star" },
+                { label: "Commercial", value: "briefcase-outline" },
+                { label: "Specialized", value: "lightbulb-on-outline" },
+                { label: "Nature / Landscape", value: "image-filter-hdr" },
+                { label: "Other", value: "dots-horizontal" },
             ],
             onChange(value: string) {
                 patchState("", 'icon', value, true, setPackageDetails, setErrors)
@@ -226,7 +250,7 @@ const services = () => {
         price: {
             key: "price",
             label: "",
-            isRequired: true,
+            isRequired: false,
             type: "custom",
             customComponent: <CustomFieldWithSwitch />
         },
@@ -252,9 +276,26 @@ const services = () => {
             label: "Select Tags",
             value: packageDetails.tags,
             dropDownItems: [
-                { label: "React Native", value: "rn" },
-                { label: "Java", value: "java" },
-                { label: "AI", value: "ai" },
+                { label: "Portrait", value: "portrait" },
+                { label: "Wedding", value: "wedding" },
+                { label: "Engagement", value: "engagement" },
+                { label: "Maternity", value: "maternity" },
+                { label: "Newborn / Baby Shoot", value: "baby" },
+                { label: "Family", value: "family" },
+                { label: "Birthday / Party", value: "birthday" },
+                { label: "Corporate / Event", value: "event" },
+                { label: "Product", value: "product" },
+                { label: "Fashion", value: "fashion" },
+                { label: "Food", value: "food" },
+                { label: "Real Estate", value: "realestate" },
+                { label: "Travel", value: "travel" },
+                { label: "Wildlife", value: "wildlife" },
+                { label: "Landscape / Nature", value: "landscape" },
+                { label: "Sports", value: "sports" },
+                { label: "Drone / Aerial", value: "drone" },
+                { label: "Underwater", value: "underwater" },
+                { label: "Creative / Specialized", value: "creative" },
+                { label: "Other", value: "other" },
             ],
             onChange(value: string[]) {
                 patchState("", 'tags', value, true, setPackageDetails, setErrors)
@@ -401,9 +442,9 @@ const services = () => {
         const currFields = activeTab === "services" ? serviceInfoFields : packageInfoFields
         let addNewServiceResponse: ApiGeneralRespose;
 
-        console.log(currDetails, currFields)
 
         const validateInput = validateValues(currDetails, currFields)
+        console.log(validateInput)
         if (!validateInput.success) {
             return showToast({
                 type: "warning",
@@ -411,6 +452,7 @@ const services = () => {
                 message: validateInput.message ?? "Something went wrong",
             })
         }
+
         if (currDetails?.customerID == "" || currDetails?.customerID == null) {
             showToast({
                 type: "error",
@@ -426,6 +468,7 @@ const services = () => {
         }
         if (activeTab == "services") {
             addNewServiceResponse = await addNewServiceAPI(servieDetails, headers)
+            console.log(addNewServiceResponse)
         }
         else {
             addNewServiceResponse = await addNewServiceAPI(packageDetails, headers)
@@ -446,7 +489,6 @@ const services = () => {
                 message: addNewServiceResponse?.message ?? "Successfully created service",
             })
             currDetails.id = addNewServiceResponse?.data
-            setOfferingData([...offeringData, currDetails])
             addOfferingDetailsInfo(currDetails)
             resetActiveDetails()
         }
@@ -456,49 +498,48 @@ const services = () => {
 
 
     const getOfferingDetails = async () => {
-        const offeringDataStore = getOfferingList()
-        console.log(offeringDataStore)
+        const offeringDataStore = getOfferingList();
+        console.log(offeringDataStore);
+
         if (offeringDataStore.length <= 0) {
-            if (!servieDetails.customerID) return
+            if (!servieDetails.customerID) return;
             const uuid: string = generateRandomString(30);
             const headers = {
-                "Idempotency-Key": uuid
-            }
-            const offeringListResponse: ApiGeneralRespose = await getOfferingListAPI(servieDetails.customerID, headers)
-            console.log(offeringListResponse)
+                "Idempotency-Key": uuid,
+            };
+            const offeringListResponse: ApiGeneralRespose = await getOfferingListAPI(
+                servieDetails.customerID,
+                headers
+            );
+
+            console.log(offeringListResponse);
+
             if (!offeringListResponse.success) {
                 showToast({
                     type: "error",
                     title: "Error",
-                    message: offeringListResponse.message
-                })
+                    message: offeringListResponse.message,
+                });
+            } else {
+                const { packages, services } = offeringListResponse.data;
+                const updatedData = [...(packages ?? []), ...(services ?? [])];
+                console.log(updatedData);
+
+                setOfferingList(updatedData);
             }
-            else {
-                const { packages, services } = offeringListResponse.data
-                const updatedData = [...packages, ...services];
-                console.log(updatedData)
-
-                setOfferingData(updatedData)
-                setOfferingList(updatedData)
-
+        } else {
+            const current = getOfferingList();
+            if (current.length !== offeringDataStore.length) {
+                setOfferingList(offeringDataStore);
             }
         }
-        else {
-            setOfferingList(offeringDataStore)
-        }
-
-    }
-
-
+    };
 
     useEffect(() => {
-        getOfferingDetails()
-    }, [])
+        console.log("calling")
+        getOfferingDetails();
+    }, []);
 
-    useEffect(() => {
-        console.log(offeringData)
-
-    }, [offeringData])
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
@@ -512,7 +553,7 @@ const services = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: hp("2%") }}
                 >
-                    <View className="rounded-t-2xl bg-white max-h-[85%] p-4">
+                    <View className="rounded-t-2xl bg-white max-h-[85%] p-4" style={{ borderRadius: wp('3%') }}>
                         {/* Header */}
                         <View className="flex flex-col items-start mb-4">
                             <Text style={[globalStyles.blackTextColor, globalStyles.subHeadingText]}>
@@ -616,15 +657,18 @@ const services = () => {
                             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                             (
                             {activeTab === "services"
-                                ? offeringData?.filter(item => item.type === OFFERINGTYPE.SERVICE).length
-                                : offeringData?.filter(item => item.type === OFFERINGTYPE.PACKAGE).length
+                                ? offeringList?.filter(item => item.type === OFFERINGTYPE.SERVICE).length
+                                : offeringList?.filter(item => item.type === OFFERINGTYPE.PACKAGE).length
                             }
                             )
                         </Text>
 
                     </View>
                     <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => setIsOpen(true)}>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => {
+                            resetActiveDetails()
+                            setIsOpen(true)
+                        }}>
                             <Feather name="plus" size={wp('5%')} color="#fff" />
                             <ButtonText style={globalStyles.buttonText}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
                         </Button>
@@ -632,8 +676,8 @@ const services = () => {
 
                 </View>
                 <View>
-                    {activeTab === 'services' && <ServiceTab serviceData={offeringData?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} />}
-                    {activeTab === 'packages' && <PackageTab />}
+                    {activeTab === 'services' && <ServiceTab serviceData={offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} handleEdit={handleEdit} />}
+                    {activeTab === 'packages' && <PackageTab packageData={offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)} handleEdit={handleEdit} />}
                 </View>
             </View>
 

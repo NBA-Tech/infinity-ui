@@ -5,6 +5,8 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import { Button, ButtonText } from '@/components/ui/button';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
+import { PackageModel, STATUS } from '@/src/types/offering/offering-type';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -71,6 +73,8 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         backgroundColor: '#F3F4F6',
         marginRight: wp('3%'),
+        alignItems: 'center',   // centers horizontally
+        justifyContent: 'center', // centers vertically
     },
     image: {
         width: '100%',
@@ -102,8 +106,11 @@ const styles = StyleSheet.create({
         color: '#6B7280',
     },
 });
-
-const PackageTab = () => {
+type PackageProps = {
+    packageData: PackageModel[];
+    handleEdit: (id: string) => void
+}
+const PackageTab = (props: PackageProps) => {
     const globalStyles = useContext(StyleContext);
 
     const colorCodes = [
@@ -152,9 +159,9 @@ const PackageTab = () => {
         { id: 's3', name: 'Birthday Photoshoot' },
     ];
 
-   
 
-    const PackageCard = ({ pkg }: { pkg: typeof packages[0] }) => {
+
+    const PackageCard = ({ pkg }: { pkg: PackageModel }) => {
         return (
             <Card
                 style={[
@@ -167,13 +174,13 @@ const PackageTab = () => {
                 ]}
             >
                 <View style={styles.headerRow}>
-                    <Text style={[globalStyles.heading3Text, styles.title]} numberOfLines={1}>
-                        {pkg.name}
+                    <Text style={[globalStyles.heading3Text, styles.title, { width: wp('70%') }]} numberOfLines={1}>
+                        {pkg.packageName}
                     </Text>
                     <View style={styles.rightHeader}>
-                        <View style={[styles.status, pkg.isActive ? styles.activeStatus : styles.inactiveStatus]}>
+                        <View style={[styles.status, pkg.status === STATUS.ACTIVE ? styles.activeStatus : styles.inactiveStatus]}>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>
-                                {pkg.isActive ? 'Active' : 'Inactive'}
+                                {pkg.status}
                             </Text>
                         </View>
                         <Feather name="more-vertical" size={wp('5%')} color="#000" style={{ marginLeft: wp('2%') }} />
@@ -181,19 +188,19 @@ const PackageTab = () => {
                 </View>
 
                 <View style={{ flexDirection: 'row', marginTop: wp('2%') }}>
-                    {pkg.image && (
+                    {pkg.icon && (
                         <View style={styles.imageWrapper}>
-                            <Image source={{ uri: pkg.image }} style={styles.image} />
+                            <MaterialCommunityIcons name={pkg.icon} size={wp('8%')} color="#000" />
                         </View>
                     )}
                     <View style={{ flex: 1 }}>
                         <Text style={styles.description} numberOfLines={2}>
                             {pkg.description}
                         </Text>
-                        <Text style={styles.price}>Rs. {pkg.price}</Text>
+                        <Text style={styles.price}>{!pkg?.calculatedPrice ? `Rs. {pkg.price}` : 'AUTO PRICING'}</Text>
 
                         <View style={styles.tagsRow}>
-                            {pkg.tags.map((tag) => (
+                            {pkg.tags && pkg?.tags.map((tag) => (
                                 <View key={tag} style={styles.tag}>
                                     <Text style={[globalStyles.smallText, globalStyles.purpleTextColor]}>{tag}</Text>
                                 </View>
@@ -201,21 +208,17 @@ const PackageTab = () => {
                         </View>
 
                         <View style={{ marginTop: wp('2%') }}>
-                            {pkg.services.slice(0, 3).map((serviceItem) => {
-                                const serviceDetails = services.find((s) => s.id === serviceItem.serviceId);
-                                if (!serviceDetails) return null;
-                                return (
-                                    <View
-                                        key={serviceItem.serviceId}
-                                        style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: wp('1%') }}
-                                    >
-                                        <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>{serviceDetails.name}</Text>
-                                        <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>x{serviceItem.quantity}</Text>
-                                    </View>
-                                );
-                            })}
-                            {pkg.services.length > 3 && (
-                                <Text style={[globalStyles.smallText, { color: '#9CA3AF' }]}>+{pkg.services.length - 3} more services</Text>
+                            {pkg?.serviceList?.map((serviceItem) => (
+                                <View
+                                    key={serviceItem.id}
+                                    style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: wp('1%') }}
+                                >
+                                    <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>{serviceItem.name}</Text>
+                                    <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>x{serviceItem.value}</Text>
+                                </View>
+                            ))}
+                            {pkg.serviceList.length > 5 && (
+                                <Text style={[globalStyles.smallText, { color: '#9CA3AF' }]}>+{pkg.serviceList.length - 5} more services</Text>
                             )}
                         </View>
                     </View>
@@ -227,8 +230,8 @@ const PackageTab = () => {
         <View style={{ margin: wp('2%') }}>
             <View>
                 <FlatList
-                    data={packages}
-                    keyExtractor={(item) => item.id}
+                    data={props?.packageData}
+                    keyExtractor={(item) => item.id + ''}
                     renderItem={({ item }) => (
                         <View style={{ gap: wp('0.5%') }}>
                             <PackageCard pkg={item} />
@@ -238,7 +241,7 @@ const PackageTab = () => {
                 />
 
             </View>
-           
+
         </View>
     );
 };
