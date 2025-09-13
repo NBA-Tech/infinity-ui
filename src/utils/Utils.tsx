@@ -1,5 +1,6 @@
 import { Country, ICountry, IState, State } from "country-state-city";
 import { FormFields } from "../types/common";
+import { v4 as uuidv4 } from 'uuid';
 
 
 type FetchWithTimeoutParams = {
@@ -62,7 +63,7 @@ export const validateValues = (values: any, formFields: FormFields) => {
         value === null ||
         value === undefined ||
         (typeof value === "string" && value.trim() === "") ||
-        (Array.isArray(value) && value.length === 0)||
+        (Array.isArray(value) && value.length === 0) ||
         Number.isNaN(value) || value === 0;
 
       if (isEmpty) {
@@ -86,6 +87,7 @@ export const fetchWithTimeout = async ({
 }: FetchWithTimeoutParams) => {
   console.log(url)
   let attempt = 0;
+  console.log(options)
 
   while (attempt < maxRetries) {
     try {
@@ -100,14 +102,27 @@ export const fetchWithTimeout = async ({
 
       // Check if the HTTP status is OK (2xx)
       if (!response.ok) {
+        let errorMessage = `HTTP Error: We are facing some issues. Please try again.`;
+
+        try {
+          // Try to parse JSON error body
+          const data = await response.json();
+          if (data?.message) {
+            errorMessage = data.message;
+          }
+        } catch (e) {
+          // fallback: keep default errorMessage
+        }
+
         return {
           json: async () => ({
             success: false,
-            message: `HTTP Error: We are facing some issues. Please try again.`,
+            message: errorMessage,
             status_code: response.status,
           }),
         };
       }
+
 
       // Return actual response if all goes well
       return response;
@@ -177,7 +192,6 @@ export const patchState = (
 
     // --- Validation ---
     if (key && isRequired) {
-      console.log(value)
       if (value === "" || value === null || value === undefined || Number.isNaN(value) || value <= 0) {
         setErrors((prevErrors: any) => ({
           ...prevErrors,
@@ -195,3 +209,24 @@ export const patchState = (
   });
 };
 
+// Generic clearState with default values
+export const clearState = <T extends Record<string, any>>(
+  state: T,
+  setState: React.Dispatch<React.SetStateAction<T>>,
+  defaults: Partial<T> = {} // optional defaults to preserve
+) => {
+  const clearedState = Object.keys(state).reduce((acc, key) => {
+    const value = state[key as keyof T];
+
+    if (Array.isArray(value)) acc[key as keyof T] = [] as any;
+    else if (typeof value === "string") acc[key as keyof T] = "" as any;
+    else if (typeof value === "number") acc[key as keyof T] = 0 as any;
+    else if (typeof value === "boolean") acc[key as keyof T] = false as any;
+    else acc[key as keyof T] = null as any;
+
+    return acc;
+  }, {} as T);
+
+  // Merge defaults on top
+  setState({ ...clearedState, ...defaults });
+};

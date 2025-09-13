@@ -5,7 +5,8 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import { Button, ButtonText } from '@/components/ui/button';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
-
+import { ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -59,74 +60,34 @@ const styles = StyleSheet.create({
         backgroundColor: '#7C3AED', // purple
         paddingHorizontal: wp('2%'),
         paddingVertical: wp('1%'),
-        borderRadius: wp('1%'),
+        borderRadius: wp('3%'),
         marginRight: wp('2%'),
         marginBottom: wp('2%'),
     },
 })
-const ServiceTab = () => {
+type ServiceTabProps = {
+    serviceData: ServiceModel[]
+}
+const ServiceTab = (props: ServiceTabProps) => {
     const globalStyles = useContext(StyleContext);
 
-    const services = [
-        {
-            id: '1',
-            name: 'Pre-Wedding PhotoShoot',
-            status: 'Active',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            price: 1000,
-            tags: ['Wedding', 'Pre-Wedding'],
-        },
-        {
-            id: '2',
-            name: 'Baby Shower Photoshoot',
-            status: 'Active',
-            description: 'Capture the beautiful moments of your baby shower.',
-            price: 800,
-            tags: ['Baby Shower', 'Photography'],
-        },
-        {
-            id: '3',
-            name: 'Birthday Party Photoshoot',
-            status: 'Inactive',
-            description: 'Fun and memorable birthday party photos.',
-            price: 1200,
-            tags: ['Birthday', 'Party'],
-        },
-         {
-            id: '4',
-            name: 'Birthday Party Photoshoot',
-            status: 'Inactive',
-            description: 'Fun and memorable birthday party photos.',
-            price: 1200,
-            tags: ['Birthday', 'Party'],
-        },
-         {
-            id: '5',
-            name: 'Birthday Party Photoshoot',
-            status: 'Inactive',
-            description: 'Fun and memorable birthday party photos.',
-            price: 1200,
-            tags: ['Birthday', 'Party'],
-        },
-        // Add more services here
-    ];
 
 
-    const ServiceCard = ({ service }: any) => {
+    const ServiceCard = ({ service }: { service: ServiceModel }) => {
         return (
             <Card style={[styles.card, globalStyles.cardShadowEffect]}>
                 {/* Header Row */}
                 <View style={styles.headerRow}>
-                    <Feather name="grid" size={wp('5%')} color="#000" />
+                    <MaterialCommunityIcons name={service?.icon || "camera"} size={wp('5%')} color="#000" />
 
-                    <Text style={[globalStyles.heading3Text, styles.title]} numberOfLines={1}>
-                        {service.name || "Pre-Wedding PhotoShoot"}
+                    <Text style={[globalStyles.heading3Text, styles.title,{width: wp('70%')}]} numberOfLines={1}>
+                        {service?.serviceName}
                     </Text>
 
                     <View style={styles.rightHeader}>
-                        <View style={[styles.status, service.status === 'Active' ? styles.activeStatus : styles.inactiveStatus]}>
+                        <View style={[styles.status, service?.status === STATUS.ACTIVE ? styles.activeStatus : styles.inactiveStatus]}>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>
-                                {service.status || "Active"}
+                                {service?.status}
                             </Text>
                         </View>
                         <Feather name="more-vertical" size={wp('5%')} color="#000" style={{ marginLeft: wp('2%') }} />
@@ -135,18 +96,27 @@ const ServiceTab = () => {
 
                 {/* Description and Price */}
                 <View style={styles.descRow}>
-                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText]} numberOfLines={2}>
-                        {service.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                    <Text
+                        style={[
+                            globalStyles.normalTextColor,
+                            globalStyles.smallText,
+                            { width: wp('70%') } // set your fixed width here
+                        ]}
+                        numberOfLines={2} // limit lines to 2
+                        ellipsizeMode="tail" // shows "..." at the end if text overflows
+                    >
+                        {service?.description}
                     </Text>
+
                     <Text style={[styles.price]}>
-                        Rs. {service.price || 1000}
+                        Rs. {service?.price}
                     </Text>
                 </View>
 
                 {/* Tags */}
                 {service.tags && service.tags.length > 0 && (
                     <View style={styles.tagsRow}>
-                        {service.tags.map((tag: string, idx: number) => (
+                        {service?.tags?.map((tag: string, idx: number) => (
                             <View key={idx} style={styles.tag}>
                                 <Text style={[globalStyles.smallText, globalStyles.whiteTextColor]}>{tag}</Text>
                             </View>
@@ -159,17 +129,17 @@ const ServiceTab = () => {
 
     return (
         <View style={{ margin: wp('2%') }}>
-            <View>
-                    <FlatList
-                        data={services}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <View style={{ gap: wp('0.5%') }}>
-                                <ServiceCard service={item} />
-                            </View>
-                        )}
-                        showsVerticalScrollIndicator={false}
-                    />
+            <View style={{height: hp('75%')}}>
+                <FlatList
+                    data={props.serviceData}
+                    keyExtractor={(item) => item.id || ''}
+                    renderItem={({ item }) => (
+                        <View style={{ gap: wp('0.5%') }}>
+                            <ServiceCard service={item} />
+                        </View>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                />
 
             </View>
         </View>

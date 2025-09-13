@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { act, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, Switch, ScrollView } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,11 +14,13 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { OFFERINGTYPE, PackageModel, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
-import { patchState, validateValues } from '@/src/utils/utils';
+import { OFFERINGTYPE, PackageModel, SERVICECATEGORY, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import { clearState, generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { addNewServiceAPI } from '@/src/api/offering/offering-service';
+import { addNewServiceAPI, getOfferingListAPI } from '@/src/api/offering/offering-service';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useOfferingStore } from '@/src/store/offering/offering-store';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -47,15 +49,18 @@ const styles = StyleSheet.create({
 })
 const services = () => {
     const globalStyles = useContext(StyleContext);
+    const { setOfferingList, getOfferingList, addOfferingDetailsInfo } = useOfferingStore();
     const [activeTab, setActiveTab] = useState('services');
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [offeringData, setOfferingData] = useState<ServiceModel[] | PackageModel[]>()
     const showToast = useToastMessage();
     const [loadingProvider, setloadingProvider] = useState<"service" | "package" | null>(null)
     const [servieDetails, setServiceDetails] = useState<ServiceModel>({
         customerID: getItem("USERID") as string,
         status: STATUS.ACTIVE,
+        serviceCategory: null,
         type: OFFERINGTYPE.SERVICE,
         serviceName: "",
         description: "",
@@ -76,6 +81,24 @@ const services = () => {
         icon: "",
         tags: [],
     })
+
+    const resetActiveDetails = () => {
+        if (activeTab === "services") {
+            clearState<ServiceModel>(servieDetails, setServiceDetails, {
+                status: STATUS.ACTIVE,
+                type: OFFERINGTYPE.SERVICE,
+                customerID: getItem("USERID") as string, // preserve userID if needed
+            });
+        } else {
+            clearState<PackageModel>(packageDetails, setPackageDetails, {
+                status: STATUS.ACTIVE,
+                type: OFFERINGTYPE.PACKAGE,
+                customerID: getItem("USERID") as string,
+            });
+        }
+    };
+
+
 
     const CustomFieldWithSwitch = () => {
 
@@ -279,6 +302,21 @@ const services = () => {
                 patchState("", 'description', value, true, setServiceDetails, setErrors)
             }
         },
+        serviceCategory: {
+            key: "serviceCategory",
+            label: "Service Category",
+            placeholder: "Select category",
+            icon: <Feather name="image" size={wp('5%')} color="#8B5CF6" />,
+            type: "select",
+            style: "w-full",
+            isRequired: true,
+            isDisabled: false,
+            value: servieDetails.serviceCategory,
+            dropDownItems: Object.values(SERVICECATEGORY).map((item) => { return { label: item, value: item } }),
+            onChange(value: string) {
+                patchState("", 'serviceCategory', value, true, setServiceDetails, setErrors)
+            }
+        },
         price: {
             key: "price",
             label: "Price",
@@ -304,9 +342,12 @@ const services = () => {
             isDisabled: false,
             value: servieDetails.icon,
             dropDownItems: [
-                { label: "Email", value: "email" },
-                { label: "Phone", value: "phone" },
-                { label: "Website", value: "website" },
+                { label: "People / Portrait", value: "account-multiple-outline" },
+                { label: "Events / Weddings", value: "calendar-star" },
+                { label: "Commercial", value: "briefcase-outline" },
+                { label: "Specialized", value: "lightbulb-on-outline" },
+                { label: "Nature / Landscape", value: "image-filter-hdr" },
+                { label: "Other", value: "dots-horizontal" },
             ],
             onChange(value: string) {
                 patchState("", 'icon', value, true, setServiceDetails, setErrors)
@@ -318,9 +359,26 @@ const services = () => {
             label: "Select Tags",
             value: servieDetails.tags,
             dropDownItems: [
-                { label: "React Native", value: "rn" },
-                { label: "Java", value: "java" },
-                { label: "AI", value: "ai" },
+                { label: "Portrait", value: "portrait" },
+                { label: "Wedding", value: "wedding" },
+                { label: "Engagement", value: "engagement" },
+                { label: "Maternity", value: "maternity" },
+                { label: "Newborn / Baby Shoot", value: "baby" },
+                { label: "Family", value: "family" },
+                { label: "Birthday / Party", value: "birthday" },
+                { label: "Corporate / Event", value: "event" },
+                { label: "Product", value: "product" },
+                { label: "Fashion", value: "fashion" },
+                { label: "Food", value: "food" },
+                { label: "Real Estate", value: "realestate" },
+                { label: "Travel", value: "travel" },
+                { label: "Wildlife", value: "wildlife" },
+                { label: "Landscape / Nature", value: "landscape" },
+                { label: "Sports", value: "sports" },
+                { label: "Drone / Aerial", value: "drone" },
+                { label: "Underwater", value: "underwater" },
+                { label: "Creative / Specialized", value: "creative" },
+                { label: "Other", value: "other" },
             ],
             onChange(value: string[]) {
                 patchState("", 'tags', value, true, setServiceDetails, setErrors)
@@ -344,7 +402,6 @@ const services = () => {
         let addNewServiceResponse: ApiGeneralRespose;
 
         console.log(currDetails, currFields)
-        return;
 
         const validateInput = validateValues(currDetails, currFields)
         if (!validateInput.success) {
@@ -354,7 +411,7 @@ const services = () => {
                 message: validateInput.message ?? "Something went wrong",
             })
         }
-        if (!currDetails?.customerID) {
+        if (currDetails?.customerID == "" || currDetails?.customerID == null) {
             showToast({
                 type: "error",
                 title: "Error",
@@ -363,12 +420,17 @@ const services = () => {
             return
         }
         setloadingProvider(activeTab)
+        const uuid: string = generateRandomString(30);
+        const headers = {
+            "Idempotency-Key": uuid
+        }
         if (activeTab == "services") {
-            addNewServiceResponse = await addNewServiceAPI(servieDetails)
+            addNewServiceResponse = await addNewServiceAPI(servieDetails, headers)
         }
         else {
-            addNewServiceResponse = await addNewServiceAPI(packageDetails)
+            addNewServiceResponse = await addNewServiceAPI(packageDetails, headers)
         }
+        setIsOpen(false)
 
         if (!addNewServiceResponse?.success) {
             showToast({
@@ -383,74 +445,64 @@ const services = () => {
                 title: "Success",
                 message: addNewServiceResponse?.message ?? "Successfully created service",
             })
+            currDetails.id = addNewServiceResponse?.data
+            setOfferingData([...offeringData, currDetails])
+            addOfferingDetailsInfo(currDetails)
+            resetActiveDetails()
         }
         setloadingProvider(null)
         console.log(servieDetails)
     }
 
+
+    const getOfferingDetails = async () => {
+        const offeringDataStore = getOfferingList()
+        console.log(offeringDataStore)
+        if (offeringDataStore.length <= 0) {
+            if (!servieDetails.customerID) return
+            const uuid: string = generateRandomString(30);
+            const headers = {
+                "Idempotency-Key": uuid
+            }
+            const offeringListResponse: ApiGeneralRespose = await getOfferingListAPI(servieDetails.customerID, headers)
+            console.log(offeringListResponse)
+            if (!offeringListResponse.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: offeringListResponse.message
+                })
+            }
+            else {
+                const { packages, services } = offeringListResponse.data
+                const updatedData = [...packages, ...services];
+                console.log(updatedData)
+
+                setOfferingData(updatedData)
+                setOfferingList(updatedData)
+
+            }
+        }
+        else {
+            setOfferingList(offeringDataStore)
+        }
+
+    }
+
+
+
+    useEffect(() => {
+        getOfferingDetails()
+    }, [])
+
+    useEffect(() => {
+        console.log(offeringData)
+
+    }, [offeringData])
+
     return (
         <SafeAreaView style={globalStyles.appBackground} >
             <BackHeader screenName='Services' />
-            <View>
-                <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
-                    <View className='flex-row justify-between items-center'>
-                        <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text]}>Services & Package</Text>
-                            <GradientCard style={{ width: wp('25%') }}>
-                                <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
-                            </GradientCard>
-                        </View>
-                    </View>
-
-                    <View
-                        className="flex flex-row items-center gap-3"
-                        style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}
-                    >
-                        <Input
-                            size="lg"
-                            style={styles.inputContainer}
-                        >
-                            <InputSlot>
-                                <Feather name="search" size={wp('5%')} color="#000" />
-                            </InputSlot>
-                            <InputField
-                                type="text"
-                                placeholder="Search Services/Packages"
-                                style={{ flex: 1, backgroundColor: '#f0f0f0' }}
-                            />
-
-                        </Input>
-                        <TouchableOpacity>
-                            <Feather name="filter" size={wp('6%')} color="#8B5CF6" />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'services' && styles.activeTab]} onPress={() => setActiveTab('services')}>
-                            <Text style={[globalStyles.normalBoldText]}>Services</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'packages' && styles.activeTab]} onPress={() => setActiveTab('packages')}>
-                            <Text style={[globalStyles.normalBoldText]}>Packages</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
-                    <View>
-                        <Text style={[globalStyles.sideHeading]}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}(5)</Text>
-                    </View>
-                    <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => setIsOpen(true)}>
-                            <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
-                        </Button>
-                    </View>
-
-                </View>
-
-                {activeTab === 'services' && <ServiceTab />}
-                {activeTab === 'packages' && <PackageTab />}
-            </View>
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => setIsOpen(false)}
@@ -514,6 +566,77 @@ const services = () => {
                 </ScrollView>
 
             </Modal>
+            <View>
+                <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
+                    <View className='flex-row justify-between items-center'>
+                        <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
+                            <Text style={[globalStyles.heading2Text]}>Services & Package</Text>
+                            <GradientCard style={{ width: wp('25%') }}>
+                                <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
+                            </GradientCard>
+                        </View>
+                    </View>
+
+                    <View
+                        className="flex flex-row items-center gap-3"
+                        style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}
+                    >
+                        <Input
+                            size="lg"
+                            style={styles.inputContainer}
+                        >
+                            <InputSlot>
+                                <Feather name="search" size={wp('5%')} color="#000" />
+                            </InputSlot>
+                            <InputField
+                                type="text"
+                                placeholder="Search Services/Packages"
+                                style={{ flex: 1, backgroundColor: '#f0f0f0' }}
+                            />
+
+                        </Input>
+                        <TouchableOpacity>
+                            <Feather name="filter" size={wp('6%')} color="#8B5CF6" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
+                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'services' && styles.activeTab]} onPress={() => setActiveTab('services')}>
+                            <Text style={[globalStyles.normalBoldText]}>Services</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'packages' && styles.activeTab]} onPress={() => setActiveTab('packages')}>
+                            <Text style={[globalStyles.normalBoldText]}>Packages</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
+                    <View>
+                        <Text style={[globalStyles.sideHeading]}>
+                            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                            (
+                            {activeTab === "services"
+                                ? offeringData?.filter(item => item.type === OFFERINGTYPE.SERVICE).length
+                                : offeringData?.filter(item => item.type === OFFERINGTYPE.PACKAGE).length
+                            }
+                            )
+                        </Text>
+
+                    </View>
+                    <View>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => setIsOpen(true)}>
+                            <Feather name="plus" size={wp('5%')} color="#fff" />
+                            <ButtonText style={globalStyles.buttonText}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
+                        </Button>
+                    </View>
+
+                </View>
+                <View>
+                    {activeTab === 'services' && <ServiceTab serviceData={offeringData?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} />}
+                    {activeTab === 'packages' && <PackageTab />}
+                </View>
+            </View>
+
         </SafeAreaView >
     );
 };
