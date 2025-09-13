@@ -87,6 +87,7 @@ export const fetchWithTimeout = async ({
   maxRetries = 5,
 }: FetchWithTimeoutParams): Promise<any> => {
   let attempt = 0;
+  console.log(url)
 
   while (attempt < maxRetries) {
     try {

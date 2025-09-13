@@ -39,3 +39,18 @@ export const deleteOfferingApi=async(offeringID:string,headers?:Record<string,an
     })
     return deleteOffering
 }
+
+export const updateOfferingServiceAPI=async(payload:ServiceModel | PackageModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const updateOfferingService=await fetchWithTimeout({
+        url:`${API_BASE_URI}/offerings/update_offering`,
+        options: {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        }
+    })
+    return updateOfferingService
+}

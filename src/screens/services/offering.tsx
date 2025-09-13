@@ -18,7 +18,7 @@ import { OFFERINGTYPE, PackageModel, SERVICECATEGORY, ServiceModel, STATUS } fro
 import { clearState, generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { addNewServiceAPI, getOfferingListAPI } from '@/src/api/offering/offering-service';
+import { addNewServiceAPI, getOfferingListAPI, updateOfferingServiceAPI } from '@/src/api/offering/offering-service';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
 })
 const services = () => {
     const globalStyles = useContext(StyleContext);
-    const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo } = useOfferingStore();
+    const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo, updateOfferingDetailsInfo } = useOfferingStore();
+    const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
     const [activeTab, setActiveTab] = useState('services');
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
@@ -93,6 +94,7 @@ const services = () => {
         icon: "",
         tags: [],
     })
+
 
     const resetActiveDetails = () => {
         if (activeTab === "services") {
@@ -440,8 +442,11 @@ const services = () => {
     const handleSaveService = async () => {
         const currDetails = activeTab === "services" ? servieDetails : packageDetails
         const currFields = activeTab === "services" ? serviceInfoFields : packageInfoFields
-        let addNewServiceResponse: ApiGeneralRespose;
+        const isUpdate = Boolean(currDetails.id)
+        let serviceResponse: ApiGeneralRespose;
+        let updateServiceResponse: ApiGeneralRespose;
 
+        console.log(currDetails)
 
         const validateInput = validateValues(currDetails, currFields)
         console.log(validateInput)
@@ -467,29 +472,43 @@ const services = () => {
             "Idempotency-Key": uuid
         }
         if (activeTab == "services") {
-            addNewServiceResponse = await addNewServiceAPI(servieDetails, headers)
-            console.log(addNewServiceResponse)
+            if (isUpdate) {
+                serviceResponse = await updateOfferingServiceAPI(servieDetails, headers)
+            }
+            else {
+                serviceResponse = await addNewServiceAPI(servieDetails, headers)
+            }
         }
         else {
-            addNewServiceResponse = await addNewServiceAPI(packageDetails, headers)
+            if (isUpdate) {
+                serviceResponse = await updateOfferingServiceAPI(packageDetails, headers)
+            }
+            else {
+                serviceResponse = await addNewServiceAPI(packageDetails, headers)
+            }
         }
         setIsOpen(false)
 
-        if (!addNewServiceResponse?.success) {
+        if (!serviceResponse?.success) {
             showToast({
                 type: "error",
                 title: "Error",
-                message: addNewServiceResponse?.message ?? "Something went wrong",
+                message: serviceResponse?.message ?? "Something went wrong",
             })
         }
         else {
             showToast({
                 type: "success",
                 title: "Success",
-                message: addNewServiceResponse?.message ?? "Successfully created service",
+                message: serviceResponse?.message ?? "Successfully created service",
             })
-            currDetails.id = addNewServiceResponse?.data
-            addOfferingDetailsInfo(currDetails)
+            if (isUpdate) {
+                updateOfferingDetailsInfo(currDetails)
+            }
+            else {
+                currDetails.id = serviceResponse?.data
+                addOfferingDetailsInfo(currDetails)
+            }
             resetActiveDetails()
         }
         setloadingProvider(null)
@@ -534,6 +553,17 @@ const services = () => {
             }
         }
     };
+
+    const handleSearch = (text: string) => {
+        let filteredData=[]
+        if(activeTab=="services"){
+            filteredData = offeringList?.filter((item) => item?.type===OFFERINGTYPE.SERVICE && item?.serviceName.toLowerCase().includes(text.toLowerCase()));
+        }
+        else{
+            filteredData = offeringList?.filter((item) => item?.type===OFFERINGTYPE.PACKAGE && item?.packageName.toLowerCase().includes(text.toLowerCase()));
+        }
+        setFilteredOfferingList(filteredData);
+    }
 
     useEffect(() => {
         console.log("calling")
@@ -633,12 +663,10 @@ const services = () => {
                                 type="text"
                                 placeholder="Search Services/Packages"
                                 style={{ flex: 1, backgroundColor: '#f0f0f0' }}
+                                onChangeText={handleSearch}
                             />
 
                         </Input>
-                        <TouchableOpacity>
-                            <Feather name="filter" size={wp('6%')} color="#8B5CF6" />
-                        </TouchableOpacity>
                     </View>
 
                     <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
