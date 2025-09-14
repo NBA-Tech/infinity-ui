@@ -1,7 +1,7 @@
 import BackHeader from '@/src/components/back-header';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import GradientCard from '@/src/utils/gradient-gard';
@@ -20,8 +20,14 @@ import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/typ
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect } from '@react-navigation/native';
-import { patchState } from '@/src/utils/utils';
+import { generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { EventInfo, OrderBasicInfo, OrderModel } from '@/src/types/order/order-type';
+import { useOfferingStore } from '@/src/store/offering/offering-store';
+import { getOfferingListAPI } from '@/src/api/offering/offering-service';
+import { OfferingModel, OFFERINGTYPE, PackageModel, ServiceInfo, ServiceModel } from '@/src/types/offering/offering-type';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { PackageComponent } from './components/package-component';
+import ServiceComponent from './components/service-component';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -40,15 +46,6 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
     },
-    packageContainer: {
-        borderRadius: wp("2%"),
-        borderWidth: wp("0.4%"),
-        borderColor: "#E5E5E5",
-        padding: wp("2%"),
-        width: wp('50%'),
-        height: hp('30%'),
-        marginHorizontal: wp("2%"),
-    }
 });
 interface CustomerOption {
     label: string;
@@ -60,8 +57,12 @@ const CreateOrder = () => {
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
+    const [offeringData, setOfferingData] = useState<ServiceModel[] | PackageModel[]>([])
+    const [packageData, setPackageData] = useState<PackageModel[]>([])
+    const [serviceData, setServiceData] = useState<ServiceModel[]>([])
     const showToast = useToastMessage();
     const { getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
+    const { offeringList, getOfferingList, setOfferingList } = useOfferingStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: "",
         orderBasicInfo: {} as OrderBasicInfo,
@@ -94,8 +95,10 @@ const CreateOrder = () => {
             getAll: true,
             requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id"],
         };
+        const uuid = generateRandomString(30);
 
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
+        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload, { "Idempotency-Key": uuid });
+        console.log(customerListResponse)
 
         if (!customerListResponse?.success) {
             return showToast({
@@ -117,6 +120,37 @@ const CreateOrder = () => {
         setCustomerList(filterData);
     };
 
+
+    const getOfferingDetails = async () => {
+        let offeringListData = getOfferingList()
+        const userID = getItem("USERID")
+        if (!userID) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found Please Logout and Login again",
+            })
+        }
+        if (offeringListData.length <= 0) {
+            const offeringData = await getOfferingListAPI(userID)
+            if (!offeringData?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: offeringData?.message ?? "Something went wrong",
+                })
+            }
+            else {
+                const { packages, services } = offeringData.data
+                offeringListData = [...(packages ?? []), ...(services ?? [])]
+                setPackageData(packages ?? [])
+                setServiceData(services ?? [])
+            }
+        }
+        setOfferingData(offeringListData as ServiceModel[] | PackageModel[])
+
+    }
+
     const userInfo: FormFields = useMemo(() => ({
         customerId: {
             parentKey: "orderBasicInfo",
@@ -129,7 +163,7 @@ const CreateOrder = () => {
             isRequired: true,
             isDisabled: false,
             dropDownItems: customerList ?? [],
-            value: orderDetails?.orderBasicInfo.customerID,
+            value: orderDetails?.orderBasicInfo.customerID ?? "",
             onChange: (value: string) => {
                 patchState('orderBasicInfo', 'customerID', value, true, setOrderDetails, setErrors);
             }
@@ -144,7 +178,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.orderBasicInfo?.pointOfContact,
+            value: orderDetails?.orderBasicInfo?.pointOfContact ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'pointOfContact', value, true, setOrderDetails, setErrors)
             },
@@ -160,7 +194,7 @@ const CreateOrder = () => {
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
-            value: orderDetails?.orderBasicInfo?.specialInstructions,
+            value: orderDetails?.orderBasicInfo?.specialInstructions ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'specialInstructions', value, false, setOrderDetails, setErrors)
             },
@@ -179,7 +213,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.eventInfo?.eventTitle,
+            value: orderDetails?.eventInfo?.eventTitle ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventTitle', value, true, setOrderDetails, setErrors)
             },
@@ -195,7 +229,7 @@ const CreateOrder = () => {
             dateType: "date",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.eventInfo?.eventDate,
+            value: orderDetails?.eventInfo?.eventDate ?? "",
             isOpen: isOpen.date,
             setIsOpen: (value: boolean) => {
                 setIsOpen({ ...isOpen, date: value });
@@ -214,7 +248,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.eventInfo?.eventTime,
+            value: orderDetails?.eventInfo?.eventTime ?? "",
             isOpen: isOpen.time,
             setIsOpen: (value: boolean) => {
                 setIsOpen({ ...isOpen, time: value });
@@ -233,7 +267,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.eventInfo?.numberOfHours,
+            value: orderDetails?.eventInfo?.numberOfHours ?? 0,
             onChange(value: string) {
                 patchState('eventInfo', 'numberOfHours', value, true, setOrderDetails, setErrors)
             },
@@ -248,7 +282,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            value: orderDetails?.eventInfo?.eventLocation,
+            value: orderDetails?.eventInfo?.eventLocation ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventLocation', value, true, setOrderDetails, setErrors)
             }
@@ -296,82 +330,55 @@ const CreateOrder = () => {
     const formOrders = [userInfo, eventInfo, eventTypes]
 
     const handleNext = () => {
-        console.log(orderDetails)
-        let isError: boolean = false
-        Object.keys(formOrders[currStep]).forEach((key) => {
-            if (isError) return
-            if (formOrders[currStep][key].isRequired && orderDetails && !orderDetails[formOrders[currStep][key].parentKey][formOrders[currStep][key].key]) {
-                isError = true
-                showToast({
-                    message: `Please enter ${formOrders[currStep][key].label}`,
-                    type: "warning",
-                    title: "Oops!"
-                })
-                return
-            }
-        })
-        if (!isError) setCurrStep(currStep + 1);
+        let validateInput
+        if (currStep! - 2) {
+            validateInput = validateValues(orderDetails, formOrders[currStep])
+        }
+        if (!validateInput?.success && !orderDetails?.eventInfo?.eventType) {
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: validateInput?.message ?? "Please fill all the required fields",
+            })
+        }
+        setCurrStep(currStep + 1)
 
     }
 
+
     const handleEventChange = (value: any, isSelected: boolean) => {
         patchState('eventInfo', 'eventType', value, true, setOrderDetails, setErrors)
+    }
+
+    const handleCalculatePrice = (serviceInfo: ServiceInfo[]) => {
+        const totalPrice = serviceInfo.reduce((sum, sel) => {
+            const service = serviceData.find((s) => s.id === sel.id);
+            if (service) {
+                return sum + service.price * sel.value;
+            }
+            return sum;
+        }, 0);
+        return totalPrice
     }
 
 
     useFocusEffect(
         useCallback(() => {
             getCustomerNameList();
+            getOfferingDetails();
 
             return () => {
                 setCustomerList([]);
+                setOfferingList([]);
             };
         }, [])
     );
 
     useEffect(() => {
-        console.log(orderDetails)
-    }, [orderDetails])
+        console.log(offeringData)
+    }, [offeringData])
 
-    const PackageCard = () => (
-        <View style={styles.packageContainer}>
-            <View>
-                <View className='flex flex-col items-center justify-center'>
-                    <GradientCard
-                        colors={["#9CA3AF", "#9CA3AF", "#9CA3AF"]}
-                        style={{
-                            padding: wp("2%"),
-                            minWidth: wp("9%"),
-                            minHeight: wp("9%"),
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Feather name="star" size={wp("5%")} color="white" />
-                    </GradientCard>
-                    <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Basic</Text>
-                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText, { flexWrap: 'wrap' }]}>Essentails services and their cost are the things you need to know</Text>
-                    <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText, { color: 'green' }]}>Rs. 1000</Text>
 
-                </View>
-                <View className="flex flex-col items-start justify-start gap-2">
-                    <View className="flex flex-row items-center gap-2">
-                        <Feather name="check-circle" size={wp("3%")} color="#06B6D4" />
-                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                            Pre-Wedding PhotoShoot
-                        </Text>
-                    </View>
-                    <View className="flex flex-row items-center gap-2">
-                        <Feather name="check-circle" size={wp("3%")} color="#06B6D4" />
-                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                            Pre-Wedding PhotoShoot
-                        </Text>
-                    </View>
-                </View>
-            </View>
-
-        </View>
-    )
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
@@ -496,12 +503,12 @@ const CreateOrder = () => {
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         <FlatList
                                             horizontal
-                                            data={[1, 2, 3]}
-                                            renderItem={({ item }) => <PackageCard />}
+                                            data={packageData}
+                                            renderItem={({ item }) => <PackageComponent pkg={item} handleCalculatePrice={handleCalculatePrice} />}
                                             showsHorizontalScrollIndicator={false}
                                             contentContainerStyle={{ paddingBottom: hp('2%') }}
                                             style={{
-                                                maxHeight: hp('30%'), 
+                                                maxHeight: hp('30%'),
                                                 marginVertical: hp('2%'),
                                             }}
                                         />
@@ -525,7 +532,7 @@ const CreateOrder = () => {
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
-                                            PhotoGraphy Services
+                                            Services
                                         </Text>
                                     </View>
                                 </View>
@@ -533,63 +540,10 @@ const CreateOrder = () => {
                                 <View style={{ marginLeft: wp('5%'), paddingVertical: hp('2%') }}>
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('2%') }}>
-                                        {Object.values(eventTypes).map((eventType, index) => (
-                                            <CustomCheckBox
-                                                key={index}
-                                                selectedStyle={{ backgroundColor: '#ECFDF5', borderColor: '#06B6D4' }}
-                                                styles={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-                                            >
-                                                {/* Left side content */}
-                                                <View className="flex flex-row items-center gap-2 flex-1">
-                                                    <View>
-                                                        <GradientCard
-                                                            colors={["#F9FAFB", "#D1D5DB", "#9CA3AF"]}
-                                                            style={{
-                                                                padding: wp("2%"),
-                                                                minWidth: wp("9%"),
-                                                                minHeight: wp("9%"),
-                                                                justifyContent: "center",
-                                                                alignItems: "center",
-                                                            }}
-                                                        >
-                                                            {eventType.icon}
-                                                        </GradientCard>
-                                                    </View>
-
-                                                    <View className="flex flex-col gap-0.5">
-                                                        <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
-                                                            Pre-Wedding Shoot
-                                                        </Text>
-                                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                                            Romantic couple photoshoot at scenic locations
-                                                        </Text>
-                                                        <View className="flex flex-row gap-2">
-                                                            <View className="flex flex-row items-center gap-1">
-                                                                <Feather name="clock" size={wp('3%')} color="#000" />
-                                                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>2 hours</Text>
-                                                            </View>
-                                                            <View className="flex flex-row items-center gap-1">
-                                                                <Feather name="file" size={wp('3%')} color="#000" />
-                                                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>3 photos</Text>
-                                                            </View>
-                                                        </View>
-                                                    </View>
-                                                </View>
-
-                                                {/* Price aligned to right */}
-                                                <Text
-                                                    style={[
-                                                        globalStyles.normalBoldText,
-                                                        { color: "#16A34A", marginLeft: "auto" } // green-600 tailwind shade
-                                                    ]}
-                                                >
-                                                    ₹10,000
-                                                </Text>
-                                            </CustomCheckBox>
-
-                                        ))
-
-                                        }
+                                        <FlatList
+                                            data={serviceData}
+                                            renderItem={({ item,index }) => <ServiceComponent eventType={item} index={index} />}
+                                        />
                                     </View>
                                 </View>
                             </Card>
@@ -598,14 +552,21 @@ const CreateOrder = () => {
                     )
 
                     }
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-end",
-                            padding: wp("2%"),
-                            marginBottom: hp("15%"),
-                        }}
-                    >
+                    <View className='flex flex-row gap-2 justify-between items-center' style={{ marginBottom: hp('15%'), marginVertical: hp('2%') }}>
+                        <Button
+                            size="lg"
+                            variant="solid"
+                            action="primary"
+                            style={[globalStyles.purpleBackground]}
+                            isDisabled={loading || Object.keys(errors).length > 0}
+                            onPress={() => setCurrStep(currStep - 1)}
+                        >
+                            <Feather name="arrow-left" size={wp("5%")} color="#fff" />
+
+                            <ButtonText style={globalStyles.buttonText}>
+                                Prev
+                            </ButtonText>
+                        </Button>
                         <Button
                             size="lg"
                             variant="solid"
@@ -615,7 +576,7 @@ const CreateOrder = () => {
                             onPress={handleNext}
                         >
                             <ButtonText style={globalStyles.buttonText}>
-                                Next : Service Details
+                                Next
                             </ButtonText>
                             <Feather name="arrow-right" size={wp("5%")} color="#fff" />
                         </Button>

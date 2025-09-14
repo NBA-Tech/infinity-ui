@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
         borderColor: "#d1d5db",
         borderWidth: wp("0.4%"),
         minHeight: hp("6%"),
-        justifyContent: "center",
         paddingHorizontal: wp("2%"),
         width: "auto",
     },

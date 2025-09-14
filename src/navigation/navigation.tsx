@@ -37,11 +37,12 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="services" component={Services} />
-            <Stack.Screen name="templateeditor" component={TemplateEditor} />
             <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
             <Stack.Screen name="useronboarding" component={UserOnBoarding} />
+            <Stack.Screen name="services" component={Services} />
+            <Stack.Screen name="templateeditor" component={TemplateEditor} />
+
 
         </Stack.Navigator>
     )
@@ -55,7 +56,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {false ? (
+            {isAuthenticated ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />

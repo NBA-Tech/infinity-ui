@@ -64,6 +64,7 @@ const services = () => {
     const globalStyles = useContext(StyleContext);
     const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo, updateOfferingDetailsInfo } = useOfferingStore();
     const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
+    const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState('services');
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
@@ -168,16 +169,17 @@ const services = () => {
                                 </InputSlot>
                                 <InputField
                                     type="text"
-                                    placeholder={"Enter Price"}
-                                    value={"0"}
+                                    placeholder="Enter Price"
+                                    value={String(packageDetails.price)}
                                     keyboardType="numeric"
                                     onChangeText={(value) => {
                                         setPackageDetails((prev) => ({
                                             ...prev,
-                                            price: parseFloat(value),
-                                        }))
+                                            price: Number(value) // fallback
+                                        }));
                                     }}
                                 />
+
                             </Input>
 
                         </View>
@@ -225,7 +227,7 @@ const services = () => {
             label: "Choose Services",
             type: "custom",
             isRequired: true,
-            customComponent: <CustomServiceAddComponent serviceList={offeringList} onChange={handleServiceChange} />
+            customComponent: <CustomServiceAddComponent serviceList={offeringList} onChange={handleServiceChange} value={packageDetails.serviceList} />
         },
         packageIcon: {
             key: "packageIcon",
@@ -555,12 +557,13 @@ const services = () => {
     };
 
     const handleSearch = (text: string) => {
-        let filteredData=[]
-        if(activeTab=="services"){
-            filteredData = offeringList?.filter((item) => item?.type===OFFERINGTYPE.SERVICE && item?.serviceName.toLowerCase().includes(text.toLowerCase()));
+        setSearchText(text);
+        let filteredData = []
+        if (activeTab == "services") {
+            filteredData = offeringList?.filter((item) => item?.type === OFFERINGTYPE.SERVICE && item?.serviceName.toLowerCase().includes(text.toLowerCase()));
         }
-        else{
-            filteredData = offeringList?.filter((item) => item?.type===OFFERINGTYPE.PACKAGE && item?.packageName.toLowerCase().includes(text.toLowerCase()));
+        else {
+            filteredData = offeringList?.filter((item) => item?.type === OFFERINGTYPE.PACKAGE && item?.packageName.toLowerCase().includes(text.toLowerCase()));
         }
         setFilteredOfferingList(filteredData);
     }
@@ -704,8 +707,8 @@ const services = () => {
 
                 </View>
                 <View>
-                    {activeTab === 'services' && <ServiceTab serviceData={offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} handleEdit={handleEdit} />}
-                    {activeTab === 'packages' && <PackageTab packageData={offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)} handleEdit={handleEdit} />}
+                    {activeTab === 'services' && <ServiceTab serviceData={searchText != '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} handleEdit={handleEdit} />}
+                    {activeTab === 'packages' && <PackageTab packageData={searchText != '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)} handleEdit={handleEdit} />}
                 </View>
             </View>
 

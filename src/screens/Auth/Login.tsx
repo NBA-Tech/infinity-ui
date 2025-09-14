@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { UserApiResponse } from '@/src/types/user/user-type';
 import { useAuth } from '@/src/context/auth-context/auth-context';
+import { generateRandomString } from '@/src/utils/utils';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
@@ -58,9 +59,11 @@ const Login = ({ setCurrScreen }: any) => {
     ]
 
     const handleLogin = async (payload: AuthModel) => {
-        const loginResponse: UserApiResponse = await loginUser(payload);
+        const uuid = generateRandomString(30);
+        const loginResponse: UserApiResponse = await loginUser(payload,{"Idempotency-Key":uuid});
 
         if (!loginResponse?.success) {
+            setLoadingProvider(null);
             return showToast({
                 type: "error",
                 title: "Error",
@@ -160,13 +163,18 @@ const Login = ({ setCurrScreen }: any) => {
                     <Text style={[globalStyles.underscoreText]}>Forgot Password?</Text>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
-                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider!=null}>
                         <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center'>
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin}>
+                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin} isDisabled={loadingProvider!=null}>
+                        {loadingProvider=="google"&&(
+                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )
+
+                        }
                         <FontAwesome name="google" size={wp('5%')} color="#fff" />
                         <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
                     </Button>

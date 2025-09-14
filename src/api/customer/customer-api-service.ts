@@ -3,34 +3,34 @@ import { ApiGeneralRespose, SearchQueryRequest } from "@/src/types/common"
 import { CustomerApiResponse, CustomerModel } from "@/src/types/customer/customer-type"
 import { fetchWithTimeout } from "@/src/utils/utils";
 
-export const addNewCustomerAPI=async(payload:CustomerModel):Promise<ApiGeneralRespose>=>{
-    const addNewCustomer=await fetchWithTimeout({
+export const addNewCustomerAPI=async(payload:CustomerModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const addNewCustomerResponse=await fetchWithTimeout({
         url:`${API_BASE_URI}/customer/add_customer`,
         options: {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...headers
             },
             body: JSON.stringify(payload)
         }
     })
-    const addNewCustomerResponse=await addNewCustomer.json();
     return addNewCustomerResponse
     
 }
 
-export const getCustomerDetails=async(payload:SearchQueryRequest):Promise<CustomerApiResponse>=>{
-    const getCustomerDetails=await fetchWithTimeout({
+export const getCustomerDetails=async(payload:SearchQueryRequest,headers?:Record<string,any>):Promise<CustomerApiResponse>=>{
+    const getCustomerDetailsResponse=await fetchWithTimeout({
         url:`${API_BASE_URI}/customer/get_customers`,
         options: {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...headers
             },
             body: JSON.stringify(payload)
         }
     })
-    const getCustomerDetailsResponse=await getCustomerDetails.json();
     return getCustomerDetailsResponse
     
 

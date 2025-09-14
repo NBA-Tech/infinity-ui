@@ -56,18 +56,25 @@ export const validateValues = (values: any, formFields: FormFields) => {
     const field = formFields[key];
 
     if (field.isRequired) {
-      const value = values[field.key];
+      let value;
 
-      // Handle empty string, null, undefined, 0, empty array
+      // Check if parentKey exists
+      if (field.parentKey) {
+        value = values?.[field.parentKey]?.[field.key];
+      } else {
+        value = values?.[field.key];
+      }
+
+      // Handle empty string, null, undefined, 0, empty array, NaN
       const isEmpty =
         value === null ||
         value === undefined ||
         (typeof value === "string" && value.trim() === "") ||
         (Array.isArray(value) && value.length === 0) ||
-        Number.isNaN(value) || value === 0;
+        Number.isNaN(value) ||
+        value === 0;
 
       if (isEmpty) {
-        console.log(field)
         return {
           success: false,
           message: `Please enter ${field.label}`,
@@ -78,6 +85,7 @@ export const validateValues = (values: any, formFields: FormFields) => {
 
   return { success: true };
 };
+
 
 
 export const fetchWithTimeout = async ({
