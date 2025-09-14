@@ -1,12 +1,13 @@
 import { PackageModel } from "@/src/types/offering/offering-type";
 import GradientCard from "@/src/utils/gradient-gard";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
-
+import { OfferingInfo, OrderType } from "@/src/types/order/order-type";
+import { ServiceInfo } from "@/src/types/offering/offering-type";
 
 const styles = StyleSheet.create({
     packageContainer: {
@@ -22,16 +23,34 @@ const styles = StyleSheet.create({
 
 type PackageComponentProps = {
     pkg: PackageModel;
-    handleCalculatePrice: (serviceInfo: any) => number
+    isSelected: boolean;
+    handleCalculatePrice: (serviceInfo: any) => number;
+    handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void
+    handleTotalPriceCharges: (offerInfo:OfferingInfo) => void
 }
-export const PackageComponent = ({ pkg, handleCalculatePrice }: PackageComponentProps) => {
+export const PackageComponent = ({ pkg, isSelected, handleCalculatePrice, handleCheckboxChange,handleTotalPriceCharges }: PackageComponentProps) => {
     const globalStyles = useContext(StyleContext);
-    const [selected, setSelected] = useState(false);
-    console.log("pkg", pkg)
+    const [selected, setSelected] = useState(isSelected);
+    console.log(isSelected)
 
     const handlePress = () => {
-        setSelected(!selected);
-    }
+        let updateValue={}
+        if (selected) {
+            updateValue={orderType: null, packageId: null,services:[] as ServiceInfo[]}
+        } else {
+            updateValue={orderType: OrderType.PACKAGE, packageId: pkg.id,services:[] as ServiceInfo[]}
+        }
+
+        handleCheckboxChange(updateValue, { parentKey: "offeringInfo", childKey: "" });
+
+        setSelected((prev) => !prev);
+        handleTotalPriceCharges(updateValue as OfferingInfo);
+    };
+
+    useEffect(()=>{
+        setSelected(isSelected)
+    },[isSelected])
+
     return (
         <TouchableOpacity
             activeOpacity={0.9}

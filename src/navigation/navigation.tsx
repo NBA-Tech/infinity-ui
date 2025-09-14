@@ -19,7 +19,7 @@ function TabNavigator() {
         >
             <Tab.Screen name="home" component={Home} />
             <Tab.Screen name="quotation" component={CreateOrder} />
-            <Tab.Screen name="customer" component={CreateCustomer} />
+            <Tab.Screen name="customer" component={Services} />
             <Tab.Screen name="invoice" component={Orders} />
             <Tab.Screen name="profile" component={Profile} />
         </Tab.Navigator>

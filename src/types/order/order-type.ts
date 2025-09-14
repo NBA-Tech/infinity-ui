@@ -1,5 +1,27 @@
 
 // Order Basic Info
+
+import { ServiceInfo } from "../offering/offering-type";
+
+export enum OrderStatus {
+  NEW = 'NEW',
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  DELIVERED = 'DELIVERED'
+}
+
+export enum OrderType {
+  SERVICE = 'SERVICE',
+  PACKAGE = 'PACKAGE'
+}
+
+export interface OfferingInfo {
+  orderType: OrderType;
+  packageId?: string;
+  services?: ServiceInfo[]
+}
 export interface OrderBasicInfo {
   customerID: string;
   pointOfContact: string;
@@ -22,7 +44,9 @@ export interface OrderModel {
   userId: string;
   orderId?: string;
   createdDate?: Date;
+  status: OrderStatus;
   updatedDate?: Date;
   orderBasicInfo: OrderBasicInfo;
   eventInfo: EventInfo;
+  offeringInfo: OfferingInfo;
 }

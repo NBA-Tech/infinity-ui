@@ -160,11 +160,17 @@ export const patchState = (
   setState((prev: any) => {
     let updated;
 
-    if (section === "") {
+    if (!section) {
       // direct scalar update
       updated = {
         ...prev,
-        [key]: value as any,
+        [key]: value,
+      };
+    } else if (!key) {
+      // replace the whole object under section
+      updated = {
+        ...prev,
+        [section]: value,
       };
     } else {
       // nested object update
@@ -179,7 +185,13 @@ export const patchState = (
 
     // --- Validation ---
     if (key && isRequired) {
-      if (value === "" || value === null || value === undefined || Number.isNaN(value) || value <= 0) {
+      if (
+        value === "" ||
+        value === null ||
+        value === undefined ||
+        Number.isNaN(value) ||
+        value <= 0
+      ) {
         setErrors((prevErrors: any) => ({
           ...prevErrors,
           [key]: errorMessage,
@@ -195,6 +207,7 @@ export const patchState = (
     return updated;
   });
 };
+
 
 // Generic clearState with default values
 export const clearState = <T extends Record<string, any>>(
