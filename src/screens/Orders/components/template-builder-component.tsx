@@ -6,15 +6,45 @@ import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CheckBox from '@react-native-community/checkbox';
 import { Divider } from '@/components/ui/divider';
+import { QuotaionHtmlInfo } from '@/src/types/order/order-type';
+import { Button, ButtonText } from '@/components/ui/button';
 
 const styles = StyleSheet.create({
     accordionHeader: {
         height: hp('8%'),
     },
 });
-
-const TemplateBuilderComponent = ({ quotationFields }: { quotationFields: any }) => {
+type TemplateBuilderComponentProps = {
+    quotationFields: any
+    handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void
+    templateValueData: any
+}
+const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templateValueData }: TemplateBuilderComponentProps) => {
     const globalStyles = useContext(StyleContext);
+
+
+    const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
+        let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
+            ...templateValueData.quotationHtmlInfo,
+        ];
+
+        if (value) {
+            if (!updatedQuotationHtmlInfo.some((item) => item.key === field.key)) {
+                updatedQuotationHtmlInfo.push({
+                    key: field.key,
+                    section: sectionKey,
+                    html: field.html,
+                });
+            }
+        } else {
+            updatedQuotationHtmlInfo = updatedQuotationHtmlInfo.filter(
+                (item) => item.key !== field.key
+            );
+        }
+
+        console.log(updatedQuotationHtmlInfo)
+        handleCheckboxChange(updatedQuotationHtmlInfo, { parentKey: 'quotationHtmlInfo', childKey: '' });
+    }
 
     return (
         <View style={{ marginTop: hp('2%') }}>
@@ -31,13 +61,14 @@ const TemplateBuilderComponent = ({ quotationFields }: { quotationFields: any })
                             <AccordionTrigger>
                                 {({ isExpanded = true }: { isExpanded: boolean }) => (
                                     <>
-                                        <View className="flex flex-row items-center">
+                                        <View className="flex flex-row items-center justify-between">
                                             {item?.icon}
                                             <Text
                                                 style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}
                                             >
                                                 {item?.label}
                                             </Text>
+                                           
                                         </View>
                                         {isExpanded ? (
                                             <Feather name="chevron-up" size={wp('5%')} color="#000" />
@@ -58,11 +89,11 @@ const TemplateBuilderComponent = ({ quotationFields }: { quotationFields: any })
                                         <View className="flex flex-row items-center gap-3">
                                             {field?.icon}
                                             <View className="flex flex-col ml-2">
-                                                <Text style={[globalStyles.heading3Text,{width: wp('70%'),flexWrap: 'wrap'}]}>{field?.heading}</Text>
-                                                <Text style={[globalStyles.labelText,{width: wp('70%'),flexWrap: 'wrap'}]} >{field?.description}</Text>
+                                                <Text style={[globalStyles.heading3Text, { width: wp('70%'), flexWrap: 'wrap' }]}>{field?.heading}</Text>
+                                                <Text style={[globalStyles.labelText, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
                                             </View>
                                         </View>
-                                        <CheckBox disabled={false} />
+                                        <CheckBox value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
                                     </View>
                                     <Divider />
                                 </View>

@@ -17,6 +17,12 @@ export enum OrderType {
   PACKAGE = 'PACKAGE'
 }
 
+export interface QuotaionHtmlInfo{
+  key:string;
+  section:string;
+  html:string
+}
+
 export interface OfferingInfo {
   orderType: OrderType;
   packageId?: string;
@@ -49,4 +55,5 @@ export interface OrderModel {
   orderBasicInfo: OrderBasicInfo;
   eventInfo: EventInfo;
   offeringInfo: OfferingInfo;
+  quotationHtmlInfo?: QuotaionHtmlInfo[]
 }

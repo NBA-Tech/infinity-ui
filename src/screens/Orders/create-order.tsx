@@ -29,6 +29,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { PackageComponent } from './components/package-component';
 import ServiceComponent from './components/service-component';
 import TemplateBuilderComponent from './components/template-builder-component';
+import TemplatePreview from './components/template-preview';
+import Modal from "react-native-modal";
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -70,14 +72,16 @@ const CreateOrder = () => {
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
         status: OrderStatus.NEW,
-        offeringInfo: {} as OfferingInfo
+        offeringInfo: {} as OfferingInfo,
+        quotationHtmlInfo: []
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currStep, setCurrStep] = useState(3);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState({
         date: false,
-        time: false
+        time: false,
+        modal: false
     })
 
     const getCustomerNameList = async () => {
@@ -339,26 +343,56 @@ const CreateOrder = () => {
                 {
                     key: "logo",
                     heading: "Logo",
+                    container: "studio-info",
                     description: "The logo of the photography studio",
                     icon: <Feather name="image" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div class="logo">{{logo}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "logo"),
                 },
                 {
                     key: "companyName",
                     heading: "Studio/Photographer Name",
+                    container: "studio-info",
                     description: "The name of the photography studio or photographer",
                     icon: <Feather name="user" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div>{{companyName}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "companyName"),
                 },
                 {
                     key: "address",
                     heading: "Studio Address",
+                    container: "studio-info",
                     description: "The official address of the studio/photographer",
                     icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div>{{address}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "address"),
                 },
                 {
-                    key: "contact",
-                    heading: "Contact Details",
-                    description: "Phone number, email, and website",
+                    key: "contactPhone",
+                    heading: "Contact Phone",
+                    container: "contact-info",
+                    description: "Primary contact phone number",
                     icon: <Feather name="phone" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div>📞 {{contactPhone}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactPhone"),
+                },
+                {
+                    key: "contactEmail",
+                    heading: "Contact Email",
+                    container: "contact-info",
+                    description: "Primary contact email address",
+                    icon: <Feather name="mail" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div>✉️ {{contactEmail}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactEmail"),
+                },
+                {
+                    key: "contactWebsite",
+                    heading: "Contact Website",
+                    container: "contact-info",
+                    description: "Official website link",
+                    icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
+                    html: `<div>🌐 {{contactWebsite}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactWebsite"),
                 },
             ],
         },
@@ -370,50 +404,94 @@ const CreateOrder = () => {
                 {
                     key: "clientName",
                     heading: "Client Name",
+                    container: "card",
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Client Name:</span> {{clientName}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
                 },
                 {
                     key: "eventType",
                     heading: "Event Type",
-                    description: "Type of photography (wedding, birthday, corporate, etc.)",
+                    container: "card",
+                    description: "Type of event (wedding, birthday, corporate, etc.)",
                     icon: <Feather name="camera" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Event Type:</span> {{eventType}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
                 },
                 {
                     key: "eventDate",
                     heading: "Event Date & Time",
+                    container: "card",
                     description: "Scheduled date and time of the shoot",
                     icon: <Feather name="calendar" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Event Date & Time:</span> {{eventDate}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
                 },
                 {
                     key: "eventLocation",
                     heading: "Event Location",
+                    container: "card",
                     description: "Venue or location of the event",
                     icon: <Feather name="map" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Event Location:</span> {{eventLocation}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
                 },
                 {
-                    key: "packageDetails",
-                    heading: "Package Details",
-                    description: "Photography package name/details",
+                    key: "packageName",
+                    heading: "Package Name",
+                    container: "card",
+                    description: "Photography package selected",
                     icon: <Feather name="package" size={wp("5%")} color="#10B981" />,
-                },
-                {
-                    key: "servicesIncluded",
-                    heading: "Services Included",
-                    description: "List of deliverables (albums, edited photos, videos, etc.)",
-                    icon: <Feather name="check-circle" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Package:</span> {{packageName}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
                 },
                 {
                     key: "shootDuration",
                     heading: "Coverage Duration",
-                    description: "Number of hours/days covered",
+                    container: "card",
+                    description: "Duration of shoot coverage",
                     icon: <Feather name="clock" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="field"><span>Coverage Duration:</span> {{shootDuration}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "shootDuration"),
                 },
                 {
-                    key: "pricing",
-                    heading: "Pricing",
-                    description: "Breakdown of costs (shoot, editing, travel, etc.)",
+                    key: "pricingTable",
+                    heading: "Pricing Table",
+                    description: "Breakdown of package and services pricing",
                     icon: <Feather name="dollar-sign" size={wp("5%")} color="#10B981" />,
+                    html: `<div class="pricing-container">
+                            <div class="pricing-row package-row">
+                                <div class="desc">Services</div>
+                                <div class="amount">Price</div>
+                            </div>
+                            <div class="pricing-row sub-service">
+                                <div class="desc">Pre-wedding Shoot</div>
+                                <div class="amount">{{preWeddingPrice}}</div>
+                            </div>
+                            <div class="pricing-row sub-service">
+                                <div class="desc">Candid Photography</div>
+                                <div class="amount">{{candidPrice}}</div>
+                            </div>
+                            <div class="pricing-row sub-service">
+                                <div class="desc">Album</div>
+                                <div class="amount">{{albumPrice}}</div>
+                            </div>
+                            <div class="pricing-row">
+                                <div class="desc">Event Photography</div>
+                                <div class="amount">{{eventPhotographyPrice}}</div>
+                            </div>
+                            <div class="pricing-row">
+                                <div class="desc">Portrait Session</div>
+                                <div class="amount">{{portraitPrice}}</div>
+                            </div>
+                            <div class="pricing-row total-row">
+                                <div class="desc">Total</div>
+                                <div class="amount">{{totalPrice}}</div>
+                            </div>
+                            </div>
+                            `,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "pricingTable"),
                 },
             ],
         },
@@ -427,22 +505,76 @@ const CreateOrder = () => {
                     heading: "Terms & Conditions",
                     description: "Payment terms, delivery timeline, rights",
                     icon: <Feather name="file-text" size={wp("5%")} color="#F59E0B" />,
+                    html: `<div class="card"><span>Terms & Conditions:</span> {{terms}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
                 },
                 {
                     key: "paymentDetails",
                     heading: "Payment Details",
                     description: "Bank account, UPI, or payment method",
                     icon: <Feather name="credit-card" size={wp("5%")} color="#F59E0B" />,
+                    html: `<div class="card"><span>Payment Details:</span> {{paymentDetails}}</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "paymentDetails"),
                 },
                 {
                     key: "signature",
                     heading: "Authorized Signature",
                     description: "Signature of the photographer/studio",
                     icon: <Feather name="edit-3" size={wp("5%")} color="#F59E0B" />,
+                    html: `<div class="signature-box">Authorized Signature<br/>____________________</div>`,
+                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "signature"),
                 },
             ],
         },
     };
+
+
+
+    const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString()) => {
+        return `
+  <!DOCTYPE html>
+  <html lang="en">
+    <body>
+      <div class="container">
+        
+        <!-- Header Section -->
+        <header class="header">
+          <div class="studio-info">
+            ${quotationFields.headerSection.fields
+                .filter(f => f.container === "studio-info" && f.isSelected)
+                .map(f => f.html)
+                .join("")}
+          </div>
+          <div class="contact-info">
+            ${quotationFields.headerSection.fields
+                .filter(f => f.container === "contact-info" && f.isSelected)
+                .map(f => f.html)
+                .join("")}
+          </div>
+        </header>
+
+        <!-- Invoice Metadata -->
+        <section class="metadata">
+          <div><strong>Invoice ID:</strong> ${invoiceId}</div>
+          <div><strong>Invoice Date:</strong> ${invoiceDate}</div>
+        </section>
+
+        <!-- Body Section -->
+        <section class="section">
+          ${quotationFields.bodySection.fields.map(f => f.isSelected && f.html).join("")}
+        </section>
+
+        <!-- Footer Section -->
+        <footer class="footer">
+          ${quotationFields.footerSection.fields.map(f => f.isSelected && f.html).join("")}
+        </footer>
+
+      </div>
+    </body>
+  </html>
+  `;
+    };
+
 
 
     const formOrders = [userInfo, eventInfo, eventTypes]
@@ -519,6 +651,14 @@ const CreateOrder = () => {
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
             <BackHeader screenName="Create Order" />
+            <Modal
+                isVisible={isOpen?.modal}
+                onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
+                onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
+            >
+                <TemplatePreview html={buildHtml()} />
+
+            </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View className='flex justify-between items-center flex-row'>
                     <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
@@ -692,16 +832,33 @@ const CreateOrder = () => {
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
                             <View style={{ backgroundColor: "#FDF2F8", padding: hp("2%") }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
-                                    <Text
-                                        style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
-                                    >
-                                        Template Builder
-                                    </Text>
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
+                                    <View className='flex flex-row items-center gap-2'>
+                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Text
+                                            style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
+                                        >
+                                            Template Builder
+                                        </Text>
+                                    </View>
+                                    <View>
+                                        <Button
+                                            size="sm"
+                                            variant="solid"
+                                            action="primary"
+                                            style={[globalStyles.purpleBackground]}
+                                            onPress={() => setIsOpen({ ...isOpen, modal: true })}
+                                        >
+                                            <Feather name="eye" size={wp("5%")} color="#fff" />
+
+                                            <ButtonText style={globalStyles.buttonText}>
+                                                Preview
+                                            </ButtonText>
+                                        </Button>
+                                    </View>
                                 </View>
                             </View>
-                            <TemplateBuilderComponent quotationFields={quotationFields} />
+                            <TemplateBuilderComponent quotationFields={quotationFields} handleCheckboxChange={handleCheckboxChange} templateValueData={orderDetails} />
                         </Card>
                     )
 
@@ -746,9 +903,6 @@ const CreateOrder = () => {
                         <View>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 1 : orderDetails?.offeringInfo?.services?.length} {orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 'Package' : 'Service'} is selected</Text>
                         </View>
-
-
-
                     </View>
 
                 </View>

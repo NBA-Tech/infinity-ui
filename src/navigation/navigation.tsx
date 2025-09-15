@@ -56,7 +56,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {isAuthenticated ? (
+            {true ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />
