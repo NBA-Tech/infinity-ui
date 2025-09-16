@@ -4,7 +4,7 @@ import { UserModel } from "@/src/types/user/user-type";
 import { fetchWithTimeout } from "@/src/utils/utils";
 
 export const updateBusinessDetailsApi=async (payload:UserModel):Promise<ApiGeneralRespose>=>{
-    const updateBusinessDetails=await fetchWithTimeout({
+    const updateBusinessDetailsResponse=await fetchWithTimeout({
         url:`${API_BASE_URI}/users/update_business_details`,
         options: {
             method: 'PUT',
@@ -14,7 +14,16 @@ export const updateBusinessDetailsApi=async (payload:UserModel):Promise<ApiGener
             body: JSON.stringify(payload)
         }
     })
-    const updateBusinessDetailsResponse=await updateBusinessDetails.json();
     return updateBusinessDetailsResponse
 
+}
+
+export const getUserDetailsApi=async (userID:string):Promise<ApiGeneralRespose>=>{
+    const getUserDetailsResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/get_user_details?userId=${userID}`,
+        options: {
+            method: 'GET',
+        }
+    })
+    return getUserDetailsResponse
 }

@@ -42,10 +42,8 @@ const htmlClassesStyles = {
         maxWidth: "60%",
     },
     logo: {
-        fontSize: 28,
-        fontWeight: "700",
-        marginBottom: 6,
-        color: "#ffffff",
+        width: '2',
+        height:'2'
     },
     "contact-info": {
         textAlign: "right",

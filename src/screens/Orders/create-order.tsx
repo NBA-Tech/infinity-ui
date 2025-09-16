@@ -12,7 +12,7 @@ import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { FormFields, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -31,6 +31,9 @@ import ServiceComponent from './components/service-component';
 import TemplateBuilderComponent from './components/template-builder-component';
 import TemplatePreview from './components/template-preview';
 import Modal from "react-native-modal";
+import { useUserStore } from '@/src/store/user/user-store';
+import { getUserDetailsApi } from '@/src/services/user/user-service';
+import { UserModel } from '@/src/types/user/user-type';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -60,13 +63,13 @@ const CreateOrder = () => {
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
-    const [offeringData, setOfferingData] = useState<ServiceModel[] | PackageModel[]>([])
     const [packageData, setPackageData] = useState<PackageModel[]>([])
     const [serviceData, setServiceData] = useState<ServiceModel[]>([])
     const showToast = useToastMessage();
     const [totalCharges, setTotalCharges] = useState<number>(0)
     const { getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
     const { offeringList, getOfferingList, setOfferingList } = useOfferingStore()
+    const { userDetails, setUserDetails, getUserDetails } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: "",
         orderBasicInfo: {} as OrderBasicInfo,
@@ -76,12 +79,12 @@ const CreateOrder = () => {
         quotationHtmlInfo: []
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [currStep, setCurrStep] = useState(3);
+    const [currStep, setCurrStep] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [isOpen, setIsOpen] = useState({
+    const [isOpen, setIsOpen] = useState({ 
         date: false,
         time: false,
-        modal: false
+        modal: false 
     })
 
     const getCustomerNameList = async () => {
@@ -126,6 +129,23 @@ const CreateOrder = () => {
         setCustomerList(filterData);
     };
 
+    const getUserDetailsUsingID = async (userID: string) => {
+        let userDetails = getUserDetails()
+        if (!userDetails) {
+            const userDetailsApi: ApiGeneralRespose = await getUserDetailsApi(userID)
+            if (!userDetailsApi?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: userDetailsApi?.message ?? "Something went wrong",
+                })
+            }
+            else {
+                setUserDetails(userDetailsApi.data)
+            }
+        }
+
+    }
 
     const getOfferingDetails = async () => {
         let offeringListData = getOfferingList()
@@ -140,6 +160,7 @@ const CreateOrder = () => {
         }
         if (offeringListData.length <= 0) {
             const offeringData = await getOfferingListAPI(userID)
+            console.log(offeringData)
             if (!offeringData?.success) {
                 showToast({
                     type: "error",
@@ -154,7 +175,7 @@ const CreateOrder = () => {
                 setServiceData(services ?? [])
             }
         }
-        setOfferingData(offeringListData as ServiceModel[] | PackageModel[])
+        setOfferingList(offeringListData as ServiceModel[] | PackageModel[])
 
     }
 
@@ -181,7 +202,7 @@ const CreateOrder = () => {
             label: "Point Of Contact",
             placeholder: "Enter Point Of Contact",
             icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
-            type: "text",
+            type: "number",
             style: "w-full",
             isRequired: true,
             isDisabled: false,
@@ -335,7 +356,7 @@ const CreateOrder = () => {
         },
     }), [orderDetails]);
 
-    const quotationFields = {
+    const quotationFields = useMemo(() => ({
         headerSection: {
             label: "Header Section",
             icon: <Feather name="layout" size={wp("5%")} color="#8B5CF6" />,
@@ -346,7 +367,9 @@ const CreateOrder = () => {
                     container: "studio-info",
                     description: "The logo of the photography studio",
                     icon: <Feather name="image" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div class="logo">{{logo}}</div>`,
+                    html: `<div>
+                    <img src=${userDetails?.userBusinessInfo?.companyLogoURL} width='50%' height='50' alt="Logo" />
+                    </div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "logo"),
                 },
                 {
@@ -355,7 +378,7 @@ const CreateOrder = () => {
                     container: "studio-info",
                     description: "The name of the photography studio or photographer",
                     icon: <Feather name="user" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div>{{companyName}}</div>`,
+                    html: `<div style="font-weight:bold;">${userDetails?.userBusinessInfo?.companyName}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "companyName"),
                 },
                 {
@@ -364,7 +387,7 @@ const CreateOrder = () => {
                     container: "studio-info",
                     description: "The official address of the studio/photographer",
                     icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div>{{address}}</div>`,
+                    html: `<div>${userDetails?.userBillingInfo?.address}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "address"),
                 },
                 {
@@ -373,7 +396,7 @@ const CreateOrder = () => {
                     container: "contact-info",
                     description: "Primary contact phone number",
                     icon: <Feather name="phone" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div>📞 {{contactPhone}}</div>`,
+                    html: `<div>📞 ${userDetails?.userBusinessInfo?.businessPhoneNumber}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactPhone"),
                 },
                 {
@@ -382,7 +405,7 @@ const CreateOrder = () => {
                     container: "contact-info",
                     description: "Primary contact email address",
                     icon: <Feather name="mail" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div>✉️ {{contactEmail}}</div>`,
+                    html: `<div>✉️ ${userDetails?.userBusinessInfo?.businessEmail}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactEmail"),
                 },
                 {
@@ -391,7 +414,7 @@ const CreateOrder = () => {
                     container: "contact-info",
                     description: "Official website link",
                     icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
-                    html: `<div>🌐 {{contactWebsite}}</div>`,
+                    html: `<div>🌐 ${userDetails?.userBusinessInfo?.websiteURL}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactWebsite"),
                 },
             ],
@@ -407,7 +430,7 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Client Name:</span> {{clientName}}</div>`,
+                    html: `<div class="field"><span>Client Name:</span>${customerList?.find((customer) => customer?.value === orderDetails?.orderBasicInfo?.customerID)?.label}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
                 },
                 {
@@ -416,7 +439,7 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Type of event (wedding, birthday, corporate, etc.)",
                     icon: <Feather name="camera" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Type:</span> {{eventType}}</div>`,
+                    html: `<div class="field"><span>Event Type:</span> ${orderDetails?.eventInfo?.eventType}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
                 },
                 {
@@ -425,7 +448,7 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Scheduled date and time of the shoot",
                     icon: <Feather name="calendar" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Date & Time:</span> {{eventDate}}</div>`,
+                    html: `<div class="field"><span>Event Date & Time:</span>${orderDetails?.eventInfo?.eventDate} : ${orderDetails?.eventInfo?.eventTime}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
                 },
                 {
@@ -434,7 +457,7 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Venue or location of the event",
                     icon: <Feather name="map" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Location:</span> {{eventLocation}}</div>`,
+                    html: `<div class="field"><span>Event Location:</span>${orderDetails?.eventInfo?.eventLocation}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
                 },
                 {
@@ -443,17 +466,9 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Photography package selected",
                     icon: <Feather name="package" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Package:</span> {{packageName}}</div>`,
+                    html:  orderDetails?.offeringInfo?.orderType===OrderType.PACKAGE&& 
+                    `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
-                },
-                {
-                    key: "shootDuration",
-                    heading: "Coverage Duration",
-                    container: "card",
-                    description: "Duration of shoot coverage",
-                    icon: <Feather name="clock" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Coverage Duration:</span> {{shootDuration}}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "shootDuration"),
                 },
                 {
                     key: "pricingTable",
@@ -526,9 +541,7 @@ const CreateOrder = () => {
                 },
             ],
         },
-    };
-
-
+    }), [orderDetails]);
 
     const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString()) => {
         return `
@@ -560,13 +573,20 @@ const CreateOrder = () => {
         </section>
 
         <!-- Body Section -->
-        <section class="section">
-          ${quotationFields.bodySection.fields.map(f => f.isSelected && f.html).join("")}
+       <section class="section">
+        ${quotationFields.bodySection.fields
+                .filter(f => f.isSelected)
+                .map(f => f.html)
+                .join("")}
         </section>
+
 
         <!-- Footer Section -->
         <footer class="footer">
-          ${quotationFields.footerSection.fields.map(f => f.isSelected && f.html).join("")}
+          ${quotationFields.footerSection.fields
+                .filter(f => f.isSelected)
+                .map(f => f.html)
+                .join("")}
         </footer>
 
       </div>
@@ -574,9 +594,6 @@ const CreateOrder = () => {
   </html>
   `;
     };
-
-
-
     const formOrders = [userInfo, eventInfo, eventTypes]
 
     const handleNext = () => {
@@ -594,10 +611,7 @@ const CreateOrder = () => {
         setCurrStep(currStep + 1)
 
     }
-
-
     const handleCheckboxChange = (value: any, stateKeyMap: Record<string, string>) => {
-        console.log(value, stateKeyMap)
         patchState(stateKeyMap.parentKey, stateKeyMap.childKey, value, true, setOrderDetails, setErrors)
     }
 
@@ -618,7 +632,6 @@ const CreateOrder = () => {
             return
         }
         const offeringIDs = offerInfo?.orderType === OrderType.PACKAGE ? offerInfo?.packageId : offerInfo?.services
-        console.log(orderDetails)
         if (offerInfo?.orderType === OrderType.PACKAGE) {
             const filteredPackage = packageData.find((p) => p.id === offerInfo?.packageId);
             setTotalCharges((filteredPackage?.calculatedPrice ? handleCalculatePrice(filteredPackage?.serviceList) : filteredPackage?.price) || 0);
@@ -632,8 +645,10 @@ const CreateOrder = () => {
 
     useFocusEffect(
         useCallback(() => {
+            const userID = getItem("USERID")
             getCustomerNameList();
             getOfferingDetails();
+            getUserDetailsUsingID(userID);
 
             return () => {
                 setCustomerList([]);
@@ -643,7 +658,7 @@ const CreateOrder = () => {
     );
 
     useEffect(() => {
-        // console.log(orderDetails)
+        console.log(orderDetails,offeringList)
     }, [orderDetails])
 
 
@@ -695,7 +710,10 @@ const CreateOrder = () => {
                                                 )}
                                             </View>
                                         </GradientCard>
-                                        {index != 3 && <Divider style={styles.divider} />}
+                                        {index != 3 && (
+                                            <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />
+                                        )}
+
                                     </View>
                                 </View>
                             ))}
