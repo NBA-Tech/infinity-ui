@@ -59,8 +59,7 @@ const Login = ({ setCurrScreen }: any) => {
     ]
 
     const handleLogin = async (payload: AuthModel) => {
-        const uuid = generateRandomString(30);
-        const loginResponse: UserApiResponse = await loginUser(payload,{"Idempotency-Key":uuid});
+        const loginResponse: UserApiResponse = await loginUser(payload);
 
         if (!loginResponse?.success) {
             setLoadingProvider(null);

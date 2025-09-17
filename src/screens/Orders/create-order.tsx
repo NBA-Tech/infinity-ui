@@ -70,7 +70,6 @@ const CreateOrder = () => {
     const [packageData, setPackageData] = useState<PackageModel[]>([])
     const [serviceData, setServiceData] = useState<ServiceModel[]>([])
     const showToast = useToastMessage();
-    const [totalCharges, setTotalCharges] = useState<number>(0)
     const { getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
     const { offeringList, getOfferingList, setOfferingList } = useOfferingStore()
     const { userDetails, setUserDetails, getUserDetails } = useUserStore()
@@ -79,6 +78,7 @@ const CreateOrder = () => {
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
         status: OrderStatus.NEW,
+        totalPrice: 0,
         offeringInfo: {} as OfferingInfo,
         quotationHtmlInfo: []
     });
@@ -109,9 +109,8 @@ const CreateOrder = () => {
             getAll: true,
             requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id"],
         };
-        const uuid = generateRandomString(30);
 
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload, { "Idempotency-Key": uuid });
+        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
 
         if (!customerListResponse?.success) {
             return showToast({
@@ -517,7 +516,7 @@ const CreateOrder = () => {
                                 <div class="col name heading">Grand Total</div>
                                 <div class="col count"></div>
                                 <div class="col price"></div>
-                                <div class="col total heading">₹ ${totalCharges}</div>
+                                <div class="col total heading">₹ ${orderDetails?.totalPrice}</div>
                             </div>
                             </div>
                             `,
@@ -584,17 +583,17 @@ const CreateOrder = () => {
 
     const handleTotalPriceCharges = (offerInfo: OfferingInfo) => {
         if (!offerInfo?.orderType) {
-            setTotalCharges(0)
+            setOrderDetails((prev) => ({ ...prev, totalPrice: 0 }))
             return
         }
         const offeringIDs = offerInfo?.orderType === OrderType.PACKAGE ? offerInfo?.packageId : offerInfo?.services
         if (offerInfo?.orderType === OrderType.PACKAGE) {
             const filteredPackage = packageData.find((p) => p.id === offerInfo?.packageId);
-            setTotalCharges((filteredPackage?.calculatedPrice ? handleCalculatePrice(filteredPackage?.serviceList) : filteredPackage?.price) || 0);
+            setOrderDetails((prev) => ({ ...prev, totalPrice: filteredPackage?.calculatedPrice ? handleCalculatePrice(filteredPackage?.serviceList) : filteredPackage?.price }))
         }
         else if (offerInfo?.orderType === OrderType.SERVICE) {
             const serviceCharge = handleCalculatePrice(offerInfo?.services as ServiceInfo[])
-            setTotalCharges(serviceCharge)
+            setOrderDetails((prev) => ({ ...prev, totalPrice: serviceCharge }))
         }
     }
 
@@ -646,8 +645,7 @@ const CreateOrder = () => {
                 message: "UserID is not found Please Logout and Login again",
             })
         }
-        const uuid=generateRandomString(30);
-        const saveNewOrder=await saveNewOrderAPI(orderDetails,{"Idempotency-Key":uuid})
+        const saveNewOrder=await saveNewOrderAPI(orderDetails)
         if(!saveNewOrder?.success){
             return showToast({
                 type: "error",
@@ -932,7 +930,7 @@ const CreateOrder = () => {
                 <View style={{ margin: hp("1%") }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-col'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Total Price: ₹ {totalCharges}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Total Price: ₹ {orderDetails?.totalPrice}</Text>
                         </View>
                         <View>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 1 : orderDetails?.offeringInfo?.services?.length} {orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 'Package' : 'Service'} is selected</Text>

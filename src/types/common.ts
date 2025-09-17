@@ -13,6 +13,10 @@ export interface ApiGeneralRespose {
   success: boolean,
   message: string,
   data?: any
+  page?:number
+  pageSize?:number
+  limit?:number
+  total?:number
 }
 
 export enum SORT_ORDER {

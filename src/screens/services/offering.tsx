@@ -469,24 +469,20 @@ const services = () => {
             return
         }
         setloadingProvider(activeTab)
-        const uuid: string = generateRandomString(30);
-        const headers = {
-            "Idempotency-Key": uuid
-        }
         if (activeTab == "services") {
             if (isUpdate) {
-                serviceResponse = await updateOfferingServiceAPI(servieDetails, headers)
+                serviceResponse = await updateOfferingServiceAPI(servieDetails)
             }
             else {
-                serviceResponse = await addNewServiceAPI(servieDetails, headers)
+                serviceResponse = await addNewServiceAPI(servieDetails)
             }
         }
         else {
             if (isUpdate) {
-                serviceResponse = await updateOfferingServiceAPI(packageDetails, headers)
+                serviceResponse = await updateOfferingServiceAPI(packageDetails)
             }
             else {
-                serviceResponse = await addNewServiceAPI(packageDetails, headers)
+                serviceResponse = await addNewServiceAPI(packageDetails)
             }
         }
         setIsOpen(false)
@@ -524,13 +520,8 @@ const services = () => {
 
         if (offeringDataStore.length <= 0) {
             if (!servieDetails.customerID) return;
-            const uuid: string = generateRandomString(30);
-            const headers = {
-                "Idempotency-Key": uuid,
-            };
             const offeringListResponse: ApiGeneralRespose = await getOfferingListAPI(
-                servieDetails.customerID,
-                headers
+                servieDetails.customerID
             );
 
             console.log(offeringListResponse);

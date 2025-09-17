@@ -139,8 +139,7 @@ const PackageTab = (props: PackageProps) => {
     const handleDelete = async () => {
         if (!currId) return;
         setLoading(true);
-        const uuid = generateRandomString(30);
-        const deleteService = await deleteOfferingApi(currId, { "Idempotency-Key": uuid });
+        const deleteService = await deleteOfferingApi(currId);
         if (!deleteService.success) {
             showToast({ type: "error", title: "Error", message: deleteService.message });
         }

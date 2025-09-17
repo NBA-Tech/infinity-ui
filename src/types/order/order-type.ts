@@ -50,6 +50,7 @@ export interface OrderModel {
   orderId?: string;
   createdDate?: Date;
   status: OrderStatus;
+  totalPrice: number;
   updatedDate?: Date;
   orderBasicInfo: OrderBasicInfo;
   eventInfo: EventInfo;
