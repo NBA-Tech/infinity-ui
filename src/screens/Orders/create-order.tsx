@@ -10,7 +10,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
 import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
@@ -19,7 +19,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
@@ -36,7 +36,7 @@ import { getUserDetailsApi } from '@/src/services/user/user-service';
 import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import { buildHtml } from './utils/html-builder';
-import { saveNewOrderAPI } from '@/src/api/order/order-api-service';
+import { getOrderDetailsAPI, saveNewOrderAPI, updateOrderDetailsAPI } from '@/src/api/order/order-api-service';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -62,8 +62,14 @@ interface CustomerOption {
     value: string;
 }
 
+type CreateOrderProps = {
+    orderId?: string
+}
+
 const CreateOrder = () => {
     const globalStyles = useContext(StyleContext);
+    const route = useRoute();
+    const { orderId } = route.params ?? {}
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
@@ -480,8 +486,8 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Photography package selected",
                     icon: <Feather name="package" size={wp("5%")} color="#10B981" />,
-                    html: orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE &&
-                        `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>`,
+                    html: orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE ?
+                        `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>` : "",
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
                 },
                 {
@@ -510,7 +516,19 @@ const CreateOrder = () => {
                                         `
                                 )
                                 .join("")
-                            : ""}
+                            : orderDetails?.offeringInfo?.orderType === OrderType.SERVICE
+                                ? orderDetails?.offeringInfo?.services?.map(
+                                    (service) => `
+                                        <div class="pricing-row">
+                                            <div class="col name">${service.name}</div>
+                                            <div class="col count">${service.value}</div>
+                                            <div class="col price">₹ ${findServicePrice(service.id)}</div>
+                                            <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
+                                        </div>
+                                        `
+                                )
+                                    .join("")
+                                : ""}
 
                             <div class="pricing-row grand-total">
                                 <div class="col name heading">Grand Total</div>
@@ -617,7 +635,7 @@ const CreateOrder = () => {
                         `;
 
             const options = {
-                html: buildHtml("1",new Date().toLocaleDateString(),quotationFields),
+                html: buildHtml("1", new Date().toLocaleDateString(), quotationFields),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -637,30 +655,53 @@ const CreateOrder = () => {
         }
     };
 
-    const handleCreateOrder=async ()=>{
-        if(!orderDetails?.userId){
+    const handleCreateOrder = async () => {
+        if (!orderDetails?.userId) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: "UserID is not found Please Logout and Login again",
             })
         }
-        const saveNewOrder=await saveNewOrderAPI(orderDetails)
-        if(!saveNewOrder?.success){
+        setLoading(true);
+        let saveNewOrder;
+        if (orderId) {
+            saveNewOrder = await updateOrderDetailsAPI(orderDetails)
+        }
+        else {
+            saveNewOrder = await saveNewOrderAPI(orderDetails)
+        }
+        setLoading(false)
+        if (!saveNewOrder?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: saveNewOrder?.message ?? "Something went wrong",
             })
         }
-        else{
+        else {
             showToast({
                 type: "success",
                 title: "Success",
                 message: saveNewOrder?.message ?? "Order created successfully",
             })
+            setOrderDetails([] as unknown as OrderModel);
+            setCurrStep(0);
         }
         //navigate to orderpage
+    }
+
+    const getOrderDetails = async (orderId: string) => {
+        const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
+        console.log(orderDetails)
+        if (!orderDetails?.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: orderDetails?.message ?? "Something went wrong ",
+            })
+        }
+        setOrderDetails(orderDetails.data)
     }
 
 
@@ -679,6 +720,14 @@ const CreateOrder = () => {
         }, [])
     );
 
+    useEffect(() => {
+        if (orderId) {
+            console.log(orderId)
+            getOrderDetails(orderId)
+        }
+
+    }, [])
+
 
 
 
@@ -690,7 +739,7 @@ const CreateOrder = () => {
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
-                <TemplatePreview html={buildHtml("1",new Date().toLocaleDateString(),quotationFields)} />
+                <TemplatePreview html={buildHtml("1", new Date().toLocaleDateString(), quotationFields)} />
 
             </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -893,7 +942,7 @@ const CreateOrder = () => {
                     )
 
                     }
-                    <View className='flex flex-row gap-2 justify-between items-center' style={{ marginBottom: hp('15%'), marginVertical: hp('2%'),marginHorizontal:wp('2%') }}>
+                    <View className='flex flex-row gap-2 justify-between items-center' style={{ marginBottom: hp('15%'), marginVertical: hp('2%'), marginHorizontal: wp('2%') }}>
                         <Button
                             size="lg"
                             variant="solid"
@@ -916,10 +965,14 @@ const CreateOrder = () => {
                             isDisabled={loading || Object.keys(errors).length > 0}
                             onPress={currStep == 3 ? handleCreateOrder : handleNext}
                         >
+                            {loading && (
+                                <ButtonSpinner size={wp("4%")} color="#fff" />
+                            )
+                            }
                             <ButtonText style={globalStyles.buttonText}>
-                                {currStep == 3 ? 'Create Order' : 'Next'}
+                                {loading ? 'Creating...' : currStep == 3 ? 'Create Order' : 'Next'}
                             </ButtonText>
-                            {currStep != 3 &&
+                            {currStep != 3 && !loading &&
                                 <Feather name="arrow-right" size={wp("5%")} color="#fff" />
                             }
                         </Button>

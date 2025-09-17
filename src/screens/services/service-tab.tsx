@@ -13,6 +13,7 @@ import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { deleteOfferingApi } from '@/src/api/offering/offering-service';
 import { generateRandomString } from '@/src/utils/utils';
 import { useToastMessage } from '@/src/components/toast/toast-message';
+import DeleteConfirmation from '@/src/components/delete-confirmation';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -177,51 +178,7 @@ const ServiceTab = (props: ServiceTabProps) => {
 
     return (
         <View style={{ margin: wp('2%') }}>
-            <Modal
-                isVisible={openDelete}
-                onBackdropPress={() => setOpenDelete(false)}
-                onBackButtonPress={() => setOpenDelete(false)}
-            >
-                <View style={{ backgroundColor: '#fff', padding: wp('5%'), borderRadius: wp('3%'), alignItems: 'center' }}>
-                    <View className='flex flex-col justify-between items-center' style={{ padding: wp('2%') }}>
-                        <View>
-                            <Feather name="alert-triangle" size={wp('10%')} color="red" />
-                        </View>
-                        <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Are you sure you want to delete this service?</Text>
-                        </View>
-                        <View className="flex flex-row justify-end items-center mt-4">
-                            <Button
-                                size="lg"
-                                variant="solid"
-                                action="primary"
-                                style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
-                                onPress={() => setOpenDelete(false)}
-                            >
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>
-                                    Cancel
-                                </ButtonText>
-                            </Button>
-
-                            <Button
-                                size="lg"
-                                variant="solid"
-                                action="primary"
-                                onPress={handleDelete}
-                                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444' }]}
-                                isDisabled={loading}
-                            >
-                                {loading && (
-                                    <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                                )}
-                                <Feather name="trash" size={wp("5%")} color="#fff" />
-                                <ButtonText style={globalStyles.buttonText}>Delete</ButtonText>
-                            </Button>
-                        </View>
-                    </View>
-                </View>
-
-            </Modal>
+            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete}  />
             <View style={{ height: hp('75%') }}>
                 <FlatList
                     data={props.serviceData}

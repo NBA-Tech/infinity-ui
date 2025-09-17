@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import React, { useContext, useEffect } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
@@ -10,7 +10,6 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { OrderModel } from '@/src/types/order/order-type';
 import { formatDate } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
-
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -35,16 +34,35 @@ const PROGRESSBAR={
 type OrderCardProps = {
     cardData:OrderModel
     customerMetaData:CustomerMetaModel
+    actions:any
 }
 const OrderCard = (orderCardProps: OrderCardProps) => {
     const globalStyles = useContext(StyleContext);
+
+    const options=[
+        {
+            label:'View',
+            onPress:()=>{},
+            icon:<Feather name="eye" size={wp('5%')} color="#3B82F6" />,
+        },
+        {
+            label:'Edit',
+            onPress:()=>{orderCardProps?.actions?.edit?.(orderCardProps?.cardData?.orderId);},
+            icon:<Feather name="edit-2" size={wp('5%')} color="#22C55E" />,
+        },
+        {
+            label:'Delete',
+            onPress:()=>{orderCardProps?.actions?.delete?.(orderCardProps?.cardData?.orderId);},
+            icon:<Feather name="trash-2" size={wp('5%')} color="#EF4444" />,
+        },
+    ]
 
     return (
         <Card style={globalStyles.cardShadowEffect}>
             <View>
                 <View>
                     <View className='flex flex-1 flex-row justify-between items-center'>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText,{width:wp('55%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}asdasdasdasdasdasdasdasdasd</Text>
                         <View style={styles.statusContainer}>
                             <Feather name="check-circle" size={wp('3%')} color="#fff" />
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>{orderCardProps?.cardData?.status}</Text>
@@ -58,7 +76,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                         </View>
                         <View className='flex flex-row gap-3'>
                             <Feather name="map" size={wp('3%')} color="#000" />
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText,{width:wp('30%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
 
                         </View>
 
@@ -91,13 +109,16 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
 
                     <View className='flex flex-1 flex-row justify-between items-center'>
                         <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Type : {orderCardProps?.cardData?.eventInfo?.eventType}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText,{width:wp('30%')}]} numberOfLines={1} ellipsizeMode='tail'>Type : {orderCardProps?.cardData?.eventInfo?.eventType}</Text>
                         </View>
-                        <View>
-                            <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
-                                <Feather name="eye" size={wp("5%")} color="#000" />
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>View Details</ButtonText>
-                            </Button>
+                        <View className='flex flex-row items-center justify-between gap-2'>
+                            {options.map((opt)=>(
+                                <TouchableOpacity key={opt.label} onPress={opt.onPress} className='flex flex-row items-center gap-1'>
+                                    {opt?.icon}
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{opt.label}</Text>
+                                </TouchableOpacity>
+                            ))
+                            }
                         </View>
                     </View>
 

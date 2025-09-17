@@ -96,7 +96,7 @@ const Footer = (props: FooterProps) => {
                 <Ionicons name="receipt-outline" size={hp("3%")} color="#888" />
             ),
         },
-        quotation: {
+        orderstack: {
             active: (
                 <View>
                     <GradientCard style={styles.activeIconWrapper}>

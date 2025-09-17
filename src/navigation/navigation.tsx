@@ -10,18 +10,25 @@ import { useAuth } from '../context/auth-context/auth-context';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
+function OrderNavigator() {
+    return(
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Orders" component={Orders} />
+            <Stack.Screen name="CreateOrder" component={CreateOrder} />
+        </Stack.Navigator>
+    )
+}
 function TabNavigator() {
     return (
         <Tab.Navigator
             screenOptions={{ headerShown: false }}
             tabBar={props => <Footer {...props} />} // inject custom footer
         >
-            <Tab.Screen name="home" component={Home} />
-            <Tab.Screen name="quotation" component={CreateOrder} />
-            <Tab.Screen name="customer" component={Services} />
-            <Tab.Screen name="invoice" component={Orders} />
-            <Tab.Screen name="profile" component={Profile} />
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="OrderStack" component={OrderNavigator} />
+            <Tab.Screen name="Customer" component={Services} />
+            <Tab.Screen name="Invoice" component={Orders} />
+            <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
     );
 }

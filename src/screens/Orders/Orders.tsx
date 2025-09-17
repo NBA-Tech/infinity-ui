@@ -11,9 +11,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { Fab } from '@/components/ui/fab';
 import OrderCard from './components/order-card';
-import { ApiGeneralRespose, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { OrderModel } from '@/src/types/order/order-type';
-import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import { deleteOrderAPI, getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -23,6 +23,8 @@ import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import Skeleton from '@/components/ui/skeleton';
 import debounce from "lodash.debounce";
 import { EmptyState } from '@/src/components/empty-state-data';
+import DeleteConfirmation from '@/src/components/delete-confirmation';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     inputContainer: {
@@ -43,6 +45,7 @@ const OrderCardSkeleton = () => (
 );
 
 const Orders = () => {
+    const navigation=useNavigation<NavigationProp>();
     const globalStyles = useContext(StyleContext);
     const [filters, setFilters] = useState<SearchQueryRequest>({ page: 1, pageSize: 10 });
     const [orderData, setOrderData] = useState<OrderModel[]>([]);
@@ -50,7 +53,10 @@ const Orders = () => {
     const [loading, setLoading] = useState(false);
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
+    const [currID, setCurrID] = useState<string>("");
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     const getOrderListData = async (reset: boolean = false) => {
         setLoading(true);
@@ -112,10 +118,34 @@ const Orders = () => {
 
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
+    const handleDelete = async() => { 
+        setLoading(true);
+        const deleteOrderResponse = await deleteOrderAPI(currID);
+        if (!deleteOrderResponse.success) {
+            showToast({ type: "error", title: "Error", message: deleteOrderResponse.message });
+        }
+        else{
+            showToast({ type: "success", title: "Success", message: deleteOrderResponse.message });
+            setRefresh(!refresh);
+        }
+        setLoading(false);
+        setOpenDelete(false);
+    }
+
+    const handleDeletePopUp = (orderId: string) => {
+        console.log("hello",orderId)
+        setCurrID(orderId);
+        setOpenDelete(true);
+    }
+
+    const handleEdit = (orderId: string) => {
+        navigation.navigate("CreateOrder", { orderId:orderId });
+    }
+
     useEffect(() => {
         const reset = filters?.page === 1;
         getOrderListData(reset);
-    }, [filters]);
+    }, [filters,refresh]);
 
     useEffect(() => {
         getCustomerMetaData();
@@ -125,6 +155,7 @@ const Orders = () => {
         <SafeAreaView style={globalStyles.appBackground}>
             <Header />
             <View>
+                <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
                 <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
@@ -160,7 +191,7 @@ const Orders = () => {
                 </View>
 
                 {loading && <OrderCardSkeleton />}
-                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery?"order":"search"} />}
+                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} />}
 
                 <FlatList
                     data={orderData ?? []}
@@ -173,6 +204,10 @@ const Orders = () => {
                             <OrderCard
                                 cardData={item}
                                 customerMetaData={customerMetaInfoList?.find(c => c?.customerID === item?.orderBasicInfo?.customerID) ?? []}
+                                actions={{
+                                    delete:handleDeletePopUp,
+                                    edit:handleEdit
+                                }}
                             />
                         </View>
                     )}
@@ -181,6 +216,10 @@ const Orders = () => {
                     }}
                     onEndReachedThreshold={0.7}
                     ListFooterComponent={hasMore && !loading ? OrderCardSkeleton : null}
+                    refreshing={loading}
+                    onRefresh={()=>{
+                        setFilters(prev => ({ ...prev, page: 1 }));
+                    }}
                 />
 
                 <Fab size="lg" placement="bottom right" style={{ backgroundColor: '#8B5CF6' }}>
