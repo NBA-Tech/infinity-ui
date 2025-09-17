@@ -20,7 +20,6 @@ export enum OrderType {
 export interface QuotaionHtmlInfo{
   key:string;
   section:string;
-  html:string
 }
 
 export interface OfferingInfo {

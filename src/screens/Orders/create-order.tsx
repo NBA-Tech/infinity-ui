@@ -33,7 +33,11 @@ import TemplatePreview from './components/template-preview';
 import Modal from "react-native-modal";
 import { useUserStore } from '@/src/store/user/user-store';
 import { getUserDetailsApi } from '@/src/services/user/user-service';
-import { UserModel } from '@/src/types/user/user-type';
+import { generatePDF } from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
+import { buildHtml } from './utils/html-builder';
+import { saveNewOrderAPI } from '@/src/api/order/order-api-service';
+
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -71,7 +75,7 @@ const CreateOrder = () => {
     const { offeringList, getOfferingList, setOfferingList } = useOfferingStore()
     const { userDetails, setUserDetails, getUserDetails } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
-        userId: "",
+        userId: getItem("USERID") as string,
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
         status: OrderStatus.NEW,
@@ -81,10 +85,10 @@ const CreateOrder = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currStep, setCurrStep] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [isOpen, setIsOpen] = useState({ 
+    const [isOpen, setIsOpen] = useState({
         date: false,
         time: false,
-        modal: false 
+        modal: false
     })
 
     const getCustomerNameList = async () => {
@@ -129,6 +133,11 @@ const CreateOrder = () => {
         setCustomerList(filterData);
     };
 
+    const findServicePrice = (serviceId: string) => {
+        const service = serviceData.find((service) => service.id === serviceId)
+        return service?.price
+    }
+
     const getUserDetailsUsingID = async (userID: string) => {
         let userDetails = getUserDetails()
         if (!userDetails) {
@@ -157,6 +166,7 @@ const CreateOrder = () => {
                 title: "Error",
                 message: "UserID is not found Please Logout and Login again",
             })
+            return
         }
         if (offeringListData.length <= 0) {
             const offeringData = await getOfferingListAPI(userID)
@@ -167,6 +177,7 @@ const CreateOrder = () => {
                     title: "Error",
                     message: offeringData?.message ?? "Something went wrong",
                 })
+                return;
             }
             else {
                 const { packages, services } = offeringData.data
@@ -174,6 +185,10 @@ const CreateOrder = () => {
                 setPackageData(packages ?? [])
                 setServiceData(services ?? [])
             }
+        }
+        else {
+            setPackageData(offeringListData.filter((offering) => offering?.type == OrderType?.PACKAGE) as PackageModel[])
+            setServiceData(offeringListData.filter((offering) => offering?.type == OrderType?.SERVICE) as ServiceModel[])
         }
         setOfferingList(offeringListData as ServiceModel[] | PackageModel[])
 
@@ -466,8 +481,8 @@ const CreateOrder = () => {
                     container: "card",
                     description: "Photography package selected",
                     icon: <Feather name="package" size={wp("5%")} color="#10B981" />,
-                    html:  orderDetails?.offeringInfo?.orderType===OrderType.PACKAGE&& 
-                    `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>`,
+                    html: orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE &&
+                        `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
                 },
                 {
@@ -476,33 +491,33 @@ const CreateOrder = () => {
                     description: "Breakdown of package and services pricing",
                     icon: <Feather name="dollar-sign" size={wp("5%")} color="#10B981" />,
                     html: `<div class="pricing-container">
-                            <div class="pricing-row package-row">
-                                <div class="desc">Services</div>
-                                <div class="amount">Price</div>
+                             <div class="pricing-row header-row">
+                                <div class="col name heading">Service</div>
+                                <div class="col count heading">Qty</div>
+                                <div class="col price heading">Unit Price</div>
+                                <div class="col total heading">Total</div>
                             </div>
-                            <div class="pricing-row sub-service">
-                                <div class="desc">Pre-wedding Shoot</div>
-                                <div class="amount">{{preWeddingPrice}}</div>
-                            </div>
-                            <div class="pricing-row sub-service">
-                                <div class="desc">Candid Photography</div>
-                                <div class="amount">{{candidPrice}}</div>
-                            </div>
-                            <div class="pricing-row sub-service">
-                                <div class="desc">Album</div>
-                                <div class="amount">{{albumPrice}}</div>
-                            </div>
-                            <div class="pricing-row">
-                                <div class="desc">Event Photography</div>
-                                <div class="amount">{{eventPhotographyPrice}}</div>
-                            </div>
-                            <div class="pricing-row">
-                                <div class="desc">Portrait Session</div>
-                                <div class="amount">{{portraitPrice}}</div>
-                            </div>
-                            <div class="pricing-row total-row">
-                                <div class="desc">Total</div>
-                                <div class="amount">{{totalPrice}}</div>
+                            ${orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE
+                            ? packageData
+                                ?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)
+                                ?.serviceList?.map(
+                                    (service) => `
+                                        <div class="pricing-row">
+                                            <div class="col name">${service.name}</div>
+                                            <div class="col count">${service.value}</div>
+                                            <div class="col price">₹ ${findServicePrice(service.id)}</div>
+                                            <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
+                                        </div>
+                                        `
+                                )
+                                .join("")
+                            : ""}
+
+                            <div class="pricing-row grand-total">
+                                <div class="col name heading">Grand Total</div>
+                                <div class="col count"></div>
+                                <div class="col price"></div>
+                                <div class="col total heading">₹ ${totalCharges}</div>
                             </div>
                             </div>
                             `,
@@ -524,14 +539,6 @@ const CreateOrder = () => {
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
                 },
                 {
-                    key: "paymentDetails",
-                    heading: "Payment Details",
-                    description: "Bank account, UPI, or payment method",
-                    icon: <Feather name="credit-card" size={wp("5%")} color="#F59E0B" />,
-                    html: `<div class="card"><span>Payment Details:</span> {{paymentDetails}}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "paymentDetails"),
-                },
-                {
                     key: "signature",
                     heading: "Authorized Signature",
                     description: "Signature of the photographer/studio",
@@ -543,57 +550,6 @@ const CreateOrder = () => {
         },
     }), [orderDetails]);
 
-    const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString()) => {
-        return `
-  <!DOCTYPE html>
-  <html lang="en">
-    <body>
-      <div class="container">
-        
-        <!-- Header Section -->
-        <header class="header">
-          <div class="studio-info">
-            ${quotationFields.headerSection.fields
-                .filter(f => f.container === "studio-info" && f.isSelected)
-                .map(f => f.html)
-                .join("")}
-          </div>
-          <div class="contact-info">
-            ${quotationFields.headerSection.fields
-                .filter(f => f.container === "contact-info" && f.isSelected)
-                .map(f => f.html)
-                .join("")}
-          </div>
-        </header>
-
-        <!-- Invoice Metadata -->
-        <section class="metadata">
-          <div><strong>Invoice ID:</strong> ${invoiceId}</div>
-          <div><strong>Invoice Date:</strong> ${invoiceDate}</div>
-        </section>
-
-        <!-- Body Section -->
-       <section class="section">
-        ${quotationFields.bodySection.fields
-                .filter(f => f.isSelected)
-                .map(f => f.html)
-                .join("")}
-        </section>
-
-
-        <!-- Footer Section -->
-        <footer class="footer">
-          ${quotationFields.footerSection.fields
-                .filter(f => f.isSelected)
-                .map(f => f.html)
-                .join("")}
-        </footer>
-
-      </div>
-    </body>
-  </html>
-  `;
-    };
     const formOrders = [userInfo, eventInfo, eventTypes]
 
     const handleNext = () => {
@@ -642,6 +598,74 @@ const CreateOrder = () => {
         }
     }
 
+    const handleShareQuotation = async () => {
+        try {
+            const message = `
+                    Hello Sir/Mam 👋,
+                    Thank you for showing interest in our photography services 📸.
+                    Please find attached your customized quotation with detailed packages, services, and pricing.
+
+                    If you have any questions or would like to make changes, feel free to reach out. We’d love to be part of your special moments ✨.
+
+                    📍 Studio Address: ${userDetails?.userBillingInfo?.address}, ${userDetails?.userBillingInfo?.city}, ${userDetails?.userBillingInfo?.state}, ${userDetails?.userBillingInfo?.zipCode}, ${userDetails?.userBillingInfo?.country}
+                    📞 Phone: ${userDetails?.userBusinessInfo?.businessPhoneNumber}
+                    📧 Email: ${userDetails?.userBusinessInfo?.businessEmail}
+                    🌐 Website: ${userDetails?.userBusinessInfo?.websiteURL}
+
+                    Looking forward to capturing memories together! 💫
+
+                    Warm regards,
+                        `;
+
+            const options = {
+                html: buildHtml("1",new Date().toLocaleDateString(),quotationFields),
+                fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
+            };
+            const file = await generatePDF(options);
+            const shareOptions = {
+                title: options.fileName,
+                message: message,
+                url: `file://${file.filePath}`,
+                type: 'application/pdf',
+            }
+
+            console.log("PDF File ->", file);
+
+            await Share.open(shareOptions);
+
+        } catch (err) {
+            console.error("Error generating PDF:", err);
+        }
+    };
+
+    const handleCreateOrder=async ()=>{
+        if(!orderDetails?.userId){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found Please Logout and Login again",
+            })
+        }
+        const uuid=generateRandomString(30);
+        const saveNewOrder=await saveNewOrderAPI(orderDetails,{"Idempotency-Key":uuid})
+        if(!saveNewOrder?.success){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: saveNewOrder?.message ?? "Something went wrong",
+            })
+        }
+        else{
+            showToast({
+                type: "success",
+                title: "Success",
+                message: saveNewOrder?.message ?? "Order created successfully",
+            })
+        }
+        //navigate to orderpage
+    }
+
+
 
     useFocusEffect(
         useCallback(() => {
@@ -657,9 +681,6 @@ const CreateOrder = () => {
         }, [])
     );
 
-    useEffect(() => {
-        console.log(orderDetails,offeringList)
-    }, [orderDetails])
 
 
 
@@ -671,7 +692,7 @@ const CreateOrder = () => {
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
-                <TemplatePreview html={buildHtml()} />
+                <TemplatePreview html={buildHtml("1",new Date().toLocaleDateString(),quotationFields)} />
 
             </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -859,20 +880,13 @@ const CreateOrder = () => {
                                             Template Builder
                                         </Text>
                                     </View>
-                                    <View>
-                                        <Button
-                                            size="sm"
-                                            variant="solid"
-                                            action="primary"
-                                            style={[globalStyles.purpleBackground]}
-                                            onPress={() => setIsOpen({ ...isOpen, modal: true })}
-                                        >
-                                            <Feather name="eye" size={wp("5%")} color="#fff" />
-
-                                            <ButtonText style={globalStyles.buttonText}>
-                                                Preview
-                                            </ButtonText>
-                                        </Button>
+                                    <View className='flex flex-row items-center gap-2'>
+                                        <TouchableOpacity onPress={() => setIsOpen({ ...isOpen, modal: true })}>
+                                            <Feather name="eye" size={wp("5%")} color="#8B5CF6" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={handleShareQuotation}>
+                                            <Feather name="share-2" size={wp("5%")} color="#8B5CF6" />
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                             </View>
@@ -881,7 +895,7 @@ const CreateOrder = () => {
                     )
 
                     }
-                    <View className='flex flex-row gap-2 justify-between items-center' style={{ marginBottom: hp('15%'), marginVertical: hp('2%') }}>
+                    <View className='flex flex-row gap-2 justify-between items-center' style={{ marginBottom: hp('15%'), marginVertical: hp('2%'),marginHorizontal:wp('2%') }}>
                         <Button
                             size="lg"
                             variant="solid"
@@ -902,12 +916,14 @@ const CreateOrder = () => {
                             action="primary"
                             style={globalStyles.purpleBackground}
                             isDisabled={loading || Object.keys(errors).length > 0}
-                            onPress={handleNext}
+                            onPress={currStep == 3 ? handleCreateOrder : handleNext}
                         >
                             <ButtonText style={globalStyles.buttonText}>
-                                Next
+                                {currStep == 3 ? 'Create Order' : 'Next'}
                             </ButtonText>
-                            <Feather name="arrow-right" size={wp("5%")} color="#fff" />
+                            {currStep != 3 &&
+                                <Feather name="arrow-right" size={wp("5%")} color="#fff" />
+                            }
                         </Button>
                     </View>
                 </View>

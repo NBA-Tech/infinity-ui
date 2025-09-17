@@ -13,14 +13,19 @@ const styles = StyleSheet.create({
     accordionHeader: {
         height: hp('8%'),
     },
+    checkBox: {
+        borderBlockColor: 'red',
+        borderWidth: 10
+    }
 });
 type TemplateBuilderComponentProps = {
     quotationFields: any
-    handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void
     templateValueData: any
+    handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void
 }
-const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templateValueData }: TemplateBuilderComponentProps) => {
+const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCheckboxChange }: TemplateBuilderComponentProps) => {
     const globalStyles = useContext(StyleContext);
+    console.log(templateValueData, quotationFields)
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
@@ -33,7 +38,6 @@ const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templ
                 updatedQuotationHtmlInfo.push({
                     key: field.key,
                     section: sectionKey,
-                    html: field.html,
                 });
             }
         } else {
@@ -42,7 +46,6 @@ const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templ
             );
         }
 
-        console.log(updatedQuotationHtmlInfo)
         handleCheckboxChange(updatedQuotationHtmlInfo, { parentKey: 'quotationHtmlInfo', childKey: '' });
     }
 
@@ -68,7 +71,7 @@ const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templ
                                             >
                                                 {item?.label}
                                             </Text>
-                                           
+
                                         </View>
                                         {isExpanded ? (
                                             <Feather name="chevron-up" size={wp('5%')} color="#000" />
@@ -93,7 +96,7 @@ const TemplateBuilderComponent = ({ quotationFields, handleCheckboxChange, templ
                                                 <Text style={[globalStyles.labelText, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
                                             </View>
                                         </View>
-                                        <CheckBox value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
+                                            <CheckBox style={styles.checkBox} value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
                                     </View>
                                     <Divider />
                                 </View>
