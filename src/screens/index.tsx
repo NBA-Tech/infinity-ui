@@ -12,3 +12,4 @@ export { default as UserOnBoarding } from './auth/user-on-boarding';
 export { default as OneTimePassword } from './auth/one-time-password';
 export { default as TemplateEditor } from './template-editor/template-editor';
 export { default as Services } from './services/offering';
+export { default as OrderDetails } from './Orders/order-details';

@@ -60,7 +60,7 @@ export const updateOrderDetailsAPI=async(payload:OrderModel,headers?:Record<stri
     const updateOrderDetailsResponse=await fetchWithTimeout({
         url:`${API_BASE_URI}/order/update_order_details`,
         options: {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 ...headers

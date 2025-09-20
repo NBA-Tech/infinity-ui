@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword, TemplateEditor, Services } from '../screens';
+import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 
 const Stack = createNativeStackNavigator();
@@ -13,6 +13,7 @@ const Tab = createBottomTabNavigator();
 function OrderNavigator() {
     return(
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="OrderDetails" component={OrderDetails} />
             <Stack.Screen name="Orders" component={Orders} />
             <Stack.Screen name="CreateOrder" component={CreateOrder} />
         </Stack.Navigator>

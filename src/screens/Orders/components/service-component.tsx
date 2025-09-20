@@ -12,10 +12,10 @@ import { ServiceInfo } from '@/src/types/offering/offering-type';
 type ServiceComponentProps = {
   eventType: any;
   index: number;
-  isSelected: boolean;
+  selectedElement: any;
   offeringInfo: OfferingInfo;
   handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void;
-  handleTotalPriceCharges: (offerInfo:OfferingInfo) => void
+  handleTotalPriceCharges: (offerInfo: OfferingInfo) => void
 };
 
 const styles = StyleSheet.create({
@@ -38,14 +38,15 @@ const styles = StyleSheet.create({
 const ServiceComponent = ({
   eventType,
   index,
-  isSelected,
+  selectedElement,
   offeringInfo,
   handleCheckboxChange,
   handleTotalPriceCharges
 }: ServiceComponentProps) => {
   const globalStyles = useContext(StyleContext);
   const [quantity, setQuantity] = useState<number>(1);
-  const [selected, setSelected] = useState<boolean>(isSelected);
+  const [selected, setSelected] = useState<boolean>(selectedElement?.id === eventType?.id);
+  console.log(selectedElement)
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -81,6 +82,10 @@ const ServiceComponent = ({
     updateOfferingInfo(checked);
   };
 
+  useEffect(() => {
+    setQuantity(selectedElement?.value || 1)
+  }, [])
+
   // If quantity changes while selected, update service value
   useEffect(() => {
     if (selected) {
@@ -90,8 +95,10 @@ const ServiceComponent = ({
 
   // Sync prop isSelected -> local state
   useEffect(() => {
-    setSelected(isSelected);
-  }, [isSelected]);
+    setSelected(selectedElement?.id === eventType?.id);
+  }, [selectedElement]);
+
+
 
   return (
     <CustomCheckBox
@@ -99,7 +106,7 @@ const ServiceComponent = ({
       selectedStyle={{ backgroundColor: '#ECFDF5', borderColor: '#06B6D4' }}
       selected={selected}
       onPress={() => handleChange(!selected)}
-      styles={{margin:0,marginVertical: hp('2%')}}
+      styles={{ margin: 0, marginVertical: hp('2%') }}
     >
       <View className="flex-row items-center justify-between">
         {/* Left side: Icon + details */}
@@ -164,8 +171,9 @@ const ServiceComponent = ({
               style={[globalStyles.greyInputBox, styles.otp]}
               keyboardType="number-pad"
               value={String(quantity)}
-              onChangeText={(val) =>
+              onChangeText={(val) => {
                 setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1))
+              }
               }
             />
 

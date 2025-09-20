@@ -211,7 +211,7 @@ const CreateOrder = () => {
             isRequired: true,
             isDisabled: false,
             dropDownItems: customerList ?? [],
-            value: orderDetails?.orderBasicInfo.customerID ?? "",
+            value: orderDetails?.orderBasicInfo?.customerID ?? "",
             onChange: (value: string) => {
                 patchState('orderBasicInfo', 'customerID', value, true, setOrderDetails, setErrors);
             }
@@ -844,7 +844,6 @@ const CreateOrder = () => {
 
                         </Card>
                     )
-
                     }
 
                     {currStep == 2 && (
@@ -904,7 +903,7 @@ const CreateOrder = () => {
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         <FlatList
                                             data={serviceData}
-                                            renderItem={({ item, index }) => <ServiceComponent eventType={item} index={index} offeringInfo={orderDetails?.offeringInfo} isSelected={orderDetails?.offeringInfo?.services?.some((s) => s.id == item.id) || false} handleTotalPriceCharges={handleTotalPriceCharges} handleCheckboxChange={handleCheckboxChange} />}
+                                            renderItem={({ item, index }) => <ServiceComponent eventType={item} index={index} offeringInfo={orderDetails?.offeringInfo} selectedElement={orderDetails?.offeringInfo?.services?.find((s) => s.id === item.id)} handleTotalPriceCharges={handleTotalPriceCharges} handleCheckboxChange={handleCheckboxChange} />}
                                         />
                                     </View>
                                 </View>

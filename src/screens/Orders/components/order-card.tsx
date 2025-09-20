@@ -62,7 +62,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
             <View>
                 <View>
                     <View className='flex flex-1 flex-row justify-between items-center'>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText,{width:wp('55%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}asdasdasdasdasdasdasdasdasd</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText,{width:wp('55%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
                         <View style={styles.statusContainer}>
                             <Feather name="check-circle" size={wp('3%')} color="#fff" />
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>{orderCardProps?.cardData?.status}</Text>
