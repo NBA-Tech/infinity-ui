@@ -6,16 +6,18 @@ import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
 import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
+import { RootStackParamList } from '../types/common';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 function OrderNavigator() {
-    return(
+    return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="OrderDetails" component={OrderDetails} />
             <Stack.Screen name="Orders" component={Orders} />
             <Stack.Screen name="CreateOrder" component={CreateOrder} />
+            <Stack.Screen name="OrderDetails" component={OrderDetails} />
+
         </Stack.Navigator>
     )
 }

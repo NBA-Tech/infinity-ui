@@ -40,6 +40,7 @@ export interface SearchQueryRequest{
 export interface RootStackParamList extends ParamListBase {
   onetimepassword: undefined;
   useronboarding: undefined;
+  OrderDetails: { orderId: string };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

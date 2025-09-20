@@ -37,6 +37,17 @@ const EventInfo = () => {
                         <Feather name="external-link" size={wp('5%')} color={'#8B5CF6'} />
                     </View>
 
+                    <View className='flex flex-row justify-start items-center gap-3'>
+                        <View className='flex flex-col'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>8</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Hours</Text>
+                        </View>
+                        <View className='flex flex-col'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>8</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Hours</Text>
+                        </View>
+                    </View>
+
 
                 </View>
 

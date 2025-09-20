@@ -113,7 +113,7 @@ const CreateOrder = () => {
         const payload: SearchQueryRequest = {
             filters: { userId },
             getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id"],
+            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id","customerBasicInfo.mobileNumber","customerBasicInfo.email"],
         };
 
         const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);

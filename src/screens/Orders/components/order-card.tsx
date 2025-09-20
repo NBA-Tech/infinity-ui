@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -22,47 +22,48 @@ const styles = StyleSheet.create({
     }
 
 })
-const PROGRESSBAR={
-    NEW:0,
-    PENDING:20,
-    IN_PROGRESS:55,
-    CANCELLED:0,
-    COMPLETED:100,
-    DELIVERED:100
+const PROGRESSBAR = {
+    NEW: 0,
+    PENDING: 20,
+    IN_PROGRESS: 55,
+    CANCELLED: 0,
+    COMPLETED: 100,
+    DELIVERED: 100
 }
 
 type OrderCardProps = {
-    cardData:OrderModel
-    customerMetaData:CustomerMetaModel
-    actions:any
+    cardData: OrderModel
+    customerMetaData: CustomerMetaModel
+    actions: any
 }
 const OrderCard = (orderCardProps: OrderCardProps) => {
     const globalStyles = useContext(StyleContext);
 
-    const options=[
+    const options = [
         {
-            label:'View',
-            onPress:()=>{},
-            icon:<Feather name="eye" size={wp('5%')} color="#3B82F6" />,
+            label: 'View',
+            onPress: () => orderCardProps?.actions?.view?.(orderCardProps?.cardData?.orderId),
+            icon: <Feather name="eye" size={wp('5%')} color="#3B82F6" />,
         },
         {
-            label:'Edit',
-            onPress:()=>{orderCardProps?.actions?.edit?.(orderCardProps?.cardData?.orderId);},
-            icon:<Feather name="edit-2" size={wp('5%')} color="#22C55E" />,
+            label: 'Edit',
+            onPress: () => orderCardProps?.actions?.edit?.(orderCardProps?.cardData?.orderId),
+            icon: <Feather name="edit-2" size={wp('5%')} color="#22C55E" />,
         },
         {
-            label:'Delete',
-            onPress:()=>{orderCardProps?.actions?.delete?.(orderCardProps?.cardData?.orderId);},
-            icon:<Feather name="trash-2" size={wp('5%')} color="#EF4444" />,
+            label: 'Delete',
+            onPress: () => orderCardProps?.actions?.delete?.(orderCardProps?.cardData?.orderId),
+            icon: <Feather name="trash-2" size={wp('5%')} color="#EF4444" />,
         },
-    ]
+    ];
+
 
     return (
         <Card style={globalStyles.cardShadowEffect}>
             <View>
                 <View>
                     <View className='flex flex-1 flex-row justify-between items-center'>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText,{width:wp('55%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText, { width: wp('55%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
                         <View style={styles.statusContainer}>
                             <Feather name="check-circle" size={wp('3%')} color="#fff" />
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>{orderCardProps?.cardData?.status}</Text>
@@ -76,7 +77,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                         </View>
                         <View className='flex flex-row gap-3'>
                             <Feather name="map" size={wp('3%')} color="#000" />
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText,{width:wp('30%')}]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText, { width: wp('30%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
 
                         </View>
 
@@ -109,10 +110,10 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
 
                     <View className='flex flex-1 flex-row justify-between items-center'>
                         <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText,{width:wp('30%')}]} numberOfLines={1} ellipsizeMode='tail'>Type : {orderCardProps?.cardData?.eventInfo?.eventType}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { width: wp('30%') }]} numberOfLines={1} ellipsizeMode='tail'>Type : {orderCardProps?.cardData?.eventInfo?.eventType}</Text>
                         </View>
                         <View className='flex flex-row items-center justify-between gap-2'>
-                            {options.map((opt)=>(
+                            {options.map((opt) => (
                                 <TouchableOpacity key={opt.label} onPress={opt.onPress} className='flex flex-row items-center gap-1'>
                                     {opt?.icon}
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{opt.label}</Text>

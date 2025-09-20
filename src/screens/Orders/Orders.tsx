@@ -68,7 +68,8 @@ const Orders = () => {
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
             if (!orderDataResponse?.success) {
-                showToast({ type: "error", title: "Error", message: orderDataResponse.message });
+                showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
+                setLoading(false);
                 return;
             }
 
@@ -133,13 +134,16 @@ const Orders = () => {
     }
 
     const handleDeletePopUp = (orderId: string) => {
-        console.log("hello",orderId)
         setCurrID(orderId);
         setOpenDelete(true);
     }
 
     const handleEdit = (orderId: string) => {
         navigation.navigate("CreateOrder", { orderId:orderId });
+    }
+    const handleView = (orderId: string) => {
+        console.log("hello",orderId)
+        navigation.navigate("OrderDetails", { orderId:orderId });
     }
 
     useEffect(() => {
@@ -206,7 +210,8 @@ const Orders = () => {
                                 customerMetaData={customerMetaInfoList?.find(c => c?.customerID === item?.orderBasicInfo?.customerID) ?? []}
                                 actions={{
                                     delete:handleDeletePopUp,
-                                    edit:handleEdit
+                                    edit:handleEdit,
+                                    view:handleView
                                 }}
                             />
                         </View>
