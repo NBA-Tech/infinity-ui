@@ -653,15 +653,8 @@ const CreateOrder = () => {
     };
 
     const handleCreateOrder = async () => {
-        const html = buildHtml("1", new Date().toLocaleDateString(), quotationFields);
-        const safeHtml = escapeHtmlForJson(html);
 
-        const updatedOrder = {
-            ...orderDetails,
-            htmlCode: safeHtml
-        };
-
-        if (!updatedOrder?.userId) {
+        if (!orderDetails?.userId) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -669,14 +662,14 @@ const CreateOrder = () => {
             });
         }
 
-        setOrderDetails(updatedOrder); // update state for UI if needed
+        setOrderDetails(orderDetails); // update state for UI if needed
         setLoading(true);
 
         let saveNewOrder;
         if (orderId) {
-            saveNewOrder = await updateOrderDetailsAPI(updatedOrder);
+            saveNewOrder = await updateOrderDetailsAPI(orderDetails);
         } else {
-            saveNewOrder = await saveNewOrderAPI(updatedOrder);
+            saveNewOrder = await saveNewOrderAPI(orderDetails);
         }
 
         setLoading(false);

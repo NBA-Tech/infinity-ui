@@ -77,8 +77,8 @@ const TimeLineDetails = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <Feather name="user" size={wp("7%")} color={"#8B5CF6"} />
-            <Text style={globalStyles.heading3Text}>Event Information</Text>
+            <Feather name="clock" size={wp("7%")} color={"#8B5CF6"} />
+            <Text style={globalStyles.heading3Text}>Timeline Information</Text>
           </View>
         </View>
 

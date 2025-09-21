@@ -32,6 +32,8 @@ const styles = StyleSheet.create({
 type OfferingDetailsProps = {
     offeringData?: OfferingInfo
     totalPrice?: number
+    setPackageData: (data: OfferingModel[]) => void
+    setServiceData: (data: OfferingModel[]) => void
 }
 const OfferingDetails = (props: OfferingDetailsProps) => {
     const globalStyles = useContext(StyleContext);
@@ -100,6 +102,8 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
         }
 
         setServiceList(servicesWithPrice);
+        props?.setPackageData?.(offeringListData.filter((offering) => offering?.type == OrderType?.PACKAGE) as OfferingModel[]);
+        props?.setServiceData?.(offeringListData.filter((offering) => offering?.type == OrderType?.SERVICE) as OfferingModel[]);
     };
 
 

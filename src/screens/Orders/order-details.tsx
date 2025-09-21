@@ -23,6 +23,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { OrderModel, OrderType } from '@/src/types/order/order-type';
 import EventInfoCard from './details-component/event-info';
+import { OfferingModel } from '@/src/types/offering/offering-type';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -40,6 +41,8 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const { orderId } = route?.params;
     const [customerList, setCustomerList] = useState<CustomerMetaModel[]>([]);
     const [orderDetails, setOrderDetails] = useState<OrderModel>();
+    const [packageData, setPackageData] = useState<OfferingModel[]>([]);
+    const [serviceData, setServiceData] = useState<OfferingModel[]>([]);
     const globalStyles = useContext(StyleContext);
     const theme = useContext(ThemeToggleContext);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
@@ -99,13 +102,8 @@ const OrderDetails = ({ route, navigation }: Props) => {
     };
 
     const getOrderDetails = async (orderId: string) => {
+        console.log("fuck")
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
-        try{
-            console.log(JSON.parse(orderDetails.replace(/\\b/g, '')))
-        }
-        catch(e){
-            console.log(e)
-        }
         if (!orderDetails?.success) {
             return showToast({
                 type: "error",
@@ -113,6 +111,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 message: orderDetails?.message ?? "Something went wrong ",
             })
         }
+        console.log(orderDetails.data)
         setOrderDetails(orderDetails.data)
     }
 
@@ -171,8 +170,10 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
                     <OfferingDetails
                         offeringData={orderDetails?.offeringInfo}
-                        totalPrice={orderDetails?.totalPrice} />
-                    <QuotationDetails htmlCode={orderDetails?.htmlCode} createdOn={orderDetails?.createdDate}/>
+                        totalPrice={orderDetails?.totalPrice} 
+                        setPackageData={setPackageData}
+                        setServiceData={setServiceData}/>
+                    <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData}/>
                     <InvoiceDetails />
                     <TimeLineDetails />
                 </View>

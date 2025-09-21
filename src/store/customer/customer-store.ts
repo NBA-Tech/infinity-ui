@@ -12,6 +12,7 @@ interface CustomerStore {
     deleteCustomerMetaInfo: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
 
     // Details CRUD
+    setCustomerDetailsInfo: (customerDetailsList: CustomerModel[]) => void; // ✅ new
     addCustomerDetailsInfo: (customerDetails: CustomerModel | CustomerModel[]) => void;
     getCustomerDetailsList: () => CustomerModel[];
     updateCustomerDetailsInfo: (customerDetails: CustomerModel | CustomerModel[]) => void;
@@ -51,7 +52,9 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             return { customerMetaInfoList: filtered };
         }),
 
-    // --- Add (single or array, avoids duplicates) ---
+    // --- Details ---
+    setCustomerDetailsInfo: (list) => set({ customerDetailsList: list }), // ✅ replace entire list
+
     addCustomerDetailsInfo: (customerDetails) =>
         set((state) => {
             const toAdd = Array.isArray(customerDetails) ? customerDetails : [customerDetails];
@@ -65,10 +68,8 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             return { customerDetailsList: merged };
         }),
 
-    // --- Get ---
     getCustomerDetailsList: () => get().customerDetailsList,
 
-    // --- Update (replace if exists, add if new) ---
     updateCustomerDetailsInfo: (customerDetails) =>
         set((state) => {
             const toUpdate = Array.isArray(customerDetails) ? customerDetails : [customerDetails];
@@ -84,7 +85,6 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             return { customerDetailsList: [...updated, ...newOnes] };
         }),
 
-    // --- Delete ---
     deleteCustomerDetailsInfo: (customerDetails) =>
         set((state) => {
             const toDelete = Array.isArray(customerDetails) ? customerDetails : [customerDetails];

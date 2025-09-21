@@ -39,18 +39,16 @@ const InvoiceDetails = () => {
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
-                            <Feather name="user" size={wp('7%')} color={'#8B5CF6'} />
-                            <Text style={globalStyles.heading3Text}>Event Information</Text>
-                        </View>
-                        <View style={styles.statusContainer}>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>PACKAGE</Text>
+                            <Feather name="file-text" size={wp('7%')} color={'#8B5CF6'} />
+                            <Text style={globalStyles.heading3Text}>Invoices</Text>
                         </View>
                     </View>
 
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-col'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quotation</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Package includes:</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Invoice #1</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Invoice Date: 2023-01-01</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: $100</Text>
                         </View>
                         <View>
                             <Feather name="eye" size={wp('5%')} color={'#000'} />

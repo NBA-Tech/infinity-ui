@@ -62,6 +62,5 @@ export interface OrderModel {
   offeringInfo: OfferingInfo;
   quotationHtmlInfo?: QuotaionHtmlInfo[]
   statusHistory?:StatusHistory[]
-  htmlCode?:string
 
 }
