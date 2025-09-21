@@ -51,7 +51,8 @@ export const getOrderDetailsAPI=async(orderID:string,headers?:Record<string,any>
         options: {
             method: 'GET',
             headers
-        }
+        },
+        responseType: 'text'
     })
     return getOrderDetailsResponse
 }

@@ -31,7 +31,6 @@ type PackageComponentProps = {
 export const PackageComponent = ({ pkg, isSelected, handleCalculatePrice, handleCheckboxChange,handleTotalPriceCharges }: PackageComponentProps) => {
     const globalStyles = useContext(StyleContext);
     const [selected, setSelected] = useState(isSelected);
-    console.log(isSelected)
 
     const handlePress = () => {
         let updateValue={}

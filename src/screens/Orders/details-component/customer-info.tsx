@@ -5,7 +5,15 @@ import { View, Text } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
-const CustomerInfo = () => {
+import { CustomerMetaModel } from '@/src/types/customer/customer-type';
+import { OrderBasicInfo } from '@/src/types/order/order-type';
+
+
+type CustomerInfoProps = {
+    customerData:CustomerMetaModel;
+    orderBasicInfo?:OrderBasicInfo
+}
+const CustomerInfo = (props:CustomerInfoProps) => {
     const globalStyles = useContext(StyleContext);
     return (
         <Card style={globalStyles.cardShadowEffect}>
@@ -17,12 +25,12 @@ const CustomerInfo = () => {
 
                     </View>
                     <View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Ajay K</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.customerData?.firstName} {props?.customerData?.lastName}</Text>
                     </View>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row gap-2'>
                             <Feather name="phone" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>+91 1234567890</Text>
+                            <Text style={globalStyles.labelText}>{props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber}</Text>
                         </View>
                         <View className='flex flex-row gap-4'>
                             <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
@@ -33,7 +41,7 @@ const CustomerInfo = () => {
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row gap-2'>
                             <Feather name="mail" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>QGf3o@example.com</Text>
+                            <Text style={globalStyles.labelText}>{props?.customerData?.email}</Text>
                         </View>
                         <View className='flex flex-row gap-4'>
                             <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
@@ -43,7 +51,7 @@ const CustomerInfo = () => {
                     <Divider />
                     <View>
                         <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Special Instrution</Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, quos.</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{props?.orderBasicInfo?.specialInstructions}</Text>
                     </View>
                 </View>
 

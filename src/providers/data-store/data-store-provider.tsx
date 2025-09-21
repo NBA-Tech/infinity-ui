@@ -49,7 +49,6 @@ export const DataStoreProvider: React.FC<ProviderProps> = ({
         const keys = await AsyncStorage.getAllKeys();
         const appKeys = keys.filter((k) => k.startsWith(baseKey));
         const items = await AsyncStorage.multiGet(appKeys);
-        console.log(items)
         const initialData: Store = {};
 
         items.forEach(([key, value]) => {
@@ -60,7 +59,6 @@ export const DataStoreProvider: React.FC<ProviderProps> = ({
             initialData[subKey] = value;
           }
         });
-        console.log(initialData)
 
         setStore(initialData);
         setIsInitialized(true);

@@ -2,13 +2,6 @@ import { Country, ICountry, IState, State } from "country-state-city";
 import { FormFields } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
 
-
-type FetchWithTimeoutParams = {
-  url: string;
-  options?: RequestInit;
-  timeout?: number;
-  maxRetries?: number;
-};
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
 }
@@ -97,14 +90,23 @@ export const validateValues = (values: any, formFields: FormFields) => {
 
 
 
+type FetchWithTimeoutParams = {
+  url: string;
+  options?: RequestInit;
+  timeout?: number;
+  maxRetries?: number;
+  responseType?: 'json' | 'text'; // <--- new prop
+};
+
 export const fetchWithTimeout = async ({
   url,
   options = {},
   timeout = 20000,
   maxRetries = 5,
+  responseType = 'json', // default to json
 }: FetchWithTimeoutParams): Promise<any> => {
   let attempt = 0;
-  console.log(url)
+  console.log(url);
 
   while (attempt < maxRetries) {
     try {
@@ -117,11 +119,16 @@ export const fetchWithTimeout = async ({
       });
       clearTimeout(timer);
 
-      // Parse JSON safely
+      // Parse response based on type
       let data: any = null;
       try {
-        data = await response.json();
-      } catch {
+        if (responseType === 'json') {
+          data = await response.json();
+        } else if (responseType === 'text') {
+          data = await response.text();
+        }
+      } catch (e) {
+        console.error(`Error parsing ${responseType}:`, e);
         data = null;
       }
 
@@ -131,7 +138,7 @@ export const fetchWithTimeout = async ({
 
       return data;
     } catch (error: any) {
-      const isTimeout = error?.name === "AbortError";
+      const isTimeout = error?.name === 'AbortError';
 
       if (isTimeout && attempt < maxRetries - 1) {
         console.warn(`Timeout attempt ${attempt + 1}, retrying...`);
@@ -142,8 +149,8 @@ export const fetchWithTimeout = async ({
       return {
         success: false,
         message: isTimeout
-          ? "Request timed out. Please try again."
-          : error?.message || "Network or server error",
+          ? 'Request timed out. Please try again.'
+          : error?.message || 'Network or server error',
         status_code: isTimeout ? 408 : 500,
         isTimeout,
       };
@@ -152,10 +159,11 @@ export const fetchWithTimeout = async ({
 
   return {
     success: false,
-    message: "Unknown error occurred",
+    message: 'Unknown error occurred',
     status_code: 500,
   };
 };
+
 
 export const patchState = (
   section: string,
@@ -239,3 +247,15 @@ export const clearState = <T extends Record<string, any>>(
   // Merge defaults on top
   setState({ ...clearedState, ...defaults });
 };
+
+
+export function escapeHtmlForJson(html: string): string {
+  return html
+    .replace(/\\/g, '\\\\') // Escape backslashes
+    .replace(/"/g, '\\"')   // Escape double quotes
+    .replace(/\n/g, '\\n')  // Escape newlines
+    .replace(/\r/g, '\\r')  // Escape carriage returns
+    .replace(/\t/g, '\\t')  // Escape tabs
+    .replace(/\f/g, '\\f')  // Escape form feeds
+    .replace(/\b/g, '\\b'); // Escape backspace
+}

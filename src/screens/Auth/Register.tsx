@@ -185,7 +185,6 @@ const Register = ({ setCurrScreen }: any) => {
     const handleGoogleRegister = async () => {
         setLoadingProvider("google");
         const authResults: AuthResult = await loginWithGoogle();
-        console.log(authResults)
 
         if (authResults.error) {
             setLoadingProvider(null);

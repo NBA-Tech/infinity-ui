@@ -60,7 +60,6 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
                 : [typeof offering === "object" ? offering.id : offering];
 
             const deleteIds = new Set(ids);
-            console.log(deleteIds)
             const filtered = state.offeringList.filter((o) => !deleteIds.has(o.id));
             return { offeringList: filtered };
         }),

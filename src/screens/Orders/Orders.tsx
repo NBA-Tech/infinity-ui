@@ -96,7 +96,7 @@ const Orders = () => {
         const payload: SearchQueryRequest = {
             filters: { userId },
             getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id"],
+            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
         };
         const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
         if (!customerListResponse?.success) {
@@ -142,7 +142,6 @@ const Orders = () => {
         navigation.navigate("CreateOrder", { orderId:orderId });
     }
     const handleView = (orderId: string) => {
-        console.log("hello",orderId)
         navigation.navigate("OrderDetails", { orderId:orderId });
     }
 
@@ -170,7 +169,7 @@ const Orders = () => {
                             <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{orderData.length} Orders found</Text>
                         </View>
                         <View>
-                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
+                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate("CreateOrder")}>
                                 <Feather name="plus" size={wp('5%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create New</ButtonText>
                             </Button>
@@ -195,13 +194,13 @@ const Orders = () => {
                 </View>
 
                 {loading && <OrderCardSkeleton />}
-                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} />}
+                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 <FlatList
                     data={orderData ?? []}
+                    style={{height:hp("60%")}}
                     keyExtractor={(_, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
-                    style={{ height: hp("60%") }}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}
                     renderItem={({ item }) => (
                         <View style={{ marginHorizontal: wp("3%"), marginVertical: hp("1%") }}>
@@ -227,9 +226,9 @@ const Orders = () => {
                     }}
                 />
 
-                <Fab size="lg" placement="bottom right" style={{ backgroundColor: '#8B5CF6' }}>
+                {/* <Fab size="lg" placement="bottom right" style={{ backgroundColor: '#8B5CF6' }}>
                     <Feather name="plus" size={wp('6%')} color="#fff" />
-                </Fab>
+                </Fab> */}
             </View>
         </SafeAreaView>
     );

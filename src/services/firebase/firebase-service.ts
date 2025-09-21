@@ -26,11 +26,9 @@ export const firebaseUploadImage = async (filePath: string, folder?: string): Pr
             }
         })
         const uploadImageResponse=await uploadImageApi.json();
-        console.log(uploadImageResponse);
         return uploadImageResponse
     }
     catch (error) {
-        console.log(error);
         return {url:"",path:""}
     }
 

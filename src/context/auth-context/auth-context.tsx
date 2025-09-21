@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }: any) => {
             try {
                 const storedAuth = getItem('isAuthenticated');
                 const createdAt = getItem("CREATEDAT");
-                console.log("storedAuth", storedAuth, createdAt)
 
                 if (storedAuth === 'true' && createdAt) {
                     const now = new Date();

@@ -21,6 +21,15 @@ function OrderNavigator() {
         </Stack.Navigator>
     )
 }
+
+
+function OfferingNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Services" component={Services} />
+        </Stack.Navigator>
+    )
+}
 function TabNavigator() {
     return (
         <Tab.Navigator
@@ -30,7 +39,7 @@ function TabNavigator() {
             <Tab.Screen name="Home" component={Home} />
             <Tab.Screen name="OrderStack" component={OrderNavigator} />
             <Tab.Screen name="Customer" component={Services} />
-            <Tab.Screen name="Invoice" component={Orders} />
+            <Tab.Screen name="Invoice" component={OfferingNavigator} />
             <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
     );

@@ -8,7 +8,6 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { Button, ButtonText } from '@/components/ui/button';
 import CustomerInfo from './details-component/customer-info';
-import EventInfo from './details-component/event-info';
 import OfferingDetails from './details-component/offering-details';
 import QuotationDetails from './details-component/quotation-details';
 import InvoiceDetails from './details-component/invoice-details';
@@ -22,6 +21,8 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
+import { OrderModel, OrderType } from '@/src/types/order/order-type';
+import EventInfoCard from './details-component/event-info';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -38,7 +39,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "OrderDetails">;
 const OrderDetails = ({ route, navigation }: Props) => {
     const { orderId } = route?.params;
     const [customerList, setCustomerList] = useState<CustomerMetaModel[]>([]);
-    const [orderDetails, setOrderDetails] = useState<>();
+    const [orderDetails, setOrderDetails] = useState<OrderModel>();
     const globalStyles = useContext(StyleContext);
     const theme = useContext(ThemeToggleContext);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
@@ -66,7 +67,6 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
     const getCustomerNameList = async () => {
         const customerMetaData = getCustomerMetaInfoList();
-        console.log(customerMetaData);
 
         if (customerMetaData?.length > 0) {
             setCustomerList(customerMetaData);
@@ -100,7 +100,12 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
     const getOrderDetails = async (orderId: string) => {
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
-        console.log(orderDetails)
+        try{
+            console.log(JSON.parse(orderDetails.replace(/\\b/g, '')))
+        }
+        catch(e){
+            console.log(e)
+        }
         if (!orderDetails?.success) {
             return showToast({
                 type: "error",
@@ -111,9 +116,11 @@ const OrderDetails = ({ route, navigation }: Props) => {
         setOrderDetails(orderDetails.data)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getCustomerNameList()
-    },[])
+        getOrderDetails(orderId)
+    }, [])
+
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
@@ -126,7 +133,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                             <View className="flex flex-col">
                                 <Text style={globalStyles.heading3Text}>Order Details</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
-                                    Order #12345
+                                    Order #{orderDetails?.orderId}
                                 </Text>
                             </View>
                         </View>
@@ -134,7 +141,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         {/* Right side */}
                         <View className="flex items-center">
                             <View style={styles.statusContainer}>
-                                <Text style={globalStyles.whiteTextColor}>Delivered</Text>
+                                <Text style={globalStyles.whiteTextColor}>{orderDetails?.status}</Text>
                             </View>
                         </View>
                     </View>
@@ -155,10 +162,17 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 showsVerticalScrollIndicator={false} // hide scrollbar if you want
             >
                 <View className='flex flex-col gap-3' style={{ marginHorizontal: wp('5%') }}>
-                    <CustomerInfo />
-                    <EventInfo />
-                    <OfferingDetails />
-                    <QuotationDetails />
+                    <CustomerInfo
+                        customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
+                        orderBasicInfo={orderDetails?.orderBasicInfo} />
+                    <EventInfoCard
+                        eventData={orderDetails?.eventInfo}
+                        serviceLength={orderDetails?.offeringInfo?.services?.length}
+                        isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
+                    <OfferingDetails
+                        offeringData={orderDetails?.offeringInfo}
+                        totalPrice={orderDetails?.totalPrice} />
+                    <QuotationDetails htmlCode={orderDetails?.htmlCode} createdOn={orderDetails?.createdDate}/>
                     <InvoiceDetails />
                     <TimeLineDetails />
                 </View>

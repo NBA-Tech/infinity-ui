@@ -204,7 +204,6 @@ const htmlClassesStyles = {
 
 const TemplatePreview = (props: TemplatePreviewProps) => {
     const { width } = useWindowDimensions();
-    console.log(props?.html)
     return (
         <ScrollView
             style={{ flex: 1, backgroundColor: "#f3f4f6" }}

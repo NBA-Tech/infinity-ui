@@ -448,10 +448,8 @@ const services = () => {
         let serviceResponse: ApiGeneralRespose;
         let updateServiceResponse: ApiGeneralRespose;
 
-        console.log(currDetails)
 
         const validateInput = validateValues(currDetails, currFields)
-        console.log(validateInput)
         if (!validateInput.success) {
             return showToast({
                 type: "warning",
@@ -510,13 +508,11 @@ const services = () => {
             resetActiveDetails()
         }
         setloadingProvider(null)
-        console.log(servieDetails)
     }
 
 
     const getOfferingDetails = async () => {
         const offeringDataStore = getOfferingList();
-        console.log(offeringDataStore);
 
         if (offeringDataStore.length <= 0) {
             if (!servieDetails.customerID) return;
@@ -524,7 +520,6 @@ const services = () => {
                 servieDetails.customerID
             );
 
-            console.log(offeringListResponse);
 
             if (!offeringListResponse.success) {
                 showToast({
@@ -535,7 +530,6 @@ const services = () => {
             } else {
                 const { packages, services } = offeringListResponse.data;
                 const updatedData = [...(packages ?? []), ...(services ?? [])];
-                console.log(updatedData);
 
                 setOfferingList(updatedData);
             }
@@ -560,7 +554,6 @@ const services = () => {
     }
 
     useEffect(() => {
-        console.log("calling")
         getOfferingDetails();
     }, []);
 

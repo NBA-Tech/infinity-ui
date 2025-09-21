@@ -46,7 +46,6 @@ const ServiceComponent = ({
   const globalStyles = useContext(StyleContext);
   const [quantity, setQuantity] = useState<number>(1);
   const [selected, setSelected] = useState<boolean>(selectedElement?.id === eventType?.id);
-  console.log(selectedElement)
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -71,7 +70,6 @@ const ServiceComponent = ({
       packageId: undefined,
       services: updatedServices,
     };
-    console.log(updateValue);
 
     handleCheckboxChange(updateValue, { parentKey: 'offeringInfo', childKey: '' });
     handleTotalPriceCharges(updateValue);

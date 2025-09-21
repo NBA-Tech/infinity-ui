@@ -12,7 +12,8 @@ export const ThemeToggleContext = createContext({
 });
 
 function GlobalStyleProvider({ children }: { children: React.ReactNode }) {
-  const systemScheme = useColorScheme(); // 'light' or 'dark'
+  // const systemScheme = useColorScheme(); // 'light' or 'dark'
+  const systemScheme = "light";
   console.log("System theme:", systemScheme);
   const [themeMode, setThemeMode] = useState("light");
 

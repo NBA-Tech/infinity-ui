@@ -20,7 +20,7 @@ import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/typ
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { generateRandomString, patchState, validateValues } from '@/src/utils/utils';
+import { escapeHtmlForJson, generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
@@ -113,7 +113,7 @@ const CreateOrder = () => {
         const payload: SearchQueryRequest = {
             filters: { userId },
             getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id","customerBasicInfo.mobileNumber","customerBasicInfo.email"],
+            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
         };
 
         const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
@@ -163,7 +163,6 @@ const CreateOrder = () => {
 
     const getOfferingDetails = async () => {
         let offeringListData = getOfferingList()
-        console.log(offeringListData)
         const userID = getItem("USERID")
         if (!userID) {
             showToast({
@@ -175,7 +174,6 @@ const CreateOrder = () => {
         }
         if (offeringListData.length <= 0) {
             const offeringData = await getOfferingListAPI(userID)
-            console.log(offeringData)
             if (!offeringData?.success) {
                 showToast({
                     type: "error",
@@ -646,7 +644,6 @@ const CreateOrder = () => {
                 type: 'application/pdf',
             }
 
-            console.log("PDF File ->", file);
 
             await Share.open(shareOptions);
 
@@ -656,44 +653,55 @@ const CreateOrder = () => {
     };
 
     const handleCreateOrder = async () => {
-        if (!orderDetails?.userId) {
+        const html = buildHtml("1", new Date().toLocaleDateString(), quotationFields);
+        const safeHtml = escapeHtmlForJson(html);
+
+        const updatedOrder = {
+            ...orderDetails,
+            htmlCode: safeHtml
+        };
+
+        if (!updatedOrder?.userId) {
             return showToast({
                 type: "error",
                 title: "Error",
-                message: "UserID is not found Please Logout and Login again",
-            })
+                message: "UserID is not found. Please Logout and Login again",
+            });
         }
+
+        setOrderDetails(updatedOrder); // update state for UI if needed
         setLoading(true);
+
         let saveNewOrder;
         if (orderId) {
-            saveNewOrder = await updateOrderDetailsAPI(orderDetails)
+            saveNewOrder = await updateOrderDetailsAPI(updatedOrder);
+        } else {
+            saveNewOrder = await saveNewOrderAPI(updatedOrder);
         }
-        else {
-            saveNewOrder = await saveNewOrderAPI(orderDetails)
-        }
-        setLoading(false)
+
+        setLoading(false);
+
         if (!saveNewOrder?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: saveNewOrder?.message ?? "Something went wrong",
-            })
+            });
         }
-        else {
-            showToast({
-                type: "success",
-                title: "Success",
-                message: saveNewOrder?.message ?? "Order created successfully",
-            })
-            setOrderDetails([] as unknown as OrderModel);
-            setCurrStep(0);
-        }
-        //navigate to orderpage
-    }
+
+        showToast({
+            type: "success",
+            title: "Success",
+            message: saveNewOrder?.message ?? "Order created successfully",
+        });
+
+        setOrderDetails([] as unknown as OrderModel);
+        setCurrStep(0);
+    };
+
 
     const getOrderDetails = async (orderId: string) => {
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
-        console.log(orderDetails)
         if (!orderDetails?.success) {
             return showToast({
                 type: "error",
@@ -722,7 +730,6 @@ const CreateOrder = () => {
 
     useEffect(() => {
         if (orderId) {
-            console.log(orderId)
             getOrderDetails(orderId)
         }
 

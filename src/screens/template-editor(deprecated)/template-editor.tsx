@@ -105,7 +105,6 @@ const TemplateEditor = () => {
   };
 
   useEffect(() => {
-    console.log(elements)
   }, [elements]);
 
   const renderElement = (type: string) => {

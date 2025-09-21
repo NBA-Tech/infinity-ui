@@ -25,7 +25,6 @@ type TemplateBuilderComponentProps = {
 }
 const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCheckboxChange }: TemplateBuilderComponentProps) => {
     const globalStyles = useContext(StyleContext);
-    console.log(templateValueData, quotationFields)
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {

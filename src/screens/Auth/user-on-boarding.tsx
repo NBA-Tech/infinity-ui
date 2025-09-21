@@ -441,7 +441,6 @@ const UserOnBoarding = () => {
         }
         setLoading(true);
         const updatedDetails = { ...businessDetails, userId };
-        console.log(updatedDetails)
         setBusinessDetails(updatedDetails);
         const updateBusinessDetails = await updateBusinessDetailsApi(updatedDetails);
         if (!updateBusinessDetails.success) {
