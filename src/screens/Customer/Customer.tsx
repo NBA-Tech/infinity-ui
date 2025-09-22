@@ -15,6 +15,8 @@ import MaterialDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Fab, FabLabel, FabIcon } from "@/components/ui/fab"
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Button, ButtonText } from '@/components/ui/button';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@/src/types/common';
 
 
 const styles = StyleSheet.create({
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
 })
 const Customer = () => {
     const globalStyles = useContext(StyleContext);
-
+    const navigation =useNavigation<NavigationProp>()
 
 
     const CustomerCardComponent = () => {
@@ -172,7 +174,7 @@ const Customer = () => {
                             <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>8 customers found</Text>
                         </View>
                         <View>
-                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]}>
+                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate('CreateCustomer')}>
                                 <Feather name="plus" size={wp('5%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create New</ButtonText>
                             </Button>

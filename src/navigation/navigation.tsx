@@ -14,7 +14,7 @@ const Tab = createBottomTabNavigator();
 function OrderNavigator() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Orders" component={Orders} />
+            <Stack.Screen name="OrdersList" component={Orders} />
             <Stack.Screen name="CreateOrder" component={CreateOrder} />
             <Stack.Screen name="OrderDetails" component={OrderDetails} />
 
@@ -30,6 +30,15 @@ function OfferingNavigator() {
         </Stack.Navigator>
     )
 }
+
+function CustomerNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="CustomerList" component={Customer} />
+            <Stack.Screen name="CreateCustomer" component={CreateCustomer} />
+        </Stack.Navigator>
+    )
+}
 function TabNavigator() {
     return (
         <Tab.Navigator
@@ -37,10 +46,10 @@ function TabNavigator() {
             tabBar={props => <Footer {...props} />} // inject custom footer
         >
             <Tab.Screen name="Home" component={Home} />
-            <Tab.Screen name="OrderStack" component={OrderNavigator} />
-            <Tab.Screen name="Customer" component={Services} />
-            <Tab.Screen name="Invoice" component={OfferingNavigator} />
-            <Tab.Screen name="Profile" component={Profile} />
+            <Tab.Screen name="Customer" component={CustomerNavigator} />
+            <Tab.Screen name="Orders" component={OrderNavigator} />
+            <Tab.Screen name="Invoice" component={Invoice} />
+            <Tab.Screen name="Offering" component={OfferingNavigator} />
         </Tab.Navigator>
     );
 }

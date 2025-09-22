@@ -9,7 +9,7 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import Feather from 'react-native-vector-icons/Feather';
 interface FooterProps {
     state: any;
     descriptors: any;
@@ -28,13 +28,7 @@ const Footer = (props: FooterProps) => {
         home: {
             active: (
                 <View>
-                    <GradientCard style={styles.activeIconWrapper}>
-                        <MaterialCommunityIcons
-                            name="view-dashboard"
-                            size={hp("3%")}
-                            color="#fff"
-                        />
-                    </GradientCard>
+                    <Feather name="home" size={hp("3%")} color="#8B5CF6" />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
@@ -47,65 +41,17 @@ const Footer = (props: FooterProps) => {
                 </View>
             ),
             inactive: (
-                <MaterialCommunityIcons
-                    name="view-dashboard-outline"
-                    size={hp("3.2%")}
-                    color="#888"
-                />
+                <Feather name="home" size={hp("3.2%")} color="#888" />
             ),
         },
         customer: {
             active: (
                 <View>
-                    <GradientCard style={styles.activeIconWrapper}>
-                        <FontAwesome5 name="address-book" size={hp("3%")} color="#fff" />
-                    </GradientCard>
-                    <Divider
-                        style={{
-                            marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
-                            height: 2,
-                            width: wp("7%"),
-                            alignSelf: "center",
-                        }}
+                    <MaterialCommunityIcons
+                        name="account-multiple"
+                        size={hp("3%")}
+                        color="#8B5CF6"
                     />
-                </View>
-            ),
-            inactive: (
-                <FontAwesome5 name="address-book" size={hp("3%")} color="#888" />
-            ),
-        },
-        invoice: {
-            active: (
-                <View>
-                    <GradientCard style={styles.activeIconWrapper}>
-                        <Ionicons name="receipt" size={hp("3%")} color="#fff" />
-                    </GradientCard>
-                    <Divider
-                        style={{
-                            marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
-                            height: 2,
-                            width: wp("7%"),
-                            alignSelf: "center",
-                        }}
-                    />
-                </View>
-            ),
-            inactive: (
-                <Ionicons name="receipt-outline" size={hp("3%")} color="#888" />
-            ),
-        },
-        orderstack: {
-            active: (
-                <View>
-                    <GradientCard style={styles.activeIconWrapper}>
-                        <MaterialCommunityIcons
-                            name="file-document"
-                            size={hp("3%")}
-                            color="#fff"
-                        />
-                    </GradientCard>
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
@@ -119,18 +65,16 @@ const Footer = (props: FooterProps) => {
             ),
             inactive: (
                 <MaterialCommunityIcons
-                    name="file-document-outline"
-                    size={hp("3%")}
+                    name="account-multiple-outline"
+                    size={hp("3.2%")}
                     color="#888"
                 />
             ),
         },
-        profile: {
+        invoice: {
             active: (
                 <View>
-                    <GradientCard style={styles.activeIconWrapper}>
-                        <FontAwesome5 name="user-circle" size={hp("3%")} color="#fff" />
-                    </GradientCard>
+                    <Ionicons name="receipt" size={hp("3%")} color="#8B5CF6" />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
@@ -143,10 +87,66 @@ const Footer = (props: FooterProps) => {
                 </View>
             ),
             inactive: (
-                <FontAwesome5 name="user-circle" size={hp("3%")} color="#888" />
+                <Ionicons name="receipt-outline" size={hp("3.2%")} color="#888" />
+            ),
+        },
+        orders: {
+            active: (
+                <View>
+                    <MaterialCommunityIcons
+                        name="clipboard-text"
+                        size={hp("3%")}
+                        color="#8B5CF6"
+                    />
+                    <Divider
+                        style={{
+                            marginTop: hp("0.1%"),
+                            backgroundColor: "#8B5CF6",
+                            height: 2,
+                            width: wp("7%"),
+                            alignSelf: "center",
+                        }}
+                    />
+                </View>
+            ),
+            inactive: (
+                <MaterialCommunityIcons
+                    name="clipboard-text-outline"
+                    size={hp("3.2%")}
+                    color="#888"
+                />
+            ),
+        },
+        offering: {
+            active: (
+                <View>
+                    <MaterialCommunityIcons
+                        name="cube"
+                        size={hp("3%")}
+                        color="#8B5CF6"
+                    />
+                    <Divider
+                        style={{
+                            marginTop: hp("0.1%"),
+                            backgroundColor: "#8B5CF6",
+                            height: 2,
+                            width: wp("7%"),
+                            alignSelf: "center",
+                        }}
+                    />
+                </View>
+            ),
+            inactive: (
+                <MaterialCommunityIcons
+                    name="cube-outline"
+                    size={hp("3.2%")}
+                    color="#888"
+                />
             ),
         },
     };
+
+
 
     return (
         <View

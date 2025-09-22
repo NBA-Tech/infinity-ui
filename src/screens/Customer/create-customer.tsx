@@ -1,4 +1,4 @@
-import React, { JSX, useContext, useEffect, useState } from 'react';
+import React, { JSX, useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
@@ -28,6 +28,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { addNewCustomerAPI } from '@/src/api/customer/customer-api-service';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
+import { Card } from '@/components/ui/card';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -63,7 +64,7 @@ const CreateCustomer = () => {
     const { addCustomerDetailsInfo, updateCustomerMetaInfoList } = useCustomerStore();
 
 
-    const basicInfoFields: FormFields = {
+    const basicInfoFields: FormFields = useMemo(() => ({
         firstName: {
             parentKey: "customerBasicInfo",
             key: "firstName",
@@ -74,6 +75,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            value: customerDetails?.customerBasicInfo?.firstName ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'firstName', value, true, setCustomerDetails, setErrors)
             }
@@ -87,6 +89,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            value: customerDetails?.customerBasicInfo?.lastName ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'lastName', value, true, setCustomerDetails, setErrors)
             }
@@ -100,6 +103,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            value: customerDetails?.customerBasicInfo?.mobileNumber ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'mobileNumber', value, true, setCustomerDetails, setErrors)
             }
@@ -113,6 +117,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            value: customerDetails?.customerBasicInfo?.email ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
             }
@@ -130,7 +135,7 @@ const CreateCustomer = () => {
                 label: gender,
                 value: gender as GENDER,
             })),
-            value: customerDetails.customerBasicInfo.gender,
+            value: customerDetails?.customerBasicInfo?.gender,
             onChange: (value: GENDER) => {
                 patchState('customerBasicInfo', 'gender', value, false, setCustomerDetails, setErrors)
             }
@@ -148,7 +153,7 @@ const CreateCustomer = () => {
                 label: lead,
                 value: lead as LEADSOURCE,
             })),
-            value: customerDetails.leadSource,
+            value: customerDetails?.leadSource,
             onChange: (value: LEADSOURCE) => {
                 patchState("", 'leadSource', value, false, setCustomerDetails, setErrors)
             }
@@ -163,11 +168,12 @@ const CreateCustomer = () => {
             isRequired: false,
             isDisabled: false,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
+            value: customerDetails?.customerBasicInfo?.notes ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'notes', value, false, setCustomerDetails, setErrors)
             }
         },
-    }
+    }),[customerDetails]);
 
     const billingInfoFields: FormFields = {
         street: {
@@ -179,6 +185,7 @@ const CreateCustomer = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            value: customerDetails?.customerBillingInfo?.street ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'street', value, false, setCustomerDetails, setErrors)
             }
@@ -193,6 +200,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            value: customerDetails?.customerBillingInfo?.city ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'city', value, false, setCustomerDetails, setErrors)
             }
@@ -206,7 +214,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
-            value: customerDetails.customerBillingInfo.country,
+            value: customerDetails?.customerBillingInfo?.country ?? "",
             dropDownItems: getCountries().map((country, index) => ({
                 label: country.name,
                 value: country.isoCode
@@ -224,8 +232,8 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
-            value: customerDetails.customerBillingInfo.state,
-            dropDownItems: getStates("IN").map((state, index) => ({
+            value: customerDetails?.customerBillingInfo?.state ?? "",
+            dropDownItems: getStates(customerDetails?.customerBillingInfo?.country).map((state, index) => ({
                 label: state.name,
                 value: state.isoCode
             })),
@@ -242,6 +250,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            value: customerDetails?.customerBillingInfo?.zipCode ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'zipCode', value, false, setCustomerDetails, setErrors)
             }
@@ -314,74 +323,39 @@ const CreateCustomer = () => {
                     </View>
                     <View className='flex flex-col'>
 
-                        <Accordion
-                            size="md"
-                            variant="filled"
-                            type="single"
-                            defaultValue={["basicInfo"]}
-                            isCollapsible={true}
-                            isDisabled={false}
-                            className="m-5 w-[90%] border border-outline-200"
-                        >
-                            <AccordionItem value="basicInfo">
-                                <AccordionHeader style={styles.accordionHeader}>
-                                    <AccordionTrigger>
-                                        {({ isExpanded = true }: { isExpanded: boolean }) => {
-                                            return (
-                                                <>
-                                                    <View className='flex flex-row  items-center justify-center'>
-                                                        <Feather name="user" size={wp('5%')} color="#8B5CF6" />
-                                                        <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Basic Information</Text>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
+                            <View style={styles.accordionHeader}>
+                                <View className='flex flex-row  items-start justify-start'>
+                                    <Feather name="user" size={wp('5%')} color="#8B5CF6" />
+                                    <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Basic Information</Text>
 
-                                                    </View>
-                                                    {isExpanded ? (
-                                                        <Feather name="chevron-up" size={wp('5%')} color="#000" />
-                                                    ) : (
-                                                        <Feather name="chevron-down" size={wp('5%')} color="#000" />
-                                                    )}
-                                                </>
-                                            )
-                                        }}
-                                    </AccordionTrigger>
-                                </AccordionHeader>
-                                <AccordionContent>
-                                    <CustomFieldsComponent infoFields={basicInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
-                                </AccordionContent>
-                            </AccordionItem>
-                            <Divider />
-                            <AccordionItem value="billingInfo">
-                                <AccordionHeader style={styles.accordionHeader}>
-                                    <AccordionTrigger>
-                                        {({ isExpanded }: { isExpanded: boolean }) => {
-                                            return (
-                                                <>
-                                                    <View className='flex flex-row  items-center justify-center'>
-                                                        <Feather name="credit-card" size={wp('5%')} color="#8B5CF6" />
-                                                        <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Billing Information</Text>
+                                </View>
+                            </View>
+                            <View>
+                                <CustomFieldsComponent infoFields={basicInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
+                            </View>
 
-                                                    </View>
-                                                    {isExpanded ? (
-                                                        <Feather name="chevron-up" size={wp('5%')} color="#000" />
-                                                    ) : (
-                                                        <Feather name="chevron-down" size={wp('5%')} color="#000" />
-                                                    )}
-                                                </>
-                                            )
-                                        }}
-                                    </AccordionTrigger>
-                                </AccordionHeader>
-                                <AccordionContent>
-                                    <CustomFieldsComponent infoFields={billingInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
+                        </Card>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginTop:hp('2%') }]}>
+                            <View style={styles.accordionHeader}>
+                                <View className='flex flex-row  items-start justify-start'>
+                                    <Feather name="credit-card" size={wp('5%')} color="#8B5CF6" />
+                                    <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Billing Information</Text>
+
+                                </View>
+                            </View>
+                            <View>
+                                <CustomFieldsComponent infoFields={billingInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
+                            </View>
+
+                        </Card>
 
 
                     </View>
 
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
 
