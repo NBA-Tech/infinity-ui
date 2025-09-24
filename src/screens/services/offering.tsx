@@ -23,6 +23,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
+import Skeleton from '@/components/ui/skeleton';
+import { EmptyState } from '@/src/components/empty-state-data';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -60,6 +62,16 @@ const styles = StyleSheet.create({
     },
 
 })
+
+const OfferingCardSkeleton = () => (
+    <View className='flex flex-col justify-between'>
+        {[...Array(4)].map((_, index) => (
+            <View key={index}>
+                <Skeleton style={{ width: wp('95%'), height: hp('15%'), marginHorizontal: wp('2%') }} />
+            </View>
+        ))}
+    </View>
+);
 const services = () => {
     const globalStyles = useContext(StyleContext);
     const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo, updateOfferingDetailsInfo } = useOfferingStore();
@@ -691,8 +703,32 @@ const services = () => {
 
                 </View>
                 <View>
-                    {activeTab === 'services' && <ServiceTab serviceData={searchText != '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)} handleEdit={handleEdit} />}
-                    {activeTab === 'packages' && <PackageTab packageData={searchText != '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)} handleEdit={handleEdit} />}
+                    {/* Loading Skeleton */}
+                    {loadingProvider != null && <OfferingCardSkeleton />}
+
+                    {/* Services Tab */}
+                    {!loadingProvider && activeTab === 'services' && (
+                        offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)?.length === 0 ? (
+                            <EmptyState variant='services' />
+                        ) : (
+                            <ServiceTab
+                                serviceData={searchText !== '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)}
+                                handleEdit={handleEdit}
+                            />
+                        )
+                    )}
+
+                    {/* Packages Tab */}
+                    {!loadingProvider && activeTab === 'packages' && (
+                        offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)?.length === 0 ? (
+                            <EmptyState variant='packages' />
+                        ) : (
+                            <PackageTab
+                                packageData={searchText !== '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)}
+                                handleEdit={handleEdit}
+                            />
+                        )
+                    )}
                 </View>
             </View>
 

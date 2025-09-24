@@ -12,7 +12,7 @@ import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -37,6 +37,8 @@ import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import { buildHtml } from './utils/html-builder';
 import { getOrderDetailsAPI, saveNewOrderAPI, updateOrderDetailsAPI } from '@/src/api/order/order-api-service';
+import { EmptyState } from '@/src/components/empty-state-data';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -96,6 +98,7 @@ const CreateOrder = () => {
         time: false,
         modal: false
     })
+    const navigation = useNavigation<NavigationProp>();
 
     const getCustomerNameList = async () => {
         const customerMetaData = getCustomerMetaInfoList();
@@ -862,6 +865,10 @@ const CreateOrder = () => {
 
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
+                                        {!loading && packageData?.length == 0 && (
+                                            <EmptyState variant='orders' onAction={()=>navigation.navigate('Offering')}/>
+                                        )
+                                        }
                                         <FlatList
                                             horizontal
                                             data={packageData}
@@ -901,6 +908,11 @@ const CreateOrder = () => {
                                 <View style={{ marginHorizontal: wp('2%'), paddingVertical: hp('2%') }}>
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
+                                        {!loading && serviceData?.length == 0 && (
+                                            <EmptyState variant='services' onAction={()=>navigation.navigate('Offering')}/>
+                                        )
+
+                                        }
                                         <FlatList
                                             data={serviceData}
                                             renderItem={({ item, index }) => <ServiceComponent eventType={item} index={index} offeringInfo={orderDetails?.offeringInfo} selectedElement={orderDetails?.offeringInfo?.services?.find((s) => s.id === item.id)} handleTotalPriceCharges={handleTotalPriceCharges} handleCheckboxChange={handleCheckboxChange} />}

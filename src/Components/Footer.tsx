@@ -117,11 +117,11 @@ const Footer = (props: FooterProps) => {
                 />
             ),
         },
-        offering: {
+        profile: {
             active: (
                 <View>
                     <MaterialCommunityIcons
-                        name="cube"
+                        name="account-circle"
                         size={hp("3%")}
                         color="#8B5CF6"
                     />
@@ -138,7 +138,7 @@ const Footer = (props: FooterProps) => {
             ),
             inactive: (
                 <MaterialCommunityIcons
-                    name="cube-outline"
+                    name="account-circle-outline"
                     size={hp("3.2%")}
                     color="#888"
                 />

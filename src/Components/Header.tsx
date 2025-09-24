@@ -94,8 +94,8 @@ const Header = () => {
             <View style={styles.headerBody}>
                 <View >
                     <View style={styles.appLogoContainer}>
-                        <Image style={{ width: wp('20%'), height: hp('10%') }} source={Logo} />
-                        <Text style={globalStyle.headingText}>INFINITY</Text>
+                        <Image style={{ width: wp('15%'), height: hp('7%') }} source={Logo} />
+                        <Text style={globalStyle.heading2Text}>INFINITY</Text>
                     </View>
                 </View>
 

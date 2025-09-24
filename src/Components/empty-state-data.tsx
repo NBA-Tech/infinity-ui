@@ -12,7 +12,8 @@ type Variant =
   | "customers"
   | "orders"
   | "quotations"
-  | "invoices";
+  | "invoices"
+  | "packages";
 
 interface EmptyStateProps {
   title?: string;
@@ -46,6 +47,16 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           actionLabel: actionLabel || "Clear Filter",
           bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(236,239,255,0.8)"],
         };
+      case "packages":
+        return {
+          icon: <MaterialCommunityIcons name="package-variant-closed" size={80} color="rgba(139,92,246,0.6)" />,
+          title: title || "No photography packages yet",
+          description:
+            description ||
+            "Create your first photography package to start offering bundled services to clients. Include pricing, session details, and deliverables.",
+          actionLabel: actionLabel || "Create Package",
+          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(254,249,231,0.8)"],
+        };
       case "services":
         return {
           icon: <MaterialCommunityIcons name="package-variant" size={80} color="rgba(139,92,246,0.6)" />,
@@ -54,7 +65,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             description ||
             "Create your first photography package to start offering services to clients. Include pricing, session details, and deliverables.",
           actionLabel: actionLabel || "Create Package",
-          secondaryActionLabel: secondaryActionLabel || "Import Template",
           bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(254,242,242,0.8)"],
         };
       case "customers":
@@ -65,7 +75,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             description ||
             "Start building your client base! Add your first client to track their sessions, preferences, and project history.",
           actionLabel: actionLabel || "Add Client",
-          secondaryActionLabel: secondaryActionLabel || "Import Contacts",
           bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(219,234,254,0.8)"],
         };
       case "orders":

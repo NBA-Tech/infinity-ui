@@ -1,6 +1,7 @@
 import { Country, ICountry, IState, State } from "country-state-city";
 import { FormFields } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
+import { Linking } from "react-native";
 
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
@@ -258,4 +259,15 @@ export function escapeHtmlForJson(html: string): string {
     .replace(/\t/g, '\\t')  // Escape tabs
     .replace(/\f/g, '\\f')  // Escape form feeds
     .replace(/\b/g, '\\b'); // Escape backspace
+}
+
+export function openDaialler(phoneNumber: string) {
+  console.log(phoneNumber)
+  let phoneUrl = `tel:${phoneNumber}`;
+  Linking.openURL(phoneUrl);
+}
+
+export function openEmailClient(email: string) {
+  let emailUrl = `mailto:${email}`;
+  Linking.openURL(emailUrl);
 }

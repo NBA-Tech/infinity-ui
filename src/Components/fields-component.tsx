@@ -239,7 +239,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     <InputField
                         type={field.type}
                         placeholder={field.placeholder}
-                        value={String(field.value)}
+                        value={String(field.value || "")}
                         keyboardType={field.type === "number" ? "numeric" : "default"}
                         onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
                         onBlur={() => field.onBlur?.(field.parentKey || "", field.key)}

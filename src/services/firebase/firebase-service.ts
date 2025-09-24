@@ -18,14 +18,13 @@ export const firebaseUploadImage = async (filePath: string, folder?: string): Pr
         if (folder) {
             formData.append("folder", folder);
         }
-        const uploadImageApi=await fetchWithTimeout({
+        const uploadImageResponse=await fetchWithTimeout({
             url:`${API_BASE_URI}/files/upload`,
             options: {
                 method: 'POST',
                 body: formData
             }
         })
-        const uploadImageResponse=await uploadImageApi.json();
         return uploadImageResponse
     }
     catch (error) {

@@ -39,6 +39,15 @@ function CustomerNavigator() {
         </Stack.Navigator>
     )
 }
+
+function ProfileNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Offering" component={OfferingNavigator} />
+        </Stack.Navigator>
+    )
+}
 function TabNavigator() {
     return (
         <Tab.Navigator
@@ -49,7 +58,7 @@ function TabNavigator() {
             <Tab.Screen name="Customer" component={CustomerNavigator} />
             <Tab.Screen name="Orders" component={OrderNavigator} />
             <Tab.Screen name="Invoice" component={Invoice} />
-            <Tab.Screen name="Offering" component={OfferingNavigator} />
+            <Tab.Screen name="profile" component={ProfileNavigator} />
         </Tab.Navigator>
     );
 }
@@ -84,7 +93,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {true ? (
+            {isAuthenticated ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />

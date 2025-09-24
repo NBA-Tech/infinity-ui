@@ -9,7 +9,7 @@ interface CustomerStore {
     setCustomerMetaInfoList: (customerMetaInfoList: CustomerMetaModel[]) => void;
     getCustomerMetaInfoList: () => CustomerMetaModel[];
     updateCustomerMetaInfoList: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
-    deleteCustomerMetaInfo: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
+    deleteCustomerMetaInfo: (customerIDs: string | string[]) => void;
 
     // Details CRUD
     setCustomerDetailsInfo: (customerDetailsList: CustomerModel[]) => void; // ✅ new
@@ -43,12 +43,15 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             return { customerMetaInfoList: [...updated, ...newOnes] };
         }),
 
-    deleteCustomerMetaInfo: (customerMetaInfo) =>
+    deleteCustomerMetaInfo: (customerIDs: string | string[]) =>
         set((state) => {
-            const toDelete = Array.isArray(customerMetaInfo) ? customerMetaInfo : [customerMetaInfo];
-            const deleteIds = new Set(toDelete.map((c) => c.customerID));
+            const idsToDelete = new Set(Array.isArray(customerIDs) ? customerIDs : [customerIDs]);
+            console.log(state.customerMetaInfoList)
 
-            const filtered = state.customerMetaInfoList.filter((c) => !deleteIds.has(c.customerID));
+            const filtered = state.customerMetaInfoList.filter(
+                (c) => !idsToDelete.has(c.customerID)
+            );
+
             return { customerMetaInfoList: filtered };
         }),
 

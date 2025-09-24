@@ -35,3 +35,14 @@ export const getCustomerDetails=async(payload:SearchQueryRequest,headers?:Record
     
 
 }
+
+export const deleteCustomerAPI=async(customerID:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const deleteCustomerResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/customer/delete_customer?customerID=${customerID}`,
+        options: {
+            method: 'DELETE',
+            headers
+        },
+    })
+    return deleteCustomerResponse 
+}

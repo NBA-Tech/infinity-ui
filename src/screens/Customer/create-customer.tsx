@@ -289,6 +289,12 @@ const CreateCustomer = () => {
             customerDetails.customerID = addNewCustomerResponse.data
             addCustomerDetailsInfo(customerDetails)
             updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+            setCustomerDetails({
+                userId: "",
+                leadSource: undefined,
+                customerBasicInfo: {} as CustomerBasicInfo,
+                customerBillingInfo: {} as CustomerBillingInfo
+            } as CustomerModel)
         }
         setLoading(false)
     }

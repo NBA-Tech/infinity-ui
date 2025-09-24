@@ -1,5 +1,5 @@
 import GradientCard from '@/src/utils/gradient-gard';
-import React, { use, useContext, useEffect, useRef, useState } from 'react';
+import React, { use, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
@@ -14,7 +14,7 @@ import { FormFields } from '@/src/types/common';
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { BUSINESSTYPE } from '@/src/constant/constants';
-import { getCountries, getStates } from '@/src/utils/utils';
+import { getCountries, getStates, patchState, validateValues } from '@/src/utils/utils';
 import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { Country } from 'country-state-city';
@@ -81,68 +81,16 @@ const UserOnBoarding = () => {
     const globalStyles = useContext(StyleContext);
     const [currStep, setCurrStep] = useState(0);
     const [headings, setHeadings] = useState(["Company Profile (Basic Info)", "Business Address & Tax Info", "Preferences & Accounting Setup"]);
-    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
     const navigation = useNavigation<NavigationProp>();
     const { login } = useAuth()
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [businessDetails, setBusinessDetails] = useState<UserModel>({
-        userId: "",
-        userBusinessInfo: {
-            companyName: "",
-            companyLogoURL: "",
-            businessType: "",
-            businessPhoneNumber: "",
-            businessEmail: "",
-            websiteURL: "",
-        },
-        userBillingInfo: {
-            gstNumber: "",
-            panNumber: "",
-            country: "",
-            state: "",
-            city: "",
-            zipCode: "",
-            address: "",
-        },
-        userSettingInfo: {
-            currency: "",
-            notificationPreference: "",
-        },
-    });
-
-    const patchState = (section: keyof UserModel, key: string, value: string) => {
-        setBusinessDetails((prev) => {
-            const updated = {
-                ...prev,
-                [section]: {
-                    ...prev[section],
-                    [key]: value,
-                },
-            };
-
-            // validate right here on the updated value
-            if (value === "") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [key]: "This field is required",
-                }));
-            } else {
-                setErrors((prevErrors) => {
-                    const { [key]: _, ...rest } = prevErrors;
-                    return rest;
-                });
-            }
-
-            return updated;
-        });
-    };
+    const [businessDetails, setBusinessDetails] = useState<UserModel>({});
 
 
-
-    const businessInfoFields: FormFields = {
+    const businessInfoFields: FormFields = useMemo(() => ({
         companyName: {
             parentKey: "userBusinessInfo",
             key: "companyName",
@@ -153,10 +101,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            isInvalid: true,
-            errorMessage: "Please enter company name",
+            value: businessDetails?.userBusinessInfo?.companyName ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "companyName", value);
+                patchState("userBusinessInfo", "companyName", value,true,setBusinessDetails,setErrors);
             },
         },
         businessType: {
@@ -169,12 +116,13 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBusinessInfo?.businessType ?? "",
             dropDownItems: BUSINESSTYPE.map((type) => ({
                 label: type,
                 value: type,
             })),
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessType", value);
+                patchState("userBusinessInfo", "businessType", value,true,setBusinessDetails,setErrors);
             },
         },
         businessPhoneNumber: {
@@ -187,8 +135,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBusinessInfo?.businessPhoneNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessPhoneNumber", value);
+                patchState("userBusinessInfo", "businessPhoneNumber", value,true,setBusinessDetails,setErrors);
             },
         },
         businessEmail: {
@@ -201,8 +150,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBusinessInfo?.businessEmail ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessEmail", value);
+                patchState("userBusinessInfo", "businessEmail", value,true,setBusinessDetails,setErrors);
             },
         },
         websiteURL: {
@@ -215,13 +165,14 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            value: businessDetails?.userBusinessInfo?.websiteURL ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "websiteURL", value);
+                patchState("userBusinessInfo", "websiteURL", value,true,setBusinessDetails,setErrors);
             },
         },
-    };
+    }), [businessDetails]);
 
-    const billingInfoFields: FormFields = {
+    const billingInfoFields: FormFields = useMemo(() => ({
         gstNumber: {
             parentKey: "userBillingInfo",
             key: "gstNumber",
@@ -232,8 +183,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.gstNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "gstNumber", value);
+                patchState("userBillingInfo", "gstNumber", value,true,setBusinessDetails,setErrors);
             },
         },
         panNumber: {
@@ -246,8 +198,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.panNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "panNumber", value);
+                patchState("userBillingInfo", "panNumber", value,true,setBusinessDetails,setErrors);
             },
         },
         country: {
@@ -260,13 +213,13 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.country ?? "",
             dropDownItems: getCountries().map((country) => ({
                 label: country.name,
                 value: country.isoCode,
             })),
             onChange: (value: string) => {
-                setSelectedCountry(value);
-                patchState("userBillingInfo", "country", value);
+                patchState("userBillingInfo", "country", value,true,setBusinessDetails,setErrors);
             },
         },
         state: {
@@ -279,12 +232,13 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
-            dropDownItems: getStates(selectedCountry as string).map((state) => ({
+            value: businessDetails?.userBillingInfo?.state ?? "",
+            dropDownItems: getStates(businessDetails?.userBillingInfo?.country as string).map((state) => ({
                 label: state.name,
                 value: state.isoCode,
             })),
             onChange: (value: string) => {
-                patchState("userBillingInfo", "state", value);
+                patchState("userBillingInfo", "state", value,true,setBusinessDetails,setErrors);
             },
         },
         city: {
@@ -297,8 +251,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.city ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "city", value);
+                patchState("userBillingInfo", "city", value,true,setBusinessDetails,setErrors);
             },
         },
         address: {
@@ -311,8 +266,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.address ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "address", value);
+                patchState("userBillingInfo", "address", value,true,setBusinessDetails,setErrors);
             },
         },
         zipCode: {
@@ -325,14 +281,15 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            value: businessDetails?.userBillingInfo?.zipCode ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "zipCode", value);
+                patchState("userBillingInfo", "zipCode", value,true,setBusinessDetails,setErrors);
             },
         },
-    };
+    }),[businessDetails]);
 
 
-    const settingInfoFields: FormFields = {
+    const settingInfoFields: FormFields = useMemo(() => ({
         currency: {
             parentKey: "userSettingInfo",
             key: "currency",
@@ -343,9 +300,9 @@ const UserOnBoarding = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: true,
-            value: Country.getCountryByCode(selectedCountry || "IN")?.currency || "INR",
+            value: Country.getCountryByCode("IN")?.currency || "INR",
             onChange: (value: string) => {
-                patchState("userSettingInfo", "currency", value);
+                patchState("userSettingInfo", "currency", value,true,setBusinessDetails,setErrors);
             },
         },
         notificationPreference: {
@@ -363,29 +320,32 @@ const UserOnBoarding = () => {
                 value: state,
             })),
             onChange: (value: string) => {
-                patchState("userSettingInfo", "notificationPreference", value);
+                patchState("userSettingInfo", "notificationPreference", value,true,setBusinessDetails,setErrors);
             },
         },
-    };
+    }),[businessDetails]);
 
 
-    const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
+    // const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
 
     const handleNext = () => {
-        let isError: boolean = false
-        Object.keys(formFields[currStep]).forEach((key) => {
-            if (isError) return
-            if (formFields[currStep][key].isRequired && !businessDetails[formFields[currStep][key].parentKey as string][formFields[currStep][key].key]) {
-                isError = true
-                showToast({
-                    message: `Please enter ${formFields[currStep][key].label}`,
-                    type: "warning",
-                    title: "Oops!"
-                })
-                return
-            }
-        })
-        if (!isError) setCurrStep(currStep + 1);
+        if(errors && Object.keys(errors).length > 0){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please fix all the errors before proceeding",
+            })
+        }
+        if(validateValues(businessDetails, currStep == 0 ? businessInfoFields : currStep == 1 ? billingInfoFields : settingInfoFields).success){
+            setCurrStep(currStep + 1);
+        }
+        else{
+            showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please fill all required fields",
+            })
+        }
 
     }
 
@@ -408,7 +368,7 @@ const UserOnBoarding = () => {
                     type: "success",
                     title: "Success"
                 })
-                patchState('userBusinessInfo', 'companyLogoURL', uploadImage.url);
+                patchState('userBusinessInfo', 'companyLogoURL', uploadImage.url,true,setBusinessDetails,setErrors);
             }
             else {
                 showToast({
@@ -554,7 +514,7 @@ const UserOnBoarding = () => {
                             )
 
                             }
-                            <CustomFieldsComponent infoFields={formFields[currStep]} errors={errors} />
+                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : currStep == 1 ? billingInfoFields : settingInfoFields} errors={errors} />
 
                         </ScrollView>
                         <View style={styles.fixedButtonContainer}>
