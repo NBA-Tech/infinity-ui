@@ -5,9 +5,13 @@ import { Card } from '@/components/ui/card';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { FormFields } from '@/src/types/common';
-const QuotationDetails = () => {
+import { CustomFieldsComponent } from '@/src/components/fields-component';
+
+type QuotationDetailsProps = {
+    orderForm?:FormFields
+}
+const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
-    const [orderInfo, setOrderInfo] = useState<any>(null);
     return (
         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
             {/* Header */}
@@ -21,6 +25,7 @@ const QuotationDetails = () => {
                     </Text>
                 </View>
             </View>
+            <CustomFieldsComponent infoFields={props.orderForm} cardStyle={{ padding: hp("2%") }}/>
 
 
         </Card>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,11 +8,16 @@ import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import QuotationDetails from './step-components/quotation-details';
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
+import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
     },
-     roundWrapper: {
+    roundWrapper: {
         borderRadius: wp("50%"),
         width: wp("13%"),
     },
@@ -25,6 +30,53 @@ const CreateInvoice = () => {
     const globalStyles = useContext(StyleContext);
     const [currStep, setCurrStep] = useState(0);
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice>();
+    const [orderInfo, setOrderInfo] = useState<any>(null);
+    const { getItem } = useDataStore()
+    const  showToast  = useToastMessage();
+
+
+
+    const getOrderMetaData = async () => {
+        const userID=getItem("USERID")
+        if(!userID){
+            showToast({ type: "error", title: "Error", message: "User not found" });
+            return
+        }
+        const filter:SearchQueryRequest={
+            filters:{"userId":userID},
+            requiredFields:["orderBasicInfo","_id","eventInfo.eventTitle"],
+            getAll:true,
+        }
+        const orderMetaDataResponse:ApiGeneralRespose=await getOrderDataListAPI(filter)
+        console.log("orderMetaDataResponse",orderMetaDataResponse)
+        if(!orderMetaDataResponse.success){
+            showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
+        }
+        else{
+            setOrderInfo(orderMetaDataResponse.data)
+        }
+    }
+    const quotaionForm:FormFields = useMemo(() => ({
+        orderId:{
+            key: "orderId",
+            label: "Select Order",
+            placeholder: "Select Order",
+            icon: <Feather name="file-text" size={wp('5%')} color="#3B82F6" />,
+            type: "select",
+            style:"w-full",
+            isRequired: true,
+            isDisabled: false,
+            dropDownItems: orderInfo?.map((order: any) => ({ label: order?.eventInfo?.eventTitle || "N/A", value: order?._id })) || [],
+            value: invoiceDetails?.orderId || "",
+        }
+        
+    }),[invoiceDetails,orderInfo])
+
+
+    useEffect(() => {
+        getOrderMetaData()
+    }, [])
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
             <BackHeader screenName="Create Invoice" />
@@ -74,7 +126,7 @@ const CreateInvoice = () => {
                     </View>
                 </View>
                 {currStep === 0 && (
-                    <QuotationDetails/>
+                    <QuotationDetails orderForm={quotaionForm}/>
                 )
 
                 }

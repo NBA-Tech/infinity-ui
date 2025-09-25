@@ -31,13 +31,14 @@ type PackageComponentProps = {
 export const PackageComponent = ({ pkg, isSelected, handleCalculatePrice, handleCheckboxChange,handleTotalPriceCharges }: PackageComponentProps) => {
     const globalStyles = useContext(StyleContext);
     const [selected, setSelected] = useState(isSelected);
+    const price=pkg?.calculatedPrice ? handleCalculatePrice(pkg?.serviceList) : pkg?.price
 
     const handlePress = () => {
         let updateValue={}
         if (selected) {
             updateValue={orderType: null, packageId: null,services:[] as ServiceInfo[]}
         } else {
-            updateValue={orderType: OrderType.PACKAGE, packageId: pkg.id,services:[] as ServiceInfo[]}
+            updateValue={orderType: OrderType.PACKAGE, packageId: pkg.id,services:[] as ServiceInfo[],packagePrice: price}
         }
 
         handleCheckboxChange(updateValue, { parentKey: "offeringInfo", childKey: "" });
@@ -103,7 +104,7 @@ export const PackageComponent = ({ pkg, isSelected, handleCalculatePrice, handle
                         { color: "green", marginBottom: 8 },
                     ]}
                 >
-                    Rs. {pkg?.calculatedPrice ? handleCalculatePrice(pkg?.serviceList) : pkg?.price}
+                    Rs. {price}
                 </Text>
 
                 {/* Service List */}

@@ -83,7 +83,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
 
                     </View>
                     <View>
-                        <View className='flex flex-1 flex-row justify-between items-center' style={{ marginTop: hp('2%'), marginHorizontal: wp('5%') }}>
+                        <View className='flex flex-1 flex-row justify-between items-center' style={{ marginTop: hp('2%')}}>
                             <View className='flex flex-col items-center'>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Budget</Text>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>₹{orderCardProps?.cardData?.totalPrice || 0}</Text>

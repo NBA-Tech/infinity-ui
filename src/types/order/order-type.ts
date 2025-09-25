@@ -31,6 +31,7 @@ export interface OfferingInfo {
   orderType: OrderType;
   packageId?: string;
   services?: ServiceInfo[]
+  packagePrice?: number;
 }
 export interface OrderBasicInfo {
   customerID: string;

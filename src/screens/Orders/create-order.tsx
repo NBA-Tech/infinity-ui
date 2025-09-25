@@ -731,6 +731,10 @@ const CreateOrder = () => {
 
     }, [])
 
+    useEffect(() => {
+        console.log("orderDetails", orderDetails)
+    },[orderDetails])
+
 
 
 
