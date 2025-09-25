@@ -14,13 +14,14 @@ type EventInfoProps = {
 }
 const EventInfoCard = (props: EventInfoProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     return (
         <Card style={globalStyles.cardShadowEffect}>
             <View style={{ padding: wp('3%') }}>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-start items-star gap-2'>
                         <Feather name="calendar" size={wp('7%')} color={'#8B5CF6'} />
-                        <Text style={globalStyles.heading3Text}>Event Information</Text>
+                        <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Event Information</Text>
                     </View>
                     <View>
                         <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.eventData?.eventTitle}</Text>
@@ -29,17 +30,17 @@ const EventInfoCard = (props: EventInfoProps) => {
 
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row gap-2'>
-                            <Feather name="calendar" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>{formatDate(props?.eventData?.eventDate ?? "")}</Text>
+                            <Feather name="calendar" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{formatDate(props?.eventData?.eventDate ?? "")}</Text>
                         </View>
                         <View className='flex flex-row gap-4'>
-                            <Feather name="clock" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>{props?.eventData?.eventTime}</Text>
+                            <Feather name="clock" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{props?.eventData?.eventTime}</Text>
                         </View>
 
                     </View>
                     <View className='flex flex-row justify-start items-center gap-2' style={{width:wp('60%')}}>
-                        <Feather name="map-pin" size={wp('5%')} color={'#000'} />
+                        <Feather name="map-pin" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{props?.eventData?.eventLocation}</Text>
                         <Feather name="external-link" size={wp('5%')} color={'#8B5CF6'} />
                     </View>

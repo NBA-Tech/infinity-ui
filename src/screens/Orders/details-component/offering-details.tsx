@@ -37,6 +37,7 @@ type OfferingDetailsProps = {
 }
 const OfferingDetails = (props: OfferingDetailsProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [serviceList, setServiceList] = useState<ServiceInfo[]>([]);
     const { getOfferingList, setOfferingList } = useOfferingStore()
     const showToast = useToastMessage()
@@ -119,9 +120,9 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
                             <Feather name="camera" size={wp('7%')} color={'#8B5CF6'} />
-                            <Text style={globalStyles.heading3Text}>Service Information</Text>
+                            <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Service Information</Text>
                         </View>
-                        <View style={styles.statusContainer}>
+                        <View style={[styles.statusContainer, { borderColor: isDark ? '#fff' : '#000' }]}>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{props?.offeringData?.orderType}</Text>
                         </View>
                     </View>

@@ -334,9 +334,9 @@ const Register = ({ setCurrScreen }: any) => {
                         </ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
-                        <Text style={[globalStyles.labelText]}>Already have an account? </Text>
+                        <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Already have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('login')}>
-                            <Text style={[globalStyles.underscoreText]}>Sign In</Text>
+                            <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Sign In</Text>
                         </TouchableOpacity>
 
                     </View>

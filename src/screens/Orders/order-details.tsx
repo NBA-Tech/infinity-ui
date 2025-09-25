@@ -44,7 +44,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const [packageData, setPackageData] = useState<OfferingModel[]>([]);
     const [serviceData, setServiceData] = useState<OfferingModel[]>([]);
     const globalStyles = useContext(StyleContext);
-    const theme = useContext(ThemeToggleContext);
+    const {isDark} = useContext(ThemeToggleContext);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
@@ -54,17 +54,17 @@ const OrderDetails = ({ route, navigation }: Props) => {
         {
             id: 1,
             label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={'#000'} />,
+            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
         {
             id: 2,
             label: 'Invoice',
-            icon: <Feather name="file" size={wp('5%')} color={'#000'} />,
+            icon: <Feather name="file" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
         {
             id: 3,
             label: 'Edit',
-            icon: <Feather name="edit" size={wp('5%')} color={'#000'} />,
+            icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         }
     ]
 
@@ -128,9 +128,9 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     <View className="flex flex-row justify-between items-center w-full">
                         {/* Left side */}
                         <View className="flex flex-row items-center gap-3">
-                            <Feather name="arrow-left" size={wp('7%')} color={'#000'} />
+                            <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
                             <View className="flex flex-col">
-                                <Text style={globalStyles.heading3Text}>Order Details</Text>
+                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Order Details</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
                                     Order #{orderDetails?.orderId}
                                 </Text>
@@ -148,7 +148,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         {actionButtons.map((action) => (
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground}>
                                 {action.icon}
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>{action.label}</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText,globalStyles.themeTextColor]}>{action.label}</ButtonText>
                             </Button>
                         ))
                         }

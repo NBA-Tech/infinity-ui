@@ -2,7 +2,7 @@ import GradientCard from '@/src/utils/gradient-gard';
 import React, { use, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Divider } from '@/components/ui/divider';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
@@ -62,9 +62,6 @@ const styles = StyleSheet.create({
     },
     fixedButtonContainer: {
         padding: hp("2%"),
-        backgroundColor: '#fff',
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb',
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
@@ -79,6 +76,7 @@ const styles = StyleSheet.create({
 
 const UserOnBoarding = () => {
     const globalStyles = useContext(StyleContext);
+    const {isDark}=useContext(ThemeToggleContext);
     const [currStep, setCurrStep] = useState(0);
     const [headings, setHeadings] = useState(["Company Profile (Basic Info)", "Business Address & Tax Info", "Preferences & Accounting Setup"]);
     const showToast = useToastMessage();
@@ -426,7 +424,7 @@ const UserOnBoarding = () => {
 
 
     return (
-        <View style={styles.body}>
+        <View style={[styles.body,globalStyles.appBackground]}>
             {/* Header */}
             <View style={styles.headingContainer}>
                 <View className="justify-center items-center">
@@ -517,10 +515,10 @@ const UserOnBoarding = () => {
                             <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : currStep == 1 ? billingInfoFields : settingInfoFields} errors={errors} />
 
                         </ScrollView>
-                        <View style={styles.fixedButtonContainer}>
+                        <View style={[styles.fixedButtonContainer,globalStyles.cardShadowEffect]}>
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} isDisabled={currStep == 0 || loading} onPress={() => setCurrStep(currStep - 1)}>
-                                <Feather name="arrow-left" size={wp("5%")} color="#000" />
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>Prev</ButtonText>
+                                <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor,globalStyles.themeTextColor]}>Prev</ButtonText>
                             </Button>
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={currStep == 2 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
                                 {

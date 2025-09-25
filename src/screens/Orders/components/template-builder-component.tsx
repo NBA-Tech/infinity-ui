@@ -1,7 +1,7 @@
 import { Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CheckBox from '@react-native-community/checkbox';
@@ -13,10 +13,6 @@ const styles = StyleSheet.create({
     accordionHeader: {
         height: hp('8%'),
     },
-    checkBox: {
-        borderBlockColor: 'red',
-        borderWidth: 10
-    }
 });
 type TemplateBuilderComponentProps = {
     quotationFields: any
@@ -25,6 +21,7 @@ type TemplateBuilderComponentProps = {
 }
 const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCheckboxChange }: TemplateBuilderComponentProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
@@ -66,16 +63,16 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
                                         <View className="flex flex-row items-center justify-between">
                                             {item?.icon}
                                             <Text
-                                                style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}
+                                                style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}
                                             >
                                                 {item?.label}
                                             </Text>
 
                                         </View>
                                         {isExpanded ? (
-                                            <Feather name="chevron-up" size={wp('5%')} color="#000" />
+                                            <Feather name="chevron-up" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                         ) : (
-                                            <Feather name="chevron-down" size={wp('5%')} color="#000" />
+                                            <Feather name="chevron-down" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                         )}
                                     </>
                                 )}
@@ -91,11 +88,11 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
                                         <View className="flex flex-row items-center gap-3">
                                             {field?.icon}
                                             <View className="flex flex-col ml-2">
-                                                <Text style={[globalStyles.heading3Text, { width: wp('70%'), flexWrap: 'wrap' }]}>{field?.heading}</Text>
-                                                <Text style={[globalStyles.labelText, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
+                                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]}>{field?.heading}</Text>
+                                                <Text style={[globalStyles.labelText,globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
                                             </View>
                                         </View>
-                                            <CheckBox style={styles.checkBox} value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
+                                            <CheckBox value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
                                     </View>
                                     <Divider />
                                 </View>

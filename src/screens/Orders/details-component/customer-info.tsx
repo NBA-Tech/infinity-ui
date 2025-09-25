@@ -15,13 +15,14 @@ type CustomerInfoProps = {
 }
 const CustomerInfo = (props:CustomerInfoProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     return (
         <Card style={globalStyles.cardShadowEffect}>
             <View style={{ padding: wp('3%') }}>
                 <View className='flex flex-col' style={{gap:hp('2%')}}>
                     <View className='flex flex-row justify-start items-star gap-2'>
                         <Feather name="user" size={wp('7%')} color={'#8B5CF6'} />
-                        <Text style={globalStyles.heading3Text}>Customer Information</Text>
+                        <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Customer Information</Text>
 
                     </View>
                     <View>
@@ -29,8 +30,8 @@ const CustomerInfo = (props:CustomerInfoProps) => {
                     </View>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row gap-2'>
-                            <Feather name="phone" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>{props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber}</Text>
+                            <Feather name="phone" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                            <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>{props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber}</Text>
                         </View>
                         <View className='flex flex-row gap-4'>
                             <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
@@ -40,8 +41,8 @@ const CustomerInfo = (props:CustomerInfoProps) => {
                     </View>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row gap-2'>
-                            <Feather name="mail" size={wp('5%')} color={'#000'} />
-                            <Text style={globalStyles.labelText}>{props?.customerData?.email}</Text>
+                            <Feather name="mail" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                            <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
                         </View>
                         <View className='flex flex-row gap-4'>
                             <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />

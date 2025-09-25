@@ -33,9 +33,9 @@ const styles = StyleSheet.create({
     },
 });
 
-const OrderCardSkeleton = () => (
+const OrderCardSkeleton = ({count}:{count:number}) => (
     <View className='flex flex-col justify-between'>
-        {[...Array(4)].map((_, index) => (
+        {[...Array(count)].map((_, index) => (
             <View key={index}>
                 <Skeleton style={{ width: wp('95%'), height: hp('15%'), marginHorizontal: wp('2%') }} />
             </View>
@@ -192,7 +192,7 @@ const Orders = () => {
                     </View>
                 </View>
 
-                {loading && <OrderCardSkeleton />}
+                {loading && <OrderCardSkeleton count={4}/>}
                 {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 <FlatList
@@ -218,7 +218,7 @@ const Orders = () => {
                         if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                     }}
                     onEndReachedThreshold={0.7}
-                    ListFooterComponent={(hasMore && loading) ? OrderCardSkeleton : null}
+                    ListFooterComponent={(hasMore && loading) ? <OrderCardSkeleton count={1} /> : null}
                     refreshing={loading}
                     onRefresh={()=>{
                         setFilters(prev => ({ ...prev, page: 1 }));

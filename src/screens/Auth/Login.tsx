@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 
 const Login = ({ setCurrScreen }: any) => {
     const globalStyles = useContext(StyleContext);
-    const { toggleTheme, isDark } = useContext(ThemeToggleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
     const showToast = useToastMessage();
     const navigation = useNavigation<NavigationProp>();
@@ -160,7 +160,7 @@ const Login = ({ setCurrScreen }: any) => {
                     </FormControl>
                 ))}
                 <View style={styles.forgotPasswordContainer}>
-                    <Text style={[globalStyles.underscoreText]}>Forgot Password?</Text>
+                    <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Forgot Password?</Text>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
                     <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider!=null}>
@@ -179,9 +179,9 @@ const Login = ({ setCurrScreen }: any) => {
                         <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
-                        <Text style={[globalStyles.labelText]}>Don't have an account? </Text>
+                        <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Don't have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('signup')}>
-                            <Text style={[globalStyles.underscoreText]}>Sign Up</Text>
+                            <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Sign Up</Text>
                         </TouchableOpacity>
 
                     </View>

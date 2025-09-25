@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     accordionHeader: {
         backgroundColor: '#EFF6FF',
         height: hp('8%'),
+        padding: wp('3%'),
     },
     cardContainer: {
         borderRadius: wp('2%'),
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
 
 const CreateCustomer = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
         userId: "",
         leadSource: undefined,
@@ -331,7 +333,7 @@ const CreateCustomer = () => {
                     <View className='flex flex-col'>
 
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
-                            <View style={[styles.accordionHeader,{backgroundColor:globalStyles.appBackground.backgroundColor}]}>
+                            <View style={[styles.accordionHeader,{backgroundColor:isDark ? '#273449' : '#EFF6FF'}]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="user" size={wp('5%')} color="#8B5CF6" />
                                     <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
@@ -344,10 +346,10 @@ const CreateCustomer = () => {
 
                         </Card>
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginTop:hp('2%') }]}>
-                            <View style={styles.accordionHeader}>
+                            <View style={[styles.accordionHeader,{backgroundColor:isDark ? '#273449' : '#EFF6FF'}]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="credit-card" size={wp('5%')} color="#8B5CF6" />
-                                    <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Billing Information</Text>
+                                    <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
 
                                 </View>
                             </View>

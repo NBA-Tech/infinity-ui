@@ -88,7 +88,7 @@ const inputFieldStyle = tva({
 });
 
 const inputSlotStyle = tva({
-  base: 'justify-center items-center rounded-lg px-3 h-16',
+  base: 'justify-center items-center rounded-lg h-16',
   variants: {
     isDark: {
       true: 'bg-[#1f2937]',

@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
 import { ServiceInfo } from '@/src/types/offering/offering-type';
 
@@ -44,6 +44,7 @@ const ServiceComponent = ({
   handleTotalPriceCharges
 }: ServiceComponentProps) => {
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
   const [quantity, setQuantity] = useState<number>(1);
   const [selected, setSelected] = useState<boolean>(selectedElement?.id === eventType?.id);
 
@@ -101,7 +102,7 @@ const ServiceComponent = ({
   return (
     <CustomCheckBox
       key={index}
-      selectedStyle={{ backgroundColor: '#ECFDF5', borderColor: '#06B6D4' }}
+      selectedStyle={{ backgroundColor: isDark? '#064E3B' : '#ECFDF5', borderColor: '#06B6D4' }}
       selected={selected}
       onPress={() => handleChange(!selected)}
       styles={{ margin: 0, marginVertical: hp('2%') }}
@@ -142,7 +143,7 @@ const ServiceComponent = ({
             </Text>
             <View className="flex-row items-center gap-3 mt-1">
               <View className="flex flex-row gap-1">
-                <Feather name="clock" size={wp('3%')} color="#000" />
+                <Feather name="clock" size={wp('3%')} color={isDark ? '#fff' : '#000'} />
                 <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
                   {eventType?.serviceCategory}
                 </Text>

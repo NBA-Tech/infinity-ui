@@ -71,12 +71,12 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                     </View>
                     <View className='flex flex-1 flex-row justify-start items-center gap-3'>
                         <View className='flex flex-row gap-3'>
-                            <Feather name="calendar" size={wp('3%')} color="#000" />
+                            <Feather name="calendar" size={wp('3%')} color="#6B7280" />
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{formatDate(orderCardProps?.cardData?.eventInfo?.eventDate)} : {orderCardProps?.cardData?.eventInfo?.eventTime}</Text>
 
                         </View>
                         <View className='flex flex-row gap-3'>
-                            <Feather name="map" size={wp('3%')} color="#000" />
+                            <Feather name="map" size={wp('3%')} color="#6B7280" />
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText, { width: wp('30%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
 
                         </View>

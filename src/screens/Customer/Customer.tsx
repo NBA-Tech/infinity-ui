@@ -187,7 +187,7 @@ const Customer = () => {
                             </Avatar>
 
                             <View style={styles.details}>
-                                <Text style={[globalStyles.heading3Text]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
+                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="event" size={wp('4%')} color="#6B7280" />
@@ -231,7 +231,7 @@ const Customer = () => {
                                 trigger={({ ...triggerProps }) => {
                                     return (
                                         <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                            <MaterialDesign name="dots-vertical" size={wp('5%')} color="#000" />
+                                            <MaterialDesign name="dots-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'}/>
                                         </Button>
                                     )
                                 }}

@@ -1,5 +1,5 @@
 import BackHeader from '@/src/components/back-header';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -70,6 +70,7 @@ type CreateOrderProps = {
 
 const CreateOrder = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const route = useRoute();
     const { orderId } = route.params ?? {}
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
@@ -733,7 +734,7 @@ const CreateOrder = () => {
 
     useEffect(() => {
         console.log("orderDetails", orderDetails)
-    },[orderDetails])
+    }, [orderDetails])
 
 
 
@@ -752,7 +753,7 @@ const CreateOrder = () => {
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View className='flex justify-between items-center flex-row'>
                     <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                        <Text style={[globalStyles.heading2Text]}>Create Order</Text>
+                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Create Order</Text>
                         <GradientCard style={{ width: wp('25%') }}>
                             <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                         </GradientCard>
@@ -798,7 +799,7 @@ const CreateOrder = () => {
                     {currStep == 0 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: "#ECFEFF", padding: hp("2%") }}>
+                            <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                                     <Feather name="user" size={wp("7%")} color="#06B6D4" />
                                     <Text
@@ -818,9 +819,9 @@ const CreateOrder = () => {
                     {currStep == 1 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: "#FDF2F8", padding: hp("2%") }}>
+                            <View style={{ backgroundColor: isDark ? "#701A3D" : "#FDF2F8", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#500724" : "#8B5CF6"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -856,9 +857,9 @@ const CreateOrder = () => {
                     {currStep == 2 && (
                         <View>
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
-                                <View style={{ backgroundColor: "#ECFDF5", padding: hp("2%") }}>
+                                <View style={{ backgroundColor: isDark ? "#064E3B" : "#ECFDF5", padding: hp("2%") }}>
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Feather name="calendar" size={wp("7%")} color="#0F766E" />
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
@@ -870,7 +871,7 @@ const CreateOrder = () => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {!loading && packageData?.length == 0 && (
-                                            <EmptyState variant='orders' onAction={()=>navigation.navigate('profile', { screen: 'Offering' })}/>
+                                            <EmptyState variant='orders' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
                                         )
                                         }
                                         <FlatList
@@ -898,9 +899,9 @@ const CreateOrder = () => {
 
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                                 {/* Header */}
-                                <View style={{ backgroundColor: "#ECFDF5", padding: hp("2%") }}>
+                                <View style={{ backgroundColor: isDark ? "#064E3B" : "#ECFDF5", padding: hp("2%") }}>
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Feather name="calendar" size={wp("7%")} color="#0F766E" />
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
@@ -913,7 +914,7 @@ const CreateOrder = () => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {!loading && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={()=>navigation.navigate('profile', { screen: 'Offering' })}/>
+                                            <EmptyState variant='services' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
                                         )
 
                                         }
@@ -932,7 +933,7 @@ const CreateOrder = () => {
                     {currStep == 3 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: "#FDF2F8", padding: hp("2%") }}>
+                            <View style={{ backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
                                     <View className='flex flex-row items-center gap-2'>
                                         <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />

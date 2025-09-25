@@ -16,13 +16,14 @@ type DeleteConfirmationProps={
 }
 const DeleteConfirmation = (props: DeleteConfirmationProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     return (
         <Modal
                 isVisible={props?.openDelete}
                 onBackdropPress={() => props?.setOpenDelete(false)}
                 onBackButtonPress={() => props?.setOpenDelete(false)}
             >
-                <View style={{ backgroundColor: '#fff', padding: wp('5%'), borderRadius: wp('3%'), alignItems: 'center' }}>
+                <View style={{ backgroundColor: isDark ? '#000' : '#fff', padding: wp('5%'), borderRadius: wp('3%'), alignItems: 'center' }}>
                     <View className='flex flex-col justify-between items-center' style={{ padding: wp('2%') }}>
                         <View>
                             <Feather name="alert-triangle" size={wp('10%')} color="red" />
@@ -38,7 +39,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                                 style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
                                 onPress={() => props?.setOpenDelete(false)}
                             >
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>
                                     Cancel
                                 </ButtonText>
                             </Button>

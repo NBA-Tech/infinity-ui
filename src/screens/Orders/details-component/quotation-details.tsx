@@ -40,7 +40,7 @@ type QuotationDetailsProps = {
 }
 const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
-    console.log(props)
+    const { isDark } = useContext(ThemeToggleContext);
     const [open, setOpen] = useState(false);
     const [userDetails, setUserDetails] = useState<UserModel | null>(null);
     const showToast  = useToastMessage();
@@ -51,12 +51,12 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
         {
             id: 1,
             label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={'#000'} />,
+            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
         {
             id: 2,
             label: 'Edit',
-            icon: <Feather name="edit" size={wp('5%')} color={'#000'} />,
+            icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
     ]
 
@@ -251,7 +251,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
                             <Feather name="file" size={wp('7%')} color={'#8B5CF6'} />
-                            <Text style={globalStyles.heading3Text}>Quotation</Text>
+                            <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Quotation</Text>
                         </View>
                     </View>
 
@@ -262,7 +262,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                         </View>
 
                         <TouchableOpacity onPress={() => setOpen(true)}>
-                            <Feather name="eye" size={wp('5%')} color={'#000'} />
+                            <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
                     </View>
 
@@ -270,7 +270,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                         {actionButtons.map((action) => (
                             <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
                                 {action.icon}
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>{action.label}</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText,globalStyles.themeTextColor]}>{action.label}</ButtonText>
                             </Button>
                         ))
                         }

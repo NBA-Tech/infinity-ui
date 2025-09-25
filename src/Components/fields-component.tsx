@@ -12,7 +12,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform, Switch } from "reac
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { StyleContext } from "../providers/theme/global-style-provider";
+import { StyleContext, ThemeToggleContext } from "../providers/theme/global-style-provider";
 import { Dropdown, MultiSelect } from "react-native-element-dropdown";
 import Feather from "react-native-vector-icons/Feather";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         height: hp("5%"),
-        borderColor: "#ccc",
         borderWidth: 1,
         borderRadius: wp("1%"),
         paddingHorizontal: wp("2%"),
@@ -73,10 +72,11 @@ const styles = StyleSheet.create({
 
 // Reusable Field Component
 const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors?: Record<string, string>; globalStyles: any }) => {
+    const { isDark } = useContext(ThemeToggleContext);
     return (
         <FormControl
             style={field.style === "w-1/2" ? { width: wp("43%"), marginRight: wp("2%") } : undefined}
-            isInvalid={field.isRequired && !!errors?.[field.key] }
+            isInvalid={field.isRequired && !!errors?.[field.key]}
         >
             {field.type != "switch" && (
                 <FormControlLabel>
@@ -91,15 +91,33 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
             {/* Single Select */}
             {field.type === "select" ? (
                 <Dropdown
-                    style={styles.dropdown}
-                    containerStyle={styles.dropdownContainer}
+                    style={[
+                        styles.dropdown,
+                        { backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#444" : "#ccc" }
+                    ]}
+                    containerStyle={[
+                        styles.dropdownContainer,
+                        { backgroundColor: isDark ? "#1E1E28" : "#fff" }
+                    ]}
                     data={field.dropDownItems || []}
                     search
                     value={field.value}
-                    placeholderStyle={[globalStyles.labelText, { color: "#808080" }]}
-                    inputSearchStyle={globalStyles.labelText}
-                    itemTextStyle={globalStyles.labelText}
-                    selectedTextStyle={globalStyles.labelText}
+                    placeholderStyle={[
+                        globalStyles.labelText,
+                        { color: isDark ? "#9CA3AF" : "#808080" } // muted grey
+                    ]}
+                    inputSearchStyle={[
+                        globalStyles.labelText,
+                        { color: isDark ? "#E5E7EB" : "#111827" } // text color
+                    ]}
+                    itemTextStyle={[
+                        globalStyles.labelText,
+                        { color: isDark ? "#E5E7EB" : "#111827" } // dropdown items
+                    ]}
+                    selectedTextStyle={[
+                        globalStyles.labelText,
+                        { color: isDark ? "#F9FAFB" : "#111827", fontWeight: "500" } // selected item
+                    ]}
                     maxHeight={300}
                     labelField="label"
                     valueField="value"
@@ -109,15 +127,19 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     renderItem={(item) => (
                         <Text
                             style={[
-                                globalStyles.normalTextColor,
                                 globalStyles.labelText,
-                                { paddingVertical: hp("0.5%") },
+                                {
+                                    paddingVertical: hp("0.5%"),
+                                    color: isDark ? "#E5E7EB" : "#111827",
+                                    backgroundColor: isDark ? "#1E1E28" : "#fff",
+                                }
                             ]}
                         >
                             {item.label}
                         </Text>
                     )}
                 />
+
             ) : field.type === "multi-select" ? (
                 <MultiSelect
                     style={styles.dropdown}
@@ -145,13 +167,14 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { justifyContent: "center" },
+                        { justifyContent: "center", backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#3A3B47" : "#ccc" },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                 >
                     <Text
                         style={[
                             globalStyles.labelText,
+                            { color: isDark ? "#fff" : "#000" },
                             !field.value && { color: "grey" },
                         ]}
                     >
@@ -174,6 +197,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                                         : new Date(`1970-01-01T${field.value}:00`)
                                     : new Date()
                             }
+                            themeVariant={isDark ? "dark" : "light"}
                             mode={field.type}
                             display={Platform.OS === "ios" ? "spinner" : "default"}
                             onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -228,7 +252,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     type="filter"
                     selectedValues={field.value || []}
                     items={field.dropDownItems || []}
-                    itemContainerStyle={{backgroundColor:"transparent",borderColor:"#EDE9FE",borderWidth:wp("0.4%"),borderRadius:wp("4%"),padding:wp("2%")}}
+                    itemContainerStyle={{ backgroundColor: "transparent", borderColor: "#EDE9FE", borderWidth: wp("0.4%"), borderRadius: wp("4%"), padding: wp("2%") }}
                     valueStyle={{ fontSize: 14 }}
                     labelStyle={{ color: "#000" }}
                     alertRequired={false}
@@ -255,7 +279,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     </FormControlHelperText>
                 </FormControlHelper>
             )}
-            {field.isRequired &&errors?.[field.key] && (
+            {field.isRequired && errors?.[field.key] && (
                 <FormControlError style={globalStyles.errorContainer}>
                     <Feather name="alert-triangle" size={20} color="#D32F2F" />
                     <FormControlErrorText style={globalStyles.errorText}>
@@ -303,6 +327,7 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
 
 // CustomCheckBox Component
 export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value, selected }: CustomCheckBoxProps) => {
+    const { isDark } = useContext(ThemeToggleContext);
     const handleSelect = () => {
         onPress(value, !selected);
     };
@@ -311,7 +336,11 @@ export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, 
         <TouchableOpacity
             style={[
                 styles.checkContainer,
-                selected && (selectedStyle || { backgroundColor: "#FDF2F8", borderColor: "#8B5CF6" }),
+                selected && (selectedStyle || {
+                    backgroundColor: isDark ? "#4B5563" : "#FDF2F8", // dark grey for dark mode
+                    borderColor: isDark ? "#8B5CF6" : "#8B5CF6"      // keep accent the same
+                }),
+
                 customStyles,
             ]}
             onPress={handleSelect}

@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import { StyleContext } from "@/src/providers/theme/global-style-provider";
+import { StyleContext,ThemeToggleContext } from "@/src/providers/theme/global-style-provider";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import Feather from "react-native-vector-icons/Feather";
 
 const TimeLineDetails = () => {
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
 
   const data = [
     {
@@ -57,7 +58,7 @@ const TimeLineDetails = () => {
 
         {/* Right content */}
         <View style={styles.contentColumn}>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={[styles.title,{color:isDark ? '#fff' : '#000'}]}>{item.title}</Text>
           <Text style={styles.subtitle}>{item.subtitle}</Text>
           <Text style={styles.date}>
             {new Date(item.date).toLocaleDateString()}{" "}
@@ -78,7 +79,7 @@ const TimeLineDetails = () => {
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <Feather name="clock" size={wp("7%")} color={"#8B5CF6"} />
-            <Text style={globalStyles.heading3Text}>Timeline Information</Text>
+            <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Timeline Information</Text>
           </View>
         </View>
 

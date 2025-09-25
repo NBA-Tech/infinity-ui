@@ -12,7 +12,7 @@ const createGlobalStyle = (isDark = false) =>
   StyleSheet.create({
     // color styles
     purpleTextColor: { color: "#8B5CF6" },
-    normalTextColor: { color: isDark ? "#E5E7EB" : "#4B5563" },
+    normalTextColor: { color: isDark ? "#fff" : "#000" },
     whiteTextColor: { color: "#fff" },
     greyTextColor: { color: isDark ? "#9CA3AF" : "#d1d5db" },
     blackTextColor: { color: "#000" },
