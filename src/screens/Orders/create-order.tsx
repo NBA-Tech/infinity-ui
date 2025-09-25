@@ -866,7 +866,7 @@ const CreateOrder = () => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {!loading && packageData?.length == 0 && (
-                                            <EmptyState variant='orders' onAction={()=>navigation.navigate('Offering')}/>
+                                            <EmptyState variant='orders' onAction={()=>navigation.navigate('profile', { screen: 'Offering' })}/>
                                         )
                                         }
                                         <FlatList
@@ -909,7 +909,7 @@ const CreateOrder = () => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {!loading && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={()=>navigation.navigate('Offering')}/>
+                                            <EmptyState variant='services' onAction={()=>navigation.navigate('profile', { screen: 'Offering' })}/>
                                         )
 
                                         }

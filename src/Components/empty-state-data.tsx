@@ -106,7 +106,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             description ||
             "Generate professional invoices for completed photography sessions. Track payments and maintain financial records effortlessly.",
           actionLabel: actionLabel || "Create Invoice",
-          secondaryActionLabel: secondaryActionLabel || "View Templates",
           bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(204,251,241,0.8)"],
         };
       default:

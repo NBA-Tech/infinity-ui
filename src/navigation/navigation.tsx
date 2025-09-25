@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, InvoiceGenerator, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails } from '../screens';
+import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 import { RootStackParamList } from '../types/common';
 
@@ -43,8 +43,16 @@ function CustomerNavigator() {
 function ProfileNavigator() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="ProfileView" component={Profile} />
             <Stack.Screen name="Offering" component={OfferingNavigator} />
+        </Stack.Navigator>
+    )
+}
+function InvoiceNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="InvoiceList" component={Invoice} />
+            <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
         </Stack.Navigator>
     )
 }
@@ -57,7 +65,7 @@ function TabNavigator() {
             <Tab.Screen name="Home" component={Home} />
             <Tab.Screen name="Customer" component={CustomerNavigator} />
             <Tab.Screen name="Orders" component={OrderNavigator} />
-            <Tab.Screen name="Invoice" component={Invoice} />
+            <Tab.Screen name="Invoice" component={InvoiceNavigator} />
             <Tab.Screen name="profile" component={ProfileNavigator} />
         </Tab.Navigator>
     );

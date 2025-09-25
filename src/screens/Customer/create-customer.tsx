@@ -29,6 +29,7 @@ import { addNewCustomerAPI } from '@/src/api/customer/customer-api-service';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { Card } from '@/components/ui/card';
+import BackHeader from '@/src/components/back-header';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -302,7 +303,7 @@ const CreateCustomer = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <Header />
+           <BackHeader screenName="Create Customer" />
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom

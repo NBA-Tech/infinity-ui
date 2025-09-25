@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
+import { useNavigation } from '@react-navigation/native';
 
 interface BackHeaderProps {
   screenName?: string;
@@ -14,6 +15,7 @@ interface BackHeaderProps {
 
 const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) => {
   const globalStyles = useContext(StyleContext);
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView>
@@ -25,7 +27,9 @@ const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) 
           ) : (
             // Default mode → back button + text
             <>
-              <Feather name="arrow-left" size={wp('7%')} color={'#000'} />
+              <TouchableOpacity onPress={() => navigation.getParent()?.goBack()}>
+                <Feather name="arrow-left" size={wp('7%')} color={'#000'} />
+              </TouchableOpacity>
               {screenName && (
                 <Text style={globalStyles.heading3Text}>{screenName}</Text>
               )}

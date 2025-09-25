@@ -17,7 +17,7 @@ import { Fab, FabLabel, FabIcon } from "@/components/ui/fab"
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Button, ButtonText } from '@/components/ui/button';
 import { useNavigation } from '@react-navigation/native';
-import { ApiGeneralRespose, NavigationProp } from '@/src/types/common';
+import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getCustomerStatsAPI } from '@/src/api/customer/customer-stat-api-service';
@@ -78,9 +78,9 @@ const styles = StyleSheet.create({
 })
 
 
-const CustomerCardSkeleton = () => (
+const CustomerCardSkeleton = ({ count }: { count: number }) => (
     <View className='flex flex-col justify-between'>
-        {[...Array(4)].map((_, index) => (
+        {[...Array(count)].map((_, index) => (
             <View key={index}>
                 <Skeleton style={{ width: wp('95%'), height: hp('15%'), marginHorizontal: wp('2%') }} />
             </View>
@@ -95,12 +95,16 @@ const Customer = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [currID, setCurrID] = useState<string>('');
+    const [filters, setFilters] = useState<SearchQueryRequest>({});
+    const [refresh, setRefresh] = useState<boolean>(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const { deleteCustomerMetaInfo } = useCustomerStore();
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
 
 
-    const getCustomerDetails = async () => {
+    const getCustomerDetails = async (reset: boolean = false) => {
         const userID = getItem('USERID')
         if (!userID) {
             showToast({
@@ -110,8 +114,14 @@ const Customer = () => {
             })
             return
         }
-        setLoading(true)
-        const customerDetailsResponse: ApiGeneralRespose = await getCustomerStatsAPI(userID)
+        if(reset) setLoading(true);
+        else setLoadingMore(true);
+        const currFilters: SearchQueryRequest = {
+            filters: { userId: getItem("USERID") },
+            ...filters
+        };
+        console.log(currFilters, reset)
+        const customerDetailsResponse: ApiGeneralRespose = await getCustomerStatsAPI(currFilters);
         if (!customerDetailsResponse?.success) {
             showToast({
                 type: 'error',
@@ -120,10 +130,11 @@ const Customer = () => {
             })
         }
         else {
-            console.log(customerDetailsResponse?.data)
-            setCustomerData(customerDetailsResponse?.data)
+            setCustomerData(prev => reset? customerDetailsResponse?.data ?? [] : [...prev, ...(customerDetailsResponse?.data ?? [])]);
+            setHasMore(customerDetailsResponse?.data?.length === (filters.pageSize || 3));
         }
-        setLoading(false)
+        if(reset) setLoading(false);
+        else setLoadingMore(false);
     }
 
     const deleteCustomer = async () => {
@@ -156,18 +167,13 @@ const Customer = () => {
 
     useFocusEffect(
         useCallback(() => {
-            getCustomerDetails();
-
-            // optional cleanup
-            return () => {
-                setCustomerData([]);
-            };
-        }, [])
+            const reset = filters?.page === 1;
+            getCustomerDetails(reset);
+        }, [filters, refresh])
     );
 
 
     const CustomerCardComponent = ({ item }: any) => {
-        console.log(item)
         return (
             <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                 <View>
@@ -316,7 +322,7 @@ const Customer = () => {
 
                 </View>
                 {loading && (
-                    <CustomerCardSkeleton />
+                    <CustomerCardSkeleton count={4} />
                 )
                 }
                 {!loading && customerData.length === 0 ? (
@@ -324,6 +330,7 @@ const Customer = () => {
                 ) : (
                     <FlatList
                         data={customerData}
+                        style={{ height: hp("60%") }}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -333,7 +340,23 @@ const Customer = () => {
                             </View>
                         )}
                         refreshing={loading}
-                        onRefresh={getCustomerDetails}
+                        onRefresh={() => {
+                            setFilters(prev => ({
+                                ...prev,
+                                page: 1,
+                            }))
+                        }}
+                        onEndReached={() => {
+                            if (hasMore && !loading) {
+                                setFilters(prev => ({
+                                    ...prev,
+                                    page: prev.page ? prev.page + 1 : 2,
+                                }))
+                            }
+                        }}
+                        onEndReachedThreshold={0.7}
+                        ListFooterComponent={loadingMore && <CustomerCardSkeleton count={1} />}
+
                     />
                 )
 
