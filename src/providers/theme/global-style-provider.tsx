@@ -16,7 +16,7 @@ function GlobalStyleProvider({ children }: { children: React.ReactNode }) {
   console.log("System theme:", systemScheme);
   const [themeMode, setThemeMode] = useState("light");
 
-  const isDark = themeMode === "dark";
+  const isDark = themeMode === "light";
   const styles = useMemo(() => (isDark ? darkTheme : lightTheme), [isDark]);
 
   const toggleTheme = () => {

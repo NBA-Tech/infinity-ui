@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
 
 const Login = ({ setCurrScreen }: any) => {
     const globalStyles = useContext(StyleContext);
+    const { toggleTheme, isDark } = useContext(ThemeToggleContext);
     const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
     const showToast = useToastMessage();
     const navigation = useNavigation<NavigationProp>();
@@ -133,7 +134,7 @@ const Login = ({ setCurrScreen }: any) => {
                         </FormControlLabel>
                         <Input size='lg'>
                             <InputSlot style={{ paddingLeft: wp('2%') }}>
-                                <Feather name={field?.icon} size={wp('5%')} color="#000" />
+                                <Feather name={field?.icon} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
                             <InputField
                                 onChangeText={(text) => userLoginRefs.current[field?.key] = text}
@@ -152,7 +153,7 @@ const Login = ({ setCurrScreen }: any) => {
                             />
                             {field?.type === 'password' && (
                                 <InputSlot onPress={() => setShowPassword(!showPassword)}>
-                                    <Feather name={showPassword ? "eye-off" : "eye"} size={wp('5%')} color="#000" />
+                                    <Feather name={showPassword ? "eye-off" : "eye"} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                 </InputSlot>
                             )}
                         </Input>

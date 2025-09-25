@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
 
 const Activity = () => {
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
 
   return (
     <View>
@@ -48,7 +49,7 @@ const Activity = () => {
               Latest updates
             </Text>
           </View>
-          <Feather name="info" size={wp('5%')} color="#000" />
+          <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
         </View>
 
         {/* Divider */}

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, ImageBackground, Image, StyleSheet, ScrollView } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Header from '@/src/components/header';
@@ -32,34 +32,35 @@ const styles = StyleSheet.create({
 })
 const Profile = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const options = [
         {
             label: "Business Information",
-            icon: <Feather name="briefcase" size={wp('6%')} color={'#000'} />,
+            icon: <Feather name="briefcase" size={wp('6%')} color="#6B7280" />,
             onPress: () => { }
         },
         {
             label: "Services & Packages",
-            icon: <Feather name="package" size={wp('6%')} color={'#000'} />,
+            icon: <Feather name="package" size={wp('6%')} color="#14B8A6" />,
             onPress: () => { }
         },
         {
             label: "Terms & Conditions",
-            icon: <Feather name="file-text" size={wp('6%')} color={'#000'} />,
+            icon: <Feather name="file-text" size={wp('6%')} color="#8B5CF6" />,
             onPress: () => { }
         },
         {
             label: "Privacy Policy",
-            icon: <Feather name="lock" size={wp('6%')} color={'#000'} />,
+            icon: <Feather name="lock" size={wp('6%')} color="#F59E0B" />,
             onPress: () => { }
         },
         {
             label: "Logout",
-            icon: <Feather name="log-out" size={wp('6%')} color={'#000'} />,
+            icon: <Feather name="log-out" size={wp('6%')} color="#EF4444" />, // red accent for logout
             onPress: () => { }
         }
+    ];
 
-    ]
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
@@ -127,7 +128,7 @@ const Profile = () => {
                                             <Text style={[globalStyles.normalTextColor, globalStyles.sideHeading]}>{option.label}</Text>
 
                                         </View>
-                                        <Feather name="chevron-right" size={wp('6%')} color={'#000'} />
+                                        <Feather name="chevron-right" size={wp('6%')} color={isDark ? "#fff" : "#000"} />
 
                                     </View>
                                 </Card>

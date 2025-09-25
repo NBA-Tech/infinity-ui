@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 
 const Home = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const generalStatData: GeneralStatInfoModel = {
         customer: {
             label: "Total Customers",

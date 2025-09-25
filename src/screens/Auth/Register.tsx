@@ -224,7 +224,7 @@ const Register = ({ setCurrScreen }: any) => {
 
                         <Input size="lg">
                             <InputSlot>
-                                <Feather name={field.icon} size={wp("5%")} color="#000" />
+                                <Feather name={field.icon} size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
 
                             <InputField
@@ -264,7 +264,7 @@ const Register = ({ setCurrScreen }: any) => {
                                                 : "eye"
                                         }
                                         size={wp("5%")}
-                                        color="#000"
+                                        color={isDark ? "#fff" : "#000"}
                                     />
                                 </InputSlot>
                             )}

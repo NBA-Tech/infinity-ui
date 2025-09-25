@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
         borderRadius: wp('2%'),
-        backgroundColor: '#f0f0f0',
     },
     cardContainer: {
         borderRadius: wp('2%'),
@@ -89,6 +88,7 @@ const InvoiceCardSkeleton = () => (
 );
 const Invoice = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const navigation = useNavigation<NavigationProp>()
     const [customerData, setCustomerData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -167,7 +167,6 @@ const Invoice = () => {
 
 
     const InvoiceCardComponent = ({ item }: any) => {
-        console.log(item)
         return (
             <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                 <View>
@@ -273,7 +272,7 @@ const Invoice = () => {
             }
 
             <View>
-                <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
+                <View className={isDark ? 'bg-[#1F2028]' : 'bg-[#fff]'} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                             <Text style={[globalStyles.heading2Text]}>Invoice</Text>
@@ -299,12 +298,11 @@ const Invoice = () => {
                             style={styles.inputContainer}
                         >
                             <InputSlot>
-                                <Feather name="search" size={wp('5%')} color="#000" />
+                                <Feather name="search" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
                             <InputField
                                 type="text"
                                 placeholder="Search Invoices"
-                                style={{ flex: 1, backgroundColor: '#f0f0f0' }}
                             />
 
                         </Input>

@@ -34,75 +34,43 @@ cssInterop(PrimitiveIcon, {
   },
 });
 
+// ------------------------- TVA STYLES -------------------------
 const inputStyle = tva({
-  base: `border border-background-300 flex-row items-center overflow-hidden content-center 
-       data-[hover=true]:border-outline-400 
-       data-[focus=true]:border-[#6366F1] 
-       data-[focus=true]:hover:border-[#4F46E5] 
-       data-[disabled=true]:opacity-40 
-       data-[disabled=true]:hover:border-background-300 
-       rounded-lg px-3 h-16 bg-white
-       font-inter`,
-
-
+  base: 'border flex-row items-center overflow-hidden content-center rounded-lg px-3 font-inter',
   variants: {
+    isDark: {
+      true: 'bg-[#1f2937] text-white placeholder:text-[#aaa] border-[#374151]',
+      false: 'bg-white text-black placeholder:text-[#595959] border-[#d1d5db]',
+    },
     size: {
       xl: 'h-12',
       lg: 'h-11',
       md: 'h-10',
       sm: 'h-9',
     },
-    isDark:{
-      true: 'bg-[#1f2937] text-[#ffffff] placeholder:text-[#aaa]',
-      false: 'bg-white text-black placeholder:text-[#595959]',
-    },
     variant: {
       underlined:
-        'rounded-none border-b data-[invalid=true]:border-b-2 data-[invalid=true]:border-error-700 data-[invalid=true]:hover:border-error-700 data-[invalid=true]:data-[focus=true]:border-error-700 data-[invalid=true]:data-[focus=true]:hover:border-error-700 data-[invalid=true]:data-[disabled=true]:hover:border-error-700',
-
-      outline:
-        'rounded border data-[invalid=true]:border-error-700 data-[invalid=true]:hover:border-error-700 data-[invalid=true]:data-[focus=true]:border-error-700 data-[invalid=true]:data-[focus=true]:hover:border-error-700 data-[invalid=true]:data-[disabled=true]:hover:border-error-700 data-[focus=true]:web:ring-1 data-[focus=true]:web:ring-inset data-[focus=true]:web:ring-indicator-primary data-[invalid=true]:web:ring-1 data-[invalid=true]:web:ring-inset data-[invalid=true]:web:ring-indicator-error data-[invalid=true]:data-[focus=true]:hover:web:ring-1 data-[invalid=true]:data-[focus=true]:hover:web:ring-inset data-[invalid=true]:data-[focus=true]:hover:web:ring-indicator-error data-[invalid=true]:data-[disabled=true]:hover:web:ring-1 data-[invalid=true]:data-[disabled=true]:hover:web:ring-inset data-[invalid=true]:data-[disabled=true]:hover:web:ring-indicator-error',
-
-      rounded:
-        'rounded-full border data-[invalid=true]:border-error-700 data-[invalid=true]:hover:border-error-700 data-[invalid=true]:data-[focus=true]:border-error-700 data-[invalid=true]:data-[focus=true]:hover:border-error-700 data-[invalid=true]:data-[disabled=true]:hover:border-error-700 data-[focus=true]:web:ring-1 data-[focus=true]:web:ring-inset data-[focus=true]:web:ring-indicator-primary data-[invalid=true]:web:ring-1 data-[invalid=true]:web:ring-inset data-[invalid=true]:web:ring-indicator-error data-[invalid=true]:data-[focus=true]:hover:web:ring-1 data-[invalid=true]:data-[focus=true]:hover:web:ring-inset data-[invalid=true]:data-[focus=true]:hover:web:ring-indicator-error data-[invalid=true]:data-[disabled=true]:hover:web:ring-1 data-[invalid=true]:data-[disabled=true]:hover:web:ring-inset data-[invalid=true]:data-[disabled=true]:hover:web:ring-indicator-error',
+        'rounded-none border-b data-[invalid=true]:border-error-700',
+      outline: 'rounded border data-[invalid=true]:border-error-700',
+      rounded: 'rounded-full border data-[invalid=true]:border-error-700',
     },
   },
-});
-
-const inputIconStyle = tva({
-  base: 'justify-center items-center text-typography-400 fill-none',
-  parentVariants: {
-    size: {
-      '2xs': 'h-3 w-3',
-      'xs': 'h-3.5 w-3.5',
-      'sm': 'h-4 w-4',
-      'md': 'h-[18px] w-[18px]',
-      'lg': 'h-5 w-5',
-      'xl': 'h-6 w-6',
-    },
-  },
-});
-
-const inputSlotStyle = tva({
-  base: 'justify-center items-center web:disabled:cursor-not-allowed',
 });
 
 const inputFieldStyle = tva({
-  base: 'flex-1 text-typography-900 py-0 px-3 placeholder:text-typography-500 h-full ios:leading-[0px] web:cursor-text web:data-[disabled=true]:cursor-not-allowed font-inter',
+  base: 'flex-1 py-0 px-3 h-full ios:leading-[0px] font-inter',
   variants: {
     isDark: {
-      true: 'text-[#ffffff] placeholder:text-[#aaa] bg-[#1f2937]',
+      true: 'text-white placeholder:text-[#aaa] bg-[#1f2937]',
       false: 'text-black placeholder:text-[#808080] bg-white',
     },
   },
-
   parentVariants: {
     variant: {
-      underlined: 'web:outline-0 web:outline-none px-0',
-      outline: 'web:outline-0 web:outline-none',
-      rounded: 'web:outline-0 web:outline-none px-4',
+      underlined: 'web:outline-0 px-0',
+      outline: 'web:outline-0',
+      rounded: 'web:outline-0 px-4',
     },
-
     size: {
       '2xs': 'text-2xs',
       'xs': 'text-xs',
@@ -119,20 +87,49 @@ const inputFieldStyle = tva({
   },
 });
 
+const inputSlotStyle = tva({
+  base: 'justify-center items-center rounded-lg px-3 h-16',
+  variants: {
+    isDark: {
+      true: 'bg-[#1f2937]',
+      false: 'bg-white',
+    },
+  },
+});
+
+const inputIconStyle = tva({
+  base: 'justify-center items-center fill-none',
+  variants: {
+    isDark: {
+      true: 'text-white',
+      false: 'text-black',
+    },
+  },
+  parentVariants: {
+    size: {
+      '2xs': 'h-3 w-3',
+      'xs': 'h-3.5 w-3.5',
+      'sm': 'h-4 w-4',
+      'md': 'h-[18px] w-[18px]',
+      'lg': 'h-5 w-5',
+      'xl': 'h-6 w-6',
+    },
+  },
+});
+
+// ------------------------- COMPONENTS -------------------------
 type IInputProps = React.ComponentProps<typeof UIInput> &
-  VariantProps<typeof inputStyle> & { className?: string};
+  VariantProps<typeof inputStyle> & { className?: string };
 const Input = React.forwardRef<React.ComponentRef<typeof UIInput>, IInputProps>(
-  function Input(
-    { className, variant = 'outline', size = 'md', ...props },
-    ref
-  ) {
+  function Input({ className, variant = 'outline', size = 'md', ...props }, ref) {
     const themeContext = useContext(ThemeToggleContext) || {};
     const isDark = themeContext.isDark ?? false;
+
     return (
       <UIInput
         ref={ref}
         {...props}
-        className={inputStyle({ variant, size, class: className })}
+        className={inputStyle({ variant, size, isDark, class: className })}
         context={{ variant, size, isDark }}
       />
     );
@@ -140,49 +137,22 @@ const Input = React.forwardRef<React.ComponentRef<typeof UIInput>, IInputProps>(
 );
 
 type IInputIconProps = React.ComponentProps<typeof UIInput.Icon> &
-  VariantProps<typeof inputIconStyle> & {
-    className?: string;
-    height?: number;
-    width?: number;
-  };
+  VariantProps<typeof inputIconStyle> & { className?: string; height?: number; width?: number; };
 
 const InputIcon = React.forwardRef<
   React.ComponentRef<typeof UIInput.Icon>,
   IInputIconProps
 >(function InputIcon({ className, size, ...props }, ref) {
   const { size: parentSize } = useStyleContext(SCOPE);
+  const themeContext = useContext(ThemeToggleContext) || {};
+  const isDark = themeContext.isDark ?? false;
 
-  if (typeof size === 'number') {
-    return (
-      <UIInput.Icon
-        ref={ref}
-        {...props}
-        className={inputIconStyle({ class: className })}
-        size={size}
-      />
-    );
-  } else if (
-    (props.height !== undefined || props.width !== undefined) &&
-    size === undefined
-  ) {
-    return (
-      <UIInput.Icon
-        ref={ref}
-        {...props}
-        className={inputIconStyle({ class: className })}
-      />
-    );
-  }
   return (
     <UIInput.Icon
       ref={ref}
       {...props}
-      className={inputIconStyle({
-        parentVariants: {
-          size: parentSize,
-        },
-        class: className,
-      })}
+      className={inputIconStyle({ isDark, parentVariants: { size: parentSize }, class: className })}
+      size={size as any}
     />
   );
 });
@@ -194,13 +164,14 @@ const InputSlot = React.forwardRef<
   React.ComponentRef<typeof UIInput.Slot>,
   IInputSlotProps
 >(function InputSlot({ className, ...props }, ref) {
+  const themeContext = useContext(ThemeToggleContext) || {};
+  const isDark = themeContext.isDark ?? false;
+
   return (
     <UIInput.Slot
       ref={ref}
       {...props}
-      className={inputSlotStyle({
-        class: className,
-      })}
+      className={inputSlotStyle({ isDark, class: className })}
     />
   );
 });
@@ -222,10 +193,7 @@ const InputField = React.forwardRef<
       {...props}
       className={inputFieldStyle({
         isDark,
-        parentVariants: {
-          variant: parentVariant,
-          size: parentSize,
-        },
+        parentVariants: { variant: parentVariant, size: parentSize },
         class: className,
       })}
     />

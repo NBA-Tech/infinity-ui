@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
 
 const TopClient = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
 
     // dummy array length 6
     const clients = [
@@ -72,7 +73,7 @@ const TopClient = () => {
                             Highest revenue contributors
                         </Text>
                     </View>
-                    <Feather name="info" size={wp('5%')} color="#000" />
+                    <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                 </View>
 
                 <Divider style={{ marginVertical: hp('1.5%') }} />

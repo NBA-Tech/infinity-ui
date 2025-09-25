@@ -21,7 +21,6 @@ import { NotificationIcon } from '../assets/Icons/SvgIcons';
 import Logo from '../assets/images/logo.png'
 const styles = StyleSheet.create({
     headerContainer:{
-        backgroundColor: '#fff',
         borderBottomRightRadius: wp('5%'),
         borderBottomLeftRadius: wp('5%'),
         shadowColor: "#000",
@@ -90,12 +89,12 @@ const Header = () => {
 
 
     return (
-        <View style={styles.headerContainer}>
+        <View style={[styles.headerContainer,{backgroundColor:isDark?"#12121A":"#fff"}]}>
             <View style={styles.headerBody}>
                 <View >
                     <View style={styles.appLogoContainer}>
                         <Image style={{ width: wp('15%'), height: hp('7%') }} source={Logo} />
-                        <Text style={globalStyle.heading2Text}>INFINITY</Text>
+                        <Text style={[globalStyle.heading2Text,globalStyle.themeTextColor]}>INFINITY</Text>
                     </View>
                 </View>
 

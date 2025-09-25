@@ -18,6 +18,7 @@ const formatCurrency = (num: number) => `$${num.toLocaleString()}`;
 
 const RevenueTrendChart = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const data = {
         labels: revenueData.map(d => d.month),
         datasets: [
@@ -29,10 +30,10 @@ const RevenueTrendChart = () => {
     };
 
     return (
-        <Card style={{ padding: wp('4%'), borderRadius: wp('2%'), backgroundColor: '#ffffffcc',marginVertical:hp('2%') }}>
+        <Card style={[{padding:wp('3%'),marginVertical:hp('3%')}]}>
             <View style={{ marginBottom: 8 }}>
-                <Text style={globalStyles.heading3Text}>Revenue Trend</Text>
-                <Text style={globalStyles.smallText}>Monthly revenue over time</Text>
+                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Revenue Trend</Text>
+                <Text style={[globalStyles.smallText,globalStyles.themeTextColor]}>Monthly revenue over time</Text>
             </View>
             {/* Add Dropdown component for the year */}
 
@@ -49,10 +50,10 @@ const RevenueTrendChart = () => {
                 fromZero={true}
                 yAxisLabel="$"
                 chartConfig={{
-                    backgroundGradientFrom: '#ffffffcc',
-                    backgroundGradientTo: '#ffffffcc',
+                    backgroundGradientFrom: isDark ? "#272932" : "#ffffffcc",
+                    backgroundGradientTo: isDark ? "#272932" : "#ffffffcc",
                     color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`, // line color
-                    labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+                    labelColor: (opacity = 1) => isDark ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
                     propsForDots: {
                         r: '4',
                         strokeWidth: '2',

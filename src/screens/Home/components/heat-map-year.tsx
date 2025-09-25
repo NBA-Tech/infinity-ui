@@ -38,6 +38,7 @@ const months = [
 
 const HeatMapYear = () => {
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
 
   // Generate random values for each month
   const values = months.map(() => Math.floor(Math.random() * 100));
@@ -61,7 +62,7 @@ const HeatMapYear = () => {
               Busiest month of the year
             </Text>
           </View>
-          <Feather name="info" size={wp('5%')} color="#000" />
+          <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
         </View>
 
         {/* Divider */}

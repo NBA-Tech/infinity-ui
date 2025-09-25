@@ -313,7 +313,7 @@ const CreateCustomer = () => {
                 <View>
                     <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text]}>Create Customer</Text>
+                            <Text style={[globalStyles.heading2Text,globalStyles.themeTextColor]}>Create Customer</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
@@ -331,10 +331,10 @@ const CreateCustomer = () => {
                     <View className='flex flex-col'>
 
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
-                            <View style={styles.accordionHeader}>
+                            <View style={[styles.accordionHeader,{backgroundColor:globalStyles.appBackground.backgroundColor}]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="user" size={wp('5%')} color="#8B5CF6" />
-                                    <Text style={[globalStyles.heading3Text, { marginLeft: wp('2%') }]}>Basic Information</Text>
+                                    <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
 
                                 </View>
                             </View>

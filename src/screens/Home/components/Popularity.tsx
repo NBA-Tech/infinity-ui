@@ -16,9 +16,10 @@ const styles = StyleSheet.create({
 })
 const Popularity = () => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     return (
         <View>
-            <Card style={styles.cardContainer}>
+            <Card style={[styles.cardContainer]}>
                 <View className='flex flex-row justify-between items-center'>
                     <View>
                         <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
@@ -28,7 +29,7 @@ const Popularity = () => {
                             Distribution of bookings
                         </Text>
                     </View>
-                    <Feather name="info" size={wp('5%')} color="#000" />
+                    <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
                 <ScrollView

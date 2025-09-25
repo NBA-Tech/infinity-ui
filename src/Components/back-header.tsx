@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
@@ -15,11 +15,12 @@ interface BackHeaderProps {
 
 const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) => {
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
   const navigation = useNavigation();
 
   return (
     <SafeAreaView>
-      <Card style={[globalStyles.cardShadowEffect, { marginBottom: hp('1%') }]}>
+      <Card style={[globalStyles.cardShadowEffect, { marginBottom: hp('1%'),backgroundColor:isDark ? '#121212' : '#ffffff' }]}>
         <View className="flex flex-row justify-start items-center gap-3" style={style}>
           {children ? (
             // Custom mode → render whatever children you pass
@@ -28,10 +29,10 @@ const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) 
             // Default mode → back button + text
             <>
               <TouchableOpacity onPress={() => navigation.getParent()?.goBack()}>
-                <Feather name="arrow-left" size={wp('7%')} color={'#000'} />
+                <Feather name="arrow-left" size={wp('7%')} color={isDark?"#fff":"#000"} />
               </TouchableOpacity>
               {screenName && (
-                <Text style={globalStyles.heading3Text}>{screenName}</Text>
+                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>{screenName}</Text>
               )}
             </>
           )}

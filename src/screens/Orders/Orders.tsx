@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
 import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
         borderRadius: wp('2%'),
-        backgroundColor: '#f0f0f0',
     },
 });
 
@@ -47,6 +46,7 @@ const OrderCardSkeleton = () => (
 const Orders = () => {
     const navigation=useNavigation<NavigationProp>();
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [filters, setFilters] = useState<SearchQueryRequest>({ page: 1, pageSize: 10 });
     const [orderData, setOrderData] = useState<OrderModel[]>([]);
     const [hasMore, setHasMore] = useState(true);
@@ -159,10 +159,10 @@ const Orders = () => {
             <Header />
             <View>
                 <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-                <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
+                <View className={isDark ? "bg-[#1F2028]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text]}>Orders</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Orders</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
@@ -178,12 +178,11 @@ const Orders = () => {
                     <View className="flex flex-row items-center gap-3" style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                         <Input size="lg" style={styles.inputContainer}>
                             <InputSlot>
-                                <Feather name="search" size={wp('5%')} color="#000" />
+                                <Feather name="search" size={wp('5%')} color={isDark ? "#fff" : "#00"} />
                             </InputSlot>
                             <InputField
                                 type="text"
                                 placeholder="Search Orders"
-                                style={{ flex: 1, backgroundColor: '#f0f0f0' }}
                                 onChangeText={debouncedSearch}
                             />
                         </Input>
@@ -219,7 +218,7 @@ const Orders = () => {
                         if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                     }}
                     onEndReachedThreshold={0.7}
-                    ListFooterComponent={hasMore && !loading ? OrderCardSkeleton : null}
+                    ListFooterComponent={(hasMore && loading) ? OrderCardSkeleton : null}
                     refreshing={loading}
                     onRefresh={()=>{
                         setFilters(prev => ({ ...prev, page: 1 }));
