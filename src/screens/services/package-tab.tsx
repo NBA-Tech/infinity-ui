@@ -119,10 +119,11 @@ type PackageProps = {
 }
 const PackageTab = (props: PackageProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [currId, setCurrId] = useState<string>();
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const { deleteOfferingDetailsInfo } = useOfferingStore();
+    const { deletePackage } = useOfferingStore();
     const showToast = useToastMessage();
 
     const colorCodes = [
@@ -146,7 +147,7 @@ const PackageTab = (props: PackageProps) => {
         }
         else {
             showToast({ type: "success", title: "Success", message: deleteService.message });
-            deleteOfferingDetailsInfo(currId);
+            deletePackage(currId);
         }
         setLoading(false);
         setOpenDelete(false);
@@ -168,7 +169,7 @@ const PackageTab = (props: PackageProps) => {
                 ]}
             >
                 <View style={styles.headerRow}>
-                    <Text style={[globalStyles.heading3Text, styles.title, { width: wp('70%') }]} numberOfLines={1}>
+                    <Text style={[globalStyles.heading3Text, styles.title,globalStyles.themeTextColor,{ width: wp('70%') }]} numberOfLines={1}>
                         {pkg.packageName}
                     </Text>
                     <View style={styles.rightHeader}>
@@ -183,7 +184,7 @@ const PackageTab = (props: PackageProps) => {
                             trigger={({ ...triggerProps }) => {
                                 return (
                                     <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                        <Feather name="more-vertical" size={wp('5%')} color="#000" style={{ marginLeft: wp('2%') }} />
+                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} style={{ marginLeft: wp('2%') }} />
                                     </Button>
                                 )
                             }}

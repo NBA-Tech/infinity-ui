@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { View, Text, ImageBackground, Image, StyleSheet, ScrollView } from 'react-native';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { View, Text, ImageBackground, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Header from '@/src/components/header';
@@ -8,6 +8,7 @@ import Background from '../../assets/images/Background.png';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     amountContainer: {
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
 const Profile = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const navigation = useNavigation();
     const options = [
         {
             label: "Business Information",
@@ -42,7 +44,7 @@ const Profile = () => {
         {
             label: "Services & Packages",
             icon: <Feather name="package" size={wp('6%')} color="#14B8A6" />,
-            onPress: () => { }
+            onPress: () => { navigation.navigate('Offering') }
         },
         {
             label: "Terms & Conditions",
@@ -121,17 +123,19 @@ const Profile = () => {
                         </View>
                         <View className='flex flex-col'>
                             {options.map((option, index) => (
-                                <Card style={[globalStyles.cardShadowEffect, { width: wp('98%'), marginVertical: hp('0.5%') }]} className='self-center' key={index}>
-                                    <View className='flex flex-row justify-between items-center p-3'>
-                                        <View className='flex flex-row justify-start items-center gap-2'>
-                                            {option.icon}
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.sideHeading]}>{option.label}</Text>
+                                <TouchableOpacity onPress={option.onPress}>
+                                    <Card style={[globalStyles.cardShadowEffect, { width: wp('98%'), marginVertical: hp('0.5%') }]} className='self-center' key={index}>
+                                        <View className='flex flex-row justify-between items-center p-3'>
+                                            <View className='flex flex-row justify-start items-center gap-2'>
+                                                {option.icon}
+                                                <Text style={[globalStyles.normalTextColor, globalStyles.sideHeading]}>{option.label}</Text>
+
+                                            </View>
+                                            <Feather name="chevron-right" size={wp('6%')} color={isDark ? "#fff" : "#000"} />
 
                                         </View>
-                                        <Feather name="chevron-right" size={wp('6%')} color={isDark ? "#fff" : "#000"} />
-
-                                    </View>
-                                </Card>
+                                    </Card>
+                                </TouchableOpacity>
                             ))
 
                             }

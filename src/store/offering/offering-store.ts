@@ -13,14 +13,14 @@ export interface OfferingStore {
   getServiceData: () => ServiceModel[];
   addService: (service: ServiceModel | ServiceModel[]) => void;
   updateService: (service: ServiceModel | ServiceModel[]) => void;
-  deleteService: (service: ServiceModel | ServiceModel[] | string | string[]) => void;
+  deleteService: (idOrIds: string | number | (string | number)[]) => void;
 
   // --- Package CRUD ---
   setPackageData: (list: PackageModel[]) => void;
   getPackageData: () => PackageModel[];
   addPackage: (pkg: PackageModel | PackageModel[]) => void;
   updatePackage: (pkg: PackageModel | PackageModel[]) => void;
-  deletePackage: (pkg: PackageModel | PackageModel[] | string | string[]) => void;
+  deletePackage: (idOrIds: string | number | (string | number)[]) => void;
 }
 
 export const useOfferingStore = create<OfferingStore>((set, get) => ({
@@ -80,15 +80,14 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
       return { serviceData: [...updatedList, ...newItems] };
     }),
 
-  deleteService: (service) =>
+  deleteService: (idOrIds: string | number | (string | number)[]) =>
     set((state) => {
-      const ids = Array.isArray(service)
-        ? service.map((s) => (typeof s === "object" ? s.id : s))
-        : [typeof service === "object" ? service.id : service];
+      const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
       const deleteIds = new Set(ids);
-      return { serviceData: state.serviceData.filter((s) => !deleteIds.has(s.id)) };
+      return {
+        serviceData: state.serviceData.filter((s) => !deleteIds.has(s.id)),
+      };
     }),
-
   // --- Package Methods ---
   setPackageData: (list) => set({ packageData: list }),
   getPackageData: () => get().packageData,
@@ -112,12 +111,13 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
       return { packageData: [...updatedList, ...newItems] };
     }),
 
-  deletePackage: (pkg) =>
+
+  deletePackage: (idOrIds: string | number | (string | number)[]) =>
     set((state) => {
-      const ids = Array.isArray(pkg)
-        ? pkg.map((p) => (typeof p === "object" ? p.id : p))
-        : [typeof pkg === "object" ? pkg.id : pkg];
+      const ids = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
       const deleteIds = new Set(ids);
-      return { packageData: state.packageData.filter((p) => !deleteIds.has(p.id)) };
+      return {
+        packageData: state.packageData.filter((p) => !deleteIds.has(p.id)),
+      };
     }),
 }));

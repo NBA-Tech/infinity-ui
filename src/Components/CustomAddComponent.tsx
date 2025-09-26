@@ -1,12 +1,23 @@
 import React, { useState, useMemo, useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
 import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { StyleContext } from "../providers/theme/global-style-provider";
+import { StyleContext, ThemeToggleContext } from "../providers/theme/global-style-provider";
 
+const styles = StyleSheet.create({
+  dropdown: {
+    height: hp("5%"),
+    borderWidth: 1,
+    borderRadius: wp("1%"),
+    paddingHorizontal: wp("2%"),
+  },
+  dropdownContainer: {
+    paddingHorizontal: wp("2%"),
+  },
+})
 interface Service {
   id: string;
   serviceName: string;
@@ -28,6 +39,7 @@ interface Props {
 const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = [], onChange }) => {
   const [rows, setRows] = useState<SelectedService[]>(value);
   const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
 
   // keep local state in sync if parent updates `value`
   useEffect(() => {
@@ -39,7 +51,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
     if (!Array.isArray(serviceList)) return [];
     const selectedIds = new Set(rows.map((r) => r.id));
     return serviceList
-      .filter((s) => s?.type === "SERVICE" && !selectedIds.has(s.id))
+      .filter((s) => !selectedIds.has(s.id))
       .map((s) => ({ label: s.serviceName, value: s.id }));
   }, [serviceList, rows]);
 
@@ -90,7 +102,6 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
           serviceList
             ?.filter(
               (s) =>
-                s?.type === "SERVICE" &&
                 (s.id === row.id || !rows.find((r) => r.id === s.id))
             )
             .map((s) => ({ label: s.serviceName, value: s.id })) || [];
@@ -104,7 +115,30 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
             {/* Dropdown */}
             <View style={{ flex: 1 }}>
               <Dropdown
-                style={{ borderWidth: 1, borderRadius: 6, padding: 8 }}
+                style={[
+                  styles.dropdown,
+                  { backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#444" : "#ccc" }
+                ]}
+                containerStyle={[
+                  styles.dropdownContainer,
+                  { backgroundColor: isDark ? "#1E1E28" : "#fff" }
+                ]}
+                placeholderStyle={[
+                  globalStyles.labelText,
+                  { color: isDark ? "#9CA3AF" : "#808080" } // muted grey
+                ]}
+                inputSearchStyle={[
+                  globalStyles.labelText,
+                  { color: isDark ? "#E5E7EB" : "#111827" } // text color
+                ]}
+                itemTextStyle={[
+                  globalStyles.labelText,
+                  { color: isDark ? "#E5E7EB" : "#111827" } // dropdown items
+                ]}
+                selectedTextStyle={[
+                  globalStyles.labelText,
+                  { color: isDark ? "#F9FAFB" : "#111827", fontWeight: "500" } // selected item
+                ]}
                 data={options}
                 value={row.id}
                 labelField="label"
@@ -112,7 +146,14 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
                 placeholder="Select Service"
                 onChange={(item) => handleUpdateRow(index, "id", item.value)}
                 renderItem={(item) => (
-                  <Text style={{ padding: 8 }}>{item.label}</Text>
+                  <Text style={[
+                    globalStyles.labelText,
+                    {
+                      paddingVertical: hp("0.5%"),
+                      color: isDark ? "#E5E7EB" : "#111827",
+                      backgroundColor: isDark ? "#1E1E28" : "#fff",
+                    }
+                  ]}>{item.label}</Text>
                 )}
               />
             </View>
@@ -147,7 +188,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
         isDisabled={!availableServices.length}
       >
         <Feather name="plus" size={wp("5%")} color="#fff" />
-        <ButtonText style={globalStyles.buttonText}>Add Service</ButtonText>
+        <ButtonText style={[globalStyles.buttonText, { color: "#fff" }]}>Add Service</ButtonText>
       </Button>
     </View>
   );

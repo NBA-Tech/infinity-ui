@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
         borderRadius: wp('2%'),
-        backgroundColor: '#f0f0f0',
     },
     tabContainer: {
         width: wp('45%'),
@@ -74,7 +73,8 @@ const OfferingCardSkeleton = () => (
 );
 const services = () => {
     const globalStyles = useContext(StyleContext);
-    const { offeringList, setOfferingList, getOfferingList, addOfferingDetailsInfo, updateOfferingDetailsInfo } = useOfferingStore();
+    const { isDark } = useContext(ThemeToggleContext);
+    const { serviceData, packageData, loadOfferings,addService,updateService,addPackage,updatePackage } = useOfferingStore();
     const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
     const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState('services');
@@ -128,11 +128,11 @@ const services = () => {
     const handleEdit = (id: string) => {
         if (id == "") return;
 
-        const filteredData: ServiceModel | PackageModel = offeringList?.filter((item) => item.id === id)?.[0];
-
-        if (filteredData.type === OFFERINGTYPE.SERVICE) {
+        if (activeTab === "services") {
+            const filteredData: ServiceModel = serviceData?.find((item) => item.id === id) as ServiceModel;
             setServiceDetails(filteredData);
         } else {
+            const filteredData: PackageModel = packageData?.find((item) => item.id === id) as PackageModel;
             setPackageDetails(filteredData);
         }
         setIsOpen(true);
@@ -239,7 +239,7 @@ const services = () => {
             label: "Choose Services",
             type: "custom",
             isRequired: true,
-            customComponent: <CustomServiceAddComponent serviceList={offeringList} onChange={handleServiceChange} value={packageDetails.serviceList} />
+            customComponent: <CustomServiceAddComponent serviceList={serviceData} onChange={handleServiceChange} value={packageDetails.serviceList} />
         },
         packageIcon: {
             key: "packageIcon",
@@ -511,62 +511,32 @@ const services = () => {
                 message: serviceResponse?.message ?? "Successfully created service",
             })
             if (isUpdate) {
-                updateOfferingDetailsInfo(currDetails)
+                activeTab==="services"?updateService(currDetails):updatePackage(currDetails)
             }
             else {
                 currDetails.id = serviceResponse?.data
-                addOfferingDetailsInfo(currDetails)
+                activeTab==="services"?addService(currDetails):addPackage(currDetails)
             }
             resetActiveDetails()
         }
         setloadingProvider(null)
     }
 
-
-    const getOfferingDetails = async () => {
-        const offeringDataStore = getOfferingList();
-
-        if (offeringDataStore.length <= 0) {
-            if (!servieDetails.customerID) return;
-            const offeringListResponse: ApiGeneralRespose = await getOfferingListAPI(
-                servieDetails.customerID
-            );
-
-
-            if (!offeringListResponse.success) {
-                showToast({
-                    type: "error",
-                    title: "Error",
-                    message: offeringListResponse.message,
-                });
-            } else {
-                const { packages, services } = offeringListResponse.data;
-                const updatedData = [...(packages ?? []), ...(services ?? [])];
-
-                setOfferingList(updatedData);
-            }
-        } else {
-            const current = getOfferingList();
-            if (current.length !== offeringDataStore.length) {
-                setOfferingList(offeringDataStore);
-            }
-        }
-    };
-
     const handleSearch = (text: string) => {
         setSearchText(text);
         let filteredData = []
         if (activeTab == "services") {
-            filteredData = offeringList?.filter((item) => item?.type === OFFERINGTYPE.SERVICE && item?.serviceName.toLowerCase().includes(text.toLowerCase()));
+            filteredData=serviceData?.filter((item) => item?.serviceName.toLowerCase().includes(text.toLowerCase()));
         }
         else {
-            filteredData = offeringList?.filter((item) => item?.type === OFFERINGTYPE.PACKAGE && item?.packageName.toLowerCase().includes(text.toLowerCase()));
+            filteredData = packageData?.filter((item) => item?.packageName.toLowerCase().includes(text.toLowerCase()));
         }
         setFilteredOfferingList(filteredData);
     }
 
     useEffect(() => {
-        getOfferingDetails();
+        const userId = getItem("USERID")
+        loadOfferings(userId,showToast);
     }, []);
 
 
@@ -582,13 +552,13 @@ const services = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: hp("2%") }}
                 >
-                    <View className="rounded-t-2xl bg-white max-h-[85%] p-4" style={{ borderRadius: wp('3%') }}>
+                    <View className={"rounded-t-2xl max-h-[85%] p-4"} style={{ borderRadius: wp('3%'),backgroundColor: isDark ? "#1F2028" : "#f5f5f5" }}>
                         {/* Header */}
                         <View className="flex flex-col items-start mb-4">
-                            <Text style={[globalStyles.blackTextColor, globalStyles.subHeadingText]}>
+                            <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText]}>
                                 {activeTab === "services" ? "Add Services" : "Add Package"}
                             </Text>
-                            <Text style={[globalStyles.blackTextColor, globalStyles.normalText]}>
+                            <Text style={[globalStyles.themeTextColor, globalStyles.normalText]}>
                                 {activeTab === "services"
                                     ? "Create Services Details"
                                     : "Create Package Details"}
@@ -612,7 +582,7 @@ const services = () => {
                                 style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
                                 onPress={() => setIsOpen(false)}
                             >
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>
                                     Cancel
                                 </ButtonText>
                             </Button>
@@ -629,7 +599,7 @@ const services = () => {
                                     <ButtonSpinner color={"#fff"} size={wp("4%")} />
                                 )}
                                 <Feather name="save" size={wp("5%")} color="#fff" />
-                                <ButtonText style={globalStyles.buttonText}>Save</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText,{color:"#fff"}]}>Save</ButtonText>
                             </Button>
                         </View>
                     </View>
@@ -637,10 +607,10 @@ const services = () => {
 
             </Modal>
             <View>
-                <View className='bg-[#fff]' style={{ marginVertical: hp('1%') }}>
+                <View className={isDark ? "bg-[#000]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text]}>Services & Package</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Services & Package</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
@@ -656,12 +626,11 @@ const services = () => {
                             style={styles.inputContainer}
                         >
                             <InputSlot>
-                                <Feather name="search" size={wp('5%')} color="#000" />
+                                <Feather name="search" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
                             <InputField
                                 type="text"
                                 placeholder="Search Services/Packages"
-                                style={{ flex: 1, backgroundColor: '#f0f0f0' }}
                                 onChangeText={handleSearch}
                             />
 
@@ -670,22 +639,22 @@ const services = () => {
 
                     <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                         <TouchableOpacity style={[styles.tabContainer, activeTab === 'services' && styles.activeTab]} onPress={() => setActiveTab('services')}>
-                            <Text style={[globalStyles.normalBoldText]}>Services</Text>
+                            <Text style={[globalStyles.normalBoldText,globalStyles.themeTextColor]}>Services</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.tabContainer, activeTab === 'packages' && styles.activeTab]} onPress={() => setActiveTab('packages')}>
-                            <Text style={[globalStyles.normalBoldText]}>Packages</Text>
+                            <Text style={[globalStyles.normalBoldText,globalStyles.themeTextColor]}>Packages</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
                     <View>
-                        <Text style={[globalStyles.sideHeading]}>
+                        <Text style={[globalStyles.sideHeading,globalStyles.themeTextColor]}>
                             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                             (
                             {activeTab === "services"
-                                ? offeringList?.filter(item => item.type === OFFERINGTYPE.SERVICE).length
-                                : offeringList?.filter(item => item.type === OFFERINGTYPE.PACKAGE).length
+                                ? serviceData.length
+                                : packageData.length
                             }
                             )
                         </Text>
@@ -694,10 +663,11 @@ const services = () => {
                     <View>
                         <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => {
                             resetActiveDetails()
+                            console.log("fuyck")
                             setIsOpen(true)
                         }}>
                             <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
+                            <ButtonText style={[globalStyles.buttonText,{color: '#fff'}]}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
                         </Button>
                     </View>
 
@@ -708,11 +678,11 @@ const services = () => {
 
                     {/* Services Tab */}
                     {!loadingProvider && activeTab === 'services' && (
-                        offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)?.length === 0 ? (
+                        serviceData?.length === 0 ? (
                             <EmptyState variant='services' />
                         ) : (
                             <ServiceTab
-                                serviceData={searchText !== '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.SERVICE)}
+                                serviceData={searchText !== '' ? filteredOfferingList : serviceData}
                                 handleEdit={handleEdit}
                             />
                         )
@@ -720,11 +690,11 @@ const services = () => {
 
                     {/* Packages Tab */}
                     {!loadingProvider && activeTab === 'packages' && (
-                        offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)?.length === 0 ? (
+                        packageData?.length === 0 ? (
                             <EmptyState variant='packages' />
                         ) : (
                             <PackageTab
-                                packageData={searchText !== '' ? filteredOfferingList : offeringList?.filter((item: any) => item.type === OFFERINGTYPE.PACKAGE)}
+                                packageData={searchText !== '' ? filteredOfferingList : packageData}
                                 handleEdit={handleEdit}
                             />
                         )

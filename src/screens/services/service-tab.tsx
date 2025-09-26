@@ -59,8 +59,6 @@ const styles = StyleSheet.create({
         marginTop: wp('2%'),
     },
     price: {
-        fontSize: wp('5%'),           // larger font
-        fontWeight: '700',             // bold
         color: '#7C3AED',              // purple highlight
     },
     tag: {
@@ -78,6 +76,7 @@ type ServiceTabProps = {
 }
 const ServiceTab = (props: ServiceTabProps) => {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [currId, setCurrId] = useState<string>();
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -105,15 +104,15 @@ const ServiceTab = (props: ServiceTabProps) => {
             <Card style={[styles.card, globalStyles.cardShadowEffect]}>
                 {/* Header Row */}
                 <View style={styles.headerRow}>
-                    <MaterialCommunityIcons name={service?.icon || "camera"} size={wp('5%')} color="#000" />
+                    <MaterialCommunityIcons name={service?.icon || "camera"} size={wp('5%')} color={isDark ? '#fff' : '#000'} />
 
-                    <Text style={[globalStyles.heading3Text, styles.title, { width: wp('70%') }]} numberOfLines={1}>
+                    <Text style={[globalStyles.heading3Text, styles.title,globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
                         {service?.serviceName}
                     </Text>
 
                     <View style={styles.rightHeader}>
                         <View style={[styles.status, service?.status === STATUS.ACTIVE ? styles.activeStatus : styles.inactiveStatus]}>
-                            <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>
+                            <Text style={[globalStyles.themeTextColor, globalStyles.smallText]}>
                                 {service?.status}
                             </Text>
                         </View>
@@ -123,7 +122,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                             trigger={({ ...triggerProps }) => {
                                 return (
                                     <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                        <Feather name="more-vertical" size={wp('5%')} color="#000" style={{ marginLeft: wp('2%') }} />
+                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} style={{ marginLeft: wp('2%') }} />
                                     </Button>
                                 )
                             }}
@@ -157,7 +156,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                         {service?.description}
                     </Text>
 
-                    <Text style={[styles.price]}>
+                    <Text style={[styles.price,globalStyles.subHeadingText]}>
                         Rs. {service?.price}
                     </Text>
                 </View>

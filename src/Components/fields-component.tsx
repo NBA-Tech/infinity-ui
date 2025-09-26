@@ -253,8 +253,8 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     selectedValues={field.value || []}
                     items={field.dropDownItems || []}
                     itemContainerStyle={{ backgroundColor: "transparent", borderColor: "#EDE9FE", borderWidth: wp("0.4%"), borderRadius: wp("4%"), padding: wp("2%") }}
-                    valueStyle={{ fontSize: 14 }}
-                    labelStyle={{ color: "#000" }}
+                    valueStyle={{ fontSize: 14, color: isDark ? "#fff" : "#000" }}
+                    itemLabelStyle={{ color: isDark ? "#fff" : "#000" }}
                     alertRequired={false}
                     setSelectedValues={field.onChange}
                 />) : (
