@@ -68,14 +68,13 @@ const createGlobalStyle = (isDark = false) =>
 
     greyInputBox: {
       backgroundColor: isDark ? "#1F1F1F" : "#efefef",
-      height: hp('5%'),
-      marginVertical: hp('1%'),
+      height: hp('5.2%'),
       borderRadius: wp('1%'),
       paddingHorizontal: wp('2%'),
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont("1.8%"),
       color: isDark ? "#E5E7EB" : "#2a2a2a",
       width: wp('80%'),
-      fontFamily: "Gilroy-normal",
+      fontFamily: "Inter-Regular",
     },
 
     // containers

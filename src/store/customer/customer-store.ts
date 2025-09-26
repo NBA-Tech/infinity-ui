@@ -1,4 +1,7 @@
-import { CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
+import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
+import { ApiGeneralRespose, SearchQueryRequest } from '@/src/types/common';
+import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
+import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { create } from 'zustand';
 
 interface CustomerStore {
@@ -10,6 +13,7 @@ interface CustomerStore {
     getCustomerMetaInfoList: () => CustomerMetaModel[];
     updateCustomerMetaInfoList: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
     deleteCustomerMetaInfo: (customerIDs: string | string[]) => void;
+    loadCustomerMetaInfoList: (userID: string, payload?: SearchQueryRequest, headers?: Record<string, any>, showToast?: any) => Promise<ApiGeneralRespose>
 
     // Details CRUD
     setCustomerDetailsInfo: (customerDetailsList: CustomerModel[]) => void; // ✅ new
@@ -54,6 +58,72 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
 
             return { customerMetaInfoList: filtered };
         }),
+    loadCustomerMetaInfoList: async (
+        userID: string,
+        payload?: SearchQueryRequest,
+        headers?: Record<string, any>,
+        showToast?: any
+    ): Promise<any> => {
+        let customerMetaData = get().getCustomerMetaInfoList();
+        if(!userID){
+            showToast?.({
+                type: "error",
+                title: "Error",
+                message: "User not found",
+            });
+            return [];
+        }
+
+        if (customerMetaData?.length > 0) {
+            return customerMetaData.map((customer) => ({
+                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+                value: customer.customerID ?? "",
+            }));
+        }
+
+        const payloadToUse: SearchQueryRequest = payload ?? {
+            filters: { userID },
+            getAll: true,
+            requiredFields: [
+                "customerBasicInfo.firstName",
+                "customerBasicInfo.lastName",
+                "_id",
+                "customerBasicInfo.mobileNumber",
+                "customerBasicInfo.email",
+            ],
+        };
+
+        try {
+            const customerListResponse: CustomerApiResponse = await getCustomerDetails(payloadToUse, headers);
+
+            if (!customerListResponse?.success) {
+                showToast?.({
+                    type: "error",
+                    title: "Error",
+                    message: customerListResponse?.message ?? "Something went wrong",
+                });
+                return [];
+            }
+
+            if (!customerListResponse?.customerList?.length) return [];
+
+            const metaList = toCustomerMetaModelList(customerListResponse.customerList);
+            set({ customerMetaInfoList: metaList });
+
+            return metaList.map((customer) => ({
+                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+                value: customer.customerID ?? "",
+            }));
+        } catch (err) {
+            showToast?.({
+                type: "error",
+                title: "Error",
+                message: (err as Error).message ?? "Something went wrong",
+            });
+            return [];
+        }
+    },
+
 
     // --- Details ---
     setCustomerDetailsInfo: (list) => set({ customerDetailsList: list }), // ✅ replace entire list

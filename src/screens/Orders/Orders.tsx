@@ -54,7 +54,7 @@ const Orders = () => {
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
     const [openDelete, setOpenDelete] = useState<boolean>(false);
-    const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
+    const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
     const [currID, setCurrID] = useState<string>("");
     const [refresh, setRefresh] = useState<boolean>(false);
 
@@ -86,26 +86,6 @@ const Orders = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const getCustomerMetaData = async () => {
-        const customerMetaData = getCustomerMetaInfoList();
-        if (customerMetaData?.length > 0) return;
-
-        const userId = getItem("USERID");
-        const payload: SearchQueryRequest = {
-            filters: { userId },
-            getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
-        };
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
-        if (!customerListResponse?.success) {
-            return showToast({ type: "error", title: "Error", message: customerListResponse?.message ?? "Something went wrong" });
-        }
-        if (!customerListResponse?.customerList?.length) return;
-
-        const metaList = toCustomerMetaModelList(customerListResponse.customerList);
-        setCustomerMetaInfoList(metaList);
     };
 
     const handleSearch = (value: string) => {
@@ -151,7 +131,8 @@ const Orders = () => {
     }, [filters,refresh]);
 
     useEffect(() => {
-        getCustomerMetaData();
+        const userId = getItem("USERID");
+        loadCustomerMetaInfoList(userId,{},{},showToast);
     }, []);
 
     return (

@@ -1,3 +1,5 @@
+import { OrderType } from "../order/order-type";
+
 export type InvoiceStatus =
   | "DRAFT"
   | "SENT"
@@ -6,6 +8,11 @@ export type InvoiceStatus =
   | "OVERDUE"
   | "CANCELLED";
 
+
+export interface InvoiceHtmlInfo {
+  key:string;
+  section:string;
+}
 export interface BillingInfo {
   name: string;
   email: string;
@@ -15,27 +22,14 @@ export interface BillingInfo {
 
 export interface InvoiceItem {
   itemId: string;           // Optional: link to Service/Package
-  description: string;      // e.g., "Camera Rental"
+  itemName: string;
+  itemType:OrderType
   quantity: number;         // total quantity (e.g., 20)
   unitPrice: number;        // price per unit
   total: number;            // quantity * unitPrice
   quantityPaid: number;     // how many units paid
   quantityRemaining: number;// auto = quantity - quantityPaid
-}
-
-export interface PaymentItem {
-  itemId: string;           // link to InvoiceItem
-  itemDescription: string;  // redundant but useful for reporting
-  quantityPaid: number;     // e.g., 10
-  amountPaid: number;       // qty * unitPrice
-}
-
-export interface PaymentHistory {
-  paymentDate: Date;
-  amount: number;
-  paymentMethod: string;    // e.g., CASH, UPI, CARD
-  transactionId: string;
-  paymentItems: PaymentItem[];
+  totalPaid: number;        // quantityPaid * unitPrice
 }
 
 export interface Invoice {
@@ -43,15 +37,12 @@ export interface Invoice {
   orderId: string;           // Link to Order
   customerId: string;        // Link to Customer
   invoiceDate: Date;
+  paymentType: string;
   dueDate: Date;
   status: InvoiceStatus;
   billingInfo: BillingInfo;
   items: InvoiceItem[];
-  subTotal: number;
-  taxAmount: number;
-  discountAmount: number;
   totalAmount: number;
   amountPaid: number;
-  balanceDue: number;
-  paymentHistory: PaymentHistory[];
+  invoiceHtmlInfo?: InvoiceHtmlInfo[]
 }

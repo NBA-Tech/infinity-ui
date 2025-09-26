@@ -30,6 +30,7 @@ export interface QuotaionHtmlInfo{
 export interface OfferingInfo {
   orderType: OrderType;
   packageId?: string;
+  packageName?: string;
   services?: ServiceInfo[]
   packagePrice?: number;
 }

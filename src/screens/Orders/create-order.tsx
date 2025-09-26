@@ -76,12 +76,10 @@ const CreateOrder = () => {
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
-    const [packageData, setPackageData] = useState<PackageModel[]>([])
-    const [serviceData, setServiceData] = useState<ServiceModel[]>([])
     const showToast = useToastMessage();
-    const { getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
-    const { offeringList, getOfferingList, setOfferingList } = useOfferingStore()
-    const { userDetails, setUserDetails, getUserDetails } = useUserStore()
+    const { loadCustomerMetaInfoList } = useCustomerStore();
+    const { serviceData, packageData, loadOfferings } = useOfferingStore()
+    const { userDetails,getUserDetailsUsingID } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: getItem("USERID") as string,
         orderBasicInfo: {} as OrderBasicInfo,
@@ -101,104 +99,14 @@ const CreateOrder = () => {
     })
     const navigation = useNavigation<NavigationProp>();
 
-    const getCustomerNameList = async () => {
-        const customerMetaData = getCustomerMetaInfoList();
-
-        if (customerMetaData?.length > 0) {
-            const filterData: CustomerOption[] = customerMetaData.map((customer) => ({
-                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
-                value: customer.customerID ?? "",
-            }));
-            setCustomerList(filterData);
-            return;
-        }
-
-        const userId = getItem("USERID");
-        const payload: SearchQueryRequest = {
-            filters: { userId },
-            getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
-        };
-
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
-
-        if (!customerListResponse?.success) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: customerListResponse?.message ?? "Something went wrong",
-            });
-        }
-
-        if (customerListResponse?.customerList?.length === 0) return;
-
-        const metaList = toCustomerMetaModelList(customerListResponse.customerList);
-        const filterData: CustomerOption[] = metaList.map((customer) => ({
-            label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
-            value: customer.customerID ?? "",
-        }));
-
-        setCustomerMetaInfoList(metaList);
-        setCustomerList(filterData);
+    const getCustomerNameList = async (userID: string) => {
+        const metaData= await loadCustomerMetaInfoList(userID,{},{},showToast)
+        setCustomerList(metaData);
     };
 
     const findServicePrice = (serviceId: string) => {
         const service = serviceData.find((service) => service.id === serviceId)
         return service?.price
-    }
-
-    const getUserDetailsUsingID = async (userID: string) => {
-        let userDetails = getUserDetails()
-        if (!userDetails) {
-            const userDetailsApi: ApiGeneralRespose = await getUserDetailsApi(userID)
-            if (!userDetailsApi?.success) {
-                showToast({
-                    type: "error",
-                    title: "Error",
-                    message: userDetailsApi?.message ?? "Something went wrong",
-                })
-            }
-            else {
-                setUserDetails(userDetailsApi.data)
-            }
-        }
-
-    }
-
-    const getOfferingDetails = async () => {
-        let offeringListData = getOfferingList()
-        const userID = getItem("USERID")
-        if (!userID) {
-            showToast({
-                type: "error",
-                title: "Error",
-                message: "UserID is not found Please Logout and Login again",
-            })
-            return
-        }
-        if (offeringListData.length <= 0) {
-            const offeringData = await getOfferingListAPI(userID)
-            if (!offeringData?.success) {
-                showToast({
-                    type: "error",
-                    title: "Error",
-                    message: offeringData?.message ?? "Something went wrong",
-                })
-                return;
-            }
-            else {
-                const { packages, services } = offeringData.data
-                offeringListData = [...(packages ?? []), ...(services ?? [])]
-                setPackageData(packages ?? [])
-                setServiceData(services ?? [])
-            }
-        }
-        else {
-            setPackageData(offeringListData.filter((offering) => offering?.type == OrderType?.PACKAGE) as PackageModel[])
-            setServiceData(offeringListData.filter((offering) => offering?.type == OrderType?.SERVICE) as ServiceModel[])
-        }
-        setOfferingList(offeringListData as ServiceModel[] | PackageModel[])
-
     }
 
     const userInfo: FormFields = useMemo(() => ({
@@ -714,13 +622,12 @@ const CreateOrder = () => {
     useFocusEffect(
         useCallback(() => {
             const userID = getItem("USERID")
-            getCustomerNameList();
-            getOfferingDetails();
-            getUserDetailsUsingID(userID);
+            getCustomerNameList(userID);
+            loadOfferings(userID,showToast);
+            getUserDetailsUsingID(userID,showToast);
 
             return () => {
                 setCustomerList([]);
-                setOfferingList([]);
             };
         }, [])
     );
