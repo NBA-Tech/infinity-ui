@@ -114,7 +114,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
         getServiceList()
     }, [props.offeringData])
     return (
-        <Card style={globalStyles.cardShadowEffect}>
+        <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View style={{ padding: wp('3%') }}>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>

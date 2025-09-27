@@ -235,7 +235,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
     };
 
     return (
-        <Card style={globalStyles.cardShadowEffect}>
+        <Card style={[globalStyles.cardShadowEffect,{flex:1}]}>
             <Modal
                 isVisible={open}
                 onBackdropPress={() => setOpen(false)}

@@ -56,7 +56,6 @@ const CreateInvoice = () => {
     const [orderInfo, setOrderInfo] = useState<any>(null);
     const [isOpen, setIsOpen] = useState({
         invoiceDate: false,
-        dueDate: false,
         modal: false
     });
     const { getItem } = useDataStore()
@@ -150,24 +149,6 @@ const CreateInvoice = () => {
             },
             onChange(value: string) {
                 patchState('', 'invoiceDate', value, true, setInvoiceDetails, setErrors)
-            },
-        },
-        dueDate: {
-            key: "dueDate",
-            label: "Due Date",
-            placeholder: "Due Date",
-            icon: <Feather name="calendar" size={wp('5%')} color="#3B82F6" />,
-            type: "date",
-            style: "w-full",
-            isRequired: true,
-            isDisabled: false,
-            value: invoiceDetails?.dueDate || undefined,
-            isOpen: isOpen.dueDate,
-            setIsOpen: (value: boolean) => {
-                setIsOpen({ ...isOpen, dueDate: value });
-            },
-            onChange(value: string) {
-                patchState('', 'dueDate', value, true, setInvoiceDetails, setErrors)
             },
         },
         paymentType: {
@@ -472,7 +453,7 @@ const CreateInvoice = () => {
     useEffect(() => {
         if (!invoiceDetails?.orderId) return
         getOrderDetails()
-        setInvoiceDetails({ orderId: invoiceDetails?.orderId,orderName:invoiceDetails?.orderName });
+        setInvoiceDetails({userId: invoiceDetails?.userId ,orderId: invoiceDetails?.orderId,orderName:invoiceDetails?.orderName });
     }, [invoiceDetails?.orderId])
 
     useEffect(() => {

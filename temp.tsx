@@ -30,7 +30,7 @@ export default function PaymentSuccess() {
 
       {/* 🎊 Confetti Blast */}
       <ConfettiCannon
-        count={150}
+        count={350}
         origin={{ x: -10, y: 0 }}
         fadeOut={true}
         autoStart={false}

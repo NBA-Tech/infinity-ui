@@ -23,6 +23,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { OrderModel, OrderType } from '@/src/types/order/order-type';
 import EventInfoCard from './details-component/event-info';
+import { TabView, TabBar } from "react-native-tab-view";
 import { OfferingModel } from '@/src/types/offering/offering-type';
 const styles = StyleSheet.create({
     statusContainer: {
@@ -44,10 +45,19 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const [packageData, setPackageData] = useState<OfferingModel[]>([]);
     const [serviceData, setServiceData] = useState<OfferingModel[]>([]);
     const globalStyles = useContext(StyleContext);
-    const {isDark} = useContext(ThemeToggleContext);
+    const { isDark } = useContext(ThemeToggleContext);
+    const [index, setIndex] = useState(0);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
+    const [routes] = useState([
+        { key: "customer", title: "Customer", icon: "user" },
+        { key: "event", title: "Event", icon: "calendar" },
+        { key: "offering", title: "Offerings", icon: "package" },
+        { key: "quotation", title: "Quotation", icon: "file-text" },
+        { key: "invoice", title: "Invoice", icon: "credit-card" },
+        { key: "timeline", title: "Timeline", icon: "clock" },
+    ]);
 
 
     const actionButtons = [
@@ -115,6 +125,53 @@ const OrderDetails = ({ route, navigation }: Props) => {
         setOrderDetails(orderDetails.data)
     }
 
+    const renderScene = ({ route }: any) => {
+        switch (route.key) {
+            case "customer":
+                return <CustomerInfo
+                    customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
+                    orderBasicInfo={orderDetails?.orderBasicInfo} />
+            case "event":
+                return <EventInfoCard
+                    eventData={orderDetails?.eventInfo}
+                    serviceLength={orderDetails?.offeringInfo?.services?.length}
+                    isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
+            case "offering":
+                return <OfferingDetails
+                    offeringData={orderDetails?.offeringInfo}
+                    totalPrice={orderDetails?.totalPrice}
+                    setPackageData={setPackageData}
+                    setServiceData={setServiceData} />
+            case "quotation":
+                return <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData} />
+            case "invoice":
+                return <InvoiceDetails />
+            case "timeline":
+                return <TimeLineDetails />
+            default:
+                return null;
+        }
+    }
+
+    const renderTabBar = (props: any) => (
+        <TabBar
+            {...props}
+            style={{ backgroundColor: globalStyles.appBackground.backgroundColor,marginBottom:hp('3%') }}
+            indicatorStyle={{ backgroundColor: "#8B5CF6", height: 3, borderRadius: 2 }}
+            activeColor={isDark ? "#fff" : "#000"}
+            inactiveColor={isDark ? "#6B7280" : "#6B7280"}
+            pressColor="rgba(139,92,246,0.15)"
+            tabStyle={{ width: "auto" }}
+            renderIcon={({ route, focused, color }: any) => (
+                <Feather
+                    name={route.icon}
+                    size={wp("5%")}
+                    color={focused ? "#8B5CF6" : "#6B7280"}
+                />
+            )}
+        />
+    );
+
     useEffect(() => {
         getCustomerNameList()
         getOrderDetails(orderId)
@@ -130,7 +187,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         <View className="flex flex-row items-center gap-3">
                             <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
                             <View className="flex flex-col">
-                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Order Details</Text>
+                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Order Details</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
                                     Order #{orderDetails?.orderId}
                                 </Text>
@@ -148,36 +205,20 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         {actionButtons.map((action) => (
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground}>
                                 {action.icon}
-                                <ButtonText style={[globalStyles.buttonText,globalStyles.themeTextColor]}>{action.label}</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
                             </Button>
                         ))
                         }
                     </View>
                 </View>
             </BackHeader>
-            <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ paddingVertical: 10 }} // optional spacing
-                showsVerticalScrollIndicator={false} // hide scrollbar if you want
-            >
-                <View className='flex flex-col gap-3' style={{ marginHorizontal: wp('5%') }}>
-                    <CustomerInfo
-                        customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
-                        orderBasicInfo={orderDetails?.orderBasicInfo} />
-                    <EventInfoCard
-                        eventData={orderDetails?.eventInfo}
-                        serviceLength={orderDetails?.offeringInfo?.services?.length}
-                        isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
-                    <OfferingDetails
-                        offeringData={orderDetails?.offeringInfo}
-                        totalPrice={orderDetails?.totalPrice} 
-                        setPackageData={setPackageData}
-                        setServiceData={setServiceData}/>
-                    <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData}/>
-                    <InvoiceDetails />
-                    <TimeLineDetails />
-                </View>
-            </ScrollView>
+            <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={{ width: wp("100%") }}
+                renderTabBar={renderTabBar}
+            />
 
 
         </SafeAreaView>

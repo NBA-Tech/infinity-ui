@@ -1,6 +1,6 @@
 export { default as Customer } from './customer/customer';
 export { default as Home } from './Home/home';
-export { default as Invoice } from './invoice/invoice';
+export { default as InvoiceList } from './invoice/invoice';
 export { default as Quotation } from './quotation/quotation';
 export { default as Profile } from './profile/profile';
 export { default as CreateCustomer } from './customer/create-customer';
@@ -13,3 +13,4 @@ export { default as TemplateEditor } from './template-editor/template-editor';
 export { default as Services } from './services/offering';
 export { default as OrderDetails } from './Orders/order-details';
 export { default as CreateInvoice } from './invoice/create-invoice';
+export { default as SplashScreen } from './splash/splash';

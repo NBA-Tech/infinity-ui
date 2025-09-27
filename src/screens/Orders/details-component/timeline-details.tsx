@@ -73,7 +73,7 @@ const TimeLineDetails = () => {
   };
 
   return (
-    <Card style={globalStyles.cardShadowEffect}>
+    <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
       <View style={{ padding: wp("3%") }}>
         {/* Header */}
         <View style={styles.header}>

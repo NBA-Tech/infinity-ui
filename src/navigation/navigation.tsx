@@ -4,10 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice } from '../screens';
+import { Customer, Home, InvoiceList, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice, SplashScreen } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 import { RootStackParamList } from '../types/common';
-import PaymentSuccess from '../../temp'
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
@@ -51,7 +50,7 @@ function ProfileNavigator() {
 function InvoiceNavigator() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="InvoiceList" component={Invoice} />
+            <Stack.Screen name="InvoiceList" component={InvoiceList} />
             <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
         </Stack.Navigator>
     )
@@ -74,7 +73,6 @@ function TabNavigator() {
 function AuthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="temp" component={PaymentSuccess}/>
             <Stack.Screen name="main" component={TabNavigator} />
         </Stack.Navigator>
     )
@@ -83,6 +81,7 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="splash" component={SplashScreen} />
             <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
             <Stack.Screen name="useronboarding" component={UserOnBoarding} />
@@ -102,7 +101,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {isAuthenticated ? (
+            {false ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />

@@ -17,7 +17,7 @@ import { Fab, FabLabel, FabIcon } from "@/components/ui/fab"
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Button, ButtonText } from '@/components/ui/button';
 import { useNavigation } from '@react-navigation/native';
-import { ApiGeneralRespose, NavigationProp } from '@/src/types/common';
+import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getCustomerStatsAPI } from '@/src/api/customer/customer-stat-api-service';
@@ -27,6 +27,10 @@ import { formatDate, openDaialler, openEmailClient } from '@/src/utils/utils';
 import { deleteCustomerAPI } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
+import debounce from "lodash.debounce";
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -86,45 +90,65 @@ const InvoiceCardSkeleton = () => (
         ))}
     </View>
 );
-const Invoice = () => {
+const InvoiceList = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const navigation = useNavigation<NavigationProp>()
-    const [customerData, setCustomerData] = useState<any[]>([]);
+    const [filters, setFilters] = useState<SearchQueryRequest>({ page: 1, pageSize: 10 });
+    const [hasMore, setHasMore] = useState(true);
+    const [invoiceData, setInvoiceData] = useState<Invoice[]>();
     const [loading, setLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [currID, setCurrID] = useState<string>('');
+    const [refresh, setRefresh] = useState<boolean>(false);
     const { deleteCustomerMetaInfo } = useCustomerStore();
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
 
 
-    const getCustomerDetails = async () => {
-        const userID = getItem('USERID')
-        if (!userID) {
-            showToast({
-                type: 'error',
-                title: 'Error',
-                message: 'User ID not found'
-            })
-            return
+
+
+    const getInvoiceListData = async (reset: boolean = false) => {
+        setLoading(true);
+        const currFilters: SearchQueryRequest = {
+            filters: { userId: getItem("USERID") },
+            requiredFields: ["invoiceId", "orderId", "orderName", "totalAmountPaying", "invoiceDate", "billingInfo"],
+            ...filters
         }
-        setLoading(true)
-        const customerDetailsResponse: ApiGeneralRespose = await getCustomerStatsAPI(userID)
-        if (!customerDetailsResponse?.success) {
-            showToast({
-                type: 'error',
-                title: 'Error',
-                message: customerDetailsResponse?.message || 'Failed to fetch customer details'
-            })
+        try {
+            const invoiceDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(currFilters);
+            if (!invoiceDataResponse?.success) {
+                showToast({ type: "error", title: "Error", message: invoiceDataResponse?.message });
+                setLoading(false);
+                return;
+            }
+            console.log(invoiceDataResponse)
+            setInvoiceData(prev =>
+                reset ? invoiceDataResponse?.data ?? [] : [...prev ?? [], ...(invoiceDataResponse?.data ?? [])]
+            );
+            setHasMore(
+                (invoiceDataResponse?.data?.length ?? 0) > 0 &&
+                (((filters?.page ?? 1) * (filters?.pageSize ?? 10)) < (invoiceDataResponse?.total ?? 0))
+            );
         }
-        else {
-            console.log(customerDetailsResponse?.data)
-            setCustomerData(customerDetailsResponse?.data)
+        catch (err) {
+            console.log(err);
         }
-        setLoading(false)
+        finally {
+            setLoading(false);
+        }
     }
+    const handleSearch = (value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            searchQuery: value,
+            searchField: "orderName",
+            page: 1,
+        }));
+    };
+
+    const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
     const deleteCustomer = async () => {
         console.log(currID)
@@ -141,7 +165,7 @@ const Invoice = () => {
             return
         }
         setLoadingDelete(false);
-        setCustomerData(prev => prev.filter(item => item._id !== currID));
+        setInvoiceData(prev => prev.filter(item => item._id !== currID));
         deleteCustomerMetaInfo(currID);
         showToast({
             type: 'success',
@@ -154,103 +178,72 @@ const Invoice = () => {
     }
 
 
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         getCustomerDetails();
+    useFocusEffect(
+        useCallback(() => {
+            const reset = filters?.page === 1;
+            getInvoiceListData();
 
-    //         // optional cleanup
-    //         return () => {
-    //             setCustomerData([]);
-    //         };
-    //     }, [])
-    // );
+            return () => {
+                setInvoiceData([]);
+            };
+        }, [filters,refresh])
+    );
 
 
-    const InvoiceCardComponent = ({ item }: any) => {
+    const InvoiceCardComponent = ({item}: {item: Invoice}) => {
         return (
-            <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
-                <View>
-                    <View style={styles.cardContent}>
-                        {/* Left Side (Avatar + Details) */}
-                        <View style={styles.leftSection}>
-                            <Avatar style={{ backgroundColor: '#8B5CF6', transform: [{ scale: 1.2 }] }}>
-                                <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                                    {item?.customerBasicInfo?.firstName}
-                                </AvatarFallbackText>
-                            </Avatar>
+            <Card style={[styles.cardContainer, globalStyles.cardShadowEffect, { borderRadius: 16, padding: 16 }]}>
+                <View className="flex flex-col gap-3">
 
-                            <View style={styles.details}>
-                                <Text style={[globalStyles.heading3Text]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
-
-                                <View style={styles.detailRow}>
-                                    <MaterialIcons name="event" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Lead Source : {item?.leadSource || 'N/A'}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.detailRow}>
-                                    <MaterialIcons name="date-range" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Created Date : {formatDate(item?.createdDate)}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.detailRow}>
-                                    <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Total Package : ₹ {item?.totalOrderPrice || 0}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.detailRow}>
-                                    <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Balance : ₹ 2023
-                                    </Text>
-                                </View>
-                            </View>
+                    {/* Header */}
+                    <View className="flex flex-row justify-between items-center">
+                        <View className="flex flex-row items-center gap-2">
+                            <MaterialCommunityIcons name="file-document-outline" size={wp('5%')} color="#3B82F6" />
+                            <Text style={[globalStyles.subHeadingText, { color: "#3B82F6" }]}>
+                                {item?.orderName}
+                            </Text>
                         </View>
-
-                        <View style={styles.statusContainer}>
-                            <View style={styles.status}>
-                                <Text style={[globalStyles.whiteTextColor, globalStyles.labelText]}>
-                                    Pending
-                                </Text>
-                            </View>
-                            <Menu
-                                placement="bottom"
-                                offset={5}
-                                trigger={({ ...triggerProps }) => {
-                                    return (
-                                        <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                            <MaterialDesign name="dots-vertical" size={wp('5%')} color="#000" />
-                                        </Button>
-                                    )
-                                }}
-                            >
-                                <MenuItem key="Community" textValue="Edit" className='gap-2'>
-                                    <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={globalStyles.labelText} >Edit</MenuItemLabel>
-                                </MenuItem>
-                                <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?._id); setOpenDelete(true); }}>
-                                    <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                    <MenuItemLabel style={globalStyles.labelText}>Delete</MenuItemLabel>
-                                </MenuItem>
-                            </Menu>
-                        </View>
-
-
+                        <MaterialCommunityIcons name="dots-vertical" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                     </View>
-                    <View style={styles.createdOn}>
-                        <TouchableOpacity onPress={() => { openEmailClient(item?.customerBasicInfo?.email) }}>
-                            <Feather name="mail" size={wp('5%')} color="#6B7280" />
-                        </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => { openDaialler(item?.customerBasicInfo?.phone) }}>
-                            <Feather name="phone" size={wp('5%')} color="#6B7280" />
-                        </TouchableOpacity>
+                    {/* Details */}
+                    <View className="flex flex-row justify-between">
+                        <View>
+                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>#{item?.invoiceId}</Text>
+                        </View>
+                        <View>
+                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Quotation ID</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>#{item?.orderId}</Text>
+                        </View>
+                    </View>
 
+                    <View className="flex flex-row justify-between">
+                        <View>
+                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Customer</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{item?.billingInfo?.name}</Text>
+                        </View>
+                        <View>
+                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Date</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{formatDate(item?.invoiceDate ?? "")}</Text>
+                        </View>
+                    </View>
+
+                    {/* Divider */}
+                    <View style={{ borderBottomWidth: 1, borderBottomColor: "#E5E7EB", marginVertical: 8 }} />
+
+                    {/* Footer with Amount + Actions */}
+                    <View className="flex flex-row justify-between items-center">
+                        <View className="flex flex-row items-center gap-2">
+                            <MaterialIcons name="attach-money" size={wp('5%')} color="#22C55E" />
+                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>${item?.totalAmountPaying}</Text>
+                        </View>
+
+                        <View className="flex flex-row gap-5">
+                            <Feather name="eye" size={wp('5%')} color="#3B82F6" />
+                            <Feather name="download" size={wp('5%')} color="#22C55E" />
+                            <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
+                        </View>
                     </View>
                 </View>
             </Card>
@@ -275,11 +268,11 @@ const Invoice = () => {
                 <View className={isDark ? 'bg-[#1F2028]' : 'bg-[#fff]'} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text,globalStyles.themeTextColor]}>Invoice</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Invoice</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{customerData?.length} Invoices Found </Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{invoiceData?.length} Invoices Found </Text>
                         </View>
                         <View>
                             <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate('CreateInvoice')}>
@@ -317,11 +310,11 @@ const Invoice = () => {
                     <InvoiceCardSkeleton />
                 )
                 }
-                {!loading && customerData.length === 0 ? (
+                {!loading && invoiceData?.length === 0 ? (
                     <EmptyState variant={"invoices"} onAction={() => navigation.navigate('CreateCustomer')} />
                 ) : (
                     <FlatList
-                        data={customerData}
+                        data={invoiceData}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -330,8 +323,8 @@ const Invoice = () => {
                                 <InvoiceCardComponent item={item} />
                             </View>
                         )}
-                        // refreshing={loading}
-                        // onRefresh={getCustomerDetails}
+                    // refreshing={loading}
+                    // onRefresh={getCustomerDetails}
                     />
                 )
 
@@ -354,4 +347,4 @@ const Invoice = () => {
     );
 };
 
-export default Invoice;
+export default InvoiceList;
