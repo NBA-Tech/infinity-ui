@@ -7,7 +7,7 @@ import Footer from '../components/footer';
 import { Customer, Home, Invoice, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 import { RootStackParamList } from '../types/common';
-
+import PaymentSuccess from '../../temp'
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
@@ -74,6 +74,7 @@ function TabNavigator() {
 function AuthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="temp" component={PaymentSuccess}/>
             <Stack.Screen name="main" component={TabNavigator} />
         </Stack.Navigator>
     )
