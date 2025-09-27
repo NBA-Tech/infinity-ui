@@ -100,7 +100,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         { backgroundColor: isDark ? "#1E1E28" : "#fff" }
                     ]}
                     data={field.dropDownItems || []}
-                    search
+                    search={field?.isSearchable || true}
                     value={field.value}
                     placeholderStyle={[
                         globalStyles.labelText,
@@ -147,7 +147,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     selectedTextStyle={{ color: "#000", fontSize: 14 }}
                     inputSearchStyle={{ color: "#000", fontSize: 14 }}
                     iconStyle={{ width: 20, height: 20 }}
-                    search
+                    search={field?.isSearchable || true}
                     data={field.dropDownItems || []}
                     value={field.value || []}
                     labelField="label"

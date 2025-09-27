@@ -49,8 +49,8 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                 const updatedTotal = item.unitPrice * newQuantity;
                 return {
                     ...item,
-                    quantityRemaining: newQuantity,
-                    totalPaid: updatedTotal,
+                    quantityPaying: newQuantity,
+                    amountPaying: updatedTotal,
                 };
             }
             return item;
@@ -61,15 +61,15 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
 
     const handleIncrementQuantity = (id: string) => {
         const item = localItems.find((i) => i.itemId === id);
-        if (item && item.quantityRemaining < item.quantity) {
-            handlePriceChangeCalculation(id, item.quantityRemaining + 1);
+        if (item && item.quantityPaying < item.quantity) {
+            handlePriceChangeCalculation(id, item.quantityPaying + 1);
         }
     };
 
     const handleDecrementQuantity = (id: string) => {
         const item = localItems.find((i) => i.itemId === id);
-        if (item && item.quantityRemaining > 0) {
-            handlePriceChangeCalculation(id, item.quantityRemaining - 1);
+        if (item && item.quantityPaying > 0) {
+            handlePriceChangeCalculation(id, item.quantityPaying - 1);
         }
     };
 
@@ -87,9 +87,8 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                         quantity: service.value,
                         unitPrice: service.price,
                         total: service.price * service.value,
-                        quantityPaid: 0,
-                        quantityRemaining: service.value,
-                        totalPaid: service.price * service.value,
+                        quantityPaying: 0,
+                        amountPaying: service.price * service.value,
                     });
                 }
             });
@@ -103,9 +102,8 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                     quantity: 1,
                     unitPrice: props.offeringInfo.packagePrice,
                     total: props.offeringInfo.packagePrice,
-                    quantityPaid: 0,
-                    quantityRemaining: 1,
-                    totalPaid: props.offeringInfo.packagePrice,
+                    quantityPaying: 1,
+                    amountPaying: props.offeringInfo.packagePrice,
                 });
             }
         }
@@ -163,7 +161,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                                     </View>
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalText, globalStyles.themeTextColor]}>Already Paid</Text>
-                                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor]}>{item.quantityPaid}</Text>
+                                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor]}>0</Text>
                                     </View>
                                 </View>
 
@@ -182,7 +180,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                                         <TextInput
                                             style={[globalStyles.greyInputBox, styles.otp]}
                                             keyboardType='number-pad'
-                                            value={item.quantityRemaining.toString()}
+                                            value={item.quantityPaying.toString()}
                                             onChangeText={(text) => {
                                                 const val = Math.min(Math.max(Number(text), 0), item.quantity);
                                                 handlePriceChangeCalculation(item.itemId, val);
@@ -206,7 +204,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
 
                                 <View className='flex flex-row justify-between items-center'>
                                     <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Total</Text>
-                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>${item.totalPaid}</Text>
+                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>${item.amountPaying}</Text>
                                 </View>
                             </View>
                         </Card>
@@ -219,7 +217,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                         style={{ backgroundColor: '#8B5CF6', borderRadius: wp('2%'), marginVertical: hp('2%') }}
                         onPress={handleAddLineItem}
                         isDisabled={
-                            props.offeringInfo.orderType === 'SERVICE'
+                            props?.offeringInfo?.orderType === 'SERVICE'
                                 ? localItems.length === props.offeringInfo.services?.length
                                 : localItems.length === 1
                         }

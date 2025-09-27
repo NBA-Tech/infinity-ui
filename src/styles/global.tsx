@@ -28,7 +28,7 @@ const createGlobalStyle = (isDark = false) =>
     labelText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Medium" },
     normalText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Regular" },
     normalBoldText: { fontSize: scaleFont("1.8%"), fontFamily: "Poppins-Bold" },
-    buttonText: { fontSize: scaleFont("2%"), fontFamily: "Poppins-Regular" },
+    buttonText: { fontSize: scaleFont("2%"), fontFamily: "Poppins-Regular",color:'#fff' },
     underscoreText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Medium", textDecorationLine: "underline" },
     smallText: { fontSize: scaleFont("1.5%"), fontFamily: "Inter-Regular" },
 

@@ -3,17 +3,17 @@ import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-s
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackHeader from '@/src/components/back-header';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import GradientCard from '@/src/utils/gradient-gard';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import QuotationDetails from './step-components/quotation-details';
-import { Invoice } from '@/src/types/invoice/invoice-type';
+import { BillingInfo, Invoice } from '@/src/types/invoice/invoice-type';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
 import { getOrderDataListAPI, getOrderDetailsAPI } from '@/src/api/order/order-api-service';
-import { patchState } from '@/src/utils/utils';
+import { formatDate, patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import LineItemsComponent from './step-components/line-items-component';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -22,6 +22,15 @@ import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import PaymentComponent from './step-components/payment-component';
 import { useUserStore } from '@/src/store/user/user-store';
+import { OrderModel, OrderType } from '@/src/types/order/order-type';
+import TemplateBuilderComponent from '../Orders/components/template-builder-component';
+import { Card } from '@/components/ui/card';
+import { buildHtml } from '../Orders/utils/html-builder';
+import Share from 'react-native-share';
+import { generatePDF } from 'react-native-html-to-pdf';
+import Modal from 'react-native-modal';
+import TemplatePreview from '../Orders/components/template-preview';
+import { createInvoiceAPI } from '@/src/api/invoice/invoice-api-service';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -40,52 +49,21 @@ const CreateInvoice = () => {
     const { isDark } = useContext(ThemeToggleContext);
     const [currStep, setCurrStep] = useState(0);
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
-    const [invoiceDetails, setInvoiceDetails] = useState<Invoice>();
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [orderDetails, setOrderDetails] = useState<any>(null);
-    const { customerMetaInfoList, getCustomerMetaInfoList } = useCustomerStore()
-    const {userDetails,getUserDetailsUsingID}=useUserStore()
+    const [orderDetails, setOrderDetails] = useState<OrderModel>();
+    const { customerMetaInfoList, getCustomerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore()
+    const { userDetails, getUserDetailsUsingID } = useUserStore()
     const [orderInfo, setOrderInfo] = useState<any>(null);
     const [isOpen, setIsOpen] = useState({
         invoiceDate: false,
-        dueDate: false
+        dueDate: false,
+        modal: false
     });
     const { getItem } = useDataStore()
     const showToast = useToastMessage();
-
-    const getCustomerInfo = async (customerID: string) => {
-        const customerMetaData = getCustomerMetaInfoList();
-        if (customerMetaData.length > 0) {
-            const customerDetails = customerMetaData.find(c => c.customerID === customerID)
-            if (customerDetails) {
-                console.log("customerDetails from store", customerDetails)
-                setOrderDetails((prev: any) => ({ ...prev, customerInfo: customerDetails }))
-                return
-            }
-        }
-        const userID = getItem("USERID")
-        const payload: SearchQueryRequest = {
-            filters: {
-                userId: userID,
-                customerID: customerID
-            },
-            getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
-        };
-
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
-        if (!customerListResponse.success) {
-            showToast({ type: "error", title: "Error", message: customerListResponse.message });
-        }
-        if (customerListResponse?.customerList?.length === 0) return;
-
-        const metaList = toCustomerMetaModelList(customerListResponse.customerList);
-        const customerDetails = metaList.find(c => c.customerID === customerID)
-        if (customerDetails) {
-            setOrderDetails((prev: any) => ({ ...prev, customerInfo: customerDetails }))
-        }
-
-    }
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice>({
+        userId: getItem("USERID") as string,
+    });
 
     const getOrderDetails = async () => {
         const orderDetails = await getOrderDetailsAPI(invoiceDetails?.orderId as string)
@@ -93,27 +71,39 @@ const CreateInvoice = () => {
             showToast({ type: "error", title: "Error", message: orderDetails.message });
         }
         else {
-            console.log("orderDetails", orderDetails)
             setOrderDetails(orderDetails?.data)
-            getCustomerInfo(orderDetails?.data?.orderBasicInfo?.customerID as string)
+            const payloadToUse: SearchQueryRequest = {
+                filters: { userId: invoiceDetails?.userId },
+                getAll: true,
+                requiredFields: [
+                    "customerBasicInfo.firstName",
+                    "customerBasicInfo.lastName",
+                    "_id",
+                    "customerBasicInfo.mobileNumber",
+                    "customerBasicInfo.email",
+                ],
+            };
+            // getCustomerInfo(orderDetails?.data?.orderBasicInfo?.customerID as string)
+            loadCustomerMetaInfoList(invoiceDetails?.userId as string, payloadToUse)
         }
+    }
+    const handleCheckboxChange = (value: any, stateKeyMap: Record<string, string>) => {
+        patchState(stateKeyMap.parentKey, stateKeyMap.childKey, value, true, setInvoiceDetails, setErrors)
     }
 
 
 
     const getOrderMetaData = async () => {
-        const userID = getItem("USERID")
-        if (!userID) {
+        if (!invoiceDetails?.userId) {
             showToast({ type: "error", title: "Error", message: "User not found" });
             return
         }
         const filter: SearchQueryRequest = {
-            filters: { "userId": userID },
+            filters: { "userId": invoiceDetails?.userId },
             requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle"],
             getAll: true,
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(filter)
-        console.log("orderMetaDataResponse", orderMetaDataResponse)
         if (!orderMetaDataResponse.success) {
             showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
         }
@@ -131,11 +121,12 @@ const CreateInvoice = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            dropDownItems: orderInfo?.map((order: any) => ({ label: order?.eventInfo?.eventTitle || "N/A", value: order?.orderId })) || [],
+            dropDownItems: orderInfo?.map((order: any) => ({ label: order?.eventInfo?.eventTitle || "N/A", value: order?.orderId+"-"+order?.eventInfo?.eventTitle || "N/A" })) || [],
             value: invoiceDetails?.orderId || undefined,
             onChange(value: string) {
-                console.log("value", value)
-                patchState('', 'orderId', value, true, setInvoiceDetails, setErrors)
+                const [orderId, orderName] = value.split("-");
+                patchState('', 'orderId', orderId, true, setInvoiceDetails, setErrors)
+                patchState('', 'orderName', orderName, true, setInvoiceDetails, setErrors)
             },
         }
 
@@ -196,7 +187,7 @@ const CreateInvoice = () => {
         }
     }), [isOpen, invoiceDetails])
 
-    const quotationFields = useMemo(() => ({
+    const invoiceFields = useMemo(() => ({
         headerSection: {
             label: "Header Section",
             icon: <Feather name="layout" size={wp("5%")} color="#8B5CF6" />,
@@ -210,7 +201,7 @@ const CreateInvoice = () => {
                     html: `<div>
                         <img src=${userDetails?.userBusinessInfo?.companyLogoURL} width='50%' height='50' alt="Logo" />
                         </div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "logo"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "logo"),
                 },
                 {
                     key: "companyName",
@@ -219,7 +210,7 @@ const CreateInvoice = () => {
                     description: "The name of the photography studio or photographer",
                     icon: <Feather name="user" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div style="font-weight:bold;">${userDetails?.userBusinessInfo?.companyName}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "companyName"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "companyName"),
                 },
                 {
                     key: "address",
@@ -228,7 +219,7 @@ const CreateInvoice = () => {
                     description: "The official address of the studio/photographer",
                     icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>${userDetails?.userBillingInfo?.address}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "address"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "address"),
                 },
                 {
                     key: "contactPhone",
@@ -237,7 +228,7 @@ const CreateInvoice = () => {
                     description: "Primary contact phone number",
                     icon: <Feather name="phone" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>📞 ${userDetails?.userBusinessInfo?.businessPhoneNumber}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactPhone"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactPhone"),
                 },
                 {
                     key: "contactEmail",
@@ -246,7 +237,7 @@ const CreateInvoice = () => {
                     description: "Primary contact email address",
                     icon: <Feather name="mail" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>✉️ ${userDetails?.userBusinessInfo?.businessEmail}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactEmail"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactEmail"),
                 },
                 {
                     key: "contactWebsite",
@@ -255,7 +246,7 @@ const CreateInvoice = () => {
                     description: "Official website link",
                     icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>🌐 ${userDetails?.userBusinessInfo?.websiteURL}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactWebsite"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactWebsite"),
                 },
             ],
         },
@@ -270,8 +261,8 @@ const CreateInvoice = () => {
                     container: "card",
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Client Name:</span>${customerList?.find((customer) => customer?.value === orderDetails?.orderBasicInfo?.customerID)?.label}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
+                    html: `<div class="field"><span>Client Name:</span>${orderDetails?.customerInfo?.firstName} ${orderDetails?.customerInfo?.lastName}</div>`,
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
                 },
                 {
                     key: "eventType",
@@ -280,7 +271,7 @@ const CreateInvoice = () => {
                     description: "Type of event (wedding, birthday, corporate, etc.)",
                     icon: <Feather name="camera" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Event Type:</span> ${orderDetails?.eventInfo?.eventType}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
                 },
                 {
                     key: "eventDate",
@@ -288,8 +279,8 @@ const CreateInvoice = () => {
                     container: "card",
                     description: "Scheduled date and time of the shoot",
                     icon: <Feather name="calendar" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Date & Time:</span>${orderDetails?.eventInfo?.eventDate} : ${orderDetails?.eventInfo?.eventTime}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
+                    html: `<div class="field"><span>Event Date & Time:</span>${formatDate(orderDetails?.eventInfo?.eventDate)} : ${orderDetails?.eventInfo?.eventTime}</div>`,
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
                 },
                 {
                     key: "eventLocation",
@@ -298,7 +289,7 @@ const CreateInvoice = () => {
                     description: "Venue or location of the event",
                     icon: <Feather name="map" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Event Location:</span>${orderDetails?.eventInfo?.eventLocation}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
                 },
                 {
                     key: "packageName",
@@ -306,9 +297,9 @@ const CreateInvoice = () => {
                     container: "card",
                     description: "Photography package selected",
                     icon: <Feather name="package" size={wp("5%")} color="#10B981" />,
-                    html: orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE ?
-                        `<div class="field"><span>Package:</span>${packageData?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)?.packageName}</div>` : "",
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
+                    html: invoiceDetails?.items?.[0]?.itemType === OrderType.PACKAGE ?
+                        `<div class="field"><span>Package:</span>${invoiceDetails?.items?.[0]?.itemName}</div>` : "",
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
                 },
                 {
                     key: "pricingTable",
@@ -322,34 +313,16 @@ const CreateInvoice = () => {
                                     <div class="col price heading">Unit Price</div>
                                     <div class="col total heading">Total</div>
                                 </div>
-                                ${orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE
-                            ? packageData
-                                ?.find((p) => p?.id === orderDetails?.offeringInfo?.packageId)
-                                ?.serviceList?.map(
-                                    (service) => `
+                                ${invoiceDetails?.items?.map(
+                        (item) => `
                                             <div class="pricing-row">
-                                                <div class="col name">${service.name}</div>
-                                                <div class="col count">${service.value}</div>
-                                                <div class="col price">₹ ${findServicePrice(service.id)}</div>
-                                                <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
+                                                <div class="col name">${item?.itemName}</div>
+                                                <div class="col count">${item?.quantity}</div>
+                                                <div class="col price">₹ ${item?.unitPrice}</div>
+                                                <div class="col total">₹ ${item?.totalPaid}</div>
                                             </div>
                                             `
-                                )
-                                .join("")
-                            : orderDetails?.offeringInfo?.orderType === OrderType.SERVICE
-                                ? orderDetails?.offeringInfo?.services?.map(
-                                    (service) => `
-                                            <div class="pricing-row">
-                                                <div class="col name">${service.name}</div>
-                                                <div class="col count">${service.value}</div>
-                                                <div class="col price">₹ ${findServicePrice(service.id)}</div>
-                                                <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
-                                            </div>
-                                            `
-                                )
-                                    .join("")
-                                : ""}
-    
+                    ).join("")}
                                 <div class="pricing-row grand-total">
                                     <div class="col name heading">Grand Total</div>
                                     <div class="col count"></div>
@@ -358,7 +331,7 @@ const CreateInvoice = () => {
                                 </div>
                                 </div>
                                 `,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "pricingTable"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "pricingTable"),
                 },
             ],
         },
@@ -373,7 +346,7 @@ const CreateInvoice = () => {
                     description: "Payment terms, delivery timeline, rights",
                     icon: <Feather name="file-text" size={wp("5%")} color="#F59E0B" />,
                     html: `<div class="card"><span>Terms & Conditions:</span> {{terms}}</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
                 },
                 {
                     key: "signature",
@@ -381,31 +354,149 @@ const CreateInvoice = () => {
                     description: "Signature of the photographer/studio",
                     icon: <Feather name="edit-3" size={wp("5%")} color="#F59E0B" />,
                     html: `<div class="signature-box">Authorized Signature<br/>____________________</div>`,
-                    isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "signature"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((section) => section?.key === "signature"),
                 },
             ],
         },
-    }), [orderDetails]);
+    }), [invoiceDetails]);
+    const handleShareQuotation = async () => {
+        try {
+            const message = `
+                        Hello Sir/Mam 👋,
+                        Thank you for showing interest in our photography services 📸.
+                        Please find attached your customized quotation with detailed packages, services, and pricing.
+    
+                        If you have any questions or would like to make changes, feel free to reach out. We’d love to be part of your special moments ✨.
+    
+                        📍 Studio Address: ${userDetails?.userBillingInfo?.address}, ${userDetails?.userBillingInfo?.city}, ${userDetails?.userBillingInfo?.state}, ${userDetails?.userBillingInfo?.zipCode}, ${userDetails?.userBillingInfo?.country}
+                        📞 Phone: ${userDetails?.userBusinessInfo?.businessPhoneNumber}
+                        📧 Email: ${userDetails?.userBusinessInfo?.businessEmail}
+                        🌐 Website: ${userDetails?.userBusinessInfo?.websiteURL}
+    
+                        Looking forward to capturing memories together! 💫
+    
+                        Warm regards,
+                            `;
+
+            const options = {
+                html: buildHtml("1", new Date().toLocaleDateString(), invoiceFields),
+                fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
+            };
+            const file = await generatePDF(options);
+            const shareOptions = {
+                title: options.fileName,
+                message: message,
+                url: `file://${file.filePath}`,
+                type: 'application/pdf',
+            }
+
+
+            await Share.open(shareOptions);
+
+        } catch (err) {
+            console.error("Error generating PDF:", err);
+        }
+    };
+
+    const handleNext = () => {
+        let validateInput={}
+        if (currStep!=3) {
+            if (currStep != 1) {
+                console.log(quotaionForm,paymentForm)
+                validateInput = validateValues(invoiceDetails, currStep == 0 ? quotaionForm : paymentForm)
+            }
+            else {
+                console.log("oops",invoiceDetails?.items?.length)
+                if (invoiceDetails?.items?.length == 0 || !invoiceDetails?.items) {
+                    validateInput = { success: false, message: "Please add at least one item to the invoice" }
+                }
+                else{
+                    validateInput={
+                        success: true
+                    }
+                }
+            }
+        }
+        if (!validateInput?.success) {
+            console.log(validateInput)
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: validateInput?.message ?? "Please fill all the required fields",
+            })
+        }
+        setCurrStep(currStep + 1)
+
+    }
+
+    const handleCreateInvoice = async () => {
+        const billingInfo:BillingInfo={
+            name: orderDetails?.customerInfo?.firstName + " " + orderDetails?.customerInfo?.lastName,
+            email: orderDetails?.customerInfo?.email,
+            mobileNumber: orderDetails?.customerInfo?.mobileNumber
+            
+        }
+        let invoicePayload:Invoice={
+            ...invoiceDetails,
+            billingInfo,
+            totalAmount: orderDetails?.totalPrice ?? 0,
+            totalAmountPaying:invoiceDetails?.items?.reduce((total, item) => total + item.amountPaying, 0),
+
+        }
+        const response = await createInvoiceAPI(invoicePayload)
+        if (response?.success) {
+            showToast({
+                type: "success",
+                title: "Success",
+                message: response?.message ?? "Invoice created successfully",
+            })
+            setInvoiceDetails({})
+            setOrderDetails({})
+            setCurrStep(0)
+        }
+        else{
+            showToast({
+                type: "error",
+                title: "Error",
+                message: response?.message ?? "Something went wrong",
+            })
+        }
+    }
 
 
     useEffect(() => {
-        const userId=getItem("USERID")
         getOrderMetaData()
-        getUserDetailsUsingID(userId,showToast)
+        getUserDetailsUsingID(invoiceDetails?.userId, showToast)
     }, [])
 
     useEffect(() => {
         if (!invoiceDetails?.orderId) return
         getOrderDetails()
-        setInvoiceDetails({ orderId: invoiceDetails?.orderId });
+        setInvoiceDetails({ orderId: invoiceDetails?.orderId,orderName:invoiceDetails?.orderName });
     }, [invoiceDetails?.orderId])
 
     useEffect(() => {
-        console.log("invoiceDetails", invoiceDetails)
-    }, [invoiceDetails])
+        if (orderDetails?.orderBasicInfo?.customerID && customerMetaInfoList.length > 0 && !orderDetails?.customerInfo) {
+            const customerDetails = customerMetaInfoList.find(c => c.customerID === orderDetails?.orderBasicInfo?.customerID as string)
+            if (customerDetails) {
+                setOrderDetails((prev: any) => ({ ...prev, customerInfo: customerDetails }))
+                setInvoiceDetails((prev: any) => ({ ...prev, customerId: customerDetails?.customerID }))
+            }
+        }
+
+    }, [customerMetaInfoList,orderDetails])
+
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
             <BackHeader screenName="Create Invoice" />
+            <Modal
+                isVisible={isOpen?.modal}
+                onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
+                onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
+            >
+                <TemplatePreview html={buildHtml("1", new Date().toLocaleDateString(), invoiceFields)} />
+
+            </Modal>
 
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View className='flex justify-between items-center flex-row'>
@@ -465,6 +556,34 @@ const CreateInvoice = () => {
                     {currStep === 2 &&
                         <PaymentComponent paymentForm={paymentForm} />
                     }
+                    {currStep === 3 &&
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
+                            {/* Header */}
+                            <View style={{ backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8", padding: hp("2%") }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
+                                    <View className='flex flex-row items-center gap-2'>
+                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Text
+                                            style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
+                                        >
+                                            Template Builder
+                                        </Text>
+                                    </View>
+                                    <View className='flex flex-row items-center gap-2'>
+                                        <TouchableOpacity onPress={() => setIsOpen({ ...isOpen, modal: true })}>
+                                            <Feather name="eye" size={wp("5%")} color="#8B5CF6" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={handleShareQuotation}>
+                                            <Feather name="share-2" size={wp("5%")} color="#8B5CF6" />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                            <TemplateBuilderComponent quotationFields={invoiceFields} handleCheckboxChange={handleCheckboxChange} templateValueData={invoiceDetails} />
+
+                        </Card>
+
+                    }
                 </View>
 
             </ScrollView>
@@ -500,11 +619,11 @@ const CreateInvoice = () => {
                     action="primary"
                     style={[globalStyles.purpleBackground, { flex: 1, marginLeft: wp("2%") }]}
                     isDisabled={false || Object.keys(errors).length > 0}
-                    onPress={() => setCurrStep(currStep + 1)}
+                    onPress={() => currStep == 3 ? handleCreateInvoice() : handleNext()}
                 >
                     {false && <ButtonSpinner size={wp("4%")} color="#fff" />}
                     <ButtonText style={globalStyles.buttonText}>
-                        {false ? "Creating..." : currStep == 3 ? "Create Order" : "Next"}
+                        {false ? "Creating..." : currStep == 3 ? "Create Invoice" : "Next"}
                     </ButtonText>
                     {currStep != 3 && !false && (
                         <Feather name="arrow-right" size={wp("5%")} color="#fff" />

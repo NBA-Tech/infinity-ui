@@ -63,6 +63,7 @@ export interface FormField {
   errorMessage?: string;
   isOpen?: boolean;
   isVisible?: boolean;
+  isSearchable?: boolean;
   customComponent?: React.ReactNode;
   renderItems?: () => React.ReactNode; // Optional function to render items
   onChange?: (value: any) => void; // Optional change handler

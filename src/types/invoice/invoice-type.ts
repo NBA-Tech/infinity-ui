@@ -1,14 +1,5 @@
 import { OrderType } from "../order/order-type";
 
-export type InvoiceStatus =
-  | "DRAFT"
-  | "SENT"
-  | "PARTIALLY_PAID"
-  | "PAID"
-  | "OVERDUE"
-  | "CANCELLED";
-
-
 export interface InvoiceHtmlInfo {
   key:string;
   section:string;
@@ -17,7 +8,6 @@ export interface BillingInfo {
   name: string;
   email: string;
   mobileNumber: string;
-  address: string;
 }
 
 export interface InvoiceItem {
@@ -27,22 +17,22 @@ export interface InvoiceItem {
   quantity: number;         // total quantity (e.g., 20)
   unitPrice: number;        // price per unit
   total: number;            // quantity * unitPrice
-  quantityPaid: number;     // how many units paid
-  quantityRemaining: number;// auto = quantity - quantityPaid
-  totalPaid: number;        // quantityPaid * unitPrice
+  quantityPaying: number;     // how many units paid
+  amountPaying: number;        // quantityPaid * unitPrice
 }
 
 export interface Invoice {
   invoiceId: string;
   orderId: string;           // Link to Order
+  orderName: string;
   customerId: string;        // Link to Customer
+  userId: string;            // Link to User
   invoiceDate: Date;
   paymentType: string;
   dueDate: Date;
-  status: InvoiceStatus;
   billingInfo: BillingInfo;
   items: InvoiceItem[];
   totalAmount: number;
-  amountPaid: number;
-  invoiceHtmlInfo?: InvoiceHtmlInfo[]
+  totalAmountPaying: number;
+  quotationHtmlInfo?: InvoiceHtmlInfo[]
 }

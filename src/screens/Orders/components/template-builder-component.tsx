@@ -22,11 +22,12 @@ type TemplateBuilderComponentProps = {
 const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCheckboxChange }: TemplateBuilderComponentProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    console.log("templateValueData", templateValueData)
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
         let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
-            ...templateValueData.quotationHtmlInfo,
+             ...templateValueData?.quotationHtmlInfo || [],
         ];
 
         if (value) {
