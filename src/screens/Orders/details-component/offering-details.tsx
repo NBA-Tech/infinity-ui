@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
@@ -11,6 +11,7 @@ import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -26,93 +27,122 @@ const styles = StyleSheet.create({
         borderRadius: wp('10%'),
         alignItems: 'center',
         backgroundColor: '#8B5CF6'
-    }
+    },
+    container: {
+        borderWidth: 1,
+        borderRadius: wp("2%"),
+        overflow: "hidden",
+    },
+    headerRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingVertical: hp("1%"),
+        paddingHorizontal: wp("3%"),
+    },
+    headerText: {
+        flex: 1,
+        fontWeight: "600",
+    },
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: hp("1.2%"),
+        paddingHorizontal: wp("3%"),
+        borderBottomWidth: 1,
+    },
+    cellService: {
+        flex: 2,
+    },
+    cellPrice: {
+        flex: 1,
+        textAlign: "right",
+    },
+    cellStatus: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
 })
 
 type OfferingDetailsProps = {
     offeringData?: OfferingInfo
     totalPrice?: number
-    setPackageData: (data: OfferingModel[]) => void
-    setServiceData: (data: OfferingModel[]) => void
 }
 const OfferingDetails = (props: OfferingDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
-    const [serviceList, setServiceList] = useState<ServiceInfo[]>([]);
-    const { getOfferingList, setOfferingList } = useOfferingStore()
-    const showToast = useToastMessage()
-    const { getItem } = useDataStore()
 
 
-    const getServiceList = async () => {
-        const userID = getItem("USERID");
-        if (!userID) {
-            showToast({
-                type: "error",
-                title: "Error",
-                message: "UserID not found. Please logout and login again.",
-            });
-            return;
-        }
+    // const getServiceList = async () => {
+    //     const userID = getItem("USERID");
+    //     if (!userID) {
+    //         showToast({
+    //             type: "error",
+    //             title: "Error",
+    //             message: "UserID not found. Please logout and login again.",
+    //         });
+    //         return;
+    //     }
 
-        let offeringListData = getOfferingList();
-        if (offeringListData.length <= 0) {
-            const offeringData = await getOfferingListAPI(userID);
-            if (!offeringData?.success) {
-                showToast({
-                    type: "error",
-                    title: "Error",
-                    message: offeringData?.message ?? "Something went wrong",
-                });
-                return;
-            } else {
-                const { packages, services } = offeringData.data;
-                offeringListData = [...(packages ?? []), ...(services ?? [])];
-            }
-        }
+    //     let offeringListData = getOfferingList();
+    //     if (offeringListData.length <= 0) {
+    //         const offeringData = await getOfferingListAPI(userID);
+    //         if (!offeringData?.success) {
+    //             showToast({
+    //                 type: "error",
+    //                 title: "Error",
+    //                 message: offeringData?.message ?? "Something went wrong",
+    //             });
+    //             return;
+    //         } else {
+    //             const { packages, services } = offeringData.data;
+    //             offeringListData = [...(packages ?? []), ...(services ?? [])];
+    //         }
+    //     }
 
-        let servicesWithPrice: ServiceInfo[] = [];
+    //     let servicesWithPrice: ServiceInfo[] = [];
 
-        if (props?.offeringData?.orderType === OrderType.SERVICE) {
-            servicesWithPrice = (props?.offeringData?.services ?? []).map(service => {
-                const fullService = offeringListData.find(
-                    (item: OfferingModel) => item.type === OrderType.SERVICE && item.id === service.id
-                );
+    //     if (props?.offeringData?.orderType === OrderType.SERVICE) {
+    //         servicesWithPrice = (props?.offeringData?.services ?? []).map(service => {
+    //             const fullService = offeringListData.find(
+    //                 (item: OfferingModel) => item.type === OrderType.SERVICE && item.id === service.id
+    //             );
 
-                return {
-                    ...service,
-                    price: fullService?.price ?? 0,
-                };
-            });
-        } else if (props?.offeringData?.orderType === OrderType.PACKAGE) {
-            const selectedPackage = offeringListData.find(
-                (item: OfferingModel) =>
-                    item.type === OrderType.PACKAGE && item.id === props?.offeringData?.packageId
-            );
+    //             return {
+    //                 ...service,
+    //                 price: fullService?.price ?? 0,
+    //             };
+    //         });
+    //     } else if (props?.offeringData?.orderType === OrderType.PACKAGE) {
+    //         const selectedPackage = offeringListData.find(
+    //             (item: OfferingModel) =>
+    //                 item.type === OrderType.PACKAGE && item.id === props?.offeringData?.packageId
+    //         );
 
-            servicesWithPrice = selectedPackage?.serviceList?.map(service => {
-                const fullService = offeringListData.find(
-                    (item: OfferingModel) => item.type === OrderType.SERVICE && item.id === service.id
-                );
+    //         servicesWithPrice = selectedPackage?.serviceList?.map(service => {
+    //             const fullService = offeringListData.find(
+    //                 (item: OfferingModel) => item.type === OrderType.SERVICE && item.id === service.id
+    //             );
 
-                return {
-                    ...service, // id, name, value
-                    price: fullService?.price ?? 0,
-                };
-            }) ?? [];
-        }
+    //             return {
+    //                 ...service, // id, name, value
+    //                 price: fullService?.price ?? 0,
+    //             };
+    //         }) ?? [];
+    //     }
 
-        setServiceList(servicesWithPrice);
-        props?.setPackageData?.(offeringListData.filter((offering) => offering?.type == OrderType?.PACKAGE) as OfferingModel[]);
-        props?.setServiceData?.(offeringListData.filter((offering) => offering?.type == OrderType?.SERVICE) as OfferingModel[]);
-    };
+    //     setServiceList(servicesWithPrice);
+    //     // props?.setPackageData?.(offeringListData.filter((offering) => offering?.type == OrderType?.PACKAGE) as OfferingModel[]);
+    //     // props?.setServiceData?.(offeringListData.filter((offering) => offering?.type == OrderType?.SERVICE) as OfferingModel[]);
+    // };
 
 
 
 
-    useEffect(() => {
-        getServiceList()
-    }, [props.offeringData])
+    // useEffect(() => {
+    //     console.log(props?.offeringData)
+    //     getServiceList()
+    // }, [props.offeringData])
     return (
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View style={{ padding: wp('3%') }}>
@@ -120,7 +150,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
                             <Feather name="camera" size={wp('7%')} color={'#8B5CF6'} />
-                            <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Service Information</Text>
+                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Service Information</Text>
                         </View>
                         <View style={[styles.statusContainer, { borderColor: isDark ? '#fff' : '#000' }]}>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{props?.offeringData?.orderType}</Text>
@@ -128,34 +158,49 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                     </View>
 
                     <View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Premium Wedding Package</Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Package includes:</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Confirm Completion:</Text>
                     </View>
 
                     <View className='flex flex-col gap-3'>
-                        <FlatList
-                            data={serviceList}
-                            renderItem={({ item, index }) => (
-                                <View className='flex flex-row justify-between items-center' key={index}>
-                                    <View className='flex flex-row justify-start items-center gap-2'>
-                                        <View style={styles.itemIconContainer}>
-                                            <Feather name="check" size={wp('2%')} color={'#fff'} />
-                                        </View>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{item?.name} x{item?.value}</Text>
+                        <View style={[styles.container, { backgroundColor: isDark ? "#1E1E2A" : "#fff", borderColor: isDark ? "#4B5563" : "#E5E7EB" }]}>
 
+                            {/* Header */}
+                            <View style={[styles.headerRow, { backgroundColor: isDark ? "#374151" : "#F3F4F6" }]}>
+                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>Service</Text>
+                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827", textAlign: "right" }]}>Price</Text>
+                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827", textAlign: "center" }]}>Status</Text>
+                            </View>
+
+                            {/* Rows */}
+                            <FlatList
+                                data={props?.offeringData?.services}
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => (
+                                    <View style={[styles.row, { borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" }]}>
+                                        <Text style={[globalStyles.normalText, styles.cellService, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                            {item.name} x{item.value}
+                                        </Text>
+                                        <Text style={[globalStyles.normalText, styles.cellPrice, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                            ${item.price}
+                                        </Text>
+                                        <TouchableOpacity style={styles.cellStatus}>
+                                            {item?.isCompleted?(
+                                                <MaterialCommunityIcons name="check-all" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                                            ):(
+                                                <MaterialCommunityIcons name="check-all" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                                            )
+
+                                            }
+                                        </TouchableOpacity>
                                     </View>
-                                    <View>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>${item?.price}</Text>
-                                    </View>
-                                </View>
-                            )}
-                            contentContainerStyle={{ gap: hp('1%') }}
-                            showsVerticalScrollIndicator={true} />
-                        <Divider />
-                        <View className='flex flex-row justify-between items-center'>
+                                )}
+                            />
+                        </View>
+                        {/* <Divider /> */}
+                        {/* <View className='flex flex-row justify-between items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Total:</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>${props?.totalPrice}</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                 </View>

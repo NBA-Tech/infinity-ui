@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -60,42 +60,46 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
 
             }
             <Card style={globalStyles.cardShadowEffect}>
-                <View>
-                    <View className='flex flex-row justify-start items-center gap-2'>
-                        <Feather name="file-text" size={wp("7%")} color="#06B6D4" />
-                        <Text style={[globalStyles.heading3Text, globalStyles.normalTextColor]}>Order Details</Text>
-                    </View>
-                </View>
-
-                <View>
-                    {listItems.reduce((rows, item, index) => {
-                        if (index % 2 === 0) rows.push([item]);
-                        else rows[rows.length - 1].push(item);
-                        return rows;
-                    }, [] as any[]).map((row, rowIndex) => (
-                        <View
-                            key={rowIndex}
-                            className="flex flex-row justify-between items-center"
-                        >
-                            {row.map((field, i) => (
-                                <View
-                                    key={i}
-                                    className="flex flex-col justify-start items-start"
-                                    style={{ marginTop: hp("2%"), flex: 1 }}
-                                >
-                                    <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
-                                        {field.label}
-                                    </Text>
-                                    <Text style={[globalStyles.normalText, globalStyles.greyTextColor]}>
-                                        {field.value}
-                                    </Text>
-                                </View>
-                            ))}
+                <ScrollView
+                contentContainerStyle={{ padding: hp("2%"),marginBottom:hp("10%") }}
+                    showsVerticalScrollIndicator={false}>
+                    <View>
+                        <View className='flex flex-row justify-start items-center gap-2'>
+                            <Feather name="file-text" size={wp("7%")} color="#06B6D4" />
+                            <Text style={[globalStyles.heading3Text, globalStyles.normalTextColor]}>Order Details</Text>
                         </View>
-                    ))}
+                    </View>
+
+                    <View>
+                        {listItems.reduce((rows, item, index) => {
+                            if (index % 2 === 0) rows.push([item]);
+                            else rows[rows.length - 1].push(item);
+                            return rows;
+                        }, [] as any[]).map((row, rowIndex) => (
+                            <View
+                                key={rowIndex}
+                                className="flex flex-row justify-between items-center"
+                            >
+                                {row.map((field, i) => (
+                                    <View
+                                        key={i}
+                                        className="flex flex-col justify-start items-start"
+                                        style={{ marginTop: hp("2%"), flex: 1 }}
+                                    >
+                                        <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
+                                            {field.label}
+                                        </Text>
+                                        <Text style={[globalStyles.normalText, globalStyles.greyTextColor]}>
+                                            {field.value}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ))}
 
 
-                </View>
+                    </View>
+                </ScrollView>
 
             </Card>
         </View>

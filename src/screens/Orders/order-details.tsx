@@ -24,8 +24,9 @@ import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { OrderModel, OrderType } from '@/src/types/order/order-type';
 import EventInfoCard from './details-component/event-info';
 import { TabView, TabBar } from "react-native-tab-view";
-import { OfferingModel } from '@/src/types/offering/offering-type';
+import { useOfferingStore } from '@/src/store/offering/offering-store';
 import Deliverables from './details-component/deliverables';
+import SwipeButton from '@/src/components/swippable-button';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -43,12 +44,11 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const { orderId } = route?.params ?? {};
     const [customerList, setCustomerList] = useState<CustomerMetaModel[]>([]);
     const [orderDetails, setOrderDetails] = useState<OrderModel>();
-    const [packageData, setPackageData] = useState<OfferingModel[]>([]);
-    const [serviceData, setServiceData] = useState<OfferingModel[]>([]);
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [index, setIndex] = useState(0);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
+    const { serviceData, packageData, loadOfferings } = useOfferingStore();
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
     const [routes] = useState([
@@ -132,6 +132,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 return <CustomerInfo
                     customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
                     orderBasicInfo={orderDetails?.orderBasicInfo} />
+                    
             case "event":
                 return <EventInfoCard
                     eventData={orderDetails?.eventInfo}
@@ -140,9 +141,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             case "offering":
                 return <OfferingDetails
                     offeringData={orderDetails?.offeringInfo}
-                    totalPrice={orderDetails?.totalPrice}
-                    setPackageData={setPackageData}
-                    setServiceData={setServiceData} />
+                    totalPrice={orderDetails?.totalPrice} />
             case "quotation":
                 return <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData} />
             case "invoice":
@@ -159,6 +158,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const renderTabBar = (props: any) => (
         <TabBar
             {...props}
+            scrollEnabled
             style={{ backgroundColor: globalStyles.appBackground.backgroundColor, marginBottom: hp('3%') }}
             indicatorStyle={{ backgroundColor: "#8B5CF6", height: 3, borderRadius: 2 }}
             activeColor={isDark ? "#fff" : "#000"}
@@ -176,8 +176,10 @@ const OrderDetails = ({ route, navigation }: Props) => {
     );
 
     useEffect(() => {
+        const userId = getItem("USERID")
         getCustomerNameList()
         getOrderDetails(orderId)
+        loadOfferings(userId, showToast)
     }, [])
 
 
@@ -215,13 +217,36 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     </View>
                 </View>
             </BackHeader>
+            <View>
+                <View className='flex flex-row justify-between items-center'>
+                    <Card
+                        style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
+                        <View className='flex flex-col justify-center items-center'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Amount</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>$ 1000</Text>
+
+                        </View>
+                    </Card>
+
+                    <Card
+                        style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
+                        <View className='flex flex-col justify-center items-center'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Paid</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>$ 100</Text>
+
+                        </View>
+                    </Card>
+
+                </View>
+            </View>
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
                 onIndexChange={setIndex}
-                initialLayout={{ width: wp("100%") }}
-                renderTabBar={renderTabBar}
+                initialLayout={{ width: hp("100%") }} // swap width/height
+                renderTabBar={(props) => renderTabBar({ ...props, vertical: true })}
             />
+            <SwipeButton />
 
 
         </SafeAreaView>

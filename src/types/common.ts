@@ -13,10 +13,10 @@ export interface ApiGeneralRespose {
   success: boolean,
   message: string,
   data?: any
-  page?:number
-  pageSize?:number
-  limit?:number
-  total?:number
+  page?: number
+  pageSize?: number
+  limit?: number
+  total?: number
 }
 
 export enum SORT_ORDER {
@@ -24,16 +24,16 @@ export enum SORT_ORDER {
   DESC = "DESC"
 }
 
-export interface SearchQueryRequest{
-  filters?:Object;
-  page?:number;
-  pageSize?:number;
-  searchQuery?:string;
-  searchField?:string;
-  requiredFields?:string[];
-  sortField?:string;
-  sortOrder?:SORT_ORDER
-  getAll?:boolean
+export interface SearchQueryRequest {
+  filters?: Object;
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
+  searchField?: string;
+  requiredFields?: string[];
+  sortField?: string;
+  sortOrder?: SORT_ORDER
+  getAll?: boolean
 
 }
 
@@ -67,8 +67,11 @@ export interface FormField {
   isSearchable?: boolean;
   customComponent?: React.ReactNode;
   renderItems?: () => React.ReactNode; // Optional function to render items
-  onChange?: (value: any) => void; // Optional change handler
-  onBlur?: (parentKey?:string,childKey?:string) => void;
+  onChange?: {
+    (value: any): void;
+    (value: any, label: any): void;
+  };
+  onBlur?: (parentKey?: string, childKey?: string) => void;
   setIsOpen?: (value: boolean) => void;
 }
 export type FormFields = Record<string, FormField>;

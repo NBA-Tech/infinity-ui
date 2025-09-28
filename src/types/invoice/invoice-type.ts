@@ -31,8 +31,7 @@ export interface Invoice {
   paymentType: string;
   dueDate: Date;
   billingInfo: BillingInfo;
-  items: InvoiceItem[];
   totalAmount: number;
-  totalAmountPaying: number;
+  amoutPaid: number;
   quotationHtmlInfo?: InvoiceHtmlInfo[]
 }

@@ -63,6 +63,9 @@ const CreateInvoice = () => {
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice>({
         userId: getItem("USERID") as string,
     });
+    const [loadingProviders, setLoadingProviders] = useState({
+        saveLoading:false
+    });
 
     const getOrderDetails = async () => {
         const orderDetails = await getOrderDetailsAPI(invoiceDetails?.orderId as string)
@@ -120,12 +123,11 @@ const CreateInvoice = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            dropDownItems: orderInfo?.map((order: any) => ({ label: order?.eventInfo?.eventTitle || "N/A", value: order?.orderId+"-"+order?.eventInfo?.eventTitle || "N/A" })) || [],
+            dropDownItems: orderInfo?.map((order: any) => ({ label: order?.eventInfo?.eventTitle || "N/A", value: order?.orderId || "N/A" })) || [],
             value: invoiceDetails?.orderId || undefined,
-            onChange(value: string) {
-                const [orderId, orderName] = value.split("-");
-                patchState('', 'orderId', orderId, true, setInvoiceDetails, setErrors)
-                patchState('', 'orderName', orderName, true, setInvoiceDetails, setErrors)
+            onChange(value: string,label:string) {
+                patchState('', 'orderId', value, true, setInvoiceDetails, setErrors)
+                patchState('', 'orderName', label, true, setInvoiceDetails, setErrors)
             },
         }
 
@@ -133,10 +135,23 @@ const CreateInvoice = () => {
 
 
     const paymentForm: FormFields = useMemo(() => ({
+        amoutPaid:{
+            key: "amoutPaid",
+            label: "Amount Paid",
+            placeholder: "Eg: $100",
+            icon: <Feather name="dollar-sign" size={wp('5%')} color="#3B82F6" />,
+            type: "number",
+            isRequired:true,
+            isDisabled:false,
+            value: invoiceDetails?.amoutPaid || undefined,
+            onChange(value: string) {
+                patchState('', 'amoutPaid', value, true, setInvoiceDetails, setErrors)
+            }
+        },
         invoiceDate: {
             key: "invoiceDate",
             label: "Invoice Date",
-            placeholder: "Invoice Date",
+            placeholder: "Eg: 12/02/2003",
             icon: <Feather name="calendar" size={wp('5%')} color="#3B82F6" />,
             type: "date",
             style: "w-full",
@@ -154,7 +169,7 @@ const CreateInvoice = () => {
         paymentType: {
             key: "paymentType",
             label: "Payment Type",
-            placeholder: "Payment Type",
+            placeholder: "Eg UPI",
             icon: <Feather name="calendar" size={wp('5%')} color="#3B82F6" />,
             type: "select",
             style: "w-full",
@@ -380,25 +395,8 @@ const CreateInvoice = () => {
     };
 
     const handleNext = () => {
-        let validateInput={}
-        if (currStep!=3) {
-            if (currStep != 1) {
-                console.log(quotaionForm,paymentForm)
-                validateInput = validateValues(invoiceDetails, currStep == 0 ? quotaionForm : paymentForm)
-            }
-            else {
-                console.log("oops",invoiceDetails?.items?.length)
-                if (invoiceDetails?.items?.length == 0 || !invoiceDetails?.items) {
-                    validateInput = { success: false, message: "Please add at least one item to the invoice" }
-                }
-                else{
-                    validateInput={
-                        success: true
-                    }
-                }
-            }
-        }
-        if (!validateInput?.success) {
+        const validateInput = validateValues(invoiceDetails, currStep == 0 ? quotaionForm : paymentForm)
+        if (!validateInput?.success || Object.keys(errors).length > 0) {
             console.log(validateInput)
             return showToast({
                 type: "warning",
@@ -411,6 +409,7 @@ const CreateInvoice = () => {
     }
 
     const handleCreateInvoice = async () => {
+        setLoadingProviders({...loadingProviders,saveLoading:true})
         const billingInfo:BillingInfo={
             name: orderDetails?.customerInfo?.firstName + " " + orderDetails?.customerInfo?.lastName,
             email: orderDetails?.customerInfo?.email,
@@ -421,10 +420,10 @@ const CreateInvoice = () => {
             ...invoiceDetails,
             billingInfo,
             totalAmount: orderDetails?.totalPrice ?? 0,
-            totalAmountPaying:invoiceDetails?.items?.reduce((total, item) => total + item.amountPaying, 0),
 
         }
         const response = await createInvoiceAPI(invoicePayload)
+        setLoadingProviders({...loadingProviders,saveLoading:false})
         if (response?.success) {
             showToast({
                 type: "success",
@@ -491,7 +490,7 @@ const CreateInvoice = () => {
                 <View>
                     <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
                         <View className="flex flex-wrap flex-row align-middle items-center">
-                            {Array.from({ length: 4 }).map((_, index) => (
+                            {Array.from({ length: 3 }).map((_, index) => (
                                 <View key={index} className="flex flex-row align-middle items-center">
                                     <View className="flex flex-row align-middle items-center">
                                         <GradientCard
@@ -513,7 +512,7 @@ const CreateInvoice = () => {
                                                 )}
                                             </View>
                                         </GradientCard>
-                                        {index != 3 && (
+                                        {index != 2 && (
                                             <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />
                                         )}
 
@@ -531,13 +530,13 @@ const CreateInvoice = () => {
                     )
 
                     }
-                    {currStep === 1 &&
+                    {/* {currStep === 1 &&
                         <LineItemsComponent offeringInfo={orderDetails?.offeringInfo} items={invoiceDetails?.items} setInvoiceDetails={setInvoiceDetails} setErrors={setErrors} />
-                    }
-                    {currStep === 2 &&
+                    } */}
+                    {currStep === 1 &&
                         <PaymentComponent paymentForm={paymentForm} />
                     }
-                    {currStep === 3 &&
+                    {currStep === 2 &&
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
                             <View style={{ backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8", padding: hp("2%") }}>
@@ -587,7 +586,7 @@ const CreateInvoice = () => {
                     variant="solid"
                     action="primary"
                     style={[globalStyles.purpleBackground, { flex: 1, marginRight: wp("2%") }]}
-                    isDisabled={false || Object.keys(errors).length > 0}
+                    isDisabled={loadingProviders.saveLoading || Object.keys(errors).length > 0}
                     onPress={() => setCurrStep(currStep - 1)}
                 >
                     <Feather name="arrow-left" size={wp("5%")} color="#fff" />
@@ -599,14 +598,14 @@ const CreateInvoice = () => {
                     variant="solid"
                     action="primary"
                     style={[globalStyles.purpleBackground, { flex: 1, marginLeft: wp("2%") }]}
-                    isDisabled={false || Object.keys(errors).length > 0}
-                    onPress={() => currStep == 3 ? handleCreateInvoice() : handleNext()}
+                    isDisabled={loadingProviders.saveLoading || Object.keys(errors).length > 0}
+                    onPress={() => currStep == 2 ? handleCreateInvoice() : handleNext()}
                 >
-                    {false && <ButtonSpinner size={wp("4%")} color="#fff" />}
+                    {loadingProviders.saveLoading && <ButtonSpinner size={wp("4%")} color="#fff" />}
                     <ButtonText style={globalStyles.buttonText}>
-                        {false ? "Creating..." : currStep == 3 ? "Create Invoice" : "Next"}
+                        {loadingProviders.saveLoading ? "Creating..." : currStep == 2 ? "Create Invoice" : "Next"}
                     </ButtonText>
-                    {currStep != 3 && !false && (
+                    {currStep != 2 && !loadingProviders.saveLoading && (
                         <Feather name="arrow-right" size={wp("5%")} color="#fff" />
                     )}
                 </Button>

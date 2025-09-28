@@ -12,13 +12,19 @@ import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { generateRandomString } from '@/src/utils/utils';
 import { updateOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
+import { COLORCODES } from '@/src/constant/constants';
 
 const styles = StyleSheet.create({
     modalContainer: {
         padding: wp('3%'),
         borderRadius: wp('3%'),
         backgroundColor: '#1E1E2A'
-    }
+    },
+    card: {
+        marginVertical: wp('2%'),
+        borderRadius: wp('2%'),
+        backgroundColor: '#fff',
+    },
 })
 
 
@@ -117,16 +123,31 @@ const Deliverables = (props: DeliverablesProps) => {
 
     const DeliverabelCardComponent = ({ deliverable }: { deliverable: Deliverable }) => {
         return (
-            <Card style={[globalStyles.cardShadowEffect,{borderColor: '#8B5CF6',borderWidth:1,width:wp('50%'),gap:hp('2%')}]}>
+            <Card
+                style={[
+                    styles.card,
+                    globalStyles.cardShadowEffect,
+                    {
+                        borderLeftWidth: 4,
+                        borderLeftColor: COLORCODES[Math.floor(Math.random() * COLORCODES.length)],
+                    },
+                ]}
+            >
+                <View className='flex flex-row justify-between items-center'>
+                    <View>
+                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Deliverable Name</Text>
+                        <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{deliverable?.name}</Text>
+                    </View>
+                    <View className='flex flex-row gap-2'>
+                        <Feather name="edit" size={wp('5%')} color="#8B5CF6" />
+                        <Feather name="trash-2" size={wp('5%')} color="#8B5CF6" />
+                    </View>
+                </View>
                 <View>
-                    <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Deliverable Name</Text>
-                    <Text style={[globalStyles.labelText,globalStyles.greyTextColor]}>{deliverable?.name}</Text>
+                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Deliverable URL</Text>
+                    <Text style={[globalStyles.labelText, globalStyles.underscoreText, globalStyles.greyTextColor]}>{deliverable?.fileUrl}</Text>
                 </View>
-                  <View>
-                    <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Deliverable URL</Text>
-                    <Text style={[globalStyles.labelText,globalStyles.underscoreText,globalStyles.greyTextColor]}>{deliverable?.fileUrl}</Text>
-                </View>
-                
+
             </Card>
         )
     }
@@ -185,7 +206,9 @@ const Deliverables = (props: DeliverablesProps) => {
                     <View>
                         <FlatList
                             data={props.orderDetails?.deliverables}
-                            renderItem={({ item }) => <DeliverabelCardComponent deliverable={item} />}
+                            renderItem={({ item }) => (
+                                <DeliverabelCardComponent deliverable={item} />
+                            )}
                             keyExtractor={(item) => item.id}
                         />
 

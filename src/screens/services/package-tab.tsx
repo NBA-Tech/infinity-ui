@@ -14,6 +14,7 @@ import { generateRandomString } from '@/src/utils/utils';
 import { deleteOfferingApi } from '@/src/api/offering/offering-service';
 import Modal from 'react-native-modal';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
+import { COLORCODES } from '@/src/constant/constants';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -125,19 +126,6 @@ const PackageTab = (props: PackageProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { deletePackage } = useOfferingStore();
     const showToast = useToastMessage();
-
-    const colorCodes = [
-        "#7C3AED", // Purple
-        "#3B82F6", // Blue
-        "#10B981", // Emerald Green
-        "#F59E0B", // Amber/Orange
-        "#EF4444", // Red
-        "#6366F1", // Indigo
-        "#14B8A6", // Teal
-        "#F43F5E", // Rose
-        "#22C55E", // Green
-        "#8B5CF6", // Violet
-    ];
     const handleDelete = async () => {
         if (!currId) return;
         setLoading(true);
@@ -164,7 +152,7 @@ const PackageTab = (props: PackageProps) => {
                     globalStyles.cardShadowEffect,
                     {
                         borderLeftWidth: 4,
-                        borderLeftColor: colorCodes[Math.floor(Math.random() * colorCodes.length)],
+                        borderLeftColor: COLORCODES[Math.floor(Math.random() * COLORCODES.length)],
                     },
                 ]}
             >

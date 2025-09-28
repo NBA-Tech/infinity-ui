@@ -123,7 +123,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     valueField="value"
                     placeholder={field.placeholder}
                     searchPlaceholder="Search..."
-                    onChange={(item) => field.onChange?.(item.value)}
+                    onChange={(item) => field.onChange?.(item?.value,item?.label)}
                     renderItem={(item) => (
                         <Text
                             style={[

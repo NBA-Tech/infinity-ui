@@ -39,6 +39,7 @@ export interface OfferingInfo {
   packageName?: string;
   services?: ServiceInfo[]
   packagePrice?: number;
+  isCompleted?: boolean
 }
 export interface OrderBasicInfo {
   customerID: string;

@@ -22,6 +22,7 @@ export interface ServiceInfo{
     name:string;
     value:number;
     price?:number;
+    isCompleted?: boolean
 }
 export interface OfferingModel {
     id?: string;

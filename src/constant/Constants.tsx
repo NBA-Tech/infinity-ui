@@ -82,3 +82,15 @@ export const QUOTATION_FIELDS = [
   // Signature
   { label: "Digital Signature", value: "digitalSignature", type: "file" },
 ];
+export const COLORCODES = [
+        "#7C3AED", // Purple
+        "#3B82F6", // Blue
+        "#10B981", // Emerald Green
+        "#F59E0B", // Amber/Orange
+        "#EF4444", // Red
+        "#6366F1", // Indigo
+        "#14B8A6", // Teal
+        "#F43F5E", // Rose
+        "#22C55E", // Green
+        "#8B5CF6", // Violet
+    ];
