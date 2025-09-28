@@ -25,6 +25,7 @@ import { OrderModel, OrderType } from '@/src/types/order/order-type';
 import EventInfoCard from './details-component/event-info';
 import { TabView, TabBar } from "react-native-tab-view";
 import { OfferingModel } from '@/src/types/offering/offering-type';
+import Deliverables from './details-component/deliverables';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "OrderDetails">;
 
 const OrderDetails = ({ route, navigation }: Props) => {
-    const { orderId } = route?.params;
+    const { orderId } = route?.params ?? {};
     const [customerList, setCustomerList] = useState<CustomerMetaModel[]>([]);
     const [orderDetails, setOrderDetails] = useState<OrderModel>();
     const [packageData, setPackageData] = useState<OfferingModel[]>([]);
@@ -56,6 +57,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         { key: "offering", title: "Offerings", icon: "package" },
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
+        { key: "deliverables", title: "Deliverables", icon: "clock" },
         { key: "timeline", title: "Timeline", icon: "clock" },
     ]);
 
@@ -112,7 +114,6 @@ const OrderDetails = ({ route, navigation }: Props) => {
     };
 
     const getOrderDetails = async (orderId: string) => {
-        console.log("fuck")
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
         if (!orderDetails?.success) {
             return showToast({
@@ -148,6 +149,8 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 return <InvoiceDetails />
             case "timeline":
                 return <TimeLineDetails />
+            case "deliverables":
+                return <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
             default:
                 return null;
         }
@@ -156,7 +159,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const renderTabBar = (props: any) => (
         <TabBar
             {...props}
-            style={{ backgroundColor: globalStyles.appBackground.backgroundColor,marginBottom:hp('3%') }}
+            style={{ backgroundColor: globalStyles.appBackground.backgroundColor, marginBottom: hp('3%') }}
             indicatorStyle={{ backgroundColor: "#8B5CF6", height: 3, borderRadius: 2 }}
             activeColor={isDark ? "#fff" : "#000"}
             inactiveColor={isDark ? "#6B7280" : "#6B7280"}

@@ -27,6 +27,12 @@ export interface QuotaionHtmlInfo{
   section:string;
 }
 
+export interface Deliverable {
+  id: string;                  // unique id
+  name: string;                // folder or file name
+  fileUrl?: string;            // only if type === "file"
+}
+
 export interface OfferingInfo {
   orderType: OrderType;
   packageId?: string;
@@ -64,5 +70,6 @@ export interface OrderModel {
   offeringInfo: OfferingInfo;
   quotationHtmlInfo?: QuotaionHtmlInfo[]
   statusHistory?:StatusHistory[]
+  deliverables?:Deliverable[]
 
 }
