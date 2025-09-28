@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Authentication from '../screens/auth/authentication';
 import Footer from '../components/footer';
-import { Customer, Home, InvoiceList, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice, SplashScreen } from '../screens';
+import { Customer, Home, InvoiceList, Quotation, Profile, CreateCustomer, CustomerDetails, CreateOrder, Orders, UserOnBoarding, OneTimePassword, TemplateEditor, Services, OrderDetails, CreateInvoice, SplashScreen, FeatureSlide, InvoiceDetails } from '../screens';
 import { useAuth } from '../context/auth-context/auth-context';
 import { RootStackParamList } from '../types/common';
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -52,6 +52,8 @@ function InvoiceNavigator() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="InvoiceList" component={InvoiceList} />
             <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
+            <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
+
         </Stack.Navigator>
     )
 }
@@ -82,6 +84,7 @@ function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="splash" component={SplashScreen} />
+            <Stack.Screen name="FeatureSlide" component={FeatureSlide} />
             <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
             <Stack.Screen name="useronboarding" component={UserOnBoarding} />
@@ -101,7 +104,7 @@ const Navigation = () => {
 
     return (
         <NavigationContainer>
-            {false ? (
+            {isAuthenticated ? (
                 <AuthStack />
             ) : (
                 <UnauthStack />

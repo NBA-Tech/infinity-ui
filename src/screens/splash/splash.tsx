@@ -7,7 +7,9 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
-import Logo from '../../assets/images/logo.png'
+import GradientCard from "@/src/utils/gradient-card"; // <-- your gradient wrapper
+import LottieView from "lottie-react-native";
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 const { width } = Dimensions.get("window");
 
 export default function SplashScreen() {
@@ -35,35 +37,36 @@ export default function SplashScreen() {
   }));
 
   return (
-    <View style={styles.container}>
+    <GradientCard style={styles.container} className="">
       {/* Infinity Logo with Animation */}
-      <Animated.View style={[animatedStyle]}>
-        <Image
-          source={Logo} // place your uploaded logo as logo.png in assets
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </Animated.View>
+        <LottieView
+        source={require("../../assets/animations/infinity.json")}
+        autoPlay
+        loop
+        style={styles.logo}
+      />
 
       {/* App Title */}
       <Text style={styles.title}>The Infinity</Text>
 
       {/* Slogan */}
       <Text style={styles.slogan}>Beyond Limits, Into Possibilities</Text>
-    </View>
+    </GradientCard>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000", // sleek black background
     justifyContent: "center",
     alignItems: "center",
+    width: width,
+    paddingHorizontal: 20,
+    borderRadius: 0,
   },
   logo: {
-    width: width * 0.5,
-    height: width * 0.5,
+    width: wp("100%"),
+    height: hp("30%"),
   },
   title: {
     marginTop: 30,
@@ -71,11 +74,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     letterSpacing: 2,
+    textAlign: "center",
   },
   slogan: {
     marginTop: 10,
     fontSize: 16,
-    color: "#aaa",
+    color: "#f0f0f0",
     fontStyle: "italic",
+    textAlign: "center",
   },
 });

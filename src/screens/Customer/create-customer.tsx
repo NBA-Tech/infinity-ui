@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import {
     Accordion,

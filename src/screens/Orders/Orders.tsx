@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonText } from '@/components/ui/button';

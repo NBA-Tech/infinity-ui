@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { StyleContext } from '@/src/providers/theme/global-style-provider';

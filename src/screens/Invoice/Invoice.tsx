@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import { Input, InputField, InputSlot } from "@/components/ui/input";
 import Feather from 'react-native-vector-icons/Feather';
@@ -186,11 +186,11 @@ const InvoiceList = () => {
             return () => {
                 setInvoiceData([]);
             };
-        }, [filters,refresh])
+        }, [filters, refresh])
     );
 
 
-    const InvoiceCardComponent = ({item}: {item: Invoice}) => {
+    const InvoiceCardComponent = ({ item }: { item: Invoice }) => {
         return (
             <Card style={[styles.cardContainer, globalStyles.cardShadowEffect, { borderRadius: 16, padding: 16 }]}>
                 <View className="flex flex-col gap-3">
@@ -236,11 +236,13 @@ const InvoiceList = () => {
                     <View className="flex flex-row justify-between items-center">
                         <View className="flex flex-row items-center gap-2">
                             <MaterialIcons name="attach-money" size={wp('5%')} color="#22C55E" />
-                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>${item?.totalAmountPaying}</Text>
+                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{item?.totalAmountPaying}</Text>
                         </View>
 
                         <View className="flex flex-row gap-5">
-                            <Feather name="eye" size={wp('5%')} color="#3B82F6" />
+                            <TouchableOpacity onPress={()=> navigation.navigate('InvoiceDetails', { invoiceId: item?.invoiceId })}>
+                                <Feather name="eye" size={wp('5%')} color="#3B82F6" />
+                            </TouchableOpacity>
                             <Feather name="download" size={wp('5%')} color="#22C55E" />
                             <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
                         </View>

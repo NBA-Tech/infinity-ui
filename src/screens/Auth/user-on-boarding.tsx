@@ -1,4 +1,4 @@
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import React, { use, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';

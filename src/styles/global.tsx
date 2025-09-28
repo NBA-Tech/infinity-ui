@@ -14,7 +14,7 @@ const createGlobalStyle = (isDark = false) =>
     purpleTextColor: { color: "#8B5CF6" },
     normalTextColor: { color: isDark ? "#fff" : "#000" },
     whiteTextColor: { color: "#fff" },
-    greyTextColor: { color: isDark ? "#9CA3AF" : "#d1d5db" },
+    greyTextColor: { color: isDark ? "#9CA3AF" : "#6B7280" },
     blackTextColor: { color: "#000" },
     errorText: { color: '#FF4D4D' },
     themeTextColor: { color: isDark ? "#fff" : "#000" },

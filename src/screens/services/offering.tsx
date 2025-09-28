@@ -4,7 +4,7 @@ import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-s
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackHeader from '@/src/components/back-header';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import Feather from 'react-native-vector-icons/Feather';

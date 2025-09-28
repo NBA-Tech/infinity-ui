@@ -3,7 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { ThemeToggleContext, StyleContext } from '../providers/theme/global-style-provider';
-import GradientCard from '../utils/gradient-gard';
+import GradientCard from '../utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import FeatherIcon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";

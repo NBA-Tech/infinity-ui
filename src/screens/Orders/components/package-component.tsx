@@ -1,5 +1,5 @@
 import { PackageModel } from "@/src/types/offering/offering-type";
-import GradientCard from "@/src/utils/gradient-gard";
+import GradientCard from "@/src/utils/gradient-card";
 import { useContext, useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";

@@ -41,6 +41,7 @@ export interface RootStackParamList extends ParamListBase {
   onetimepassword: undefined;
   useronboarding: undefined;
   OrderDetails: { orderId: string };
+  InvoiceDetails: { invoiceId: string };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

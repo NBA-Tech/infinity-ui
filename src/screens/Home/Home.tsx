@@ -6,7 +6,7 @@ import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-s
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { BarChart } from 'react-native-chart-kit';
 import { GeneralStatInfoModel } from './types/home-type';
 import { StatInfo } from './components/stat-info';

@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackHeader from '@/src/components/back-header';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import GradientCard from '@/src/utils/gradient-gard';
+import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import QuotationDetails from './step-components/quotation-details';

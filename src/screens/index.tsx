@@ -14,3 +14,5 @@ export { default as Services } from './services/offering';
 export { default as OrderDetails } from './Orders/order-details';
 export { default as CreateInvoice } from './invoice/create-invoice';
 export { default as SplashScreen } from './splash/splash';
+export { default as FeatureSlide } from './feature-slide/feature-slide';
+export {default as InvoiceDetails} from './invoice/invoice-details';
