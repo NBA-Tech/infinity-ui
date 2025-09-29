@@ -19,16 +19,15 @@ export const addNewCustomerAPI=async(payload:CustomerModel,headers?:Record<strin
     
 }
 
-export const getCustomerDetails=async(payload:SearchQueryRequest,headers?:Record<string,any>):Promise<CustomerApiResponse>=>{
+export const getCustomerDetailsAPI=async(customerID:string,headers?:Record<string,any>):Promise<CustomerApiResponse>=>{
     const getCustomerDetailsResponse=await fetchWithTimeout({
-        url:`${API_BASE_URI}/customer/get_customers`,
+        url:`${API_BASE_URI}/customer/get_customer_details?customerID=${customerID}`,
         options: {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 ...headers
             },
-            body: JSON.stringify(payload)
         }
     })
     return getCustomerDetailsResponse
@@ -45,4 +44,34 @@ export const deleteCustomerAPI=async(customerID:string,headers?:Record<string,an
         },
     })
     return deleteCustomerResponse 
+}
+
+export const getCustomerListBasedOnFilters=async(payload:SearchQueryRequest,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const getCustomerListBasedOnFiltersResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/customer/get_customers`,
+        options: {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        }
+    })
+    return getCustomerListBasedOnFiltersResponse
+}
+
+export const updateCustomerAPI=async(payload:CustomerModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const updateCustomerResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/customer/update_customer_details`,
+        options: {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        }
+    })
+    return updateCustomerResponse
 }

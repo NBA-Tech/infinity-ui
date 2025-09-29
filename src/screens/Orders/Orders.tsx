@@ -18,7 +18,6 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { CustomerApiResponse } from '@/src/types/customer/customer-type';
-import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import Skeleton from '@/components/ui/skeleton';
 import debounce from "lodash.debounce";

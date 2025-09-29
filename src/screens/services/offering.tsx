@@ -570,6 +570,7 @@ const services = () => {
                             <CustomFieldsComponent
                                 infoFields={activeTab === "services" ? serviceInfoFields : packageInfoFields}
                                 errors={errors}
+                                cardStyle={{padding:wp('2%')}}
                             />
                         </View>
 
@@ -663,7 +664,6 @@ const services = () => {
                     <View>
                         <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => {
                             resetActiveDetails()
-                            console.log("fuyck")
                             setIsOpen(true)
                         }}>
                             <Feather name="plus" size={wp('5%')} color="#fff" />

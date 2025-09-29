@@ -12,7 +12,6 @@ import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { CustomerApiResponse } from '@/src/types/customer/customer-type';
-import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { formatDate } from '@/src/utils/utils';
 

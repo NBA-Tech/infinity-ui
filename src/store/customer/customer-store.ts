@@ -1,4 +1,4 @@
-import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
+import { getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import { ApiGeneralRespose, SearchQueryRequest } from '@/src/types/common';
 import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
@@ -14,6 +14,7 @@ interface CustomerStore {
     updateCustomerMetaInfoList: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
     deleteCustomerMetaInfo: (customerIDs: string | string[]) => void;
     loadCustomerMetaInfoList: (userID: string, payload?: SearchQueryRequest, headers?: Record<string, any>, showToast?: any) => Promise<ApiGeneralRespose>
+    resetCustomerMetaInfoList: () => void;
 
     // Details CRUD
     setCustomerDetailsInfo: (customerDetailsList: CustomerModel[]) => void; // ✅ new
@@ -21,6 +22,7 @@ interface CustomerStore {
     getCustomerDetailsList: () => CustomerModel[];
     updateCustomerDetailsInfo: (customerDetails: CustomerModel | CustomerModel[]) => void;
     deleteCustomerDetailsInfo: (customerDetails: CustomerModel | CustomerModel[]) => void;
+    resetCustomerDetailsInfo: () => void;
 }
 
 // ✅ Zustand Store (fully typed)
@@ -65,7 +67,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         showToast?: any
     ): Promise<any> => {
         let customerMetaData = get().getCustomerMetaInfoList();
-        if(!userID){
+        if (!userID) {
             showToast?.({
                 type: "error",
                 title: "Error",
@@ -94,7 +96,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         };
 
         try {
-            const customerListResponse: CustomerApiResponse = await getCustomerDetails(payloadToUse, headers);
+            const customerListResponse: ApiGeneralRespose = await getCustomerListBasedOnFilters(payloadToUse, headers);
 
             if (!customerListResponse?.success) {
                 showToast?.({
@@ -105,9 +107,9 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
                 return [];
             }
 
-            if (!customerListResponse?.customerList?.length) return [];
+            if (!customerListResponse?.data?.length) return [];
 
-            const metaList = toCustomerMetaModelList(customerListResponse.customerList);
+            const metaList = toCustomerMetaModelList(customerListResponse.data);
             set({ customerMetaInfoList: metaList });
 
             return metaList.map((customer) => ({
@@ -122,6 +124,9 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             });
             return [];
         }
+    },
+    resetCustomerMetaInfoList() {
+        set({ customerMetaInfoList: [] });
     },
 
 
@@ -166,4 +171,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             const filtered = state.customerDetailsList.filter((c) => !deleteIds.has(c.customerID));
             return { customerDetailsList: filtered };
         }),
+    resetCustomerDetailsInfo() {
+        set({ customerDetailsList: [] });
+    }
 }));

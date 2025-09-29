@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { resetAllStoreDetails } from '@/src/utils/utils';
 // 1️⃣ Create context with default value
 const AuthContext = createContext({
     isAuthenticated: false,
@@ -56,8 +57,11 @@ export const AuthProvider = ({ children }: any) => {
 
     // Logout function
     const logout = async () => {
+        resetAllStoreDetails()
         setIsAuthenticated(false);
         await removeItem('isAuthenticated');
+        await removeItem('CREATEDAT');
+        await removeItem('USERID');
     };
 
     if (loading) {

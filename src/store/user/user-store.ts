@@ -9,6 +9,7 @@ export interface UserStore {
   getUserDetails: () => UserModel | null;
   deleteUserDetails: () => void;
   getUserDetailsUsingID: (userID: string,showToast: any) => Promise<void>;
+  resetUserDetails: () => void;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -37,4 +38,5 @@ export const useUserStore = create<UserStore>((set, get) => ({
         }
     }
   },
+  resetUserDetails: () => set({ userDetails: null }),
 }));

@@ -2,6 +2,9 @@ import { Country, ICountry, IState, State } from "country-state-city";
 import { FormFields } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
 import { Linking } from "react-native";
+import { useUserStore } from "../store/user/user-store";
+import { useCustomerStore } from "../store/customer/customer-store";
+import { useOfferingStore } from "../store/offering/offering-store";
 
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
@@ -274,4 +277,12 @@ export function openEmailClient(email: string) {
 
 export function isAllLoadingFalse(loadingObj: any) {
   return Object.values(loadingObj).every(value => value === false);
+}
+
+export const resetAllStoreDetails=()=>{
+  useUserStore.getState().resetUserDetails()
+  useCustomerStore.getState().resetCustomerDetailsInfo()
+  useCustomerStore.getState().resetCustomerMetaInfoList()
+  useOfferingStore.getState().resetPackage()
+  useOfferingStore.getState().resetService()
 }

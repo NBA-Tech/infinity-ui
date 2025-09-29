@@ -14,6 +14,7 @@ export interface OfferingStore {
   addService: (service: ServiceModel | ServiceModel[]) => void;
   updateService: (service: ServiceModel | ServiceModel[]) => void;
   deleteService: (idOrIds: string | number | (string | number)[]) => void;
+  resetService: () => void;
 
   // --- Package CRUD ---
   setPackageData: (list: PackageModel[]) => void;
@@ -21,6 +22,7 @@ export interface OfferingStore {
   addPackage: (pkg: PackageModel | PackageModel[]) => void;
   updatePackage: (pkg: PackageModel | PackageModel[]) => void;
   deletePackage: (idOrIds: string | number | (string | number)[]) => void;
+  resetPackage: () => void;
 }
 
 export const useOfferingStore = create<OfferingStore>((set, get) => ({
@@ -88,6 +90,7 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
         serviceData: state.serviceData.filter((s) => !deleteIds.has(s.id)),
       };
     }),
+  resetService: () => set({ serviceData: [] }),
   // --- Package Methods ---
   setPackageData: (list) => set({ packageData: list }),
   getPackageData: () => get().packageData,
@@ -120,4 +123,6 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
         packageData: state.packageData.filter((p) => !deleteIds.has(p.id)),
       };
     }),
+
+  resetPackage: () => set({ packageData: [] }),
 }));

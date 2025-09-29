@@ -28,8 +28,8 @@ export interface SearchQueryRequest {
   filters?: Object;
   page?: number;
   pageSize?: number;
-  searchQuery?: string;
-  searchField?: string;
+  searchQuery?: string[] | string;
+  searchField?: string[] | string;
   requiredFields?: string[];
   sortField?: string;
   sortOrder?: SORT_ORDER
@@ -42,6 +42,9 @@ export interface RootStackParamList extends ParamListBase {
   useronboarding: undefined;
   OrderDetails: { orderId: string };
   InvoiceDetails: { invoiceId: string };
+  Success: { text?: string };
+  CreateInvoice: { invoiceId: string };
+  CreateCustomer: { customerID: string };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

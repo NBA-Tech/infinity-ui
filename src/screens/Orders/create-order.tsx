@@ -123,7 +123,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             dropDownItems: customerList ?? [],
             value: orderDetails?.orderBasicInfo?.customerID ?? "",
             onChange: (value: string) => {
@@ -140,7 +140,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.orderBasicInfo?.pointOfContact ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'pointOfContact', value, true, setOrderDetails, setErrors)
@@ -157,7 +157,7 @@ const CreateOrder = () => {
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.orderBasicInfo?.specialInstructions ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'specialInstructions', value, false, setOrderDetails, setErrors)
@@ -177,7 +177,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventTitle ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventTitle', value, true, setOrderDetails, setErrors)
@@ -194,7 +194,7 @@ const CreateOrder = () => {
             dateType: "date",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventDate ?? "",
             isOpen: isOpen.date,
             setIsOpen: (value: boolean) => {
@@ -214,7 +214,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventTime ?? "",
             isOpen: isOpen.time,
             setIsOpen: (value: boolean) => {
@@ -234,7 +234,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.numberOfHours ?? 0,
             onChange(value: string) {
                 patchState('eventInfo', 'numberOfHours', value, true, setOrderDetails, setErrors)
@@ -250,7 +250,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
-            isLoading:loadingProvider?.intialLoading,
+            isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventLocation ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventLocation', value, true, setOrderDetails, setErrors)
@@ -611,8 +611,13 @@ const CreateOrder = () => {
             message: saveNewOrder?.message ?? "Order created successfully",
         });
 
-        setOrderDetails([] as unknown as OrderModel);
-        setCurrStep(0);
+        setOrderDetails({
+            userId: orderDetails?.userId,
+        });
+        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully" });
+        setTimeout(() => {
+            setCurrStep(0);
+        }, 2000);
     };
 
 
@@ -634,29 +639,24 @@ const CreateOrder = () => {
 
     useFocusEffect(
         useCallback(() => {
-            let isActive = true; // To prevent state update after unmount
             const fetchData = async () => {
                 try {
                     setloadingProvider(prev => ({ ...prev, intialLoading: true }));
 
                     const userID = await getItem("USERID"); // if async
-                    await getCustomerNameList(userID);
                     await loadOfferings(userID, showToast);
                     await getUserDetailsUsingID(userID, showToast);
-
+                    await getCustomerNameList(userID);
                 } catch (error) {
                     console.log("Error fetching data", error);
                 } finally {
-                    if (isActive) {
-                        setloadingProvider(prev => ({ ...prev, intialLoading: false }));
-                    }
+                    setloadingProvider(prev => ({ ...prev, intialLoading: false }));
                 }
             };
 
             fetchData();
 
             return () => {
-                isActive = false;
                 setCustomerList([]); // cleanup
             };
         }, [])
@@ -918,7 +918,7 @@ const CreateOrder = () => {
                             <ButtonText style={globalStyles.buttonText}>
                                 {!isAllLoadingFalse(loadingProvider) ? 'Creating...' : currStep == 3 ? 'Create Order' : 'Next'}
                             </ButtonText>
-                            {currStep != 3 && !isAllLoadingFalse(loadingProvider) &&
+                            {currStep != 3 && isAllLoadingFalse(loadingProvider) &&
                                 <Feather name="arrow-right" size={wp("5%")} color="#fff" />
                             }
                         </Button>

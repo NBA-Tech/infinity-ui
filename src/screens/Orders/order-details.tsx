@@ -15,7 +15,7 @@ import TimeLineDetails from './details-component/timeline-details';
 import { ApiGeneralRespose, RootStackParamList, SearchQueryRequest } from '@/src/types/common';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CustomerApiResponse, CustomerMetaModel } from '@/src/types/customer/customer-type';
-import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
+import { getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
@@ -95,7 +95,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
         };
 
-        const customerListResponse: CustomerApiResponse = await getCustomerDetails(payload);
+        const customerListResponse: CustomerApiResponse = await getCustomerListBasedOnFilters(payload);
 
         if (!customerListResponse?.success) {
             return showToast({

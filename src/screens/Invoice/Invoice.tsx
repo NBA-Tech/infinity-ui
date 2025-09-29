@@ -20,7 +20,6 @@ import { useNavigation } from '@react-navigation/native';
 import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getCustomerStatsAPI } from '@/src/api/customer/customer-stat-api-service';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
 import { formatDate, openDaialler, openEmailClient } from '@/src/utils/utils';
@@ -81,9 +80,10 @@ const styles = StyleSheet.create({
 })
 
 
-const InvoiceCardSkeleton = () => (
+
+const InvoiceCardSkeleton = ({count}:{count:number}) => (
     <View className='flex flex-col justify-between'>
-        {[...Array(4)].map((_, index) => (
+        {[...Array(count)].map((_, index) => (
             <View key={index}>
                 <Skeleton style={{ width: wp('95%'), height: hp('15%'), marginHorizontal: wp('2%') }} />
             </View>
@@ -113,7 +113,7 @@ const InvoiceList = () => {
         setLoading(true);
         const currFilters: SearchQueryRequest = {
             filters: { userId: getItem("USERID") },
-            requiredFields: ["invoiceId", "orderId", "orderName", "totalAmountPaying", "invoiceDate", "billingInfo"],
+            requiredFields: ["invoiceId", "orderId", "orderName", "amountPaid", "invoiceDate", "billingInfo"],
             ...filters
         }
         try {
@@ -181,10 +181,11 @@ const InvoiceList = () => {
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1;
-            getInvoiceListData();
+            getInvoiceListData(reset);
 
             return () => {
                 setInvoiceData([]);
+                setFilters({ page: 1, pageSize: 10 });
             };
         }, [filters, refresh])
     );
@@ -203,7 +204,6 @@ const InvoiceList = () => {
                                 {item?.orderName}
                             </Text>
                         </View>
-                        <MaterialCommunityIcons name="dots-vertical" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                     </View>
 
                     {/* Details */}
@@ -236,14 +236,14 @@ const InvoiceList = () => {
                     <View className="flex flex-row justify-between items-center">
                         <View className="flex flex-row items-center gap-2">
                             <MaterialIcons name="attach-money" size={wp('5%')} color="#22C55E" />
-                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{item?.totalAmountPaying}</Text>
+                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{item?.amountPaid ?? 0}</Text>
                         </View>
 
                         <View className="flex flex-row gap-5">
                             <TouchableOpacity onPress={()=> navigation.navigate('InvoiceDetails', { invoiceId: item?.invoiceId })}>
                                 <Feather name="eye" size={wp('5%')} color="#3B82F6" />
                             </TouchableOpacity>
-                            <Feather name="download" size={wp('5%')} color="#22C55E" />
+                            <Feather name="edit" size={wp('5%')} color="#22C55E" />
                             <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
                         </View>
                     </View>
@@ -309,7 +309,7 @@ const InvoiceList = () => {
 
                 </View>
                 {loading && (
-                    <InvoiceCardSkeleton />
+                    <InvoiceCardSkeleton count={4}/>
                 )
                 }
                 {!loading && invoiceData?.length === 0 ? (
@@ -317,6 +317,7 @@ const InvoiceList = () => {
                 ) : (
                     <FlatList
                         data={invoiceData}
+                        style={{height:hp('60%')}}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -325,8 +326,15 @@ const InvoiceList = () => {
                                 <InvoiceCardComponent item={item} />
                             </View>
                         )}
-                    // refreshing={loading}
-                    // onRefresh={getCustomerDetails}
+                        onEndReached={() => {
+                        if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
+                    }}
+                    onEndReachedThreshold={0.7}
+                    ListFooterComponent={(hasMore && loading) ? <InvoiceCardSkeleton count={1} /> : null}
+                    refreshing={loading}
+                    onRefresh={()=>{
+                        setFilters(prev => ({ ...prev, page: 1 }));
+                    }}
                     />
                 )
 

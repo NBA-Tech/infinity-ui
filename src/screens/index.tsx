@@ -16,3 +16,4 @@ export { default as CreateInvoice } from './invoice/create-invoice';
 export { default as SplashScreen } from './splash/splash';
 export { default as FeatureSlide } from './feature-slide/feature-slide';
 export {default as InvoiceDetails} from './invoice/invoice-details';
+export {default as Success} from './success/success';

@@ -20,13 +20,14 @@ import { useNavigation } from '@react-navigation/native';
 import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getCustomerStatsAPI } from '@/src/api/customer/customer-stat-api-service';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
 import { formatDate, openDaialler, openEmailClient } from '@/src/utils/utils';
-import { deleteCustomerAPI } from '@/src/api/customer/customer-api-service';
+import { deleteCustomerAPI, getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -105,38 +106,126 @@ const Customer = () => {
 
 
     const getCustomerDetails = async (reset: boolean = false) => {
-        const userID = getItem('USERID')
+        const userID = getItem("USERID");
         if (!userID) {
             showToast({
-                type: 'error',
-                title: 'Error',
-                message: 'User ID not found'
-            })
-            return
+                type: "error",
+                title: "Error",
+                message: "User ID not found",
+            });
+            return;
         }
-        if(reset) setLoading(true);
-        else setLoadingMore(true);
-        const currFilters: SearchQueryRequest = {
-            filters: { userId: getItem("USERID") },
-            ...filters
-        };
-        console.log(currFilters, reset)
-        const customerDetailsResponse: ApiGeneralRespose = await getCustomerStatsAPI(currFilters);
-        if (!customerDetailsResponse?.success) {
+
+        reset ? setLoading(true) : setLoadingMore(true);
+
+        try {
+            // Step 1: Get customers
+            const customerFilters: SearchQueryRequest = {
+                filters: { userId: userID },
+                ...filters,
+            };
+            const customerDetailsResponse: ApiGeneralRespose =
+                await getCustomerListBasedOnFilters(customerFilters);
+
+            if (!customerDetailsResponse?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message:
+                        customerDetailsResponse?.message ||
+                        "Failed to fetch customer details",
+                });
+                return;
+            }
+
+            const customers = customerDetailsResponse?.data ?? [];
+            const customerIds = customers.map((item: any) => item.customerID);
+
+            // Step 2: Get orders for those customers
+            const orderFilters: SearchQueryRequest = {
+                filters: { userId: userID },
+                searchQuery: [customerIds],
+                searchField: "orderBasicInfo.customerID",
+                ...filters,
+            };
+
+            const orderDetailsResponse: ApiGeneralRespose =
+                await getOrderDataListAPI(orderFilters);
+
+            if (!orderDetailsResponse?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message:
+                        orderDetailsResponse?.message ||
+                        "Failed to fetch order details",
+                });
+                return;
+            }
+
+            const orders = orderDetailsResponse?.data ?? [];
+            const orderIds = orders.map((item: any) => item.orderId);
+
+            // Step 3: Get invoices for those orders
+            const invoiceFilters: SearchQueryRequest = {
+                filters: { userId: userID },
+                searchQuery: [orderIds],
+                searchField: "orderId",
+                ...filters,
+            };
+
+            const invoiceDetailsResponse: ApiGeneralRespose =
+                await getInvoiceListBasedOnFiltersAPI(invoiceFilters);
+
+            if (!invoiceDetailsResponse?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message:
+                        invoiceDetailsResponse?.message ||
+                        "Failed to fetch invoice details",
+                });
+                return;
+            }
+
+            const invoices = invoiceDetailsResponse?.data ?? [];
+
+            // Step 4: Compute totals
+            const totalQuotation = orders.reduce(
+                (total: number, item: any) => total + (item.totalPrice || 0),
+                0
+            );
+            console.log(invoices)
+            const totalInvoice = invoices.reduce(
+                (total: number, item: any) => total + (item.amountPaid || 0),
+                0
+            );
+            console.log(totalInvoice)
+
+            // Step 5: Attach totals to customer data
+            const updatedCustomers = customers.map((c: any) => ({
+                ...c,
+                totalQuotation,
+                totalInvoice,
+            }));
+
+            setCustomerData((prev) =>
+                reset ? updatedCustomers : [...prev, ...updatedCustomers]
+            );
+
+            setHasMore(customers.length === (filters.pageSize || 3));
+        } catch (err) {
+            console.error("Error fetching customer details:", err);
             showToast({
-                type: 'error',
-                title: 'Error',
-                message: customerDetailsResponse?.message || 'Failed to fetch customer details'
-            })
+                type: "error",
+                title: "Error",
+                message: "Unexpected error occurred",
+            });
+        } finally {
+            reset ? setLoading(false) : setLoadingMore(false);
         }
-        else {
-            console.log(customerDetailsResponse?.data)
-            setCustomerData(prev => reset? customerDetailsResponse?.data ?? [] : [...prev, ...(customerDetailsResponse?.data ?? [])]);
-            setHasMore(customerDetailsResponse?.data?.length === (filters.pageSize || 3));
-        }
-        if(reset) setLoading(false);
-        else setLoadingMore(false);
-    }
+    };
+
 
     const deleteCustomer = async () => {
         console.log(currID)
@@ -153,7 +242,7 @@ const Customer = () => {
             return
         }
         setLoadingDelete(false);
-        setCustomerData(prev => prev.filter(item => item._id !== currID));
+        setCustomerData(prev => prev.filter(item => item.customerID !== currID));
         deleteCustomerMetaInfo(currID);
         showToast({
             type: 'success',
@@ -174,6 +263,9 @@ const Customer = () => {
         }, [filters, refresh])
     );
 
+    useEffect(()=>{
+        console.log(customerData,"custiomer")
+    },[customerData])
 
     const CustomerCardComponent = ({ item }: any) => {
         return (
@@ -189,7 +281,7 @@ const Customer = () => {
                             </Avatar>
 
                             <View style={styles.details}>
-                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
+                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="event" size={wp('4%')} color="#6B7280" />
@@ -208,14 +300,14 @@ const Customer = () => {
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Total Package : ₹ {item?.totalOrderPrice || 0}
+                                        Total Package : ₹ {item?.totalQuotation || 0}
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Balance : ₹ 2023
+                                        Balance : ₹ {item?.totalInvoice || 0}
                                     </Text>
                                 </View>
                             </View>
@@ -225,21 +317,22 @@ const Customer = () => {
                             <Menu
                                 placement="bottom"
                                 offset={5}
+                                style={{backgroundColor:isDark ? '#1E1E2A' : '#fff'}}
                                 trigger={({ ...triggerProps }) => {
                                     return (
                                         <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                            <MaterialDesign name="dots-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'}/>
+                                            <MaterialDesign name="dots-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                                         </Button>
                                     )
                                 }}
                             >
-                                <MenuItem key="Community" textValue="Edit" className='gap-2'>
+                                <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={()=>navigation.navigate('CreateCustomer',{customerID:item?.customerID})}>
                                     <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={globalStyles.labelText} >Edit</MenuItemLabel>
+                                    <MenuItemLabel style={[globalStyles.labelText,globalStyles.themeTextColor]} >Edit</MenuItemLabel>
                                 </MenuItem>
-                                <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?._id); setOpenDelete(true); }}>
+                                <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?.customerID); setOpenDelete(true); }}>
                                     <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                    <MenuItemLabel style={globalStyles.labelText}>Delete</MenuItemLabel>
+                                    <MenuItemLabel style={[globalStyles.labelText,globalStyles.themeTextColor]}>Delete</MenuItemLabel>
                                 </MenuItem>
                             </Menu>
                         </View>
@@ -279,7 +372,7 @@ const Customer = () => {
                 <View className={isDark ? 'bg-[#1F2028]' : 'bg-[#fff]'} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text,globalStyles.themeTextColor]}>Customers</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Customers</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>

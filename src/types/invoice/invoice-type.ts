@@ -32,6 +32,6 @@ export interface Invoice {
   dueDate: Date;
   billingInfo: BillingInfo;
   totalAmount: number;
-  amoutPaid: number;
+  amountPaid: number;
   quotationHtmlInfo?: InvoiceHtmlInfo[]
 }

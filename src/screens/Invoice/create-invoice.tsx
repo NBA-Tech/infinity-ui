@@ -11,14 +11,13 @@ import QuotationDetails from './step-components/quotation-details';
 import { BillingInfo, Invoice } from '@/src/types/invoice/invoice-type';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { ApiGeneralRespose, FormFields, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields, RootStackParamList, SearchQueryRequest } from '@/src/types/common';
 import { getOrderDataListAPI, getOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { formatDate, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import LineItemsComponent from './step-components/line-items-component';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { CustomerApiResponse } from '@/src/types/customer/customer-type';
-import { getCustomerDetails } from '@/src/api/customer/customer-api-service';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import PaymentComponent from './step-components/payment-component';
 import { useUserStore } from '@/src/store/user/user-store';
@@ -31,6 +30,7 @@ import { generatePDF } from 'react-native-html-to-pdf';
 import Modal from 'react-native-modal';
 import TemplatePreview from '../Orders/components/template-preview';
 import { createInvoiceAPI } from '@/src/api/invoice/invoice-api-service';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("2%"),
@@ -44,7 +44,9 @@ const styles = StyleSheet.create({
         height: hp("0.5%"),
     },
 })
-const CreateInvoice = () => {
+type Props = NativeStackScreenProps<RootStackParamList, "CreateInvoice">;
+const CreateInvoice = ({ navigation, route }: Props) => {
+    const { invoiceId } = route.params || {};
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [currStep, setCurrStep] = useState(0);
@@ -137,8 +139,8 @@ const CreateInvoice = () => {
 
 
     const paymentForm: FormFields = useMemo(() => ({
-        amoutPaid: {
-            key: "amoutPaid",
+        amountPaid: {
+            key: "amountPaid",
             label: "Amount Paid",
             placeholder: "Eg: $100",
             icon: <Feather name="dollar-sign" size={wp('5%')} color="#3B82F6" />,
@@ -146,9 +148,9 @@ const CreateInvoice = () => {
             isRequired: true,
             isDisabled: false,
             isLoading: loadingProvider.intialLoading,
-            value: invoiceDetails?.amoutPaid || undefined,
+            value: invoiceDetails?.amountPaid || undefined,
             onChange(value: string) {
-                patchState('', 'amoutPaid', value, true, setInvoiceDetails, setErrors)
+                patchState('', 'amountPaid', value, true, setInvoiceDetails, setErrors)
             }
         },
         invoiceDate: {
@@ -435,6 +437,7 @@ const CreateInvoice = () => {
                 title: "Success",
                 message: response?.message ?? "Invoice created successfully",
             })
+            navigation.navigate("Success",{text:response?.message ?? "Invoice created successfully"})
             setInvoiceDetails({})
             setOrderDetails({})
             setCurrStep(0)

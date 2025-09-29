@@ -469,7 +469,7 @@ const UserOnBoarding = () => {
                                             }
                                         </View>
                                     </GradientCard>
-                                    {index != 2 && <Divider style={styles.divider} />}
+                                    {index != 2 && <Divider style={[styles.divider,{ backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
                             ))}
                         </View>

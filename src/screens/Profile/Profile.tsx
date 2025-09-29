@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '@/src/context/auth-context/auth-context';
 
 const styles = StyleSheet.create({
     amountContainer: {
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
 const Profile = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const { logout } = useAuth()
     const navigation = useNavigation();
     const options = [
         {
@@ -59,7 +61,7 @@ const Profile = () => {
         {
             label: "Logout",
             icon: <Feather name="log-out" size={wp('6%')} color="#EF4444" />, // red accent for logout
-            onPress: () => { }
+            onPress: () => logout()
         }
     ];
 
@@ -123,7 +125,7 @@ const Profile = () => {
                         </View>
                         <View className='flex flex-col'>
                             {options.map((option, index) => (
-                                <TouchableOpacity onPress={option.onPress}>
+                                <TouchableOpacity onPress={option?.onPress}>
                                     <Card style={[globalStyles.cardShadowEffect, { width: wp('98%'), marginVertical: hp('0.5%') }]} className='self-center' key={index}>
                                         <View className='flex flex-row justify-between items-center p-3'>
                                             <View className='flex flex-row justify-start items-center gap-2'>

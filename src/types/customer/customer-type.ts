@@ -45,7 +45,7 @@ export interface CustomerApiResponse{
   status: number;
   success: boolean;
   message: string;
-  customerList: CustomerModel[]
+  data: CustomerModel[] | CustomerModel
 }
 
 

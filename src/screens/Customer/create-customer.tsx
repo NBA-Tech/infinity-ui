@@ -17,19 +17,20 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { getCountries, getStates, patchState } from '@/src/utils/utils';
+import { getCountries, getStates, isAllLoadingFalse, patchState } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
-import { CustomerBasicInfo, CustomerBillingInfo, CustomerModel, GENDER, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
-import { ApiGeneralRespose, FormFields } from '@/src/types/common';
+import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, GENDER, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
+import { ApiGeneralRespose, FormFields, RootStackParamList } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { addNewCustomerAPI } from '@/src/api/customer/customer-api-service';
+import { addNewCustomerAPI, getCustomerDetailsAPI, updateCustomerAPI } from '@/src/api/customer/customer-api-service';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { Card } from '@/components/ui/card';
 import BackHeader from '@/src/components/back-header';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -49,9 +50,10 @@ const styles = StyleSheet.create({
 
 
 
-
-const CreateCustomer = () => {
+type Props = NativeStackScreenProps<RootStackParamList, "CreateCustomer">;
+const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
+    const { customerID } = route.params || {};
     const { isDark } = useContext(ThemeToggleContext);
     const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
         userId: "",
@@ -62,9 +64,9 @@ const CreateCustomer = () => {
     } as CustomerModel);
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
-    const [loading, setLoading] = useState(false);
+    const [loadingProvider, setloadingProvider] = useState({ intialLoading: false, saveLoading: false });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const { addCustomerDetailsInfo, updateCustomerMetaInfoList } = useCustomerStore();
+    const { addCustomerDetailsInfo, updateCustomerMetaInfoList, updateCustomerDetailsInfo } = useCustomerStore();
 
 
     const basicInfoFields: FormFields = useMemo(() => ({
@@ -78,6 +80,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBasicInfo?.firstName ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'firstName', value, true, setCustomerDetails, setErrors)
@@ -92,6 +95,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBasicInfo?.lastName ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'lastName', value, true, setCustomerDetails, setErrors)
@@ -106,6 +110,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBasicInfo?.mobileNumber ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'mobileNumber', value, true, setCustomerDetails, setErrors)
@@ -120,6 +125,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBasicInfo?.email ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
@@ -134,6 +140,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             dropDownItems: Object.values(GENDER).map((gender) => ({
                 label: gender,
                 value: gender as GENDER,
@@ -152,6 +159,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             dropDownItems: Object.values(LEADSOURCE).map((lead) => ({
                 label: lead,
                 value: lead as LEADSOURCE,
@@ -170,13 +178,14 @@ const CreateCustomer = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             value: customerDetails?.customerBasicInfo?.notes ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'notes', value, false, setCustomerDetails, setErrors)
             }
         },
-    }),[customerDetails]);
+    }), [customerDetails]);
 
     const billingInfoFields: FormFields = {
         street: {
@@ -188,6 +197,7 @@ const CreateCustomer = () => {
             style: "w-full",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBillingInfo?.street ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'street', value, false, setCustomerDetails, setErrors)
@@ -203,6 +213,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBillingInfo?.city ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'city', value, false, setCustomerDetails, setErrors)
@@ -217,6 +228,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBillingInfo?.country ?? "",
             dropDownItems: getCountries().map((country, index) => ({
                 label: country.name,
@@ -235,6 +247,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBillingInfo?.state ?? "",
             dropDownItems: getStates(customerDetails?.customerBillingInfo?.country).map((state, index) => ({
                 label: state.name,
@@ -253,6 +266,7 @@ const CreateCustomer = () => {
             style: "w-1/2",
             isRequired: false,
             isDisabled: false,
+            isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBillingInfo?.zipCode ?? "",
             onChange: (value: string) => {
                 patchState('customerBillingInfo', 'zipCode', value, false, setCustomerDetails, setErrors)
@@ -261,11 +275,23 @@ const CreateCustomer = () => {
 
     }
 
-
-
+    const getCustomerDetails = async (customerID: string) => {
+        setloadingProvider({ ...loadingProvider, intialLoading: true });
+        const getCustomerDetailsResponse: CustomerApiResponse = await getCustomerDetailsAPI(customerID)
+        if (!getCustomerDetailsResponse?.success) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: getCustomerDetailsResponse?.message ?? "Something went wrong",
+            })
+            return
+        }
+        setCustomerDetails(getCustomerDetailsResponse?.data as CustomerModel)
+        setloadingProvider({ ...loadingProvider, intialLoading: false });
+    }
 
     const handleSubmit = async () => {
-        setLoading(true)
+        setloadingProvider({ ...loadingProvider, saveLoading: true });
         const userId = getItem("USERID")
         if (!userId) {
             return showToast({
@@ -275,7 +301,14 @@ const CreateCustomer = () => {
             })
         }
         customerDetails.userId = userId;
-        const addNewCustomerResponse: ApiGeneralRespose = await addNewCustomerAPI(customerDetails)
+        let addNewCustomerResponse: ApiGeneralRespose;
+        if (customerID) {
+            addNewCustomerResponse = await updateCustomerAPI(customerDetails)
+        }
+        else {
+            addNewCustomerResponse = await addNewCustomerAPI(customerDetails)
+
+        }
         if (!addNewCustomerResponse?.success) {
             showToast({
                 type: "error",
@@ -289,9 +322,18 @@ const CreateCustomer = () => {
                 title: "Success",
                 message: addNewCustomerResponse?.message ?? "Successfully created customer",
             })
-            customerDetails.customerID = addNewCustomerResponse.data
-            addCustomerDetailsInfo(customerDetails)
-            updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+            if (customerID) {
+                updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+                updateCustomerDetailsInfo(customerDetails)
+            }
+            else {
+                customerDetails.customerID = addNewCustomerResponse.data
+                addCustomerDetailsInfo(customerDetails)
+                updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+
+            }
+            setloadingProvider({ ...loadingProvider, saveLoading: false });
+            navigation.navigate("Success", { text: addNewCustomerResponse?.message ?? "Customer Created Successfully" })
             setCustomerDetails({
                 userId: "",
                 leadSource: undefined,
@@ -299,13 +341,19 @@ const CreateCustomer = () => {
                 customerBillingInfo: {} as CustomerBillingInfo
             } as CustomerModel)
         }
-        setLoading(false)
     }
+
+    useEffect(() => {
+        console.log(customerID)
+        if (customerID) {
+            getCustomerDetails(customerID)
+        }
+    }, [customerID])
 
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-           <BackHeader screenName="Create Customer" />
+            <BackHeader screenName="Create Customer" />
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom
@@ -315,28 +363,28 @@ const CreateCustomer = () => {
                 <View>
                     <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text,globalStyles.themeTextColor]}>Create Customer</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Create Customer</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={loading || Object.keys(errors).length > 0}>
-                            {loading && (
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                            {loadingProvider.saveLoading && (
                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )
                             }
                             <Feather name="save" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>{loading ? "Saving..." : "Save"}</ButtonText>
+                            <ButtonText style={globalStyles.buttonText}>{loadingProvider.saveLoading ? "Saving..." : "Save"}</ButtonText>
                         </Button>
 
                     </View>
                     <View className='flex flex-col'>
 
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
-                            <View style={[styles.accordionHeader,{backgroundColor:isDark ? '#273449' : '#EFF6FF'}]}>
+                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#EFF6FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="user" size={wp('5%')} color="#8B5CF6" />
-                                    <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
+                                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
 
                                 </View>
                             </View>
@@ -345,11 +393,11 @@ const CreateCustomer = () => {
                             </View>
 
                         </Card>
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginTop:hp('2%') }]}>
-                            <View style={[styles.accordionHeader,{backgroundColor:isDark ? '#273449' : '#EFF6FF'}]}>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginTop: hp('2%') }]}>
+                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#EFF6FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="credit-card" size={wp('5%')} color="#8B5CF6" />
-                                    <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
+                                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
 
                                 </View>
                             </View>
