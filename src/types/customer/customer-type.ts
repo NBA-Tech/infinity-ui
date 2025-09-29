@@ -1,9 +1,5 @@
 // src/models/CustomerModel.ts
 
-export enum STATUS {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-}
 
 export enum GENDER {
   MALE = "MALE",
@@ -40,7 +36,6 @@ export interface CustomerModel {
   customerID?: string;
   userId: string;
   createdDate?: Date;
-  status?: STATUS;
   leadSource?: LEADSOURCE;
   customerBasicInfo: CustomerBasicInfo;
   customerBillingInfo: CustomerBillingInfo;

@@ -222,11 +222,6 @@ const Customer = () => {
                         </View>
 
                         <View style={styles.statusContainer}>
-                            <View style={styles.status}>
-                                <Text style={[globalStyles.whiteTextColor, globalStyles.labelText]}>
-                                    Pending
-                                </Text>
-                            </View>
                             <Menu
                                 placement="bottom"
                                 offset={5}
