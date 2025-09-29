@@ -5,13 +5,15 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
-import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
+import { OfferingInfo, OrderModel, OrderType } from '@/src/types/order/order-type';
 import { OfferingModel, ServiceInfo } from '@/src/types/offering/offering-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { updateServiceCompletionStatus } from '@/src/api/order/order-api-service';
+import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -46,16 +48,17 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: hp("1.2%"),
-        paddingHorizontal: wp("3%"),
-        borderBottomWidth: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
     },
     cellService: {
-        flex: 2,
+        flex: 2, // wider column
+        textAlign: "left",
     },
     cellPrice: {
         flex: 1,
         textAlign: "right",
+        marginRight: wp("5%"),
     },
     cellStatus: {
         flex: 1,
@@ -65,12 +68,16 @@ const styles = StyleSheet.create({
 })
 
 type OfferingDetailsProps = {
+    orderId?: string
     offeringData?: OfferingInfo
     totalPrice?: number
+    setOrderDetails: React.Dispatch<React.SetStateAction<OrderModel>>
 }
 const OfferingDetails = (props: OfferingDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const showToast = useToastMessage();
+    const {triggerConfetti} = useConfetti();
 
 
     // const getServiceList = async () => {
@@ -143,6 +150,57 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     //     console.log(props?.offeringData)
     //     getServiceList()
     // }, [props.offeringData])
+
+    const handleStatusChange = async (item: ServiceInfo | OfferingInfo) => {
+        if (!item) return;
+        const updateStatusResponse = await updateServiceCompletionStatus(props?.orderId ?? '', props?.offeringData?.orderType === OrderType.PACKAGE ? item?.packageId ?? '' : item?.id ?? '', !item?.isCompleted ?? false, props?.offeringData?.orderType ?? OrderType.SERVICE)
+        if (!updateStatusResponse?.success) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: updateStatusResponse?.message ?? "Something went wrong",
+            });
+            return;
+        }
+        props?.setOrderDetails((prev) => {
+            if (!prev?.offeringInfo) return prev;
+
+            // Case 1: Service order
+            if (prev.offeringInfo.orderType === "SERVICE") {
+                return {
+                    ...prev,
+                    offeringInfo: {
+                        ...prev.offeringInfo,
+                        services: prev.offeringInfo.services?.map((service) => {
+                            if (service?.id === item?.id) {
+                                return {
+                                    ...service,
+                                    isCompleted: !service?.isCompleted,
+                                };
+                            }
+                            return service;
+                        }),
+                    },
+                };
+            }
+
+            // Case 2: Package order
+            if (prev.offeringInfo.orderType === "PACKAGE") {
+                return {
+                    ...prev,
+                    offeringInfo: {
+                        isCompleted: !prev.offeringInfo.isCompleted
+                    },
+                };
+            }
+
+            return prev;
+        });
+        triggerConfetti()
+
+
+        // getServiceList();
+    }
     return (
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View style={{ padding: wp('3%') }}>
@@ -159,16 +217,38 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
                     <View>
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Confirm Completion:</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>*Note Click on the double tick to mark the servcie as delivered</Text>
                     </View>
 
-                    <View className='flex flex-col gap-3'>
-                        <View style={[styles.container, { backgroundColor: isDark ? "#1E1E2A" : "#fff", borderColor: isDark ? "#4B5563" : "#E5E7EB" }]}>
-
+                    <View style={{ flexDirection: "column", gap: 12 }}>
+                        <View
+                            style={[
+                                styles.container,
+                                {
+                                    backgroundColor: isDark ? "#1E1E2A" : "#fff",
+                                    borderColor: isDark ? "#4B5563" : "#E5E7EB",
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    overflow: "hidden",
+                                },
+                            ]}
+                        >
                             {/* Header */}
-                            <View style={[styles.headerRow, { backgroundColor: isDark ? "#374151" : "#F3F4F6" }]}>
-                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>Service</Text>
-                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827", textAlign: "right" }]}>Price</Text>
-                                <Text style={[globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827", textAlign: "center" }]}>Status</Text>
+                            <View
+                                style={[
+                                    styles.row,
+                                    { backgroundColor: isDark ? "#374151" : "#F3F4F6", borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
+                                ]}
+                            >
+                                <Text style={[styles.cellService, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                    Service
+                                </Text>
+                                <Text style={[styles.cellPrice, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                    Price
+                                </Text>
+                                <Text style={[styles.cellStatus, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                    Status
+                                </Text>
                             </View>
 
                             {/* Rows */}
@@ -176,32 +256,31 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                 data={props?.offeringData?.services}
                                 keyExtractor={(item) => item.id}
                                 renderItem={({ item }) => (
-                                    <View style={[styles.row, { borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" }]}>
-                                        <Text style={[globalStyles.normalText, styles.cellService, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                    <View
+                                        style={[
+                                            styles.row,
+                                            { borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
+                                        ]}
+                                    >
+                                        <Text style={[styles.cellService, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
                                             {item.name} x{item.value}
                                         </Text>
-                                        <Text style={[globalStyles.normalText, styles.cellPrice, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                        <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
                                             ${item.price}
                                         </Text>
-                                        <TouchableOpacity style={styles.cellStatus}>
-                                            {item?.isCompleted?(
-                                                <MaterialCommunityIcons name="check-all" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                            ):(
-                                                <MaterialCommunityIcons name="check-all" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                            )
-
-                                            }
+                                        <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
+                                            {item?.isCompleted ? (
+                                                <MaterialCommunityIcons name="check-all" size={wp("5%")} color="#10B981" /> // green for done
+                                            ) : (
+                                                <MaterialCommunityIcons name="check-all" size={wp("5%")} color={isDark ? "#6B7280" : "#9CA3AF"} /> // grey for pending
+                                            )}
                                         </TouchableOpacity>
                                     </View>
                                 )}
                             />
                         </View>
-                        {/* <Divider /> */}
-                        {/* <View className='flex flex-row justify-between items-center'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Total:</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>${props?.totalPrice}</Text>
-                        </View> */}
                     </View>
+
 
                 </View>
 

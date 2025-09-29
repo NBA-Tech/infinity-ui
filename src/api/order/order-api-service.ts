@@ -1,6 +1,6 @@
 import { API_BASE_URI } from "@/src/config/app-config"
 import { ApiGeneralRespose, SearchQueryRequest } from "@/src/types/common"
-import { OrderModel } from "@/src/types/order/order-type"
+import { OrderModel, OrderStatus, OrderType } from "@/src/types/order/order-type"
 import { fetchWithTimeout } from "@/src/utils/utils"
 
 export const saveNewOrderAPI=async(payload:OrderModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
@@ -69,4 +69,15 @@ export const updateOrderDetailsAPI=async(payload:OrderModel,headers?:Record<stri
         }
     })
     return updateOrderDetailsResponse
+}
+
+export const updateServiceCompletionStatus=async(orderId:string,offerId:string,isCompleted:boolean,orderType:OrderType,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+     const updateServiceCompletionResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/order/update_service_completion?orderId=${orderId}&offerId=${offerId}&isCompleted=${isCompleted}&orderType=${orderType}`,
+        options: {
+            method: 'GET',
+            headers
+        },
+    })
+    return updateServiceCompletionResponse
 }

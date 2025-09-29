@@ -271,3 +271,7 @@ export function openEmailClient(email: string) {
   let emailUrl = `mailto:${email}`;
   Linking.openURL(emailUrl);
 }
+
+export function isAllLoadingFalse(loadingObj: any) {
+  return Object.values(loadingObj).every(value => value === false);
+}

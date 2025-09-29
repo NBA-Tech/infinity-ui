@@ -17,6 +17,7 @@ import GlobalStyleProvider from './src/providers/theme/global-style-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DataStoreProvider } from './src/providers/data-store/data-store-provider';
 import { AuthProvider } from './src/context/auth-context/auth-context';
+import  {ConfettiProvider}  from './src/providers/confetti/confetti-provider';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -28,7 +29,9 @@ function App() {
           <DataStoreProvider>
             <AuthProvider>
               <GlobalStyleProvider>
-                <Navigation />
+                <ConfettiProvider>
+                  <Navigation />
+                </ConfettiProvider>
               </GlobalStyleProvider>
             </AuthProvider>
           </DataStoreProvider>

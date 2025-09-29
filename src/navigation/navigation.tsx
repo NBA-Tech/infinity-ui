@@ -83,9 +83,9 @@ function AuthStack() {
 function UnauthStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name="splash" component={SplashScreen} />
             <Stack.Screen name="FeatureSlide" component={FeatureSlide} />
-            <Stack.Screen name="authentication" component={Authentication} />
             <Stack.Screen name='onetimepassword' component={OneTimePassword} />
             <Stack.Screen name="useronboarding" component={UserOnBoarding} />
             <Stack.Screen name="services" component={Services} />

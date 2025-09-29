@@ -130,6 +130,7 @@ const Customer = () => {
             })
         }
         else {
+            console.log(customerDetailsResponse?.data)
             setCustomerData(prev => reset? customerDetailsResponse?.data ?? [] : [...prev, ...(customerDetailsResponse?.data ?? [])]);
             setHasMore(customerDetailsResponse?.data?.length === (filters.pageSize || 3));
         }
@@ -167,7 +168,8 @@ const Customer = () => {
 
     useFocusEffect(
         useCallback(() => {
-            const reset = filters?.page === 1;
+            const reset = filters?.page === 1 || !filters?.page;
+            console.log(filters?.page)
             getCustomerDetails(reset);
         }, [filters, refresh])
     );
@@ -254,7 +256,7 @@ const Customer = () => {
                             <Feather name="mail" size={wp('5%')} color="#6B7280" />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => { openDaialler(item?.customerBasicInfo?.phone) }}>
+                        <TouchableOpacity onPress={() => { openDaialler(item?.customerBasicInfo?.mobileNumber) }}>
                             <Feather name="phone" size={wp('5%')} color="#6B7280" />
                         </TouchableOpacity>
 

@@ -20,7 +20,7 @@ import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/typ
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { escapeHtmlForJson, generateRandomString, patchState, validateValues } from '@/src/utils/utils';
+import { escapeHtmlForJson, generateRandomString, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
 import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
@@ -79,7 +79,7 @@ const CreateOrder = () => {
     const showToast = useToastMessage();
     const { loadCustomerMetaInfoList } = useCustomerStore();
     const { serviceData, packageData, loadOfferings } = useOfferingStore()
-    const { userDetails,getUserDetailsUsingID } = useUserStore()
+    const { userDetails, getUserDetailsUsingID } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: getItem("USERID") as string,
         orderBasicInfo: {} as OrderBasicInfo,
@@ -91,7 +91,10 @@ const CreateOrder = () => {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [currStep, setCurrStep] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loadingProvider, setloadingProvider] = useState({
+        saveLoading: false,
+        intialLoading: false
+    })
     const [isOpen, setIsOpen] = useState({
         date: false,
         time: false,
@@ -100,7 +103,7 @@ const CreateOrder = () => {
     const navigation = useNavigation<NavigationProp>();
 
     const getCustomerNameList = async (userID: string) => {
-        const metaData= await loadCustomerMetaInfoList(userID,{},{},showToast)
+        const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
         setCustomerList(metaData);
     };
 
@@ -120,6 +123,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             dropDownItems: customerList ?? [],
             value: orderDetails?.orderBasicInfo?.customerID ?? "",
             onChange: (value: string) => {
@@ -136,6 +140,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.orderBasicInfo?.pointOfContact ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'pointOfContact', value, true, setOrderDetails, setErrors)
@@ -152,6 +157,7 @@ const CreateOrder = () => {
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.orderBasicInfo?.specialInstructions ?? "",
             onChange(value: string) {
                 patchState('orderBasicInfo', 'specialInstructions', value, false, setOrderDetails, setErrors)
@@ -171,6 +177,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventTitle ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventTitle', value, true, setOrderDetails, setErrors)
@@ -187,6 +194,7 @@ const CreateOrder = () => {
             dateType: "date",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventDate ?? "",
             isOpen: isOpen.date,
             setIsOpen: (value: boolean) => {
@@ -206,6 +214,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventTime ?? "",
             isOpen: isOpen.time,
             setIsOpen: (value: boolean) => {
@@ -225,6 +234,7 @@ const CreateOrder = () => {
             style: "w-1/2",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.numberOfHours ?? 0,
             onChange(value: string) {
                 patchState('eventInfo', 'numberOfHours', value, true, setOrderDetails, setErrors)
@@ -240,6 +250,7 @@ const CreateOrder = () => {
             style: "w-full",
             isRequired: true,
             isDisabled: false,
+            isLoading:loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.eventLocation ?? "",
             onChange(value: string) {
                 patchState('eventInfo', 'eventLocation', value, true, setOrderDetails, setErrors)
@@ -575,7 +586,7 @@ const CreateOrder = () => {
         }
 
         setOrderDetails(orderDetails); // update state for UI if needed
-        setLoading(true);
+        setloadingProvider({ ...loadingProvider, saveLoading: true });
 
         let saveNewOrder;
         if (orderId) {
@@ -584,7 +595,7 @@ const CreateOrder = () => {
             saveNewOrder = await saveNewOrderAPI(orderDetails);
         }
 
-        setLoading(false);
+        setloadingProvider({ ...loadingProvider, saveLoading: false });
 
         if (!saveNewOrder?.success) {
             return showToast({
@@ -606,6 +617,7 @@ const CreateOrder = () => {
 
 
     const getOrderDetails = async (orderId: string) => {
+        setloadingProvider({ ...loadingProvider, intialLoading: true });
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
         if (!orderDetails?.success) {
             return showToast({
@@ -615,19 +627,37 @@ const CreateOrder = () => {
             })
         }
         setOrderDetails(orderDetails.data)
+        setloadingProvider({ ...loadingProvider, intialLoading: false });
     }
 
 
 
     useFocusEffect(
         useCallback(() => {
-            const userID = getItem("USERID")
-            getCustomerNameList(userID);
-            loadOfferings(userID,showToast);
-            getUserDetailsUsingID(userID,showToast);
+            let isActive = true; // To prevent state update after unmount
+            const fetchData = async () => {
+                try {
+                    setloadingProvider(prev => ({ ...prev, intialLoading: true }));
+
+                    const userID = await getItem("USERID"); // if async
+                    await getCustomerNameList(userID);
+                    await loadOfferings(userID, showToast);
+                    await getUserDetailsUsingID(userID, showToast);
+
+                } catch (error) {
+                    console.log("Error fetching data", error);
+                } finally {
+                    if (isActive) {
+                        setloadingProvider(prev => ({ ...prev, intialLoading: false }));
+                    }
+                }
+            };
+
+            fetchData();
 
             return () => {
-                setCustomerList([]);
+                isActive = false;
+                setCustomerList([]); // cleanup
             };
         }, [])
     );
@@ -638,13 +668,6 @@ const CreateOrder = () => {
         }
 
     }, [])
-
-    useEffect(() => {
-        console.log("orderDetails", orderDetails)
-    }, [orderDetails])
-
-
-
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
@@ -777,7 +800,7 @@ const CreateOrder = () => {
 
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
-                                        {!loading && packageData?.length == 0 && (
+                                        {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
                                             <EmptyState variant='orders' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
                                         )
                                         }
@@ -820,7 +843,7 @@ const CreateOrder = () => {
                                 <View style={{ marginHorizontal: wp('2%'), paddingVertical: hp('2%') }}>
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
-                                        {!loading && serviceData?.length == 0 && (
+                                        {isAllLoadingFalse(loadingProvider) && serviceData?.length == 0 && (
                                             <EmptyState variant='services' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
                                         )
 
@@ -871,7 +894,7 @@ const CreateOrder = () => {
                             variant="solid"
                             action="primary"
                             style={[globalStyles.purpleBackground]}
-                            isDisabled={loading || Object.keys(errors).length > 0}
+                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                             onPress={() => setCurrStep(currStep - 1)}
                         >
                             <Feather name="arrow-left" size={wp("5%")} color="#fff" />
@@ -885,17 +908,17 @@ const CreateOrder = () => {
                             variant="solid"
                             action="primary"
                             style={globalStyles.purpleBackground}
-                            isDisabled={loading || Object.keys(errors).length > 0}
+                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                             onPress={currStep == 3 ? handleCreateOrder : handleNext}
                         >
-                            {loading && (
+                            {!isAllLoadingFalse(loadingProvider) && (
                                 <ButtonSpinner size={wp("4%")} color="#fff" />
                             )
                             }
                             <ButtonText style={globalStyles.buttonText}>
-                                {loading ? 'Creating...' : currStep == 3 ? 'Create Order' : 'Next'}
+                                {!isAllLoadingFalse(loadingProvider) ? 'Creating...' : currStep == 3 ? 'Create Order' : 'Next'}
                             </ButtonText>
-                            {currStep != 3 && !loading &&
+                            {currStep != 3 && !isAllLoadingFalse(loadingProvider) &&
                                 <Feather name="arrow-right" size={wp("5%")} color="#fff" />
                             }
                         </Button>

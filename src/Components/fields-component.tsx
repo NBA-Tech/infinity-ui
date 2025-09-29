@@ -101,7 +101,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     ]}
                     data={field.dropDownItems || []}
                     search={field?.isSearchable || true}
-                    value={field.value}
+                    value={field?.isLoading ? undefined : field.value}
                     placeholderStyle={[
                         globalStyles.labelText,
                         { color: isDark ? "#9CA3AF" : "#808080" } // muted grey
@@ -118,10 +118,11 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         globalStyles.labelText,
                         { color: isDark ? "#F9FAFB" : "#111827", fontWeight: "500" } // selected item
                     ]}
+                    disable={field.isDisabled || field?.isLoading}
                     maxHeight={300}
                     labelField="label"
                     valueField="value"
-                    placeholder={field.placeholder}
+                    placeholder={field?.isLoading ? "Loading..." : field.placeholder}
                     searchPlaceholder="Search..."
                     onChange={(item) => field.onChange?.(item?.value,item?.label)}
                     renderItem={(item) => (
@@ -149,10 +150,11 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     iconStyle={{ width: 20, height: 20 }}
                     search={field?.isSearchable || true}
                     data={field.dropDownItems || []}
-                    value={field.value || []}
+                    value={field?.isLoading ? undefined : field.value || []}
                     labelField="label"
                     valueField="value"
-                    placeholder={field.placeholder || "Select items"}
+                    disable={field.isDisabled || field?.isLoading}
+                    placeholder={field?.isLoading ? "Loading..." : field.placeholder}
                     searchPlaceholder="Search..."
                     onChange={(items) => field.onChange?.(items)}
                     renderLeftIcon={() => field.icon}
@@ -170,6 +172,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         { justifyContent: "center", backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#3A3B47" : "#ccc" },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
+                    disabled={field.isDisabled || field?.isLoading}
                 >
                     <Text
                         style={[
@@ -185,7 +188,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                                     hour: "2-digit",
                                     minute: "2-digit",
                                 })
-                            : field.placeholder || `Select ${field.type}`}
+                            : (field?.isLoading ? "Loading..." : field.placeholder) || `Select ${field.type}`}
                     </Text>
 
                     {field.isOpen && (
@@ -258,15 +261,16 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     alertRequired={false}
                     setSelectedValues={field.onChange}
                 />) : (
-                <Input size="lg" isDisabled={field.isDisabled} style={field.extraStyles}>
+                <Input size="lg" isDisabled={field.isDisabled || field?.isLoading} style={field.extraStyles}>
                     <InputSlot>{field.icon}</InputSlot>
                     <InputField
                         type={field.type}
-                        placeholder={field.placeholder}
+                        placeholder={field?.isLoading ? "Loading..." : field.placeholder}
                         value={String(field.value || "")}
                         keyboardType={field.type === "number" ? "numeric" : "default"}
                         onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
                         onBlur={() => field.onBlur?.(field.parentKey || "", field.key)}
+                
                     />
                 </Input>
             )}

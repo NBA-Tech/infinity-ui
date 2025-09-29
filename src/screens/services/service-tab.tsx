@@ -80,20 +80,20 @@ const ServiceTab = (props: ServiceTabProps) => {
     const [currId, setCurrId] = useState<string>();
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const { deleteOfferingDetailsInfo } = useOfferingStore();
+    const { deleteService } = useOfferingStore();
     const showToast = useToastMessage();
 
 
     const handleDelete = async () => {
         if (!currId) return;
         setLoading(true);
-        const deleteService = await deleteOfferingApi(currId);
-        if (!deleteService.success) {
-            showToast({ type: "error", title: "Error", message: deleteService.message });
+        const deleteServiceResponse = await deleteOfferingApi(currId);
+        if (!deleteServiceResponse.success) {
+            showToast({ type: "error", title: "Error", message: deleteServiceResponse.message });
         }
         else {
-            showToast({ type: "success", title: "Success", message: deleteService.message });
-            deleteOfferingDetailsInfo(currId);
+            showToast({ type: "success", title: "Success", message: deleteServiceResponse.message });
+            deleteService(currId);
         }
         setLoading(false);
         setOpenDelete(false);

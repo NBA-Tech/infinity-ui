@@ -69,14 +69,14 @@ const OrderDetails = ({ route, navigation }: Props) => {
             icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
         {
-            id: 2,
-            label: 'Invoice',
-            icon: <Feather name="file" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-        {
             id: 3,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+        },
+        {
+            id:4,
+            label: 'Cancel',
+            icon: <Feather name="x" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         }
     ]
 
@@ -140,8 +140,10 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
             case "offering":
                 return <OfferingDetails
+                    orderId={orderDetails?.orderId}
                     offeringData={orderDetails?.offeringInfo}
-                    totalPrice={orderDetails?.totalPrice} />
+                    totalPrice={orderDetails?.totalPrice} 
+                    setOrderDetails={setOrderDetails}/>
             case "quotation":
                 return <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData} />
             case "invoice":
@@ -206,7 +208,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                             </View>
                         </View>
                     </View>
-                    <View className='flex flex-row justify-between items-center' style={{ marginVertical: hp('2%') }}>
+                    <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('2%') }}>
                         {actionButtons.map((action) => (
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground}>
                                 {action.icon}

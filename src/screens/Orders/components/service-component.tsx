@@ -58,7 +58,7 @@ const ServiceComponent = ({
       // add/replace service
       updatedServices = [
         ...(offeringInfo.services || []).filter((s) => s.id !== eventType.id),
-        { id: eventType.id, name: eventType.serviceName, value: qty, price: eventType.price },
+        { id: eventType.id, name: eventType.serviceName, value: qty, price: eventType.price,isCompleted: false },
       ];
     } else {
       // remove service

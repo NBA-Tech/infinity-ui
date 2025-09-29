@@ -38,7 +38,7 @@ export const PackageComponent = ({ pkg, isSelected, handleCalculatePrice, handle
         if (selected) {
             updateValue={orderType: null, packageId: null,services:[] as ServiceInfo[]}
         } else {
-            updateValue={orderType: OrderType.PACKAGE, packageId: pkg.id,packagePrice: price,packageName:pkg.packageName,services:[] as ServiceInfo[]}
+            updateValue={orderType: OrderType.PACKAGE, packageId: pkg.id,packagePrice: price,packageName:pkg.packageName,services:[] as ServiceInfo[],isCompleted:false}
         }
 
         handleCheckboxChange(updateValue, { parentKey: "offeringInfo", childKey: "" });
