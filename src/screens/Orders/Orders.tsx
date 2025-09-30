@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Header from '@/src/components/header';
 import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
@@ -13,18 +13,18 @@ import { Fab } from '@/components/ui/fab';
 import OrderCard from './components/order-card';
 import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { OrderModel } from '@/src/types/order/order-type';
-import { deleteOrderAPI, getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import { deleteOrderAPI, getOrderDataListAPI, getOrderMetaDataAPI } from '@/src/api/order/order-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
-import { CustomerApiResponse } from '@/src/types/customer/customer-type';
-import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import Skeleton from '@/components/ui/skeleton';
 import debounce from "lodash.debounce";
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useNavigation } from '@react-navigation/native';
-
+import FilterComponent from '@/src/components/filter-component';
+import { isFilterApplied } from '@/src/utils/utils';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const OrderCardSkeleton = ({count}:{count:number}) => (
+const OrderCardSkeleton = ({ count }: { count: number }) => (
     <View className='flex flex-col justify-between'>
         {[...Array(count)].map((_, index) => (
             <View key={index}>
@@ -43,7 +43,7 @@ const OrderCardSkeleton = ({count}:{count:number}) => (
 );
 
 const Orders = () => {
-    const navigation=useNavigation<NavigationProp>();
+    const navigation = useNavigation<NavigationProp>();
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [filters, setFilters] = useState<SearchQueryRequest>({ page: 1, pageSize: 10 });
@@ -56,14 +56,18 @@ const Orders = () => {
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
     const [currID, setCurrID] = useState<string>("");
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [openFilter, setOpenFilter] = useState(false);
+    const [customerListFilter, setCustomerListFilter] = useState<string[]>();
+    const [eventTypeFilter, setEventTypeFilter] = useState<string[]>();
+    const [totalCount, setTotalCount] = useState(0);
 
     const getOrderListData = async (reset: boolean = false) => {
         setLoading(true);
         const currFilters: SearchQueryRequest = {
-            filters: { userId: getItem("USERID") },
             requiredFields: ["orderId", "status", "totalPrice", "orderBasicInfo.customerID", "eventInfo"],
             ...filters
         };
+        currFilters.filters = { ...currFilters.filters, userId: getItem("USERID") };
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
             if (!orderDataResponse?.success) {
@@ -87,6 +91,18 @@ const Orders = () => {
         }
     };
 
+    const loadOrdersMetaData = async (userId: string) => {
+        const orderMetaDataResponse=await getOrderMetaDataAPI(userId);
+        if (!orderMetaDataResponse.success) {
+            showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
+        }
+        else {
+            setTotalCount(orderMetaDataResponse.data?.totalCounts);
+            setCustomerListFilter(orderMetaDataResponse.data?.customerIDs);
+            setEventTypeFilter(orderMetaDataResponse.data?.eventTypes);
+        }
+    }
+
     const handleSearch = (value: string) => {
         setFilters(prev => ({
             ...prev,
@@ -98,13 +114,13 @@ const Orders = () => {
 
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
-    const handleDelete = async() => { 
+    const handleDelete = async () => {
         setLoading(true);
         const deleteOrderResponse = await deleteOrderAPI(currID);
         if (!deleteOrderResponse.success) {
             showToast({ type: "error", title: "Error", message: deleteOrderResponse.message });
         }
-        else{
+        else {
             showToast({ type: "success", title: "Success", message: deleteOrderResponse.message });
             setRefresh(!refresh);
         }
@@ -118,25 +134,43 @@ const Orders = () => {
     }
 
     const handleEdit = (orderId: string) => {
-        navigation.navigate("CreateOrder", { orderId:orderId });
+        navigation.navigate("CreateOrder", { orderId: orderId });
     }
     const handleView = (orderId: string) => {
-        navigation.navigate("OrderDetails", { orderId:orderId });
+        navigation.navigate("OrderDetails", { orderId: orderId });
     }
 
     useEffect(() => {
         const reset = filters?.page === 1;
         getOrderListData(reset);
-    }, [filters,refresh]);
+    }, [filters, refresh]);
 
     useEffect(() => {
         const userId = getItem("USERID");
-        loadCustomerMetaInfoList(userId,{},{},showToast);
+        loadCustomerMetaInfoList(userId, {}, {}, showToast);
+        loadOrdersMetaData(userId);
     }, []);
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
             <Header />
+            <FilterComponent
+                filterName='orders'
+                filters={filters}
+                setFilters={setFilters}
+                setOpenFilter={setOpenFilter}
+                openFilter={openFilter}
+                setRefresh={setRefresh}
+                extraValue={{
+                    customerList: customerMetaInfoList
+                        ?.filter(c => customerListFilter?.some(cust => cust === c.customerID))
+                        .map(c => ({
+                            label: `${c.firstName} ${c.lastName}`,
+                            value: c.customerID
+                        })),
+                    eventTypeList: eventTypeFilter?.map(e => ({ label: e, value: e }))
+                }}
+            />
             <View>
                 <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
                 <View className={isDark ? "bg-[#1F2028]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
@@ -146,7 +180,7 @@ const Orders = () => {
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{orderData.length} Orders found</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{totalCount} Orders found</Text>
                         </View>
                         <View>
                             <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate("CreateOrder")}>
@@ -166,18 +200,18 @@ const Orders = () => {
                                 onChangeText={debouncedSearch}
                             />
                         </Input>
-                        <TouchableOpacity>
-                            <Feather name="filter" size={wp('6%')} color="#8B5CF6" />
+                        <TouchableOpacity onPress={() => setOpenFilter(true)}>
+                            <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#8B5CF6" />
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {loading && <OrderCardSkeleton count={4}/>}
+                {loading && <OrderCardSkeleton count={4} />}
                 {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 <FlatList
                     data={orderData ?? []}
-                    style={{height:hp("60%")}}
+                    style={{ height: hp("60%") }}
                     keyExtractor={(_, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -187,9 +221,9 @@ const Orders = () => {
                                 cardData={item}
                                 customerMetaData={customerMetaInfoList?.find(c => c?.customerID === item?.orderBasicInfo?.customerID) ?? []}
                                 actions={{
-                                    delete:handleDeletePopUp,
-                                    edit:handleEdit,
-                                    view:handleView
+                                    delete: handleDeletePopUp,
+                                    edit: handleEdit,
+                                    view: handleView
                                 }}
                             />
                         </View>
@@ -200,7 +234,7 @@ const Orders = () => {
                     onEndReachedThreshold={0.7}
                     ListFooterComponent={(hasMore && loading) ? <OrderCardSkeleton count={1} /> : null}
                     refreshing={loading}
-                    onRefresh={()=>{
+                    onRefresh={() => {
                         setFilters(prev => ({ ...prev, page: 1 }));
                     }}
                 />

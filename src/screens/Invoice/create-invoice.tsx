@@ -71,6 +71,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     });
 
     const getOrderDetails = async () => {
+        setloadingProvider({ ...loadingProvider, intialLoading: true });
         const orderDetails = await getOrderDetailsAPI(invoiceDetails?.orderId as string)
         if (!orderDetails.success) {
             showToast({ type: "error", title: "Error", message: orderDetails.message });
@@ -90,6 +91,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             };
             // getCustomerInfo(orderDetails?.data?.orderBasicInfo?.customerID as string)
             loadCustomerMetaInfoList(invoiceDetails?.userId as string, payloadToUse)
+            setloadingProvider({ ...loadingProvider, intialLoading: false });
         }
     }
     const handleCheckboxChange = (value: any, stateKeyMap: Record<string, string>) => {
@@ -404,7 +406,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     const handleNext = () => {
         const validateInput = validateValues(invoiceDetails, currStep == 0 ? quotaionForm : paymentForm)
         if (!validateInput?.success || Object.keys(errors).length > 0) {
-            console.log(validateInput)
             return showToast({
                 type: "warning",
                 title: "Oops!!",
@@ -533,7 +534,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 <View>
                     {currStep === 0 && (
                         <>
-                            <QuotationDetails orderForm={quotaionForm} orderDetails={orderDetails} />
+                            <QuotationDetails orderForm={quotaionForm} orderDetails={orderDetails} isLoading={loadingProvider.intialLoading} />
                         </>
                     )
 
@@ -609,7 +610,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                     onPress={() => currStep == 2 ? handleCreateInvoice() : handleNext()}
                 >
-                    {!isAllLoadingFalse(loadingProvider) && <ButtonSpinner size={wp("4%")} color="#fff" />}
+                    {loadingProvider.saveLoading && <ButtonSpinner size={wp("4%")} color="#fff" />}
                     <ButtonText style={globalStyles.buttonText}>
                         {loadingProvider.saveLoading ? "Creating..." : currStep == 2 ? "Create Invoice" : "Next"}
                     </ButtonText>

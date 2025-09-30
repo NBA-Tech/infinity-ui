@@ -22,12 +22,14 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatDate, openDaialler, openEmailClient } from '@/src/utils/utils';
+import { formatDate, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
 import { deleteCustomerAPI, getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
+import FilterComponent from '@/src/components/filter-component';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -97,9 +99,11 @@ const Customer = () => {
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [currID, setCurrID] = useState<string>('');
     const [filters, setFilters] = useState<SearchQueryRequest>({});
+    const [errors, setErrors] = useState<Record<string, string>>({})
     const [refresh, setRefresh] = useState<boolean>(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [openFilter, setOpenFilter] = useState(false);
     const { deleteCustomerMetaInfo } = useCustomerStore();
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
@@ -120,10 +124,9 @@ const Customer = () => {
 
         try {
             // Step 1: Get customers
-            const customerFilters: SearchQueryRequest = {
-                filters: { userId: userID },
-                ...filters,
-            };
+            const customerFilters: SearchQueryRequest = filters
+            customerFilters.filters = { ...(customerFilters.filters || {}), userId: userID };
+
             const customerDetailsResponse: ApiGeneralRespose =
                 await getCustomerListBasedOnFilters(customerFilters);
 
@@ -143,11 +146,11 @@ const Customer = () => {
 
             // Step 2: Get orders for those customers
             const orderFilters: SearchQueryRequest = {
-                filters: { userId: userID },
                 searchQuery: [customerIds],
                 searchField: "orderBasicInfo.customerID",
                 ...filters,
             };
+            orderFilters.filters = { ...(orderFilters.filters || {}), userId: userID };
 
             const orderDetailsResponse: ApiGeneralRespose =
                 await getOrderDataListAPI(orderFilters);
@@ -168,11 +171,11 @@ const Customer = () => {
 
             // Step 3: Get invoices for those orders
             const invoiceFilters: SearchQueryRequest = {
-                filters: { userId: userID },
                 searchQuery: [orderIds],
                 searchField: "orderId",
                 ...filters,
             };
+            invoiceFilters.filters = { ...(invoiceFilters.filters || {}), userId: userID };
 
             const invoiceDetailsResponse: ApiGeneralRespose =
                 await getInvoiceListBasedOnFiltersAPI(invoiceFilters);
@@ -190,24 +193,34 @@ const Customer = () => {
 
             const invoices = invoiceDetailsResponse?.data ?? [];
 
-            // Step 4: Compute totals
-            const totalQuotation = orders.reduce(
-                (total: number, item: any) => total + (item.totalPrice || 0),
-                0
-            );
-            console.log(invoices)
-            const totalInvoice = invoices.reduce(
-                (total: number, item: any) => total + (item.amountPaid || 0),
-                0
-            );
-            console.log(totalInvoice)
+            const updatedCustomers = customers.map((c: any) => {
+                // Orders for this customer
+                const customerOrders = orders.filter(
+                    (o: any) => o.orderBasicInfo.customerID === c.customerID
+                );
 
-            // Step 5: Attach totals to customer data
-            const updatedCustomers = customers.map((c: any) => ({
-                ...c,
-                totalQuotation,
-                totalInvoice,
-            }));
+                // Quotations (sum totalPrice of all orders)
+                const totalQuotation = customerOrders.reduce(
+                    (total: number, o: any) => total + (o.totalPrice || 0),
+                    0
+                );
+
+                // Invoices (sum amountPaid for this customer's orders)
+                const customerOrderIds = customerOrders.map((o: any) => o.orderId);
+                const customerInvoices = invoices.filter((inv: any) =>
+                    customerOrderIds.includes(inv.orderId)
+                );
+                const totalInvoice = customerInvoices.reduce(
+                    (total: number, inv: any) => total + (inv.amountPaid || 0),
+                    0
+                );
+
+                return {
+                    ...c,
+                    totalQuotation,
+                    totalInvoice,
+                };
+            });
 
             setCustomerData((prev) =>
                 reset ? updatedCustomers : [...prev, ...updatedCustomers]
@@ -228,7 +241,6 @@ const Customer = () => {
 
 
     const deleteCustomer = async () => {
-        console.log(currID)
         if (!currID) return;
         setLoadingDelete(true);
         const deleteCustomerResponse = await deleteCustomerAPI(currID);
@@ -258,14 +270,9 @@ const Customer = () => {
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1 || !filters?.page;
-            console.log(filters?.page)
-            getCustomerDetails(reset);
+            getCustomerDetails(reset || refresh);
         }, [filters, refresh])
     );
-
-    useEffect(()=>{
-        console.log(customerData,"custiomer")
-    },[customerData])
 
     const CustomerCardComponent = ({ item }: any) => {
         return (
@@ -317,7 +324,7 @@ const Customer = () => {
                             <Menu
                                 placement="bottom"
                                 offset={5}
-                                style={{backgroundColor:isDark ? '#1E1E2A' : '#fff'}}
+                                style={{ backgroundColor: isDark ? '#1E1E2A' : '#fff' }}
                                 trigger={({ ...triggerProps }) => {
                                     return (
                                         <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
@@ -326,13 +333,13 @@ const Customer = () => {
                                     )
                                 }}
                             >
-                                <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={()=>navigation.navigate('CreateCustomer',{customerID:item?.customerID})}>
+                                <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => navigation.navigate('CreateCustomer', { customerID: item?.customerID })}>
                                     <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={[globalStyles.labelText,globalStyles.themeTextColor]} >Edit</MenuItemLabel>
+                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
                                 </MenuItem>
                                 <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?.customerID); setOpenDelete(true); }}>
                                     <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                    <MenuItemLabel style={[globalStyles.labelText,globalStyles.themeTextColor]}>Delete</MenuItemLabel>
+                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
                                 </MenuItem>
                             </Menu>
                         </View>
@@ -356,6 +363,8 @@ const Customer = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
+            <FilterComponent filterName='customer' openFilter={openFilter} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} setRefresh={setRefresh} />
+
             <Header />
             {openDelete && (
                 <DeleteConfirmation
@@ -367,6 +376,7 @@ const Customer = () => {
             )
 
             }
+
 
             <View>
                 <View className={isDark ? 'bg-[#1F2028]' : 'bg-[#fff]'} style={{ marginVertical: hp('1%') }}>
@@ -403,8 +413,8 @@ const Customer = () => {
                             />
 
                         </Input>
-                        <TouchableOpacity>
-                            <Feather name="filter" size={wp('6%')} color="#8B5CF6" />
+                        <TouchableOpacity onPress={() => setOpenFilter(true)}>
+                             <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#8B5CF6" />
                         </TouchableOpacity>
                     </View>
 

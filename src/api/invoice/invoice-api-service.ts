@@ -33,3 +33,14 @@ export const getInvoiceListBasedOnFiltersAPI=async(payload:SearchQueryRequest,he
     })
     return getInvoiceListBasedOnFiltersResponse
 }
+
+export const getInvoiceMetaInfoDetailsAPI=async(userId:string,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const getInvoiceMetaInfoDetailsResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/invoice/get_invoices_meta_data?userId=${userId}`,
+        options: {
+            method: 'GET',
+            headers
+        },
+    })
+    return getInvoiceMetaInfoDetailsResponse
+}

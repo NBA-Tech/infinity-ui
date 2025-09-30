@@ -1,5 +1,5 @@
 import { Country, ICountry, IState, State } from "country-state-city";
-import { FormFields } from "../types/common";
+import { FormFields, SearchQueryRequest } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
 import { Linking } from "react-native";
 import { useUserStore } from "../store/user/user-store";
@@ -265,7 +265,6 @@ export function escapeHtmlForJson(html: string): string {
 }
 
 export function openDaialler(phoneNumber: string) {
-  console.log(phoneNumber)
   let phoneUrl = `tel:${phoneNumber}`;
   Linking.openURL(phoneUrl);
 }
@@ -286,3 +285,16 @@ export const resetAllStoreDetails=()=>{
   useOfferingStore.getState().resetPackage()
   useOfferingStore.getState().resetService()
 }
+export const isFilterApplied = (filters: SearchQueryRequest) => {
+  if (!filters || !filters.filters) return false;
+
+  const ignoredKeys = ["page", "pageSize", "userId"];
+
+  return Object.entries(filters.filters).some(
+    ([key, value]) =>
+      !ignoredKeys.includes(key) &&
+      value !== null &&
+      value !== undefined &&
+      value !== ""
+  );
+};

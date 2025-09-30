@@ -163,7 +163,7 @@ const CreateOrder = () => {
                 patchState('orderBasicInfo', 'specialInstructions', value, false, setOrderDetails, setErrors)
             },
         }
-    }), [customerList, orderDetails]);
+    }), [customerList, orderDetails,loadingProvider?.intialLoading]);
 
 
     const eventInfo: FormFields = useMemo(() => ({

@@ -116,11 +116,6 @@ const Deliverables = (props: DeliverablesProps) => {
         setCurrDeliverable(undefined);
     }
 
-    useEffect(() => {
-        console.log(props.orderDetails)
-
-    }, [props.orderDetails])
-
     const DeliverabelCardComponent = ({ deliverable }: { deliverable: Deliverable }) => {
         return (
             <Card

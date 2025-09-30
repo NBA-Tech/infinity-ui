@@ -52,7 +52,6 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
     deleteCustomerMetaInfo: (customerIDs: string | string[]) =>
         set((state) => {
             const idsToDelete = new Set(Array.isArray(customerIDs) ? customerIDs : [customerIDs]);
-            console.log(state.customerMetaInfoList)
 
             const filtered = state.customerMetaInfoList.filter(
                 (c) => !idsToDelete.has(c.customerID)

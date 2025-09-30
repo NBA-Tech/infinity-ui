@@ -81,3 +81,13 @@ export const updateServiceCompletionStatus=async(orderId:string,offerId:string,i
     })
     return updateServiceCompletionResponse
 }
+export const getOrderMetaDataAPI=async(userId:string,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const getOrderMetaDataResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/order/get_order_meta_data?userId=${userId}`,
+        options: {
+            method: 'GET',
+            headers
+        },
+    })
+    return getOrderMetaDataResponse
+}

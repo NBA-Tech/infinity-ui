@@ -344,7 +344,6 @@ const CreateCustomer = ({ navigation, route }: Props) => {
     }
 
     useEffect(() => {
-        console.log(customerID)
         if (customerID) {
             getCustomerDetails(customerID)
         }
