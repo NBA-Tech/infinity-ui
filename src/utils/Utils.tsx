@@ -1,5 +1,5 @@
 import { Country, ICountry, IState, State } from "country-state-city";
-import { FormFields, SearchQueryRequest } from "../types/common";
+import { FormFields, GlobalStatus, SearchQueryRequest } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
 import { Linking } from "react-native";
 import { useUserStore } from "../store/user/user-store";
@@ -297,4 +297,17 @@ export const isFilterApplied = (filters: SearchQueryRequest) => {
       value !== undefined &&
       value !== ""
   );
+};
+
+export const getNextStatus = (status: GlobalStatus): GlobalStatus => {
+  switch (status) {
+    case GlobalStatus.PENDING:
+      return GlobalStatus.IN_PROGRESS;
+    case GlobalStatus.IN_PROGRESS:
+      return GlobalStatus.COMPLETED;
+    case GlobalStatus.COMPLETED:
+      return GlobalStatus.DELIVERED;
+    default:
+      return status; // CANCELLED/DELIVERED stay the same
+  }
 };

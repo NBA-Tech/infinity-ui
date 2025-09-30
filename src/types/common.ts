@@ -1,6 +1,45 @@
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamListBase } from '@react-navigation/native';
+export enum GlobalStatus {
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  DELIVERED = "DELIVERED",
+}
+
+// 2. Status metadata map
+export const GLOBALSTATUS: Record<
+  GlobalStatus,
+  { label: string; color: string; icon: string }
+> = {
+  [GlobalStatus.PENDING]: {
+    label: "PENDING",
+    color: "warning",
+    icon: "clock",
+  },
+  [GlobalStatus.IN_PROGRESS]: {
+    label: "IN PROGRESS",
+    color: "primary",
+    icon: "clock",
+  },
+  [GlobalStatus.COMPLETED]: {
+    label: "COMPLETED",
+    color: "success",
+    icon: "check-circle",
+  },
+  [GlobalStatus.CANCELLED]: {
+    label: "CANCELLED",
+    color: "error",
+    icon: "close-circle",
+  },
+  [GlobalStatus.DELIVERED]: {
+    label: "DELIVERED",
+    color: "success",
+    icon: "check-circle",
+  },
+};
 
 export interface GradientCardProps {
   colors?: string[],

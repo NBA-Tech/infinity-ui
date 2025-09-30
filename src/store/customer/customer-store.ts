@@ -83,7 +83,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         }
 
         const payloadToUse: SearchQueryRequest = payload ?? {
-            filters: { userID },
+            filters: { userId:userID },
             getAll: true,
             requiredFields: [
                 "customerBasicInfo.firstName",

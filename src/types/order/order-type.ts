@@ -4,7 +4,6 @@
 import { ServiceInfo } from "../offering/offering-type";
 
 export enum OrderStatus {
-  NEW = 'NEW',
   PENDING = 'PENDING',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',

@@ -212,6 +212,13 @@ const InvoiceList = () => {
         loadCustomerMetaInfoList(userId)
     }, [])
 
+    useFocusEffect(
+        useCallback(() => {
+            const userId = getItem("USERID")
+            loadInvoiceMetaData(userId)
+        },[])
+    )
+
 
     const InvoiceCardComponent = ({ item }: { item: Invoice }) => {
         return (
@@ -317,7 +324,7 @@ const InvoiceList = () => {
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{totalCount} Invoices Found </Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{invoiceData?.length} Invoices Found </Text>
                         </View>
                         <View>
                             <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate('CreateInvoice')}>
@@ -371,7 +378,7 @@ const InvoiceList = () => {
                             </View>
                         )}
                         onEndReached={() => {
-                            if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
+                            if (hasMore && !loading) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                         }}
                         onEndReachedThreshold={0.7}
                         ListFooterComponent={(hasMore && loading) ? <InvoiceCardSkeleton count={1} /> : null}

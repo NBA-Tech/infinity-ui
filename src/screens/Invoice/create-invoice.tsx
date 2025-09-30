@@ -29,7 +29,7 @@ import Share from 'react-native-share';
 import { generatePDF } from 'react-native-html-to-pdf';
 import Modal from 'react-native-modal';
 import TemplatePreview from '../Orders/components/template-preview';
-import { createInvoiceAPI } from '@/src/api/invoice/invoice-api-service';
+import { createInvoiceAPI, getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -73,29 +73,41 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     const getOrderDetails = async () => {
         setloadingProvider({ ...loadingProvider, intialLoading: true });
         const orderDetails = await getOrderDetailsAPI(invoiceDetails?.orderId as string)
+        console.log(orderDetails)
         if (!orderDetails.success) {
             showToast({ type: "error", title: "Error", message: orderDetails.message });
         }
         else {
             setOrderDetails(orderDetails?.data)
-            const payloadToUse: SearchQueryRequest = {
-                filters: { userId: invoiceDetails?.userId },
-                getAll: true,
-                requiredFields: [
-                    "customerBasicInfo.firstName",
-                    "customerBasicInfo.lastName",
-                    "_id",
-                    "customerBasicInfo.mobileNumber",
-                    "customerBasicInfo.email",
-                ],
-            };
             // getCustomerInfo(orderDetails?.data?.orderBasicInfo?.customerID as string)
-            loadCustomerMetaInfoList(invoiceDetails?.userId as string, payloadToUse)
+            loadCustomerMetaInfoList(invoiceDetails?.userId as string)
             setloadingProvider({ ...loadingProvider, intialLoading: false });
         }
     }
     const handleCheckboxChange = (value: any, stateKeyMap: Record<string, string>) => {
         patchState(stateKeyMap.parentKey, stateKeyMap.childKey, value, true, setInvoiceDetails, setErrors)
+    }
+    const getInvoiceDetailsList = async (orderId: string) => {
+        const userId = getItem("USERID");
+        const filters: SearchQueryRequest = {
+            filters: { "userId": userId, "orderId": orderId },
+            requiredFields: ["invoiceId", "amountPaid", "orderId"],
+            getAll: true,
+        }
+        const orderMetaDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(filters)
+        if (!orderMetaDataResponse.success) {
+            showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
+        }
+        else {
+            const totalAmount = orderMetaDataResponse?.data?.reduce((total: number, invoice: any) => total + invoice?.amountPaid, 0);
+            console.log(totalAmount);
+            setOrderDetails((prev) => ({
+                ...prev,
+                totalAmountCanPay: (prev?.totalPrice ?? 0) - (totalAmount ?? 0)
+            }))
+
+            // setInvoiceDetails(orderMetaDataResponse?.data)
+        }
     }
 
 
@@ -111,6 +123,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             getAll: true,
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(filter)
+        console.log(orderMetaDataResponse);
         if (!orderMetaDataResponse.success) {
             showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
         }
@@ -152,6 +165,9 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             isLoading: loadingProvider.intialLoading,
             value: invoiceDetails?.amountPaid || undefined,
             onChange(value: string) {
+                if(Number(value) > orderDetails?.totalAmountCanPay){
+                   return  showToast({ type: "error", title: "Error", message: `Amount can't be greater than ₹ ${orderDetails?.totalAmountCanPay}` });
+                }
                 patchState('', 'amountPaid', value, true, setInvoiceDetails, setErrors)
             }
         },
@@ -438,7 +454,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 title: "Success",
                 message: response?.message ?? "Invoice created successfully",
             })
-            navigation.navigate("Success",{text:response?.message ?? "Invoice created successfully"})
+            navigation.navigate("Success", { text: response?.message ?? "Invoice created successfully" })
             setInvoiceDetails({})
             setOrderDetails({})
             setCurrStep(0)
@@ -460,8 +476,13 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     useEffect(() => {
         if (!invoiceDetails?.orderId) return
         getOrderDetails()
-        setInvoiceDetails({userId: invoiceDetails?.userId ,orderId: invoiceDetails?.orderId,orderName:invoiceDetails?.orderName });
+        getInvoiceDetailsList(invoiceDetails?.orderId)
+        setInvoiceDetails({ userId: invoiceDetails?.userId, orderId: invoiceDetails?.orderId, orderName: invoiceDetails?.orderName });
     }, [invoiceDetails?.orderId])
+
+    useEffect(() => {
+        console.log(orderDetails)
+    }, [orderDetails])
 
 
     useEffect(() => {

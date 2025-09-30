@@ -239,7 +239,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             type: "select",
             style: "w-full",
             dropDownItems: props?.extraValue?.orderList,
-            value: props?.filters?.filters?.["orderType"] ?? "",
+            value: props?.filters?.filters?.["orderId"] ?? "",
             onChange: (value: string) => {
                 props?.setRefresh(true)
                 props?.setFilters(prev => ({
@@ -247,8 +247,30 @@ const FilterComponent = (props: FilterComponentProps) => {
                     page: 1,
                     filters: {
                         ...prev?.filters,
-                        "orderName": value
+                        "orderId": value
                     }
+                }))
+            }
+
+        },
+        paymentType:{
+            parentKey: "paymentType",
+            key: "paymentType",
+            label: "Payment Type",
+            type: "chips",
+            style: "w-full",
+            dropDownItems: ["bank","cash"].map((paymentType) => ({
+                label: paymentType.toUpperCase(),
+                value: paymentType
+            })),
+            value: props?.filters?.searchQuery ?? [],
+            onChange: (value: string) => {
+                props?.setRefresh(true)
+                props?.setFilters(prev => ({
+                    ...prev,
+                    page: 1,
+                    searchField: "paymentType",
+                    searchQuery: value
                 }))
             }
 

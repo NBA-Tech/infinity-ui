@@ -122,6 +122,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 message: orderDetails?.message ?? "Something went wrong ",
             })
         }
+        console.log(orderDetails)
         setOrderDetails(orderDetails.data)
     }
 
