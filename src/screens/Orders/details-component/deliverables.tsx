@@ -124,7 +124,7 @@ const Deliverables = (props: DeliverablesProps) => {
                     globalStyles.cardShadowEffect,
                     {
                         borderLeftWidth: 4,
-                        borderLeftColor: COLORCODES[Math.floor(Math.random() * COLORCODES.length)],
+                        borderLeftColor: "#14B8A6",
                     },
                 ]}
             >
@@ -175,7 +175,7 @@ const Deliverables = (props: DeliverablesProps) => {
 
             </Modal>
 
-            <View style={{ padding: wp('3%') }}>
+            <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>

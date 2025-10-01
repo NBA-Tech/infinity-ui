@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
@@ -17,6 +17,12 @@ import { getUserDetailsApi } from '@/src/services/user/user-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { PackageModel, ServiceModel } from '@/src/types/offering/offering-type';
 import { buildHtml } from '../utils/html-builder';
+import { COLORCODES } from '@/src/constant/constants';
+import { getQuotationFields } from '@/src/utils/order/quotation-utils';
+import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { generatePDF } from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     statusContainer: {
@@ -27,254 +33,172 @@ const styles = StyleSheet.create({
         gap: wp('1%'),
         borderWidth: 1,
         borderColor: '#000'
-    }
+    },
+    card: {
+        marginVertical: wp('2%'),
+        borderRadius: wp('2%'),
+        backgroundColor: '#fff',
+        gap: wp('4%')
+    },
 })
 
 type QuotationDetailsProps = {
     htmlTemplate: QuotaionHtmlInfo[];
     serviceData: ServiceModel[];
-    packageData:PackageModel[];
+    packageData: PackageModel[];
     orderDetails: OrderModel;
     createdOn: Date;
+    borderColor: string;
 
 }
 const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [open, setOpen] = useState(false);
-    const [userDetails, setUserDetails] = useState<UserModel | null>(null);
-    const showToast  = useToastMessage();
-    const { getUserDetails } = useUserStore();
+    const showToast = useToastMessage();
+    const { userDetails,getUserDetailsUsingID } = useUserStore();
     const { getItem } = useDataStore();
+    const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
+    const [customerList, setCustomerList] = useState<any[]>();
+    const navigation = useNavigation();
+    const handleShareQuotation = async () => {
+        try {
+            const message = `
+                        Hello Sir/Mam 👋,
+                        Thank you for showing interest in our photography services 📸.
+                        Please find attached your customized quotation with detailed packages, services, and pricing.
+    
+                        If you have any questions or would like to make changes, feel free to reach out. We’d love to be part of your special moments ✨.
+    
+                        📍 Studio Address: ${userDetails?.userBillingInfo?.address}, ${userDetails?.userBillingInfo?.city}, ${userDetails?.userBillingInfo?.state}, ${userDetails?.userBillingInfo?.zipCode}, ${userDetails?.userBillingInfo?.country}
+                        📞 Phone: ${userDetails?.userBusinessInfo?.businessPhoneNumber}
+                        📧 Email: ${userDetails?.userBusinessInfo?.businessEmail}
+                        🌐 Website: ${userDetails?.userBusinessInfo?.websiteURL}
+    
+                        Looking forward to capturing memories together! 💫
+    
+                        Warm regards,
+                            `;
 
-    const actionButtons = [
-        {
-            id: 1,
-            label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-        {
-            id: 2,
-            label: 'Edit',
-            icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-    ]
-
-
-    const getUserDetailsUsingID = async (userID: string) => {
-        let userDetails = getUserDetails()
-        if (!userDetails) {
-            const userDetailsApi: ApiGeneralRespose = await getUserDetailsApi(userID)
-            if (!userDetailsApi?.success) {
-                showToast({
-                    type: "error",
-                    title: "Error",
-                    message: userDetailsApi?.message ?? "Something went wrong",
-                })
+            const options = {
+                html: buildHtml("1", new Date().toLocaleDateString(), quotationFields),
+                fileName: `Quotation_${props?.orderDetails?.eventInfo?.eventTitle}`,
+            };
+            const file = await generatePDF(options);
+            const shareOptions = {
+                title: options.fileName,
+                message: message,
+                url: `file://${file.filePath}`,
+                type: 'application/pdf',
             }
-            else {
-                setUserDetails(userDetailsApi.data)
-            }
-        }
-        else{
-            setUserDetails(userDetails)
-        }
 
-    }
+
+            await Share.open(shareOptions);
+
+        } catch (err) {
+            console.error("Error generating PDF:", err);
+        }
+    };
     const findServicePrice = (serviceId: string) => {
         const service = props?.serviceData.find((service) => service.id === serviceId)
         return service?.price
     }
 
+    const loadCustomerData = async () => {
+        const userID = getItem("USERID")
+        const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
+        setCustomerList(metaData);
+    }
+
 
     useEffect(() => {
-        const userID= getItem("USERID")
-        getUserDetailsUsingID(userID)
+        const userID = getItem("USERID")
+        getUserDetailsUsingID(userID,showToast)
+        loadCustomerData()
     }, [])
-    const quotationFields = {
-        headerSection: {
-            fields: [
-                {
-                    key: "logo",
-                    container: "studio-info",
-                    html: `<div>
-                        <img src=${userDetails?.userBusinessInfo?.companyLogoURL} width='50%' height='50' alt="Logo" />
-                        </div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "logo"),
-                },
-                {
-                    key: "companyName",
-                    container: "studio-info",
-                    html: `<div style="font-weight:bold;">${userDetails?.userBusinessInfo?.companyName}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "companyName"),
-                },
-                {
-                    key: "address",
-                    container: "studio-info",
-                    html: `<div>${userDetails?.userBillingInfo?.address}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "address"),
-                },
-                {
-                    key: "contactPhone",
-                    container: "contact-info",
-                    html: `<div>📞 ${userDetails?.userBusinessInfo?.businessPhoneNumber}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactPhone"),
-                },
-                {
-                    key: "contactEmail",
-                    container: "contact-info",
-                    html: `<div>✉️ ${userDetails?.userBusinessInfo?.businessEmail}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactEmail"),
-                },
-                {
-                    key: "contactWebsite",
-                    container: "contact-info",
-                    html: `<div>🌐 ${userDetails?.userBusinessInfo?.websiteURL}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "contactWebsite"),
-                },
-            ],
-        },
+    const quotationFields = useMemo(
+        () =>
+            getQuotationFields(
+                userDetails,
+                props?.orderDetails,
+                customerList,
+                props?.packageData,
+                findServicePrice
+            ),
+        [customerMetaInfoList, props?.orderDetails, props?.packageData, userDetails]
+    );
 
-        bodySection: {
-            fields: [
-                {
-                    key: "clientName",
-                    container: "card",
-                    // html: `<div class="field"><span>Client Name:</span>${customerList?.find((customer) => customer?.value === props?.orderDetails?.orderBasicInfo?.customerID)?.label}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
-                },
-                {
-                    key: "eventType",
-                    container: "card",
-                    html: `<div class="field"><span>Event Type:</span> ${props?.orderDetails?.eventInfo?.eventType}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
-                },
-                {
-                    key: "eventDate",
-                    container: "card",
-                    html: `<div class="field"><span>Event Date & Time:</span>${props?.orderDetails?.eventInfo?.eventDate} : ${props?.orderDetails?.eventInfo?.eventTime}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
-                },
-                {
-                    key: "eventLocation",
-                    container: "card",
-                    html: `<div class="field"><span>Event Location:</span>${props?.orderDetails?.eventInfo?.eventLocation}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
-                },
-                {
-                    key: "packageName",
-                    container: "card",
-                    html: props?.orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE ?
-                        `<div class="field"><span>Package:</span>${props?.packageData?.find((p) => p?.id === props?.orderDetails?.offeringInfo?.packageId)?.packageName}</div>` : "",
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "packageName"),
-                },
-                {
-                    key: "pricingTable",
-                    html: `<div class="pricing-container">
-                                 <div class="pricing-row header-row">
-                                    <div class="col name heading">Service</div>
-                                    <div class="col count heading">Qty</div>
-                                    <div class="col price heading">Unit Price</div>
-                                    <div class="col total heading">Total</div>
-                                </div>
-                                ${props?.orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE
-                            ? props?.packageData
-                                ?.find((p) => p?.id === props?.orderDetails?.offeringInfo?.packageId)
-                                ?.serviceList?.map(
-                                    (service) => `
-                                            <div class="pricing-row">
-                                                <div class="col name">${service.name}</div>
-                                                <div class="col count">${service.value}</div>
-                                                <div class="col price">₹ ${findServicePrice(service.id)}</div>
-                                                <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
-                                            </div>
-                                            `
-                                )
-                                .join("")
-                            : props?.orderDetails?.offeringInfo?.orderType === OrderType.SERVICE
-                                ? props?.orderDetails?.offeringInfo?.services?.map(
-                                    (service) => `
-                                            <div class="pricing-row">
-                                                <div class="col name">${service.name}</div>
-                                                <div class="col count">${service.value}</div>
-                                                <div class="col price">₹ ${findServicePrice(service.id)}</div>
-                                                <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
-                                            </div>
-                                            `
-                                )
-                                    .join("")
-                                : ""}
-    
-                                <div class="pricing-row grand-total">
-                                    <div class="col name heading">Grand Total</div>
-                                    <div class="col count"></div>
-                                    <div class="col price"></div>
-                                    <div class="col total heading">₹ ${props?.orderDetails?.totalPrice}</div>
-                                </div>
-                                </div>
-                                `,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "pricingTable"),
-                },
-            ],
+      const actionButtons = [
+        {
+            id: 1,
+            label: 'Share',
+            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress: ()=>{
+                handleShareQuotation()
+            }
         },
-
-        footerSection: {
-            fields: [
-                {
-                    key: "terms",
-                    html: `<div class="card"><span>Terms & Conditions:</span> {{terms}}</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
-                },
-                {
-                    key: "signature",
-                    html: `<div class="signature-box">Authorized Signature<br/>____________________</div>`,
-                    isSelected: props?.orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "signature"),
-                },
-            ],
+        {
+            id: 2,
+            label: 'Edit',
+            icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress: () => {
+                navigation.navigate("CreateOrder", { orderId: props?.orderDetails?.orderId });
+            }
         },
-    };
+    ]
 
     return (
-        <Card style={[globalStyles.cardShadowEffect,{flex:1}]}>
+        <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <Modal
                 isVisible={open}
                 onBackdropPress={() => setOpen(false)}
                 onBackButtonPress={() => setOpen(false)}
             >
                 <View style={globalStyles?.appBackground}>
-                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId,formatDate(props?.orderDetails?.createdDate),quotationFields)} />
+                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId, formatDate(props?.orderDetails?.createdDate), quotationFields)} />
                 </View>
 
             </Modal>
-            <View style={{ padding: wp('3%') }}>
+            <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
                             <Feather name="file" size={wp('7%')} color={'#8B5CF6'} />
-                            <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor]}>Quotation</Text>
+                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Quotation</Text>
                         </View>
                     </View>
+                    <Card
+                        style={[
+                            styles.card,
+                            globalStyles.cardShadowEffect,
+                            {
+                                borderLeftWidth: 4,
+                                borderLeftColor: props?.borderColor,
+                            },
+                        ]}
+                    >
 
-                    <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-col'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quotation Preview</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Created On: {formatDate(props?.createdOn)}</Text>
+                        <View className='flex flex-row justify-between items-center'>
+                            <View className='flex flex-col'>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quotation Preview</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Created On: {formatDate(props?.createdOn)}</Text>
+                            </View>
+
+                            <TouchableOpacity onPress={() => setOpen(true)}>
+                                <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                            </TouchableOpacity>
                         </View>
 
-                        <TouchableOpacity onPress={() => setOpen(true)}>
-                            <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className='flex flex-row justify-between items-center' >
-                        {actionButtons.map((action) => (
-                            <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
-                                {action.icon}
-                                <ButtonText style={[globalStyles.buttonText,globalStyles.themeTextColor]}>{action.label}</ButtonText>
-                            </Button>
-                        ))
-                        }
-                    </View>
+                        <View className='flex flex-row justify-between items-center' >
+                            {actionButtons.map((action) => (
+                                <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
+                                    {action.icon}
+                                    <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
+                                </Button>
+                            ))
+                            }
+                        </View>
+                    </Card>
 
                 </View>
 

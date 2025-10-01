@@ -1,10 +1,11 @@
 import { Country, ICountry, IState, State } from "country-state-city";
-import { FormFields, GlobalStatus, SearchQueryRequest } from "../types/common";
+import { FormFields, GLOBALSTATUS, GlobalStatus, SearchQueryRequest } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
 import { Linking } from "react-native";
 import { useUserStore } from "../store/user/user-store";
 import { useCustomerStore } from "../store/customer/customer-store";
 import { useOfferingStore } from "../store/offering/offering-store";
+import { OfferingInfo, OrderType } from "../types/order/order-type";
 
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
@@ -299,15 +300,31 @@ export const isFilterApplied = (filters: SearchQueryRequest) => {
   );
 };
 
-export const getNextStatus = (status: GlobalStatus): GlobalStatus => {
+export const getNextStatus = (status: GlobalStatus) => {
+  let nextStatus: GlobalStatus;
+
   switch (status) {
     case GlobalStatus.PENDING:
-      return GlobalStatus.IN_PROGRESS;
+      nextStatus = GlobalStatus.IN_PROGRESS;
+      break;
     case GlobalStatus.IN_PROGRESS:
-      return GlobalStatus.COMPLETED;
+      nextStatus = GlobalStatus.COMPLETED;
+      break;
     case GlobalStatus.COMPLETED:
-      return GlobalStatus.DELIVERED;
+      nextStatus = GlobalStatus.DELIVERED;
+      break;
     default:
-      return status; // CANCELLED/DELIVERED stay the same
+      nextStatus = status; // CANCELLED/DELIVERED stay the same
   }
+  return GLOBALSTATUS[nextStatus]; // return the object {label, color, icon}
 };
+
+export const getPercentageOfCompletion=(offeringInfo:OfferingInfo):number=>{
+  if(offeringInfo?.orderType==OrderType.PACKAGE){
+    return offeringInfo?.isCompleted?100:0
+  }
+  else{
+    const completedServicesCount = offeringInfo?.services?.filter((service) => service?.isCompleted)?.length ?? 0;
+    return Math.floor((completedServicesCount / (offeringInfo?.services?.length ?? 1)) * 100);
+  }
+}

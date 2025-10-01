@@ -12,34 +12,40 @@ export enum GlobalStatus {
 // 2. Status metadata map
 export const GLOBALSTATUS: Record<
   GlobalStatus,
-  { label: string; color: string; icon: string }
+  { key: string; label: string; color: string; icon: string }
 > = {
   [GlobalStatus.PENDING]: {
-    label: "PENDING",
-    color: "warning",
+    key: "PENDING",
+    label: "Pending",
+    color: "#F59E0B", // Amber 500 (warning)
     icon: "clock",
   },
   [GlobalStatus.IN_PROGRESS]: {
-    label: "IN PROGRESS",
-    color: "primary",
+    key: "IN_PROGRESS",
+    label: "In Progress",
+    color: "#3B82F6", // Blue 500 (primary)
     icon: "clock",
   },
   [GlobalStatus.COMPLETED]: {
-    label: "COMPLETED",
-    color: "success",
+    key: "COMPLETED",
+    label: "Completed",
+    color: "#10B981", // Green 500 (success)
     icon: "check-circle",
   },
   [GlobalStatus.CANCELLED]: {
-    label: "CANCELLED",
-    color: "error",
+    key: "CANCELLED",
+    label: "Cancelled",
+    color: "#EF4444", // Red 500 (error)
     icon: "close-circle",
   },
   [GlobalStatus.DELIVERED]: {
-    label: "DELIVERED",
-    color: "success",
+    key: "DELIVERED",
+    label: "Delivered",
+    color: "#22C55E", // Green 500/600 (success, slightly different)
     icon: "check-circle",
   },
 };
+
 
 export interface GradientCardProps {
   colors?: string[],

@@ -91,3 +91,14 @@ export const getOrderMetaDataAPI=async(userId:string,headers?:Record<string,stri
     })
     return getOrderMetaDataResponse
 }
+
+export const updateOrderStatusAPI=async(orderId:string,orderStatus:OrderStatus,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const updateOrderStatusResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/order/update_order_status?orderId=${orderId}&status=${orderStatus}`,
+        options: {
+            method: 'PATCH',
+            headers
+        },
+    })
+    return updateOrderStatusResponse
+}

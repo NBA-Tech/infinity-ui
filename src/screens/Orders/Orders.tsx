@@ -21,7 +21,7 @@ import Skeleton from '@/components/ui/skeleton';
 import debounce from "lodash.debounce";
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import FilterComponent from '@/src/components/filter-component';
 import { isFilterApplied } from '@/src/utils/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -64,10 +64,21 @@ const Orders = () => {
     const getOrderListData = async (reset: boolean = false) => {
         setLoading(true);
         const currFilters: SearchQueryRequest = {
-            requiredFields: ["orderId", "status", "totalPrice", "orderBasicInfo.customerID", "eventInfo"],
-            ...filters
+            requiredFields: [
+                "orderId",
+                "status",
+                "totalPrice",
+                "orderBasicInfo.customerID",
+                "eventInfo",
+                "offeringInfo"
+            ],
+            ...filters,
+            filters: {
+                ...(filters?.filters || {}),
+                userId: getItem("USERID"),
+            },
         };
-        currFilters.filters = { ...currFilters.filters, userId: getItem("USERID") };
+
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
             if (!orderDataResponse?.success) {
@@ -92,7 +103,7 @@ const Orders = () => {
     };
 
     const loadOrdersMetaData = async (userId: string) => {
-        const orderMetaDataResponse=await getOrderMetaDataAPI(userId);
+        const orderMetaDataResponse = await getOrderMetaDataAPI(userId);
         if (!orderMetaDataResponse.success) {
             showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
         }
@@ -140,10 +151,12 @@ const Orders = () => {
         navigation.navigate("OrderDetails", { orderId: orderId });
     }
 
-    useEffect(() => {
-        const reset = filters?.page === 1;
-        getOrderListData(reset);
-    }, [filters, refresh]);
+    useFocusEffect(
+        useCallback(() => {
+            const reset = filters?.page === 1;
+            getOrderListData(reset);
+        }, [filters, refresh])
+    );
 
     useEffect(() => {
         const userId = getItem("USERID");
@@ -180,7 +193,7 @@ const Orders = () => {
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{totalCount} Orders found</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{orderData?.length} Orders found</Text>
                         </View>
                         <View>
                             <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate("CreateOrder")}>

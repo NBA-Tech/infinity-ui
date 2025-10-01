@@ -12,7 +12,7 @@ import OfferingDetails from './details-component/offering-details';
 import QuotationDetails from './details-component/quotation-details';
 import InvoiceDetails from './details-component/invoice-details';
 import TimeLineDetails from './details-component/timeline-details';
-import { ApiGeneralRespose, RootStackParamList, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, GlobalStatus, GLOBALSTATUS, RootStackParamList, SearchQueryRequest } from '@/src/types/common';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CustomerApiResponse, CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
@@ -20,20 +20,25 @@ import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getOrderDetailsAPI } from '@/src/api/order/order-api-service';
+import { getOrderDetailsAPI, updateOrderStatusAPI } from '@/src/api/order/order-api-service';
 import { OrderModel, OrderType } from '@/src/types/order/order-type';
 import EventInfoCard from './details-component/event-info';
 import { TabView, TabBar } from "react-native-tab-view";
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import Deliverables from './details-component/deliverables';
 import SwipeButton from '@/src/components/swippable-button';
+import Skeleton from '@/components/ui/skeleton';
+import { COLORCODES } from '@/src/constant/constants';
+import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import { getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
+import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
-        borderRadius: wp('30%'),
+        borderRadius: wp('50%'),
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#065F46',
         gap: wp('1%')
     }
 })
@@ -58,27 +63,24 @@ const OrderDetails = ({ route, navigation }: Props) => {
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
         { key: "deliverables", title: "Deliverables", icon: "clock" },
-        { key: "timeline", title: "Timeline", icon: "clock" },
     ]);
+    const { triggerConfetti } = useConfetti()
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
+    const [loadingProvider, setLoadingProvider] = useState({ intialLoading: false, saveLoading: false });
 
 
     const actionButtons = [
         {
             id: 1,
-            label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-        {
-            id: 3,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         },
         {
-            id:4,
+            id: 2,
             label: 'Cancel',
             icon: <Feather name="x" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         }
-    ]
+    ] 
 
     const getCustomerNameList = async () => {
         const customerMetaData = getCustomerMetaInfoList();
@@ -114,6 +116,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     };
 
     const getOrderDetails = async (orderId: string) => {
+        setLoadingProvider({ ...loadingProvider, intialLoading: true });
         const orderDetails: ApiGeneralRespose = await getOrderDetailsAPI(orderId)
         if (!orderDetails?.success) {
             return showToast({
@@ -122,34 +125,66 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 message: orderDetails?.message ?? "Something went wrong ",
             })
         }
-        console.log(orderDetails)
         setOrderDetails(orderDetails.data)
+        setLoadingProvider({ ...loadingProvider, intialLoading: false });
+    }
+    const getAllInvoiceData = async () => {
+        setLoadingProvider({ ...loadingProvider, intialLoading: true });
+        const userId = getItem("USERID");
+        const payload: SearchQueryRequest = {
+            filters: { userId: userId, orderId: orderDetails?.orderId },
+            getAll: true,
+        };
+        const invoiceResponse = await getInvoiceListBasedOnFiltersAPI(payload);
+        if (!invoiceResponse.success) {
+            return showToast({ type: "error", title: "Error", message: invoiceResponse.message });
+        }
+        setInvoiceDetails(invoiceResponse.data);
+        setLoadingProvider({ ...loadingProvider, intialLoading: false });
     }
 
     const renderScene = ({ route }: any) => {
         switch (route.key) {
             case "customer":
                 return <CustomerInfo
+                    key={orderDetails?.orderId}
                     customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
-                    orderBasicInfo={orderDetails?.orderBasicInfo} />
-                    
+                    orderBasicInfo={orderDetails?.orderBasicInfo}
+                    isLoading={loadingProvider.intialLoading} />
+
             case "event":
                 return <EventInfoCard
+                    key={orderDetails?.orderId}
                     eventData={orderDetails?.eventInfo}
                     serviceLength={orderDetails?.offeringInfo?.services?.length}
-                    isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE} />
+                    isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE}
+                    isLoading={loadingProvider.intialLoading} />
             case "offering":
                 return <OfferingDetails
+                    key={orderDetails?.orderId}
                     orderId={orderDetails?.orderId}
                     offeringData={orderDetails?.offeringInfo}
-                    totalPrice={orderDetails?.totalPrice} 
-                    setOrderDetails={setOrderDetails}/>
+                    totalPrice={orderDetails?.totalPrice}
+                    isLoading={loadingProvider.intialLoading}
+                    setOrderDetails={setOrderDetails} />
             case "quotation":
-                return <QuotationDetails orderDetails={orderDetails} createdOn={orderDetails?.createdDate} packageData={packageData} serviceData={serviceData} />
+                return <QuotationDetails
+                    key={orderDetails?.orderId}
+                    orderDetails={orderDetails}
+                    createdOn={orderDetails?.createdDate}
+                    packageData={packageData}
+                    serviceData={serviceData}
+                    borderColor={"#3B82F6"} />
             case "invoice":
-                return <InvoiceDetails />
-            case "timeline":
-                return <TimeLineDetails />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 16 }}>
+                        <InvoiceDetails
+                            key={orderDetails?.orderId}
+                            orderDetails={orderDetails}
+                            invoiceDetails={invoiceDetails}
+                        />
+                    </ScrollView>
+                )
             case "deliverables":
                 return <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
             default:
@@ -176,6 +211,16 @@ const OrderDetails = ({ route, navigation }: Props) => {
             )}
         />
     );
+    const handleStatusChange = async (status: any) => {
+        setLoadingProvider({ ...loadingProvider, saveLoading: true });
+        const updateOrderStatusResponse = await updateOrderStatusAPI(orderDetails?.orderId, status?.key)
+        if (!updateOrderStatusResponse?.success) {
+            return showToast({ type: "error", title: "Error", message: updateOrderStatusResponse?.message })
+        }
+        setOrderDetails({ ...orderDetails, status: status?.key })
+        setLoadingProvider({ ...loadingProvider, saveLoading: false });
+        triggerConfetti()
+    }
 
     useEffect(() => {
         const userId = getItem("USERID")
@@ -183,6 +228,13 @@ const OrderDetails = ({ route, navigation }: Props) => {
         getOrderDetails(orderId)
         loadOfferings(userId, showToast)
     }, [])
+
+    useEffect(() => {
+        if (orderDetails?.orderId) {
+            getAllInvoiceData()
+        }
+
+    }, [orderDetails?.orderId])
 
 
     return (
@@ -203,7 +255,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
                         {/* Right side */}
                         <View className="flex items-center">
-                            <View style={styles.statusContainer}>
+                            <View style={[styles.statusContainer, { backgroundColor: orderDetails?.status ?( GLOBALSTATUS[orderDetails?.status]?.color): '#6B7280'}]}>
                                 <Text style={globalStyles.whiteTextColor}>{orderDetails?.status}</Text>
                             </View>
                         </View>
@@ -225,7 +277,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Amount</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>$ 1000</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `$ ${orderDetails?.totalPrice}`}</Text>
 
                         </View>
                     </Card>
@@ -234,7 +286,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Paid</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>$ 100</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `$ ${invoiceDetails?.reduce((total, invoice) => total + invoice.amountPaid, 0)}`}</Text>
 
                         </View>
                     </Card>
@@ -248,8 +300,15 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 initialLayout={{ width: hp("100%") }} // swap width/height
                 renderTabBar={(props) => renderTabBar({ ...props, vertical: true })}
             />
-            <SwipeButton />
+            {orderDetails?.status != GlobalStatus.DELIVERED && !loadingProvider.intialLoading && (
+                <SwipeButton
+                    text={`Swipe to make order as ${getNextStatus(orderDetails?.status as GlobalStatus)?.label}`}
+                    isDisabled={loadingProvider.saveLoading}
+                    isReset={!loadingProvider.saveLoading}
+                    onConfirm={() => handleStatusChange(getNextStatus(orderDetails?.status as GlobalStatus))} />
+            )
 
+            }
 
         </SafeAreaView>
 

@@ -14,6 +14,7 @@ import { getOfferingListAPI } from '@/src/api/offering/offering-service';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { updateServiceCompletionStatus } from '@/src/api/order/order-api-service';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -71,13 +72,15 @@ type OfferingDetailsProps = {
     orderId?: string
     offeringData?: OfferingInfo
     totalPrice?: number
+    isLoading?: boolean
     setOrderDetails: React.Dispatch<React.SetStateAction<OrderModel>>
 }
 const OfferingDetails = (props: OfferingDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
-    const {triggerConfetti} = useConfetti();
+    const { triggerConfetti } = useConfetti();
+    const [loading, setLoading] = useState(false)
 
 
     // const getServiceList = async () => {
@@ -153,6 +156,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
     const handleStatusChange = async (item: ServiceInfo | OfferingInfo) => {
         if (!item) return;
+        setLoading(true)
         const updateStatusResponse = await updateServiceCompletionStatus(props?.orderId ?? '', props?.offeringData?.orderType === OrderType.PACKAGE ? item?.packageId ?? '' : item?.id ?? '', !item?.isCompleted ?? false, props?.offeringData?.orderType ?? OrderType.SERVICE)
         if (!updateStatusResponse?.success) {
             showToast({
@@ -196,6 +200,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
             return prev;
         });
+        setLoading(false)
         triggerConfetti()
 
 
@@ -203,7 +208,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     }
     return (
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
-            <View style={{ padding: wp('3%') }}>
+            <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-star gap-2'>
@@ -211,76 +216,98 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Service Information</Text>
                         </View>
                         <View style={[styles.statusContainer, { borderColor: isDark ? '#fff' : '#000' }]}>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{props?.offeringData?.orderType}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{props?.isLoading ? 'Loading...' : props?.offeringData?.orderType}</Text>
                         </View>
                     </View>
-
-                    <View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Confirm Completion:</Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>*Note Click on the double tick to mark the servcie as delivered</Text>
-                    </View>
-
-                    <View style={{ flexDirection: "column", gap: 12 }}>
-                        <View
-                            style={[
-                                styles.container,
-                                {
-                                    backgroundColor: isDark ? "#1E1E2A" : "#fff",
-                                    borderColor: isDark ? "#4B5563" : "#E5E7EB",
-                                    borderWidth: 1,
-                                    borderRadius: 8,
-                                    overflow: "hidden",
-                                },
-                            ]}
-                        >
-                            {/* Header */}
-                            <View
-                                style={[
-                                    styles.row,
-                                    { backgroundColor: isDark ? "#374151" : "#F3F4F6", borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
-                                ]}
-                            >
-                                <Text style={[styles.cellService, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                    Service
-                                </Text>
-                                <Text style={[styles.cellPrice, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                    Price
-                                </Text>
-                                <Text style={[styles.cellStatus, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                    Status
-                                </Text>
+                    {props?.isLoading ? (
+                        <Skeleton height={hp('25%')} />
+                    ) : (
+                        <View className='flex flex-col' style={{ gap: hp('2%') }}>
+                            <View>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Confirm Completion:</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>*Note Click on the double tick to mark the servcie as delivered</Text>
                             </View>
 
-                            {/* Rows */}
-                            <FlatList
-                                data={props?.offeringData?.services}
-                                keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => (
+                            <View style={{ flexDirection: "column", gap: 12 }}>
+                                <View
+                                    style={[
+                                        styles.container,
+                                        {
+                                            backgroundColor: isDark ? "#1E1E2A" : "#fff",
+                                            borderColor: isDark ? "#4B5563" : "#E5E7EB",
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            overflow: "hidden",
+                                        },
+                                    ]}
+                                >
+                                    {/* Header */}
                                     <View
                                         style={[
                                             styles.row,
-                                            { borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
+                                            { backgroundColor: isDark ? "#374151" : "#F3F4F6", borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
                                         ]}
                                     >
-                                        <Text style={[styles.cellService, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                            {item.name} x{item.value}
+                                        <Text style={[styles.cellService, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                            Service
                                         </Text>
-                                        <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                            ${item.price}
+                                        <Text style={[styles.cellPrice, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                            Price
                                         </Text>
-                                        <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
-                                            {item?.isCompleted ? (
-                                                <MaterialCommunityIcons name="check-all" size={wp("5%")} color="#10B981" /> // green for done
-                                            ) : (
-                                                <MaterialCommunityIcons name="check-all" size={wp("5%")} color={isDark ? "#6B7280" : "#9CA3AF"} /> // grey for pending
-                                            )}
-                                        </TouchableOpacity>
+                                        <Text style={[styles.cellStatus, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
+                                            Status
+                                        </Text>
                                     </View>
-                                )}
-                            />
-                        </View>
-                    </View>
 
+                                    {/* Rows */}
+                                    <FlatList
+                                        data={props?.offeringData?.services}
+                                        keyExtractor={(item) => item.id}
+                                        renderItem={({ item }) => (
+                                            <View
+                                                style={[
+                                                    styles.row,
+                                                    { borderBottomWidth: 1, borderBottomColor: isDark ? "#4B5563" : "#E5E7EB" },
+                                                ]}
+                                            >
+                                                <Text style={[styles.cellService, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                                    {item.name} x{item.value}
+                                                </Text>
+                                                <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
+                                                    ${item.price}
+                                                </Text>
+                                                <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
+                                                    {loading && (
+                                                        <Text style={[globalStyles.normalText, globalStyles.smallText, { color: isDark ? "#fff" : "#111827" }]}>Updating...</Text>
+                                                    )
+                                                    }
+                                                    {!loading && (
+                                                        item?.isCompleted ? (
+                                                            <MaterialCommunityIcons
+                                                                name="check-all"
+                                                                size={wp("5%")}
+                                                                color="#10B981" // green for done
+                                                            />
+                                                        ) : (
+                                                            <MaterialCommunityIcons
+                                                                name="check-all"
+                                                                size={wp("5%")}
+                                                                color={isDark ? "#6B7280" : "#9CA3AF"} // grey for pending
+                                                            />
+                                                        )
+                                                    )}
+
+
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    )
+
+                    }
 
                 </View>
 
