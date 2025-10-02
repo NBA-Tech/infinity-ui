@@ -333,11 +333,15 @@ const Customer = () => {
                                     )
                                 }}
                             >
-                                <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => navigation.navigate('CreateCustomer', { customerID: item?.customerID })}>
-                                    <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
+                                <MenuItem key="view" textValue="eye" className='gap-2' onPress={() => navigation.navigate('CustomerDetails', { customerID: item?.customerID })}>
+                                    <Feather name="eye" size={wp('5%')} color="#3B82F6" />
+                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >View</MenuItemLabel>
                                 </MenuItem>
-                                <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?.customerID); setOpenDelete(true); }}>
+                                 <MenuItem key="edit" textValue="eye" className='gap-2' onPress={() => navigation.navigate('CreateCustomer', { customerID: item?.customerID })}>
+                                    <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
+                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >View</MenuItemLabel>
+                                </MenuItem>
+                                <MenuItem key="delete" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?.customerID); setOpenDelete(true); }}>
                                     <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
                                     <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
                                 </MenuItem>

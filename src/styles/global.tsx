@@ -20,17 +20,75 @@ const createGlobalStyle = (isDark = false) =>
     themeTextColor: { color: isDark ? "#fff" : "#000" },
 
     // text styles
-    headingText: { fontSize: scaleFont("3.5%"), fontFamily: "Poppins-Bold" },
-    heading2Text: { fontSize: scaleFont("3%"), fontFamily: "Poppins-Bold" },
-    sideHeading: { fontSize: scaleFont("2.2%"), fontFamily: "Poppins-Bold" },
-    heading3Text: { fontSize: scaleFont("2.3%"), fontFamily: "Poppins-SemiBold" },
-    subHeadingText: { fontSize: scaleFont("2.5%"), fontFamily: "Poppins-Bold" },
-    labelText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Medium" },
-    normalText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Regular" },
-    normalBoldText: { fontSize: scaleFont("1.8%"), fontFamily: "Poppins-Bold" },
-    buttonText: { fontSize: scaleFont("2%"), fontFamily: "Poppins-Regular", color: '#fff' },
-    underscoreText: { fontSize: scaleFont("2%"), fontFamily: "Inter-Medium", textDecorationLine: "underline" },
-    smallText: { fontSize: scaleFont("1.5%"), fontFamily: "Inter-Regular" },
+    headingText: {
+      fontSize: scaleFont("3.5%"),
+      fontFamily: "Poppins-Bold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    heading2Text: {
+      fontSize: scaleFont("3%"),
+      fontFamily: "Poppins-Bold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    sideHeading: {
+      fontSize: scaleFont("2.2%"),
+      fontFamily: "Poppins-Bold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    heading3Text: {
+      fontSize: scaleFont("2.3%"),
+      fontFamily: "Poppins-SemiBold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    subHeadingText: {
+      fontSize: scaleFont("2.5%"),
+      fontFamily: "Poppins-Bold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    labelText: {
+      fontSize: scaleFont("2%"),
+      fontFamily: "Inter-Medium",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    normalText: {
+      fontSize: scaleFont("2%"),
+      fontFamily: "Inter-Regular",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    normalBoldText: {
+      fontSize: scaleFont("1.8%"),
+      fontFamily: "Poppins-Bold",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    buttonText: {
+      fontSize: scaleFont("2%"),
+      fontFamily: "Poppins-Regular",
+      color: "#fff",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    underscoreText: {
+      fontSize: scaleFont("2%"),
+      fontFamily: "Inter-Medium",
+      textDecorationLine: "underline",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+    smallText: {
+      fontSize: scaleFont("1.5%"),
+      fontFamily: "Inter-Regular",
+      flexWrap: "wrap",
+      flexShrink: 1
+    },
+
 
     // background
     purpleBackground: {

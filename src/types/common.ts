@@ -36,7 +36,7 @@ export const GLOBALSTATUS: Record<
     key: "CANCELLED",
     label: "Cancelled",
     color: "#EF4444", // Red 500 (error)
-    icon: "close-circle",
+    icon: "x-circle",
   },
   [GlobalStatus.DELIVERED]: {
     key: "DELIVERED",
@@ -90,6 +90,7 @@ export interface RootStackParamList extends ParamListBase {
   Success: { text?: string };
   CreateInvoice: { invoiceId: string };
   CreateCustomer: { customerID: string };
+  CustomerDetails: { customerID: string };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

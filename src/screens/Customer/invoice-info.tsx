@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
@@ -7,7 +7,11 @@ import GradientCard from '@/src/utils/gradient-card';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
-
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import { formatDate } from '@/src/utils/utils';
+import Skeleton from '@/components/ui/skeleton';
+import { EmptyState } from '@/src/components/empty-state-data';
+import { useNavigation } from '@react-navigation/native';
 
 
 const styles = StyleSheet.create({
@@ -40,29 +44,17 @@ const styles = StyleSheet.create({
 
     }
 });
-const InvoiceInfo = () => {
+type InvoiceInfoProps = {
+    invoiceDetails: Invoice[]
+    isLoading: boolean
+}
+const InvoiceInfo = (props: InvoiceInfoProps) => {
+    console.log(props.invoiceDetails);
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
+    const navigation = useNavigation();
 
-    const invoiceInfo = {
-        completed: {
-            title: "Paid",
-            value: "100",
-            color: "#22C55E", // green-500
-        },
-        pending: {
-            title: "Unpaid",
-            value: "50",
-            color: "#F59E0B", // amber-500
-        },
-        cancelled: {
-            title: "Overdue",
-            value: "0",
-            color: "#EF4444", // red-500
-        },
-
-    };
-
-    const InvoiceCard = () => {
+    const InvoiceCard = ({ invoice }: { invoice: Invoice }) => {
         return (
             <Card style={globalStyles.cardShadowEffect}>
                 <View className="flex flex-row items-start justify-between w-full">
@@ -85,34 +77,34 @@ const InvoiceInfo = () => {
                                     globalStyles.subHeadingText,
                                 ]}
                             >
-                                INV-2024-001
+                                {invoice?.invoiceId}
                             </Text>
 
                             {/* Date + Items */}
                             <View className="flex flex-row gap-3">
                                 {/* Date */}
                                 <View className="flex flex-row items-center gap-2 mt-1">
-                                    <Feather name="calendar" size={wp("3%")} color="#000" />
+                                    <Feather name="calendar" size={wp("3%")} color={isDark ? '#fff' : '#000'} />
                                     <Text
                                         style={[
                                             globalStyles.normalTextColor,
                                             globalStyles.smallText,
                                         ]}
                                     >
-                                        24/6/2000
+                                        {formatDate(invoice?.invoiceDate)}
                                     </Text>
                                 </View>
 
                                 {/* Items */}
                                 <View className="flex flex-row items-center gap-2 mt-1">
-                                    <Feather name="map" size={wp("3%")} color="#000" />
+                                    <Feather name="map" size={wp("3%")} color={isDark ? '#fff' : '#000'} />
                                     <Text
                                         style={[
                                             globalStyles.normalTextColor,
                                             globalStyles.smallText,
                                         ]}
                                     >
-                                        3 items
+                                        {invoice?.orderName}
                                     </Text>
                                 </View>
                             </View>
@@ -127,20 +119,16 @@ const InvoiceInfo = () => {
                                 globalStyles.subHeadingText,
                             ]}
                         >
-                            ₹10,00,000
+                            ₹{invoice?.amountPaid}
                         </Text>
-                        <View style={styles.statusContainer}>
-                            <Feather name="check-circle" size={wp('3%')} color="#fff" />
-                            <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>Completed</Text>
-                        </View>
                     </View>
 
                 </View>
                 <Divider style={{ marginVertical: hp('2%') }} />
                 <View className='flex flex-1 flex-row justify-end items-center gap-3'>
                     <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
-                        <Feather name="eye" size={wp("5%")} color="#000" />
-                        <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor]}>View Details</ButtonText>
+                        <Feather name="eye" size={wp("5%")} color={isDark ? '#fff' : '#000'} />
+                        <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>View Details</ButtonText>
                     </Button>
 
                     <Button size="sm" variant="solid" action="primary" style={globalStyles.purpleBackground}>
@@ -161,55 +149,37 @@ const InvoiceInfo = () => {
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
         >
-            <View className='flex flex-col'>
-                <View style={styles.projectContainer}>
-                    {Object.values(invoiceInfo).map((stat, index) => (
-                        <Card
-                            style={[
-                                styles.cardContainer,
-                                { backgroundColor: `${stat.color}20` }, // Subtle background
-                            ]}
-                            key={index}
-                        >
-                            <View style={styles.textContainer}>
-                                <Text
-                                    style={[
-                                        globalStyles.normalTextColor,
-                                        globalStyles.labelText,
-                                        {
-                                            color: stat.color,
-                                        },
-                                    ]}
-                                >
-                                    {stat.title}
-                                </Text>
-                                <View className="flex-row items-center gap-1 mt-1">
-                                    <Text
-                                        style={[
-                                            globalStyles.normalTextColor,
-                                            globalStyles.labelText,
-                                            {
-                                                color: stat.color,
-                                            },
-                                        ]}
-                                    >
-                                        {stat.value}
-                                    </Text>
-                                </View>
-                            </View>
-                        </Card>
-                    ))}
-                </View>
-
-
-            </View>
 
             <View style={{ margin: hp('1%'), gap: hp('2%') }}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <InvoiceCard key={index} />
-                ))
+                {!props?.isLoading && props?.invoiceDetails?.length === 0 && (
+                    <EmptyState variant="orders" onAction={() => navigation.navigate('Invoice', { screen: 'CreateInvoice' })} />
+                )}
+                {props?.isLoading ? (
+                    <View>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <Skeleton
+                                key={index}
+                                style={{
+                                    width: wp('90%'),       // width of each item
+                                    height: hp('10%'),       // height of each item
+                                    marginRight: wp('2%'),  // horizontal spacing
+                                    marginBottom: hp('2%'), // vertical spacing
+                                }}
+                            />
+                        ))}
+                    </View>
+                ) : (
+                    <FlatList
+                        data={props?.invoiceDetails}
+                        renderItem={({ item }) => <InvoiceCard invoice={item} />}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={{ gap: hp('2%') }}
+                    />
+                )
 
                 }
+
+
             </View>
 
         </ScrollView>

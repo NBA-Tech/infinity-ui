@@ -35,6 +35,7 @@ function CustomerNavigator() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="CustomerList" component={Customer} />
             <Stack.Screen name="CreateCustomer" component={CreateCustomer} />
+            <Stack.Screen name="CustomerDetails" component={CustomerDetails} />
         </Stack.Navigator>
     )
 }

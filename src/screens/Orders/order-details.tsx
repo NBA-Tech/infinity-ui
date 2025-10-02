@@ -59,10 +59,10 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const [routes] = useState([
         { key: "customer", title: "Customer", icon: "user" },
         { key: "event", title: "Event", icon: "calendar" },
-        { key: "offering", title: "Offerings", icon: "package" },
+        { key: "deliverables", title: "Deliverables", icon: "package" },
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
-        { key: "deliverables", title: "Deliverables", icon: "clock" },
+        { key: "links", title: "Links", icon: "link" },
     ]);
     const { triggerConfetti } = useConfetti()
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
@@ -74,13 +74,15 @@ const OrderDetails = ({ route, navigation }: Props) => {
             id: 1,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress: () => navigation.navigate("CreateOrder", { orderId: orderDetails?.orderId })
         },
         {
             id: 2,
             label: 'Cancel',
             icon: <Feather name="x" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress: () => handleStatusChange({ key: GlobalStatus.CANCELLED })
         }
-    ] 
+    ]
 
     const getCustomerNameList = async () => {
         const customerMetaData = getCustomerMetaInfoList();
@@ -159,7 +161,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     serviceLength={orderDetails?.offeringInfo?.services?.length}
                     isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE}
                     isLoading={loadingProvider.intialLoading} />
-            case "offering":
+            case "deliverables":
                 return <OfferingDetails
                     key={orderDetails?.orderId}
                     orderId={orderDetails?.orderId}
@@ -185,7 +187,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         />
                     </ScrollView>
                 )
-            case "deliverables":
+            case "links":
                 return <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
             default:
                 return null;
@@ -197,21 +199,15 @@ const OrderDetails = ({ route, navigation }: Props) => {
             {...props}
             scrollEnabled
             style={{ backgroundColor: globalStyles.appBackground.backgroundColor, marginBottom: hp('3%') }}
-            indicatorStyle={{ backgroundColor: "#8B5CF6", height: 3, borderRadius: 2 }}
+            indicatorStyle={{ backgroundColor: "transparent", height: 3, borderRadius: 2 }}
             activeColor={isDark ? "#fff" : "#000"}
             inactiveColor={isDark ? "#6B7280" : "#6B7280"}
             pressColor="rgba(139,92,246,0.15)"
             tabStyle={{ width: "auto" }}
-            renderIcon={({ route, focused, color }: any) => (
-                <Feather
-                    name={route.icon}
-                    size={wp("5%")}
-                    color={focused ? "#8B5CF6" : "#6B7280"}
-                />
-            )}
         />
     );
     const handleStatusChange = async (status: any) => {
+        if (status == undefined) return
         setLoadingProvider({ ...loadingProvider, saveLoading: true });
         const updateOrderStatusResponse = await updateOrderStatusAPI(orderDetails?.orderId, status?.key)
         if (!updateOrderStatusResponse?.success) {
@@ -219,7 +215,8 @@ const OrderDetails = ({ route, navigation }: Props) => {
         }
         setOrderDetails({ ...orderDetails, status: status?.key })
         setLoadingProvider({ ...loadingProvider, saveLoading: false });
-        triggerConfetti()
+
+        if (status?.key != GlobalStatus.CANCELLED) triggerConfetti()
     }
 
     useEffect(() => {
@@ -255,14 +252,14 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
                         {/* Right side */}
                         <View className="flex items-center">
-                            <View style={[styles.statusContainer, { backgroundColor: orderDetails?.status ?( GLOBALSTATUS[orderDetails?.status]?.color): '#6B7280'}]}>
+                            <View style={[styles.statusContainer, { backgroundColor: orderDetails?.status ? (GLOBALSTATUS[orderDetails?.status]?.color) : '#6B7280' }]}>
                                 <Text style={globalStyles.whiteTextColor}>{orderDetails?.status}</Text>
                             </View>
                         </View>
                     </View>
                     <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('2%') }}>
                         {actionButtons.map((action) => (
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground}>
+                            <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
                                 {action.icon}
                                 <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
                             </Button>
@@ -299,8 +296,18 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 onIndexChange={setIndex}
                 initialLayout={{ width: hp("100%") }} // swap width/height
                 renderTabBar={(props) => renderTabBar({ ...props, vertical: true })}
+                commonOptions={{
+                    icon: ({ route, focused, color }) => (
+                        <Feather
+                            name={route.icon}
+                            size={wp("5%")}
+                            color={focused ? "#8B5CF6" : "#6B7280"}
+                        />
+                    ),
+                }}
+
             />
-            {orderDetails?.status != GlobalStatus.DELIVERED && !loadingProvider.intialLoading && (
+            {(orderDetails?.status != GlobalStatus.DELIVERED && orderDetails?.status != GlobalStatus.CANCELLED) && !loadingProvider.intialLoading && (
                 <SwipeButton
                     text={`Swipe to make order as ${getNextStatus(orderDetails?.status as GlobalStatus)?.label}`}
                     isDisabled={loadingProvider.saveLoading}

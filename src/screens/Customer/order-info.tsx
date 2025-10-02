@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import Feather from 'react-native-vector-icons/Feather';
-import { Progress, ProgressFilledTrack } from "@/components/ui/progress"
-import { Divider } from '@/components/ui/divider';
-import { Button, ButtonText } from '@/components/ui/button';
 import OrderCard from '../Orders/components/order-card';
-
+import { OrderModel } from '@/src/types/order/order-type';
+import { GlobalStatus } from '@/src/types/common';
+import Skeleton from '@/components/ui/skeleton';
+import { EmptyState } from '@/src/components/empty-state-data';
+import { useNavigation } from '@react-navigation/native';
 const styles = StyleSheet.create({
     projectContainer: {
         flexDirection: 'row',
@@ -30,28 +30,46 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 });
-
-const ProjectInfo = () => {
+type ProjectInfoProps = {
+    orderDetails: OrderModel[];
+    customerMetaData: Record<string, any>;
+    isLoading?: boolean
+}
+const ProjectInfo = (props: ProjectInfoProps) => {
     const globalStyles = useContext(StyleContext);
+    const navigation = useNavigation();
+    const [statCount, setStatCount] = useState({
+        completed: 0,
+        pending: 0,
+        cancelled: 0
+    });
 
-    const statInfo = {
-        completed: {
-            title: "Completed",
-            value: "100",
-            color: "#3B82F6", // blue-500
-        },
-        pending: {
-            title: "Pending",
-            value: "50",
-            color: "#F59E0B", // amber-500
-        },
-        cancelled: {
-            title: "Cancelled",
-            value: "0",
-            color: "#EF4444", // red-500
-        },
+    const statInfo = useMemo(() => {
+        const orders = props.orderDetails || [];
 
-    };
+        const delivered = orders.filter(o => o.status === GlobalStatus.DELIVERED).length;
+        const pendingCount = orders.filter(o => o.status === GlobalStatus.PENDING).length;
+        const cancelledCount = orders.filter(o => o.status === GlobalStatus.CANCELLED).length;
+
+        return {
+            delivered: {
+                title: "Delivered",
+                value: delivered.toString(),
+                color: "#3B82F6",
+            },
+            pending: {
+                title: "Pending",
+                value: pendingCount.toString(),
+                color: "#F59E0B",
+            },
+            cancelled: {
+                title: "Cancelled",
+                value: cancelledCount.toString(),
+                color: "#EF4444",
+            },
+        };
+    }, [props.orderDetails]);
+
 
     return (
         <ScrollView
@@ -78,7 +96,7 @@ const ProjectInfo = () => {
                                         },
                                     ]}
                                 >
-                                    {stat.title}
+                                    {props?.isLoading ? "Loading..." : stat.title}
                                 </Text>
                                 <View className="flex-row items-center gap-1 mt-1">
                                     <Text
@@ -90,7 +108,7 @@ const ProjectInfo = () => {
                                             },
                                         ]}
                                     >
-                                        {stat.value}
+                                        {props?.isLoading ? "Loading..." : stat.value}
                                     </Text>
                                 </View>
                             </View>
@@ -100,12 +118,38 @@ const ProjectInfo = () => {
 
 
             </View>
-            <View style={{ margin: hp('2%'),gap:hp('2%') }}>
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <OrderCard key={index} />
-                ))
+            <View style={{ margin: hp('2%'), gap: hp('2%') }}>
+                {!props?.isLoading && props?.orderDetails?.length === 0 && (
+                    <EmptyState variant="orders" onAction={()=>navigation.navigate('Orders', { screen: 'CreateOrder' })}/>
+                )
 
                 }
+                {props.isLoading ? (
+                    <View>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <Skeleton
+                                key={index}
+                                style={{
+                                    width: wp('90%'),       // width of each item
+                                    height: hp('10%'),       // height of each item
+                                    marginRight: wp('2%'),  // horizontal spacing
+                                    marginBottom: hp('2%'), // vertical spacing
+                                }}
+                            />
+                        ))}
+                    </View>
+                ) : (
+                    <FlatList
+                        data={props?.orderDetails || []}
+                        renderItem={({ item }) => (
+                            <OrderCard cardData={item} customerMetaData={props?.customerMetaData} />
+                        )}
+                        contentContainerStyle={{ paddingBottom: hp('2%') }} // optional spacing at bottom
+                        keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+                    />
+                )}
+
+
             </View>
         </ScrollView>
     );

@@ -732,7 +732,7 @@ const CreateOrder = () => {
                             isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                             onPress={currStep == 3 ? handleCreateOrder : handleNext}
                         >
-                            {!isAllLoadingFalse(loadingProvider) && (
+                            {loadingProvider.saveLoading && (
                                 <ButtonSpinner size={wp("4%")} color="#fff" />
                             )
                             }

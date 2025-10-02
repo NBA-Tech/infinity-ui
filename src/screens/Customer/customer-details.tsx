@@ -1,21 +1,32 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
+    TouchableOpacity,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import Feather from "react-native-vector-icons/Feather";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { Avatar, AvatarFallbackText } from "@/components/ui/avatar";
 import BackHeader from "@/src/components/back-header";
-import { StyleContext } from "@/src/providers/theme/global-style-provider";
+import { StyleContext, ThemeToggleContext } from "@/src/providers/theme/global-style-provider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Divider } from "@/components/ui/divider";
 import { GeneralInfo } from "./genera-iInfo";
 import ProjectInfo from "./order-info";
 import InvoiceInfo from "./invoice-info";
+import { RootStackParamList, SearchQueryRequest } from "@/src/types/common";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { getCustomerDetailsAPI } from "@/src/api/customer/customer-api-service";
+import { useToastMessage } from "@/src/components/toast/toast-message";
+import { CustomerModel } from "@/src/types/customer/customer-type";
+import { formatDate } from "@/src/utils/utils";
+import { getOrderDataListAPI } from "@/src/api/order/order-api-service";
+import { OrderModel } from "@/src/types/order/order-type";
+import { Invoice } from "@/src/types/invoice/invoice-type";
+import { getInvoiceListBasedOnFiltersAPI } from "@/src/api/invoice/invoice-api-service";
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -38,35 +49,140 @@ const DeliverablesRoute = () => (
     </ScrollView>
 );
 
-const renderScene = SceneMap({
-    general: GeneralInfo,
-    projects: ProjectInfo,
-    invoices: InvoiceInfo,
-    deliverables: DeliverablesRoute,
-});
+
 
 // ---------------- Main Screen ----------------
-export default function CustomerDetailsScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, "CustomerDetails">;
+export default function CustomerDetails({ navigation, route }: Props) {
     const globalStyles = useContext(StyleContext);
+    const { isDark } = useContext(ThemeToggleContext);
+    const { customerID } = route.params ?? {}
+    const showToast = useToastMessage();
     const [index, setIndex] = useState(0);
+    const [customerDetails, setCustomerDetails] = useState<CustomerModel>();
+    const [orderDetails, setOrderDetails] = useState<OrderModel[]>([]);
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
+    const [paymentMetaDetails, setPaymentMetaDetails] = useState<Record<string, any>>({
+        totalAmount: 0,
+        totalPaid: 0,
+    });
+    const [loading, setLoading] = useState(false);
     const [routes] = useState([
         { key: "general", title: "General", icon: "briefcase" },
         { key: "projects", title: "Projects", icon: "briefcase" },
         { key: "invoices", title: "Invoices", icon: "briefcase" },
-        { key: "deliverables", title: "Deliverables", icon: "briefcase" },
     ]);
+
+    const renderScene = ({ route }: any) => {
+        switch (route.key) {
+            case "general":
+                return <GeneralInfo key={route.key} customerDetails={customerDetails} paymentDetails={paymentMetaDetails} isLoading={loading} />;
+            case "projects":
+                return <ProjectInfo key={route.key} orderDetails={orderDetails} customerMetaData={
+                    {
+                        firstName: customerDetails?.customerBasicInfo?.firstName,
+                        lastName: customerDetails?.customerBasicInfo?.lastName
+                    }
+                } isLoading={loading} />;
+            case "invoices":
+                return <InvoiceInfo key={route.key} invoiceDetails={invoiceDetails} isLoading={loading} />;
+            default:
+                return null;
+        }
+    };
 
     const renderTabBar = (props: any) => (
         <TabBar
             {...props}
-            style={{ backgroundColor: '#fff' }}
+            style={{ backgroundColor: globalStyles.appBackground.backgroundColor, marginBottom: hp('3%') }}
             indicatorStyle={{ backgroundColor: '#8B5CF6', height: 3, borderRadius: 2 }}
-            activeColor="#111827"
-            inactiveColor="#6B7280"
+            activeColor={isDark ? "#fff" : "#000"}
+            inactiveColor={isDark ? "#6B7280" : "#6B7280"}
             pressColor="rgba(139,92,246,0.15)"
             tabStyle={{ width: 'auto' }}
         />
     );
+
+    const getOrderDetails = async (customerId: string) => {
+        const payload: SearchQueryRequest = {
+            filters: {
+                "orderBasicInfo.customerID": customerId
+            },
+            getAll: true,
+            requiredFields: ["orderId", "createdDate", "status", "eventInfo", "offeringInfo", "totalPrice"]
+        }
+        const orderDetailsResponse = await getOrderDataListAPI(payload)
+        if (!orderDetailsResponse?.success) {
+            return showToast({ type: "error", title: "Error", message: orderDetailsResponse?.message })
+        }
+        setOrderDetails(orderDetailsResponse.data as OrderModel[])
+        setPaymentMetaDetails((prev) => ({
+            ...prev,
+            totalAmount: orderDetailsResponse?.data?.reduce(
+                (total: number, order: OrderModel) => total + (order?.totalPrice || 0),
+                0
+            ),
+        }));
+    }
+
+    const getCustomerDetails = async (customerId: string) => {
+        const customerDetailsResponse = await getCustomerDetailsAPI(customerId)
+        if (!customerDetailsResponse?.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message:
+                    customerDetailsResponse?.message ||
+                    "Failed to fetch customer details",
+            });
+        }
+        console.log(customerDetailsResponse.data)
+        setCustomerDetails(customerDetailsResponse.data as CustomerModel)
+    }
+
+    const getInvoiceDetails = async (customerId: string) => {
+        const payload: SearchQueryRequest = {
+            filters: {
+                "customerId": customerId
+            },
+            getAll: true,
+            requiredFields: ["invoiceId", "invoiceDate", "orderName", "amountPaid"]
+        }
+        const invoiceDetailsResponse = await getInvoiceListBasedOnFiltersAPI(payload)
+        if (!invoiceDetailsResponse?.success) {
+            return showToast({ type: "error", title: "Error", message: invoiceDetailsResponse?.message })
+        }
+        setInvoiceDetails(invoiceDetailsResponse.data as Invoice[])
+        setPaymentMetaDetails((prev) => ({
+            ...prev,
+            totalPaid: invoiceDetailsResponse?.data?.reduce(
+                (total: number, invoice: Invoice) => total + (invoice?.amountPaid || 0),
+                0
+            ),
+        }))
+    }
+
+
+    useEffect(() => {
+        if (!customerID) return;
+
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                await Promise.all([
+                    getCustomerDetails(customerID),
+                    getOrderDetails(customerID),
+                    getInvoiceDetails(customerID),
+                ]);
+            } catch (error) {
+                console.error("Error fetching customer data:", error);
+            } finally {
+                setLoading(false); // only set false when all are done
+            }
+        };
+
+        fetchData();
+    }, [customerID]);
 
 
     return (
@@ -87,19 +203,19 @@ export default function CustomerDetailsScreen() {
                         }}
                     >
                         <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                            Arlene McCoy
+                            {customerDetails?.customerBasicInfo?.firstName + " " + customerDetails?.customerBasicInfo?.lastName}
                         </AvatarFallbackText>
                     </Avatar>
 
                     <View className="flex flex-col justify-center">
-                        <Text style={globalStyles.heading2Text}>Arlene McCoy</Text>
+                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerDetails?.customerBasicInfo?.firstName + " " + customerDetails?.customerBasicInfo?.lastName}</Text>
                         <Text
                             style={[
                                 globalStyles.smallText,
-                                globalStyles.normalTextColor,
+                                globalStyles.themeTextColor,
                             ]}
                         >
-                            Created On : 25/7/2023
+                            Created On : {formatDate(customerDetails?.createdDate)}
                         </Text>
                     </View>
 
@@ -107,7 +223,9 @@ export default function CustomerDetailsScreen() {
                         className="flex flex-row justify-end items-center"
                         style={{ flex: 1 }}
                     >
-                        <Feather name="edit" size={wp("6%")} color={"#8B5CF6"} />
+                        <TouchableOpacity onPress={() => navigation.navigate("CreateCustomer", { customerID: customerID })}>
+                            <Feather name="edit" size={wp("6%")} color={"#8B5CF6"} />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
