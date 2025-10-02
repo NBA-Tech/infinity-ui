@@ -9,6 +9,7 @@ export const toCustomerMetaModel = (customer: CustomerModel): CustomerMetaModel 
   mobileNumber: customer.customerBasicInfo?.mobileNumber ?? "",
   email: customer.customerBasicInfo?.email ?? "",
   gender: customer.customerBasicInfo?.gender,
+  createdDate: customer.createdDate
 });
 
 

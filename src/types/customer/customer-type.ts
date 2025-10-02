@@ -22,6 +22,7 @@ export interface CustomerBasicInfo {
   email: string;
   notes?: string;
   gender?: GENDER;
+  createdDate?: Date;
 }
 
 export interface CustomerBillingInfo {

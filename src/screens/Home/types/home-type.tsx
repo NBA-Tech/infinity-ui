@@ -3,6 +3,9 @@ export interface GeneralCardModel {
     backgroundColor: string;
     icon: React.ReactNode;
     gradientColors?: string[];
+    isTrending?: boolean;
+    count: number;
+    percentageOfChange: string;
 }
 
 export interface GeneralStatInfoModel {

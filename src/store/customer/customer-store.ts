@@ -13,7 +13,7 @@ interface CustomerStore {
     getCustomerMetaInfoList: () => CustomerMetaModel[];
     updateCustomerMetaInfoList: (customerMetaInfo: CustomerMetaModel | CustomerMetaModel[]) => void;
     deleteCustomerMetaInfo: (customerIDs: string | string[]) => void;
-    loadCustomerMetaInfoList: (userID: string, payload?: SearchQueryRequest, headers?: Record<string, any>, showToast?: any) => Promise<ApiGeneralRespose>
+    loadCustomerMetaInfoList: (userID: string,showToast?: any,payload?: SearchQueryRequest, headers?: Record<string, any>) => Promise<ApiGeneralRespose>
     resetCustomerMetaInfoList: () => void;
 
     // Details CRUD
@@ -61,9 +61,9 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         }),
     loadCustomerMetaInfoList: async (
         userID: string,
+        showToast?: any,
         payload?: SearchQueryRequest,
         headers?: Record<string, any>,
-        showToast?: any
     ): Promise<any> => {
         let customerMetaData = get().getCustomerMetaInfoList();
         if (!userID) {
@@ -88,7 +88,8 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             requiredFields: [
                 "customerBasicInfo.firstName",
                 "customerBasicInfo.lastName",
-                "_id",
+                "customerID",
+                "createdDate",
                 "customerBasicInfo.mobileNumber",
                 "customerBasicInfo.email",
             ],

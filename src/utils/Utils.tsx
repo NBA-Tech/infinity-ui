@@ -6,6 +6,8 @@ import { useUserStore } from "../store/user/user-store";
 import { useCustomerStore } from "../store/customer/customer-store";
 import { useOfferingStore } from "../store/offering/offering-store";
 import { OfferingInfo, OrderType } from "../types/order/order-type";
+import { isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
+
 
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
@@ -327,4 +329,139 @@ export const getPercentageOfCompletion=(offeringInfo:OfferingInfo):number=>{
     const completedServicesCount = offeringInfo?.services?.filter((service) => service?.isCompleted)?.length ?? 0;
     return Math.floor((completedServicesCount / (offeringInfo?.services?.length ?? 1)) * 100);
   }
+}
+
+type Period = "year" | "month" | "week";
+
+interface ImprovementResult {
+  change: number;     // raw % change
+  formatted: string;  // "+25%" or "-10%"
+}
+
+export function calculateImprovement<T>(
+  data: T[],
+  dateKey: keyof T,
+  period: Period
+): ImprovementResult {
+  if (!Array.isArray(data) || data.length === 0) {
+    return { change: 0, formatted: "0%" };
+  }
+
+  const now = new Date();
+
+  let currentCount = 0;
+  let prevCount = 0;
+
+  data.forEach((item) => {
+    const value = item[dateKey];
+    if (!value) return;
+
+    const d = new Date(value as any);
+    if (isNaN(d.getTime())) return; // invalid date guard
+
+    if (period === "year") {
+      if (d.getFullYear() === now.getFullYear()) currentCount++;
+      else if (d.getFullYear() === now.getFullYear() - 1) prevCount++;
+    }
+
+    if (period === "month") {
+      if (
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth()
+      ) {
+        currentCount++;
+      } else if (
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth() - 1
+      ) {
+        prevCount++;
+      } else if (
+        now.getMonth() === 0 && // January edge case
+        d.getFullYear() === now.getFullYear() - 1 &&
+        d.getMonth() === 11
+      ) {
+        prevCount++;
+      }
+    }
+
+    if (period === "week") {
+      const getWeek = (date: Date) => {
+        const startOfYear = new Date(date.getFullYear(), 0, 1);
+        const days = Math.floor(
+          (date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        return Math.ceil((days + startOfYear.getDay() + 1) / 7);
+      };
+
+      const thisWeek = getWeek(now);
+      const lastWeek = thisWeek - 1;
+      const dWeek = getWeek(d);
+
+      if (d.getFullYear() === now.getFullYear() && dWeek === thisWeek) {
+        currentCount++;
+      } else if (d.getFullYear() === now.getFullYear() && dWeek === lastWeek) {
+        prevCount++;
+      } else if (
+        lastWeek === 0 && // edge case: first week of the year
+        d.getFullYear() === now.getFullYear() - 1 &&
+        getWeek(d) === getWeek(new Date(d.getFullYear(), 11, 31))
+      ) {
+        prevCount++;
+      }
+    }
+  });
+
+  // Calculate %
+  if (prevCount === 0 && currentCount === 0) {
+    return { change: 0, formatted: "0%" };
+  }
+  if (prevCount === 0) {
+    return { change: 100, formatted: "+100%" };
+  }
+
+  const change = ((currentCount - prevCount) / prevCount) * 100;
+  const rounded = Math.round(change);
+
+  return {
+    change: rounded,
+    formatted: `${rounded >= 0 ? "+" : ""}${rounded}%`
+  };
+}
+
+export function getUpcomingByTimeframe<T>(
+  data: T[],
+  dateKey: keyof T,
+  timeframe: Period
+): T[] {
+  const now = new Date();
+
+  let start: Date;
+  let end: Date;
+
+  switch (timeframe) {
+    case "week":
+      start = startOfWeek(now, { weekStartsOn: 1 }); // Monday
+      end = endOfWeek(now, { weekStartsOn: 1 });
+      break;
+    case "month":
+      start = startOfMonth(now);
+      end = endOfMonth(now);
+      break;
+    case "year":
+      start = startOfYear(now);
+      end = endOfYear(now);
+      break;
+    default:
+      throw new Error("Invalid timeframe");
+  }
+
+  return data.filter((item) => {
+    const dateVal = new Date(item[dateKey] as unknown as string);
+
+    return (
+      isAfter(dateVal, now) && // upcoming only
+      dateVal >= start &&
+      dateVal <= end
+    );
+  });
 }

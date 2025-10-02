@@ -44,15 +44,18 @@ export const StatInfo = ({ item, index }: { item: GeneralCardModel; index: numbe
         </GradientCard>
 
         {/* Trending info */}
-        <View style={styles.trendingRow}>
-          <Feather name="trending-up" size={wp('5%')} color="#fff" />
-          <Text style={[globalStyles.whiteTextColor, globalStyles.smallText, { marginLeft: 4 }]}>+2.5%</Text>
-        </View>
+        {item?.isTrending &&
+          <View style={styles.trendingRow}>
+            <Feather name={item?.percentageOfChange?.includes('-') ? 'trending-down' : 'trending-up'} size={wp('5%')} color="#fff" />
+            <Text style={[globalStyles.whiteTextColor, globalStyles.smallText, { marginLeft: 4 }]}>{item?.percentageOfChange}</Text>
+          </View>
+        }
+
       </View>
 
       {/* Bottom stats */}
       <View style={styles.bottomStats}>
-        <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>247</Text>
+        <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>{item.count}</Text>
         <Text style={[globalStyles.whiteTextColor, globalStyles.normalText]}>{item.label}</Text>
       </View>
     </Card>
