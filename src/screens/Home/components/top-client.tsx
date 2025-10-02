@@ -1,11 +1,14 @@
 import { Card } from '@/components/ui/card';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, FlatList } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
+import { OrderModel } from '@/src/types/order/order-type';
+import { CustomerMetaModel } from '@/src/types/customer/customer-type';
+import { GlobalStatus } from '@/src/types/common';
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -18,20 +21,45 @@ const styles = StyleSheet.create({
         width: wp('60%'),
     }
 });
-
-const TopClient = () => {
+type TopClientProps = {
+    orderDetails: OrderModel[]
+    customerMetaInfo: CustomerMetaModel
+}
+const TopClient = (props: TopClientProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const [topCustomers, setTopCustomers] = useState([]);
 
-    // dummy array length 6
-    const clients = [
-        { id: '1', name: 'Arlene McCoy', orders: 4 },
-        { id: '2', name: 'John Doe', orders: 6 },
-        { id: '3', name: 'Jane Smith', orders: 2 },
-        { id: '4', name: 'Michael Brown', orders: 8 },
-        { id: '5', name: 'Emily Johnson', orders: 5 },
-        { id: '6', name: 'Chris Evans', orders: 7 },
-    ];
+    const getTopCustomersSummary = (orders: OrderModel[], topN: number = 10) => {
+        const countMap: Record<string, { count: number; deliveredCount: number }> = {};
+
+        orders.forEach(order => {
+            if (!order.customerID) return;
+
+            if (!countMap[order.customerID]) {
+                countMap[order.customerID] = { count: 0, deliveredCount: 0 };
+            }
+
+            countMap[order.customerID].count += 1;
+            if (order.status === GlobalStatus.DELIVERED) {
+                countMap[order.customerID].deliveredCount += 1;
+            }
+        });
+
+        // Convert to array and sort by total count descending
+        const sortedCustomers = Object.entries(countMap)
+            .map(([customerID, data]) => ({ customerID, ...data }))
+            .sort((a, b) => b.count - a.count);
+
+        return sortedCustomers.slice(0, topN);
+    };
+
+    useEffect(() => {
+        const sortedOrders = getTopCustomersSummary(props?.orderDetails, 10)
+        setTopCustomers(sortedOrders)
+        console.log(props?.customerMetaInfo)
+
+    }, [props?.orderDetails])
 
     const renderClientCard = ({ item }: any) => (
         <Card style={[globalStyles.cardShadowEffect, styles.innerCard]}>
@@ -43,19 +71,19 @@ const TopClient = () => {
                     }}
                 >
                     <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                        {item.name}
+                         {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
                     </AvatarFallbackText>
                 </Avatar>
                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
-                    {item.name}
+                    {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
                 </Text>
             </View>
             <View className='flex flex-row justify-between items-center mt-2'>
                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                    Total Orders : {item.orders}
+                    Total Orders : {item?.count}
                 </Text>
                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                    Completed : {item.orders}
+                    Delivered : {item?.deliveredCount}
                 </Text>
             </View>
         </Card>
@@ -81,9 +109,9 @@ const TopClient = () => {
                 {/* Horizontal FlatList */}
                 <FlatList
                     horizontal
-                    data={clients}
+                    data={topCustomers}
                     renderItem={renderClientCard}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.customerID}
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ marginVertical: hp('2%') }}
                 />

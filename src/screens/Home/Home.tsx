@@ -10,7 +10,6 @@ import GradientCard from '@/src/utils/gradient-card';
 import { BarChart } from 'react-native-chart-kit';
 import { GeneralCardModel, GeneralStatInfoModel } from './types/home-type';
 import { StatInfo } from './components/stat-info';
-import HomeLineChart from './components/home-line-chart';
 import EventDateKeeper from './components/event-date-keeper';
 import Activity from './components/activity';
 import Popularity from './components/popularity';
@@ -20,12 +19,14 @@ import TopClient from './components/top-client';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { calculateImprovement } from '@/src/utils/utils';
+import { calculateImprovement, getUpcomingByTimeframe } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
-import { ApiGeneralRespose, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { OrderModel } from '@/src/types/order/order-type';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import RevenueTrendChart from './components/home-line-chart';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -40,6 +41,8 @@ const Home = () => {
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
+    const [orderStatus, setOrderStatus] = useState();
     const generalStatData = useMemo<GeneralStatInfoModel>(() => {
         return {
             customer: {
@@ -61,6 +64,12 @@ const Home = () => {
                 icon: <Feather name="dollar-sign" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#22C55E", "#10B981"],
                 isTrending: true,
+                count: `$ ${invoiceDetails?.reduce((a, b) => a + b.amountPaid, 0) || 0}`,
+                percentageOfChange: calculateImprovement<ApiGeneralRespose>(
+                    invoiceDetails,
+                    "invoiceDate",
+                    "month"
+                ).formatted
             },
             upcomingShoots: {
                 label: "Upcoming Shoots",
@@ -68,13 +77,20 @@ const Home = () => {
                 icon: <Feather name="calendar" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#EF4444", "#F87171"],
                 isTrending: false,
+                count: getUpcomingByTimeframe(orderDetails, "eventDate", "month")?.length || 0
             },
-            completedOrders: {
-                label: "Completed Orders",
+            deliveredOrders: {
+                label: "Delivered Orders",
                 backgroundColor: "#F59E0B",
                 icon: <Feather name="check-circle" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#F59E0B", "#FBBF24"],
                 isTrending: true,
+                count: `${orderStatus?.delivered?.length || 0}`,
+                percentageOfChange: calculateImprovement<OrderModel>(
+                    orderStatus?.delivered,
+                    "createdDate",
+                    "month"
+                )?.formatted
             },
             pendingOrders: {
                 label: "Pending Orders",
@@ -82,31 +98,36 @@ const Home = () => {
                 icon: <Feather name="clock" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#8B5CF6", "#A78BFA"],
                 isTrending: true,
+                count: orderStatus?.pending?.length || 0,
+                percentageOfChange: calculateImprovement<OrderModel>(
+                    orderStatus?.pending,
+                    "createdDate",
+                    "month"
+                )?.formatted
             },
-            activeQuotation: {
-                label: "Active Quotation",
+            totalInvoice: {
+                label: "Total Invoice",
                 backgroundColor: "#3B82F6",
                 icon: <Feather name="file-text" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#3B82F6", "#2563EB"],
                 isTrending: true,
+                count: invoiceDetails?.length || 0,
+                percentageOfChange: calculateImprovement<ApiGeneralRespose>(
+                    invoiceDetails,
+                    "invoiceDate",
+                    "month"
+                )?.formatted
             },
         };
-    }, [customerMetaInfoList]);
+    }, [customerMetaInfoList, orderStatus, orderDetails]);
 
     const getOrderDetails = async (userId: string) => {
-        if (!userId) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: "User not found Please login again",
-            })
-        }
         const payload: SearchQueryRequest = {
             filters: {
                 userId: userId
             },
             getAll: true,
-            requiredFields: ["orderId", "status", "createdDate"]
+            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle","eventInfo.eventType","orderBasicInfo.customerID"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
         if (!orderMetaDataResponse.success) {
@@ -116,16 +137,54 @@ const Home = () => {
                 message: orderMetaDataResponse.message,
             })
         }
-        console.log(orderMetaDataResponse.data)
-        setOrderDetails(orderMetaDataResponse?.data)
+        const normalisedOrders = orderMetaDataResponse?.data?.map((order: OrderModel) => {
+            const { orderBasicInfo, eventInfo, ...rest } = order
+            return {
+                ...rest,
+                ...eventInfo,
+                ...orderBasicInfo
+            };
+        })
+        console.log(normalisedOrders)
+        setOrderDetails(normalisedOrders)
+        setOrderStatus({
+            delivered: orderMetaDataResponse?.data?.filter((order: OrderModel) => order?.status === GlobalStatus.DELIVERED),
+            pending: orderMetaDataResponse?.data?.filter((order: OrderModel) => order?.status === GlobalStatus.PENDING),
+        })
+    }
+
+    const getInvoiceDetails = async (userId: string) => {
+        const payload: SearchQueryRequest = {
+            filters: {
+                userId: userId
+            },
+            getAll: true,
+            requiredFields: ["invoiceId", "amountPaid", "invoiceDate"]
+        }
+        const orderMetaDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(payload)
+        if (!orderMetaDataResponse.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: orderMetaDataResponse.message,
+            })
+        }
+        setInvoiceDetails(orderMetaDataResponse?.data)
     }
 
 
     useEffect(() => {
         const userId = getItem("USERID")
+        if (!userId) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "User not found Please login again",
+            })
+        }
         loadCustomerMetaInfoList(userId, showToast);
         getOrderDetails(userId)
-        console.log(customerMetaInfoList)
+        getInvoiceDetails(userId)
     }, [])
 
     return (
@@ -147,7 +206,7 @@ const Home = () => {
 
                         </View>
                         <View>
-                            <HomeLineChart />
+                            <RevenueTrendChart invoiceDetails={invoiceDetails} />
                         </View>
                         <View>
                             <EventDateKeeper />
@@ -157,11 +216,11 @@ const Home = () => {
                             <Popularity />
                         </View>
                         <View>
-                            <DeadLines />
+                            <DeadLines orderDetails={orderDetails} />
 
                         </View>
                         <View>
-                            <TopClient />
+                            <TopClient orderDetails={orderDetails} customerMetaInfo={customerMetaInfoList} />
                         </View>
                         <View>
                             <Activity />

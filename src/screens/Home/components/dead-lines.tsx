@@ -1,10 +1,12 @@
 import { Card } from '@/components/ui/card';
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Divider } from '@/components/ui/divider';
+import { OrderModel } from '@/src/types/order/order-type';
+import { GlobalStatus } from '@/src/types/common';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -30,9 +32,65 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
     },
 })
-const DeadLines = () => {
+type DeadLinesProps = {
+    orderDetails: OrderModel[]
+};
+const DeadLines = (props: DeadLinesProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const [weeklyOrderData, setWeeklyOrderData] = useState([]);
+
+    const getTimeToEvent = (eventDateStr:string) => {
+        console.log(eventDateStr)
+        const eventDate = new Date(eventDateStr);
+        const today = new Date();
+
+        // Get UTC dates without time
+        const eventUTC = Date.UTC(eventDate.getUTCFullYear(), eventDate.getUTCMonth(), eventDate.getUTCDate());
+        const todayUTC = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+
+        const diffInDays = Math.round((eventUTC - todayUTC) / (1000 * 60 * 60 * 24));
+
+        if (diffInDays === 0) return "Today";
+        if (diffInDays === 1) return "1 day to go";
+        if (diffInDays > 1) return `${diffInDays} days to go`;
+        if (diffInDays === -1) return "1 day ago";
+        return `${Math.abs(diffInDays)} days ago`;
+    };
+
+
+
+    const deadLineComponent = ({ item }: { item: OrderModel }) => {
+        if (item?.status == GlobalStatus.COMPLETED || item?.status == GlobalStatus.DELIVERED) return null
+        return (
+            <View style={{ marginTop: hp('2%') }}>
+                <View style={styles.activityRow}>
+                    <View style={[styles.dot, { backgroundColor: "red" }]}>
+                    </View>
+
+                    <View style={styles.textWrapper}>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
+                            {item?.eventTitle}
+                        </Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                            {item?.eventType}
+                        </Text>
+                    </View>
+
+                    <View style={styles.timeWrapper}>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                            {getTimeToEvent(item?.eventDate)}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
+    useEffect(() => {
+        setWeeklyOrderData(props?.orderDetails, "eventDate", "week")
+
+    }, [props?.orderDetails])
     return (
         <View>
             <Card style={[styles.cardContainer]}>
@@ -53,27 +111,13 @@ const DeadLines = () => {
                     contentContainerStyle={{ paddingBottom: hp('2%') }}
                     nestedScrollEnabled={true}
                 >
-                    <View style={{ marginTop: hp('2%') }}>
-                        <View style={styles.activityRow}>
-                            <View style={[styles.dot,{backgroundColor:"red"}]}>
-                            </View>
+                    <FlatList
+                        data={weeklyOrderData}
+                        renderItem={deadLineComponent}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
 
-                            <View style={styles.textWrapper}>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
-                                    Pre-Wedding PhotoShoot
-                                </Text>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                                    Wedding Photography
-                                </Text>
-                            </View>
 
-                            <View style={styles.timeWrapper}>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                                    1 day ago
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
                 </ScrollView>
 
 

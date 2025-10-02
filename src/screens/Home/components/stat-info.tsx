@@ -46,7 +46,7 @@ export const StatInfo = ({ item, index }: { item: GeneralCardModel; index: numbe
         {/* Trending info */}
         {item?.isTrending &&
           <View style={styles.trendingRow}>
-            <Feather name={item?.percentageOfChange?.includes('-') ? 'trending-down' : 'trending-up'} size={wp('5%')} color="#fff" />
+            <Feather name={item?.percentageOfChange && item?.percentageOfChange?.includes('-') ? 'trending-down' : 'trending-up'} size={wp('5%')} color="#fff" />
             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText, { marginLeft: 4 }]}>{item?.percentageOfChange}</Text>
           </View>
         }

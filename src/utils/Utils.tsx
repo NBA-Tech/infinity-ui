@@ -455,7 +455,7 @@ export function getUpcomingByTimeframe<T>(
       throw new Error("Invalid timeframe");
   }
 
-  return data.filter((item) => {
+  return data?.filter((item) => {
     const dateVal = new Date(item[dateKey] as unknown as string);
 
     return (
@@ -464,4 +464,31 @@ export function getUpcomingByTimeframe<T>(
       dateVal <= end
     );
   });
+}
+
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export function getMonthlyRevenue<T extends { [key: string]: any }>(
+  data: T[],
+  dateKey: keyof T,
+  amountKey: keyof T
+): { month: string; value: number }[] {
+  // Initialize all months with 0
+  const monthlyTotals: { [key: string]: number } = {};
+  MONTH_NAMES.forEach((m) => (monthlyTotals[m] = 0));
+
+  data.forEach((item) => {
+    const dateValue = item[dateKey];
+    if (!dateValue) return;
+
+    const date = new Date(dateValue as any);
+    const monthName = MONTH_NAMES[date.getMonth()];
+
+    monthlyTotals[monthName] += Number(item[amountKey]) || 0;
+  });
+
+  // Convert to array format
+  return MONTH_NAMES.map((month) => ({
+    month,
+    value: monthlyTotals[month],
+  }));
 }
