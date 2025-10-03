@@ -33,15 +33,15 @@ const TopClient = (props: TopClientProps) => {
     const getTopCustomersSummary = (orders: OrderModel[], topN: number = 10) => {
         const countMap: Record<string, { count: number; deliveredCount: number }> = {};
 
-        orders.forEach(order => {
-            if (!order.customerID) return;
+        orders?.forEach(order => {
+            if (!order?.customerID) return;
 
             if (!countMap[order.customerID]) {
                 countMap[order.customerID] = { count: 0, deliveredCount: 0 };
             }
 
             countMap[order.customerID].count += 1;
-            if (order.status === GlobalStatus.DELIVERED) {
+            if (order?.status === GlobalStatus.DELIVERED) {
                 countMap[order.customerID].deliveredCount += 1;
             }
         });
