@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -6,6 +6,7 @@ import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-s
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { OrderModel } from '@/src/types/order/order-type';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -14,9 +15,35 @@ const styles = StyleSheet.create({
         height: hp('40%'), // fixed height for scroll
     },
 })
-const Popularity = () => {
+type PopularityProps = {
+    orderDetails: OrderModel[]
+}
+const Popularity = (props: PopularityProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const [percentageStat, setPercentageStat] = useState<{ eventType: string; percentage: number; value: number }[]>([]);
+
+
+
+
+    useEffect(() => {
+        if (!props?.orderDetails) return;
+
+        // Get unique event types
+        const uniqueEventTypes = Array.from(new Set(props.orderDetails.map((item) => item.eventType)));
+
+        // Calculate percentage and count
+        const stats = uniqueEventTypes.map((eventType) => {
+            const filtered = props.orderDetails.filter((item) => item.eventType === eventType);
+            return {
+                eventType,
+                value: filtered.length,
+                percentage: Math.round((filtered.length / props.orderDetails.length) * 100),
+            };
+        });
+
+        setPercentageStat(stats);
+    }, [props.orderDetails]);
     return (
         <View>
             <Card style={[styles.cardContainer]}>
@@ -37,18 +64,18 @@ const Popularity = () => {
                     contentContainerStyle={{ paddingBottom: hp('2%') }}
                     nestedScrollEnabled={true}
                 >
-                    {Array.from({ length: 5 }).map((_, index) => (
+                    {percentageStat && percentageStat.map((item, index) => (
                         <View style={{ marginTop: hp('2%') }}>
-                            <View className='flex flex-row justify-between items-center gap-3'>
+                            <View className='flex flex-row justify-between items-center'>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                    Wedding Photography
+                                    {item.eventType}
                                 </Text>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                    40%
+                                    {item.value}
                                 </Text>
                             </View>
                             <View style={{ marginTop: hp('1%') }}>
-                                <Progress value={55} style={{ width: wp('40%') }}>
+                                <Progress value={item.percentage} style={{ width: wp('40%') }}>
                                     <ProgressFilledTrack style={{ backgroundColor: '#4F46E5' }} />
                                 </Progress>
                             </View>

@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import GradientCard from '@/src/utils/gradient-card';
 import { Card } from '@/components/ui/card';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { GeneralCardModel } from '../types/home-type';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import Tooltip, { Placement } from "react-native-tooltip-2";
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -29,12 +30,23 @@ const styles = StyleSheet.create({
 
 export const StatInfo = ({ item, index }: { item: GeneralCardModel; index: number }) => {
   const globalStyles = useContext(StyleContext);
+  const [toolTipVisible, setToolTipVisible] = React.useState(false);
 
   return (
     <Card style={[styles.cardContainer, { backgroundColor: item.backgroundColor }]}>
       {/* Info icon */}
       <View style={{ alignItems: 'flex-end' }}>
-        <Feather name="info" size={wp('5%')} color="#fff" />
+        <Tooltip
+          isVisible={toolTipVisible}
+          content={<Text>{item.tooltip}</Text>}
+          placement={Placement.BOTTOM}
+          onClose={() => setToolTipVisible(false)}>
+          <TouchableOpacity onPress={()=> setToolTipVisible(true)}>
+            <Feather name="info" size={wp('5%')} color="#fff" />
+          </TouchableOpacity>
+
+        </Tooltip>
+
       </View>
 
       {/* Main row */}

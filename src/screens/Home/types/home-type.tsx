@@ -4,6 +4,7 @@ export interface GeneralCardModel {
     icon: React.ReactNode;
     gradientColors?: string[];
     isTrending?: boolean;
+    tooltip?: string;
     count: number;
     percentageOfChange: string;
 }

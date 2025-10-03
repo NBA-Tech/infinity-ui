@@ -57,6 +57,7 @@ const Home = () => {
                     "createdDate",
                     "month"
                 ).formatted,
+                tooltip: "Gets the total number of customers"
             },
             revenue: {
                 label: "Total Revenue",
@@ -69,7 +70,8 @@ const Home = () => {
                     invoiceDetails,
                     "invoiceDate",
                     "month"
-                ).formatted
+                ).formatted,
+                tooltip: "Gets the total revenue of all orders"
             },
             upcomingShoots: {
                 label: "Upcoming Shoots",
@@ -77,7 +79,8 @@ const Home = () => {
                 icon: <Feather name="calendar" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#EF4444", "#F87171"],
                 isTrending: false,
-                count: getUpcomingByTimeframe(orderDetails, "eventDate", "month")?.length || 0
+                count: getUpcomingByTimeframe(orderDetails, "eventDate", "month")?.length || 0,
+                tooltip: "Gets the total number of upcoming shoots in the month",
             },
             deliveredOrders: {
                 label: "Delivered Orders",
@@ -90,7 +93,8 @@ const Home = () => {
                     orderStatus?.delivered,
                     "createdDate",
                     "month"
-                )?.formatted
+                )?.formatted,
+                tooltip: "Gets the total number of delivered orders",
             },
             pendingOrders: {
                 label: "Pending Orders",
@@ -103,7 +107,8 @@ const Home = () => {
                     orderStatus?.pending,
                     "createdDate",
                     "month"
-                )?.formatted
+                )?.formatted,
+                tooltip: "Gets the total number of pending orders",
             },
             totalInvoice: {
                 label: "Total Invoice",
@@ -116,7 +121,8 @@ const Home = () => {
                     invoiceDetails,
                     "invoiceDate",
                     "month"
-                )?.formatted
+                )?.formatted,
+                tooltip: "Gets the total number of invoices",
             },
         };
     }, [customerMetaInfoList, orderStatus, orderDetails]);
@@ -213,7 +219,7 @@ const Home = () => {
                         </View>
 
                         <View>
-                            <Popularity />
+                            <Popularity orderDetails={orderDetails}/>
                         </View>
                         <View>
                             <DeadLines orderDetails={orderDetails} />
@@ -226,7 +232,7 @@ const Home = () => {
                             <Activity />
                         </View>
                         <View>
-                            <HeatmapYear />
+                            <HeatmapYear orderDetails={orderDetails}/>
                         </View>
                     </View>
                 </View>

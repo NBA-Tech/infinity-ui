@@ -260,9 +260,6 @@ const EventDateKeeper = () => {
   useEffect(() => {
     getMonthEvents(new Date().getMonth() + 1, new Date().getFullYear())
   }, [])
-  useEffect(() => {
-    console.log(eventMarkedDate)
-  }, [eventMarkedDate])
 
   return (
     <Card>

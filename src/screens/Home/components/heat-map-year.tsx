@@ -5,29 +5,31 @@ import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-s
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { OrderModel } from '@/src/types/order/order-type';
 
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: wp('2%'),
     marginVertical: hp('2%'),
-    padding: wp('4%'),
-    height: hp('50%'),
+    padding: wp('5%'),
+    minHeight: hp('35%'), // Adjusted min height
   },
   heatContainer: {
-    borderRadius: wp('2%'),
-    height: hp('10%'),
-    width: wp('25%'),
+    borderRadius: wp('3%'),
+    height: hp('8%'), // smaller height to avoid overflow
+    width: wp('20%'),
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    flex: 1,
   },
   monthWrapper: {
     alignItems: 'center',
-    marginBottom: hp('2%'),
-    width: wp('28%'),
+    marginBottom: hp('1.5%'),
   },
 });
 
@@ -36,16 +38,28 @@ const months = [
   'Jul','Aug','Sep','Oct','Nov','Dec'
 ];
 
-const HeatMapYear = () => {
+type HeatMapYearProps = {
+  orderDetails: OrderModel[]
+};
+
+const HeatMapYear = ({ orderDetails }: HeatMapYearProps) => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
-  // Generate random values for each month
-  const values = months.map(() => Math.floor(Math.random() * 100));
+  const currentYear = new Date().getFullYear();
+
+  // Calculate counts for each month of current year
+  const values = months.map((_, idx) => {
+    const monthIndex = idx; // Jan=0, Feb=1, etc
+    return orderDetails?.filter((order) => {
+      const eventDate = order?.eventDate ? new Date(order?.eventDate) : null;
+      return eventDate && eventDate.getFullYear() === currentYear && eventDate.getMonth() === monthIndex;
+    }).length;
+  });
 
   // Function to calculate violet shade based on value
   const getColor = (val: number) => {
-    const opacity = Math.min(1, val / 100); // scale 0–100 → 0–1
+    const opacity = Math.min(1, val / Math.max(...values, 1)); // scale relative to max value
     return `rgba(138, 43, 226, ${0.3 + opacity * 0.7})`; // violet with brightness variation
   };
 
@@ -53,7 +67,7 @@ const HeatMapYear = () => {
     <View>
       <Card style={styles.cardContainer}>
         {/* Header */}
-        <View className="flex flex-row justify-between items-center">
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View>
             <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
               Booking Heatmap
@@ -80,7 +94,7 @@ const HeatMapYear = () => {
                   style={[
                     globalStyles.whiteTextColor,
                     globalStyles.normalText,
-                    { textAlign: 'center', marginBottom: hp('1%') },
+                    { textAlign: 'center', marginBottom: hp('0.5%') },
                   ]}
                 >
                   {values[idx]}
