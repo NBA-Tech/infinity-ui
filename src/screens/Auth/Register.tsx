@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -47,7 +47,7 @@ const Register = ({ setCurrScreen }: any) => {
     const { setItem } = useDataStore();
     const navigation = useNavigation<NavigationProp>();
 
-    const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>(null);
+    const [loadingProvider, setLoadingProvider] = useState<"google" | "email" | null>();
 
     // 🔧 Fix 1: Strongly type the ref values
     const userRegisterRefs = useRef<Record<FormKeys, string>>({
@@ -69,48 +69,43 @@ const Register = ({ setCurrScreen }: any) => {
         confirmPassword: false,
     });
 
-    const formFields: {
-        label: string;
-        type: "text" | "email" | "password";
-        placeholder: string;
-        icon: string;
-        key: FormKeys;
-    }[] = [
-            {
-                label: "Username",
-                type: "text",
-                placeholder: "Eg :John Doe",
-                icon: "user",
-                key: "username",
-            },
-            {
-                label: "Email",
-                type: "email",
-                placeholder: "Eg :YJy0g@example.com",
-                icon: "mail",
-                key: "email",
-            },
-            {
-                label: "Password",
-                type: "password",
-                placeholder: "********",
-                icon: "lock",
-                key: "password",
-            },
-            {
-                label: "Confirm Password",
-                type: "password",
-                placeholder: "********",
-                icon: "lock",
-                key: "confirmPassword",
-            },
-        ];
+    const formFields = useMemo(() => [
+        {
+            label: "Username",
+            type: "text",
+            placeholder: "Eg :John Doe",
+            icon: "user",
+            key: "username" as const,
+        },
+        {
+            label: "Email",
+            type: "email",
+            placeholder: "Eg :YJy0g@example.com",
+            icon: "mail",
+            key: "email" as const,
+        },
+        {
+            label: "Password",
+            type: showPassword?.password ? "text" : "password",
+            placeholder: "********",
+            icon: "lock",
+            key: "password" as const,
+            isText: false
+        },
+        {
+            label: "Confirm Password",
+            type: showPassword?.confirmPassword ? "text" : "password",
+            placeholder: "********",
+            icon: "lock",
+            key: "confirmPassword" as const,
+        },
+    ], [showPassword]);
 
     const validateInputs = (inputType: FormKeys) => {
         if (inputType === "email") {
             setErrors((prev) => ({
                 ...prev,
-                email: !checkValidEmail(userRegisterRefs.current.email),
+                email: checkValidEmail(userRegisterRefs.current.email),
             }));
         } else if (inputType === "password") {
             const result = checkPasswordStrength(userRegisterRefs.current.password);
@@ -145,40 +140,33 @@ const Register = ({ setCurrScreen }: any) => {
             });
             await setItem("USERID", register?.userId);
         }
-        if (payload.authType === "EMAIL_PASSWORD") {
-            setTimeout(() => {
-                navigation.navigate("onetimepassword");
 
-            }, 1000);
-        }
-        else {
-            setTimeout(() => {
-                navigation.navigate("useronboarding");
-
-            }, 1000);
-        }
+        navigation.navigate("useronboarding");
 
     };
 
-    const handleEmailRegister = () => {
-        setLoadingProvider("email");
+    const handleEmailRegister = async () => {
+        if(!userRegisterRefs.current.email || !userRegisterRefs.current.password || !userRegisterRefs.current.username){
+            setLoadingProvider(null);
+            return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
+        }
         const hasError = Object.values(errors).some(Boolean);
 
         if (hasError) {
-            setLoadingProvider(null);
             return showToast({
                 type: "warning",
                 title: "Oops!",
                 message: "Please resolve the errors",
             })
         }
+        setLoadingProvider("email");
         const payload: AuthModel = {
             username: userRegisterRefs.current.username,
             email: userRegisterRefs.current.email,
             password: userRegisterRefs.current.password,
             authType: "EMAIL_PASSWORD"
         }
-        handleRegister(payload);
+        await handleRegister(payload);
         setLoadingProvider(null);
     };
 
@@ -234,32 +222,26 @@ const Register = ({ setCurrScreen }: any) => {
                                 }}
                                 onBlur={() => validateInputs(field.key)}
                                 placeholder={field.placeholder}
-                                keyboardType={
-                                    field.type === "number"
-                                        ? "numeric"
-                                        : field.type === "email"
-                                            ? "email-address"
-                                            : "default"
-                                }
+                                keyboardType={field?.type}
                                 secureTextEntry={
-                                    field.type === "password" &&
-                                    !showPassword[field.key as "password" | "confirmPassword"]
+                                    field.key === "password" ? !showPassword.password :
+                                        field.key === "confirmPassword" ? !showPassword.confirmPassword :
+                                            false
                                 }
                             />
 
-                            {field.type === "password" && (
+                            {(field.key === "password" || field.key === "confirmPassword") && (
                                 <InputSlot
                                     onPress={() =>
                                         setShowPassword((prev) => ({
                                             ...prev,
-                                            [field.key]:
-                                                !prev[field.key as "password" | "confirmPassword"],
+                                            [field.key]: !prev[field.key],
                                         }))
                                     }
                                 >
                                     <Feather
                                         name={
-                                            showPassword[field.key as "password" | "confirmPassword"]
+                                            showPassword[field.key]
                                                 ? "eye-off"
                                                 : "eye"
                                         }
@@ -298,7 +280,7 @@ const Register = ({ setCurrScreen }: any) => {
                         )}
                         <FontAwesome name="envelope" size={wp("5%")} color="#fff" />
                         <ButtonText style={globalStyles.buttonText}>
-                            {loadingProvider === "email"
+                            {loadingProvider == "email"
                                 ? "Signing Up...."
                                 : "Sign Up with Email"}
                         </ButtonText>
@@ -334,9 +316,9 @@ const Register = ({ setCurrScreen }: any) => {
                         </ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
-                        <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Already have an account? </Text>
+                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('login')}>
-                            <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Sign In</Text>
+                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
                         </TouchableOpacity>
 
                     </View>
