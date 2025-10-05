@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ImageBackground } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { useRoute } from '@react-navigation/native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { WaveHandIcon } from '@/src/assets/Icons/SvgIcons';
+import Background from '../../assets/images/Background.png'
 const styles = StyleSheet.create({
     otpBodyContainer: {
         flex: 1,
@@ -16,6 +17,10 @@ const styles = StyleSheet.create({
     cardContainer: {
         padding: hp('2%'),
         width: wp('85%'),
+    },
+    body: {
+        flex: 1,
+        marginVertical: hp('15%')
     },
     heading: {
         flexDirection: 'row',
@@ -60,14 +65,13 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     }
 });
-const OneTimePassword = (props: any) => {
-    const { navigation } = props;
-    const route = useRoute();
+const OneTimePassword = ({ navigation, route }: { navigation: any, route: any }) => {
+    const { authData } = route?.params || {};
     const [loading, setLoading] = useState(false);
     const [timer, setTimer] = useState(60);
     const numInputs = 4;
     const [otp, setOtp] = useState(Array(numInputs).fill(""));
-    const inputRefs = useRef([]);
+    const inputRefs = useRef(Array(numInputs).fill(null));
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const globalStyle = useContext(StyleContext);
 
@@ -94,6 +98,7 @@ const OneTimePassword = (props: any) => {
 
             // Move focus to next input
             if (index < numInputs - 1) {
+                console.log("index", inputRefs, newOtp,index)
                 inputRefs.current[index + 1]?.focus();
             }
         } else if (text === "") {
@@ -103,50 +108,57 @@ const OneTimePassword = (props: any) => {
         }
     };
 
+
     return (
-        <SafeAreaView style={globalStyle.appBackground}>
-            <View style={styles.otpBodyContainer}>
-                <Card size="md" variant="filled" style={[globalStyle.cardShadowEffect]}>
+        <ImageBackground
+            source={Background}
+            resizeMode="cover"
+            style={{ flex: 1 }}>
+            <View style={styles.body}>
+                <View style={styles.otpBodyContainer}>
+                    <Card size="md" variant="filled" style={[globalStyle.cardShadowEffect]}>
 
-                    <View style={styles.cardContainer}>
-                        <View style={styles.heading}>
-                            <WaveHandIcon />
-                            <Text style={globalStyle.headingText}>OTP Verification</Text>
+                        <View style={styles.cardContainer}>
+                            <View style={styles.heading}>
+                                <WaveHandIcon />
+                                <Text style={globalStyle.themeTextColor}>OTP Verification</Text>
+                            </View>
+                            <View style={styles.subHeading}>
+                                <Text style={[globalStyle.labelText, globalStyle.themeTextColor]}>
+                                    For verification, please enter the OTP sent to your email. If you haven’t received the code yet, please check your spam folder.
+                                </Text>
+                            </View>
+
+                            <View style={styles.otpContainer}>
+                                {otp.map((digit, index) => (
+                                    <TextInput
+                                        key={index}
+                                        ref={inputRefs.current[index]}
+                                        style={[globalStyle.greyInputBox, styles.otp]}
+                                        keyboardType="number-pad"
+                                        maxLength={1}
+                                        value={digit}
+                                        onChangeText={(text) => handleChange(text, index)}
+                                        onKeyPress={({ nativeEvent }) => {
+                                            if (nativeEvent.key === 'Backspace' && otp[index] === "" && index > 0) {
+                                                inputRefs.current[index - 1]?.focus(); // move back
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </View>
+
+                            <Button size="lg" variant="solid" action="primary" style={[globalStyle.purpleBackground, { marginVertical: hp('3%') }]}>
+                                <ButtonText style={globalStyle.buttonText}>Verify OTP</ButtonText>
+                            </Button>
+
+
                         </View>
-                        <View style={styles.subHeading}>
-                            <Text style={[globalStyle.labelText, globalStyle.normalTextColor]}>
-                                For verification, please enter the OTP sent to your email. If you haven’t received the code.
-                            </Text>
-                        </View>
 
-                        <View style={styles.otpContainer}>
-                            {otp.map((digit, index) => (
-                                <TextInput
-                                    key={index}
-                                    style={[globalStyle.greyInputBox, styles.otp]}
-                                    keyboardType="number-pad"
-                                    maxLength={1}
-                                    value={digit}
-                                    onChangeText={(text) => handleChange(text, index)}
-                                    onKeyPress={({ nativeEvent }) => {
-                                        if (nativeEvent.key === 'Backspace' && otp[index] === "" && index > 0) {
-                                            inputRefs.current[index - 1].focus();
-                                        }
-                                    }}
-                                />
-                            ))}
-
-                        </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyle.purpleBackground,{marginVertical:hp('3%')}]}>
-                            <ButtonText style={globalStyle.buttonText}>Verify OTP</ButtonText>
-                        </Button>
-
-
-                    </View>
-
-                </Card>
+                    </Card>
+                </View>
             </View>
-        </SafeAreaView>
+        </ImageBackground>
     );
 };
 

@@ -43,6 +43,7 @@ const Home = () => {
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
     const [orderStatus, setOrderStatus] = useState();
+    const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false });
     const generalStatData = useMemo<GeneralStatInfoModel>(() => {
         return {
             customer: {
@@ -133,7 +134,7 @@ const Home = () => {
                 userId: userId
             },
             getAll: true,
-            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle","eventInfo.eventType","orderBasicInfo.customerID"]
+            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
         if (!orderMetaDataResponse.success) {
@@ -178,20 +179,47 @@ const Home = () => {
         setInvoiceDetails(orderMetaDataResponse?.data)
     }
 
-
     useEffect(() => {
-        const userId = getItem("USERID")
-        if (!userId) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: "User not found Please login again",
-            })
-        }
-        loadCustomerMetaInfoList(userId, showToast);
-        getOrderDetails(userId)
-        getInvoiceDetails(userId)
-    }, [])
+        const fetchData = async () => {
+            const userId = await getItem("USERID");
+            if (!userId) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: "User not found. Please login again",
+                });
+            }
+
+            // Set all loading to true
+            setLoadingProvider(prev => ({ ...prev, allLoading: true }));
+            setLoadingProvider(prev => ({ ...prev, customerLoading: true }));
+            setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
+            setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
+
+
+
+
+            try {
+                // Load customer info
+                await loadCustomerMetaInfoList(userId, showToast);
+                setLoadingProvider(prev => ({ ...prev, customerLoading: false }));
+
+                // Load orders
+                await getOrderDetails(userId);
+                setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
+
+                // Load invoices
+                await getInvoiceDetails(userId);
+                setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
+            } finally {
+                // Turn off overall loading
+                setLoadingProvider(prev => ({ ...prev, allLoading: false }));
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
@@ -205,34 +233,34 @@ const Home = () => {
                                 showsHorizontalScrollIndicator={false}
                                 contentContainerStyle={styles.scrollContainer}
                                 data={Object.values(generalStatData)}
-                                renderItem={({ item, index }) => <StatInfo item={item} index={index} />}
+                                renderItem={({ item, index }) => <StatInfo item={item} index={index} isLoading={loadingProvider.allLoading} />}
                                 keyExtractor={(item, index) => index.toString()}
                                 onEndReachedThreshold={0.7}
                             />
 
                         </View>
                         <View>
-                            <RevenueTrendChart invoiceDetails={invoiceDetails} />
+                            <RevenueTrendChart invoiceDetails={invoiceDetails} isLoading={loadingProvider.invoiceLoading} />
                         </View>
                         <View>
                             <EventDateKeeper />
                         </View>
 
                         <View>
-                            <Popularity orderDetails={orderDetails}/>
+                            <Popularity orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
                         </View>
                         <View>
-                            <DeadLines orderDetails={orderDetails} />
+                            <DeadLines orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
 
                         </View>
                         <View>
-                            <TopClient orderDetails={orderDetails} customerMetaInfo={customerMetaInfoList} />
+                            <TopClient orderDetails={orderDetails} customerMetaInfo={customerMetaInfoList} isLoading={loadingProvider.customerLoading || loadingProvider.orderLoading} />
                         </View>
                         <View>
                             <Activity />
                         </View>
                         <View>
-                            <HeatmapYear orderDetails={orderDetails}/>
+                            <HeatmapYear orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
                         </View>
                     </View>
                 </View>

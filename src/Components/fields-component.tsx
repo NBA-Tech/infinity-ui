@@ -100,7 +100,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         { backgroundColor: isDark ? "#1E1E28" : "#fff" }
                     ]}
                     data={field.dropDownItems || []}
-                    search={field?.isSearchable || true}
+                    search={field?.isSearchable ?? true}
                     value={field?.isLoading ? undefined : field.value}
                     placeholderStyle={[
                         globalStyles.labelText,
@@ -139,6 +139,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                             {item.label}
                         </Text>
                     )}
+                    renderLeftIcon={() => field.icon}
                 />
 
             ) : field.type === "multi-select" ? (
@@ -259,6 +260,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     valueStyle={{ fontSize: 14, color: isDark ? "#fff" : "#000" }}
                     itemLabelStyle={{ color: isDark ? "#fff" : "#000" }}
                     alertRequired={false}
+                    itemLeadingIconContainerStyle={{ backgroundColor: isDark ? "#fff" : "#fff",borderRadius: wp("4%") }}
                     setSelectedValues={field.onChange}
                 />) : (
                 <Input size="lg" isDisabled={field.isDisabled || field?.isLoading} style={field.extraStyles}>

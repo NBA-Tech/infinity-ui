@@ -7,13 +7,13 @@ import { Divider } from '@/components/ui/divider';
 import RangeSlider from './range-slider';
 import { FormFields, SearchQueryRequest } from '../types/common';
 import Feather from 'react-native-vector-icons/Feather';
-import { getCountries, patchState } from '../utils/utils';
+import { getCountries, getStates, patchState } from '../utils/utils';
 import { CustomFieldsComponent } from './fields-component';
 import { LEADSOURCE } from '../types/customer/customer-type';
 import { Button, ButtonText } from '@/components/ui/button';
 import { OrderStatus } from '../types/order/order-type';
 import { ORDERSTATUS } from '../constant/constants';
-
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type FilterComponentProps = {
     openFilter: boolean
     filters?: SearchQueryRequest
@@ -34,12 +34,12 @@ const FilterComponent = (props: FilterComponentProps) => {
             key: "country",
             label: "Country",
             placeholder: "Select Country",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon:  <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: false,
             isDisabled: false,
-            value: props?.filters?.filters?.userBillingInfo?.country ?? "",
+            value: props?.filters?.filters?.["customerBillingInfo.country"] ?? "",
             dropDownItems: getCountries().map((country) => ({
                 label: country.name,
                 value: country.isoCode,
@@ -61,13 +61,16 @@ const FilterComponent = (props: FilterComponentProps) => {
             key: "state",
             label: "State",
             placeholder: "Select State",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: false,
             isDisabled: false,
             value: props?.filters?.filters?.["customerBillingInfo.state"]?.state ?? "",
-            dropDownItems: [],
+            dropDownItems: getStates(props?.filters?.filters?.["customerBillingInfo.country"] ?? "").map((state) => ({
+                label: state.name,
+                value: state.isoCode
+            })),
             onChange: (value: string) => {
                 props?.setRefresh(true)
                 props?.setFilters(prev => ({
@@ -86,6 +89,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             label: "Date Sort",
             type: "select",
             style: "w-full",
+            icon: <MaterialIcons name="sort" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             value: props?.filters?.sortOrder === "DESC" ? "LATEST" : "OLDEST" ?? "",
             dropDownItems: ["LATEST", "OLDEST"].map((dateSort) => ({
                 label: dateSort,
@@ -315,7 +319,7 @@ const FilterComponent = (props: FilterComponentProps) => {
                         </Button>
                         <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={() => {
                             props?.setOpenFilter(false)
-                            props?.setFilters(prev => ({ page: 1 }))
+                            props?.setFilters(prev => ({ page: 1,pageSize: 10 }))
                         }
                         }>
                             <ButtonText style={[globalStyles.buttonText]}>Reset</ButtonText>

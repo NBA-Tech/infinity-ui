@@ -6,6 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { OrderModel } from '@/src/types/order/order-type';
+import Skeleton from '@/components/ui/skeleton';
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -34,15 +35,16 @@ const styles = StyleSheet.create({
 });
 
 const months = [
-  'Jan','Feb','Mar','Apr','May','Jun',
-  'Jul','Aug','Sep','Oct','Nov','Dec'
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
 type HeatMapYearProps = {
   orderDetails: OrderModel[]
+  isLoading: boolean
 };
 
-const HeatMapYear = ({ orderDetails }: HeatMapYearProps) => {
+const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
@@ -89,17 +91,24 @@ const HeatMapYear = ({ orderDetails }: HeatMapYearProps) => {
               <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
                 {month}
               </Text>
-              <View style={[styles.heatContainer, { backgroundColor: getColor(values[idx]) }]}>
-                <Text
-                  style={[
-                    globalStyles.whiteTextColor,
-                    globalStyles.normalText,
-                    { textAlign: 'center', marginBottom: hp('0.5%') },
-                  ]}
-                >
-                  {values[idx]}
-                </Text>
-              </View>
+              {isLoading ? (
+                <Skeleton width={wp('20%')} height={hp('8%')} />
+              ) : (
+                <View style={[styles.heatContainer, { backgroundColor: getColor(values[idx]) }]}>
+                  <Text
+                    style={[
+                      globalStyles.whiteTextColor,
+                      globalStyles.normalText,
+                      { textAlign: 'center', marginBottom: hp('0.5%') },
+                    ]}
+                  >
+                    {values[idx]}
+                  </Text>
+                </View>
+              )
+
+              }
+
             </View>
           ))}
         </View>

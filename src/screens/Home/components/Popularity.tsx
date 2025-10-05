@@ -7,6 +7,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { OrderModel } from '@/src/types/order/order-type';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -17,6 +18,7 @@ const styles = StyleSheet.create({
 })
 type PopularityProps = {
     orderDetails: OrderModel[]
+    isLoading: boolean
 }
 const Popularity = (props: PopularityProps) => {
     const globalStyles = useContext(StyleContext);
@@ -59,32 +61,39 @@ const Popularity = (props: PopularityProps) => {
                     <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: hp('2%') }}
-                    nestedScrollEnabled={true}
-                >
-                    {percentageStat && percentageStat.map((item, index) => (
-                        <View style={{ marginTop: hp('2%') }}>
-                            <View className='flex flex-row justify-between items-center'>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                    {item.eventType}
-                                </Text>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                    {item.value}
-                                </Text>
-                            </View>
-                            <View style={{ marginTop: hp('1%') }}>
-                                <Progress value={item.percentage} style={{ width: wp('40%') }}>
-                                    <ProgressFilledTrack style={{ backgroundColor: '#4F46E5' }} />
-                                </Progress>
-                            </View>
+                {props?.isLoading ? (
+                    <Skeleton height={hp('30%')} width={wp('88%')} />
+                ) : (
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: hp('2%') }}
+                        nestedScrollEnabled={true}
+                    >
+                        {percentageStat && percentageStat.map((item, index) => (
+                            <View style={{ marginTop: hp('2%') }}>
+                                <View className='flex flex-row justify-between items-center'>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                        {item.eventType}
+                                    </Text>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                        {item.value}
+                                    </Text>
+                                </View>
+                                <View style={{ marginTop: hp('1%') }}>
+                                    <Progress value={item.percentage} style={{ width: wp('40%') }}>
+                                        <ProgressFilledTrack style={{ backgroundColor: '#4F46E5' }} />
+                                    </Progress>
+                                </View>
 
-                        </View>
-                    ))
+                            </View>
+                        ))
 
-                    }
-                </ScrollView>
+                        }
+                    </ScrollView>
+                )
+
+                }
+
 
 
 

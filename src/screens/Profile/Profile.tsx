@@ -8,9 +8,9 @@ import Background from '../../assets/images/Background.png';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/src/context/auth-context/auth-context';
-
+import { NavigationProp } from '@/src/types/common';
 const styles = StyleSheet.create({
     amountContainer: {
         padding: wp('5%'),
@@ -36,7 +36,8 @@ const Profile = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { logout } = useAuth()
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
+
     const options = [
         {
             label: "Business Information",
@@ -61,7 +62,15 @@ const Profile = () => {
         {
             label: "Logout",
             icon: <Feather name="log-out" size={wp('6%')} color="#EF4444" />, // red accent for logout
-            onPress: () => logout()
+            onPress: async () => {
+                await logout();
+                navigation.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: 'UnauthStack', params: { screen: 'Authentication' } }],
+                    })
+                );
+            }
         }
     ];
 

@@ -144,7 +144,7 @@ const ProjectInfo = (props: ProjectInfoProps) => {
                         renderItem={({ item }) => (
                             <OrderCard cardData={item} customerMetaData={props?.customerMetaData} />
                         )}
-                        contentContainerStyle={{ paddingBottom: hp('2%') }} // optional spacing at bottom
+                        contentContainerStyle={{ paddingBottom: hp('2%'),gap: hp('2%') }} // optional spacing at bottom
                         keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
                     />
                 )}

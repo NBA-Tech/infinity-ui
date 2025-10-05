@@ -30,6 +30,7 @@ import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import FilterComponent from '@/src/components/filter-component';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import debounce from "lodash.debounce";
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -41,7 +42,6 @@ const styles = StyleSheet.create({
     cardContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
     },
     leftSection: {
         flexDirection: 'row',
@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-start',
-        gap: wp('3%'),
     },
     status: {
         borderRadius: wp('1.5%'),
@@ -142,7 +141,7 @@ const Customer = () => {
             }
 
             const customers = customerDetailsResponse?.data ?? [];
-            const customerIds = customers.map((item: any) => item.customerID);
+            const customerIds = customers.map((item: any) => item?.customerID);
 
             // Step 2: Get orders for those customers
             const orderFilters: SearchQueryRequest = {
@@ -225,8 +224,8 @@ const Customer = () => {
             setCustomerData((prev) =>
                 reset ? updatedCustomers : [...prev, ...updatedCustomers]
             );
-
-            setHasMore(customers.length === (filters.pageSize || 3));
+            console.log(customers.length, filters.pageSize)
+            setHasMore(customers.length === (filters.pageSize || 10));
         } catch (err) {
             console.error("Error fetching customer details:", err);
             showToast({
@@ -266,10 +265,22 @@ const Customer = () => {
 
     }
 
+    const handleSearch = (value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            searchQuery: value,
+            searchField: ["customerBasicInfo.firstName", "customerBasicInfo.lastName"],
+            page: 1,
+        }));
+    };
+
+    const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
+
 
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1 || !filters?.page;
+            console.log(filters)
             getCustomerDetails(reset || refresh);
         }, [filters, refresh])
     );
@@ -288,7 +299,7 @@ const Customer = () => {
                             </Avatar>
 
                             <View style={styles.details}>
-                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
+                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { width: wp('60%') }]} numberOfLines={1}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
 
                                 <View style={styles.detailRow}>
                                     <MaterialIcons name="event" size={wp('4%')} color="#6B7280" />
@@ -337,9 +348,9 @@ const Customer = () => {
                                     <Feather name="eye" size={wp('5%')} color="#3B82F6" />
                                     <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >View</MenuItemLabel>
                                 </MenuItem>
-                                 <MenuItem key="edit" textValue="eye" className='gap-2' onPress={() => navigation.navigate('CreateCustomer', { customerID: item?.customerID })}>
+                                <MenuItem key="edit" textValue="eye" className='gap-2' onPress={() => navigation.navigate('CreateCustomer', { customerID: item?.customerID })}>
                                     <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >View</MenuItemLabel>
+                                    <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
                                 </MenuItem>
                                 <MenuItem key="delete" textValue="Delete" className='gap-2' onPress={() => { setCurrID(item?.customerID); setOpenDelete(true); }}>
                                     <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
@@ -414,11 +425,12 @@ const Customer = () => {
                             <InputField
                                 type="text"
                                 placeholder="Search Customer"
+                                onChangeText={debouncedSearch}
                             />
 
                         </Input>
                         <TouchableOpacity onPress={() => setOpenFilter(true)}>
-                             <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#8B5CF6" />
+                            <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#8B5CF6" />
                         </TouchableOpacity>
                     </View>
 

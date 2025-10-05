@@ -10,11 +10,16 @@ import Animated, {
 import GradientCard from "@/src/utils/gradient-card"; // <-- your gradient wrapper
 import LottieView from "lottie-react-native";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { useNavigation } from "@react-navigation/native";
+import { useDataStore } from "@/src/providers/data-store/data-store-provider";
+import { NavigationProp } from "@/src/types/common";
 const { width } = Dimensions.get("window");
 
 export default function SplashScreen() {
   const scale = useSharedValue(0.8);
   const rotate = useSharedValue(0);
+  const { getItem } = useDataStore();
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     // Pulse + rotate animation
@@ -35,11 +40,31 @@ export default function SplashScreen() {
       { rotate: `${rotate.value}deg` },
     ],
   }));
+  useEffect(() => {
+    const checkNavigation = async () => {
+      const isNewDevice = await getItem("IS_NEW_DEVICE");
+      const isAuthenticated = await getItem("isAuthenticated");
+    
+      if (isAuthenticated) {
+        navigation.replace("AuthStack"); // go to authenticated stack
+      } else if (!isNewDevice) {
+        navigation.replace("UnauthStack", { screen: "FeatureSlide" }); // go to feature slide
+      } else {
+        navigation.replace("UnauthStack", { screen: "Authentication" }); // default auth screen
+      }
+    };
+
+    const timer = setTimeout(() => {
+      checkNavigation();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   return (
     <GradientCard style={styles.container} className="">
       {/* Infinity Logo with Animation */}
-        <LottieView
+      <LottieView
         source={require("../../assets/animations/infinity.json")}
         autoPlay
         loop

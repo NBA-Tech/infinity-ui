@@ -9,6 +9,7 @@ import { Divider } from '@/components/ui/divider';
 import { OrderModel } from '@/src/types/order/order-type';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { GlobalStatus } from '@/src/types/common';
+import Skeleton from '@/components/ui/skeleton';
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -24,6 +25,7 @@ const styles = StyleSheet.create({
 type TopClientProps = {
     orderDetails: OrderModel[]
     customerMetaInfo: CustomerMetaModel
+    isLoading: boolean
 }
 const TopClient = (props: TopClientProps) => {
     const globalStyles = useContext(StyleContext);
@@ -57,8 +59,6 @@ const TopClient = (props: TopClientProps) => {
     useEffect(() => {
         const sortedOrders = getTopCustomersSummary(props?.orderDetails, 10)
         setTopCustomers(sortedOrders)
-        console.log(props?.customerMetaInfo)
-
     }, [props?.orderDetails])
 
     const renderClientCard = ({ item }: any) => (
@@ -71,7 +71,7 @@ const TopClient = (props: TopClientProps) => {
                     }}
                 >
                     <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                         {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
+                        {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
                     </AvatarFallbackText>
                 </Avatar>
                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
@@ -105,16 +105,34 @@ const TopClient = (props: TopClientProps) => {
                 </View>
 
                 <Divider style={{ marginVertical: hp('1.5%') }} />
+                {(props?.isLoading) ? (
+                    <View className='flex flex-row items-center gap-3'>
+                        <FlatList
+                            horizontal
+                            data={[1, 2, 3, 4]}
+                            renderItem={({ item }) => (
+                                <Skeleton key={item} width={wp('60%')} height={hp('15%')} />
+                            )}
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ gap: hp('2%') }}
+                        />
 
-                {/* Horizontal FlatList */}
-                <FlatList
-                    horizontal
-                    data={topCustomers}
-                    renderItem={renderClientCard}
-                    keyExtractor={(item) => item.customerID}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ marginVertical: hp('2%') }}
-                />
+                    </View>
+                ) : (
+                    <FlatList
+                        horizontal
+                        data={topCustomers}
+                        renderItem={renderClientCard}
+                        keyExtractor={(item) => item.customerID}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ marginVertical: hp('2%') }}
+
+                    />
+                )
+
+                }
+
+
             </Card>
         </View>
     );

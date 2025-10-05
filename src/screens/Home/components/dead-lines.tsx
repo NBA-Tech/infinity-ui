@@ -7,6 +7,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import { Divider } from '@/components/ui/divider';
 import { OrderModel } from '@/src/types/order/order-type';
 import { GlobalStatus } from '@/src/types/common';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -34,14 +35,14 @@ const styles = StyleSheet.create({
 })
 type DeadLinesProps = {
     orderDetails: OrderModel[]
+    isLoading: boolean
 };
 const DeadLines = (props: DeadLinesProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [weeklyOrderData, setWeeklyOrderData] = useState([]);
 
-    const getTimeToEvent = (eventDateStr:string) => {
-        console.log(eventDateStr)
+    const getTimeToEvent = (eventDateStr: string) => {
         const eventDate = new Date(eventDateStr);
         const today = new Date();
 
@@ -106,19 +107,24 @@ const DeadLines = (props: DeadLinesProps) => {
                     <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: hp('2%') }}
-                    nestedScrollEnabled={true}
-                >
-                    <FlatList
-                        data={weeklyOrderData}
-                        renderItem={deadLineComponent}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
+                {props?.isLoading ? (
+                    <Skeleton height={hp('30%')} width={wp('88%')} />
+                ) : (
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: hp('2%') }}
+                        nestedScrollEnabled={true}
+                    >
+                        <FlatList
+                            data={weeklyOrderData}
+                            renderItem={deadLineComponent}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                    </ScrollView>
+                )
 
+                }
 
-                </ScrollView>
 
 
 

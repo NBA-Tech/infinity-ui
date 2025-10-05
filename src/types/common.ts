@@ -1,6 +1,7 @@
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamListBase } from '@react-navigation/native';
+import { AuthModel } from './auth/auth-type';
 export enum GlobalStatus {
   PENDING = "PENDING",
   IN_PROGRESS = "IN_PROGRESS",
@@ -83,7 +84,7 @@ export interface SearchQueryRequest {
 }
 
 export interface RootStackParamList extends ParamListBase {
-  onetimepassword: undefined;
+  OneTimePassword: {authData:AuthModel};
   useronboarding: undefined;
   OrderDetails: { orderId: string };
   InvoiceDetails: { invoiceId: string };

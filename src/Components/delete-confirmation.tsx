@@ -29,7 +29,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                             <Feather name="alert-triangle" size={wp('10%')} color="red" />
                         </View>
                         <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Are you sure you want to delete this service?</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Are you sure you want to delete?</Text>
                         </View>
                         <View className="flex flex-row justify-end items-center mt-4">
                             <Button
@@ -49,7 +49,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                                 variant="solid"
                                 action="primary"
                                 onPress={props?.handleDelete}
-                                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444' }]}
+                                style={[{ marginHorizontal: wp("2%"), backgroundColor: '#EF4444',borderRadius: wp("2%"), }]}
                                 isDisabled={props?.loading}
                             >
                                 {props?.loading && (

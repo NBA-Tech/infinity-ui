@@ -3,11 +3,11 @@ import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import GradientCard from '@/src/utils/gradient-card';
 import { Card } from '@/components/ui/card';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { GeneralCardModel } from '../types/home-type';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import Tooltip, { Placement } from "react-native-tooltip-2";
-
+import Skeleton from '@/components/ui/skeleton';
+import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
 const styles = StyleSheet.create({
   cardContainer: {
     width: wp('46%'),
@@ -28,9 +28,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const StatInfo = ({ item, index }: { item: GeneralCardModel; index: number }) => {
+export const StatInfo = ({ item,isLoading,index }: { item: GeneralCardModel;isLoading: boolean;index: number }) => {
   const globalStyles = useContext(StyleContext);
   const [toolTipVisible, setToolTipVisible] = React.useState(false);
+
+  if(isLoading){
+    return (
+      <Skeleton height={hp('20%')} width={wp('45%')} />
+    );
+  }
 
   return (
     <Card style={[styles.cardContainer, { backgroundColor: item.backgroundColor }]}>

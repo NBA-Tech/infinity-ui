@@ -17,3 +17,4 @@ export { default as SplashScreen } from './splash/splash';
 export { default as FeatureSlide } from './feature-slide/feature-slide';
 export {default as InvoiceDetails} from './invoice/invoice-details';
 export {default as Success} from './success/success';
+export {default as Authentication} from './auth/authentication';

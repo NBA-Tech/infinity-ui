@@ -68,16 +68,16 @@ export default function CustomerDetails({ navigation, route }: Props) {
     });
     const [loading, setLoading] = useState(false);
     const [routes] = useState([
-        { key: "general", title: "General", icon: "briefcase" },
-        { key: "projects", title: "Projects", icon: "briefcase" },
-        { key: "invoices", title: "Invoices", icon: "briefcase" },
+        { key: "general", title: "General", icon: "user" },
+        { key: "orders", title: "Orders", icon: "camera" },
+        { key: "invoices", title: "Invoices", icon: "file-text" },
     ]);
 
     const renderScene = ({ route }: any) => {
         switch (route.key) {
             case "general":
                 return <GeneralInfo key={route.key} customerDetails={customerDetails} paymentDetails={paymentMetaDetails} isLoading={loading} />;
-            case "projects":
+            case "orders":
                 return <ProjectInfo key={route.key} orderDetails={orderDetails} customerMetaData={
                     {
                         firstName: customerDetails?.customerBasicInfo?.firstName,

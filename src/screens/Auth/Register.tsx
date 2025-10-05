@@ -125,6 +125,10 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     const handleRegister = async (payload: AuthModel) => {
+        if(payload.authType === "EMAIL_PASSWORD"){
+            navigation.navigate("OneTimePassword", { authData: payload });
+            return
+        }
         const register: AuthResponse = await registerUser(payload);
         if (!register?.success) {
             return showToast({
@@ -142,11 +146,10 @@ const Register = ({ setCurrScreen }: any) => {
         }
 
         navigation.navigate("useronboarding");
-
     };
 
     const handleEmailRegister = async () => {
-        if(!userRegisterRefs.current.email || !userRegisterRefs.current.password || !userRegisterRefs.current.username){
+        if (!userRegisterRefs.current.email || !userRegisterRefs.current.password || !userRegisterRefs.current.username) {
             setLoadingProvider(null);
             return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
         }

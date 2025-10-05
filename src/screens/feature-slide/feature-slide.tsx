@@ -18,7 +18,9 @@ import {
 } from "react-native-responsive-screen";
 import GradientCard from "@/src/utils/gradient-card";
 import LottieView from "lottie-react-native";
-
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@/src/types/common";
+import { useDataStore } from "@/src/providers/data-store/data-store-provider";
 const { width } = Dimensions.get("window");
 const AnimatedFlatList = Animated.createAnimatedComponent(RNFlatList);
 
@@ -61,6 +63,8 @@ const FeatureSlide = () => {
     const scrollX = useSharedValue(0);
     const flatListRef = useRef<RNFlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const navigation = useNavigation<NavigationProp>();
+    const { setItem } = useDataStore();
 
     // Track scroll with Reanimated
     const scrollHandler = useAnimatedScrollHandler({
@@ -111,16 +115,22 @@ const FeatureSlide = () => {
             {/* Continue Button */}
             <TouchableOpacity
                 style={styles.continueButton}
-                onPress={() => {
-                    if (index < slides.length - 1) {
-                        flatListRef.current?.scrollToIndex({ index: index + 1 });
-                        setCurrentIndex(index + 1);
+                onPress={async () => {
+                    if (currentIndex < slides.length - 1) {
+                        flatListRef.current?.scrollToIndex({
+                            index: currentIndex + 1,
+                            animated: true,
+                        });
+                        setCurrentIndex(currentIndex + 1);
                     } else {
-                        console.log("Finished onboarding!");
+                        await setItem("IS_NEW_DEVICE", true);
+                        navigation.replace("Authentication"); // use replace for auth flow
                     }
                 }}
             >
-                <Text style={styles.continueText}>Continue →</Text>
+                <Text style={styles.continueText}>
+                    {currentIndex < slides.length - 1 ? "Next →" : "Register →"}
+                </Text>
             </TouchableOpacity>
         </View>
     );
@@ -137,7 +147,13 @@ const FeatureSlide = () => {
                 showsHorizontalScrollIndicator={false}
                 onScroll={scrollHandler}
                 scrollEventThrottle={16}
+                getItemLayout={(_, index) => ({
+                    length: width,
+                    offset: width * index,
+                    index,
+                })}
             />
+
 
             {/* Pagination Dots */}
             <View style={styles.pagination}>
