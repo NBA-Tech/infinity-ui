@@ -18,7 +18,7 @@ const { width } = Dimensions.get("window");
 export default function SplashScreen() {
   const scale = useSharedValue(0.8);
   const rotate = useSharedValue(0);
-  const { getItem } = useDataStore();
+  const { isInitialized,getItem } = useDataStore();
   const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
@@ -42,8 +42,10 @@ export default function SplashScreen() {
   }));
   useEffect(() => {
     const checkNavigation = async () => {
-      const isNewDevice = await getItem("IS_NEW_DEVICE");
-      const isAuthenticated = await getItem("isAuthenticated");
+      if(!isInitialized) return
+      const isNewDevice = getItem("IS_NEW_DEVICE");
+      const isAuthenticated = getItem("isAuthenticated");
+      console.log(isAuthenticated,isNewDevice)
     
       if (isAuthenticated) {
         navigation.replace("AuthStack"); // go to authenticated stack
@@ -59,7 +61,7 @@ export default function SplashScreen() {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation,isInitialized]);
 
   return (
     <GradientCard style={styles.container} className="">

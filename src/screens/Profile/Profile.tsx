@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, ImageBackground, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,12 @@ import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/src/context/auth-context/auth-context';
-import { NavigationProp } from '@/src/types/common';
+import { NavigationProp, SearchQueryRequest } from '@/src/types/common';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { useUserStore } from '@/src/store/user/user-store';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
+import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 const styles = StyleSheet.create({
     amountContainer: {
         padding: wp('5%'),
@@ -36,7 +41,12 @@ const Profile = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { logout } = useAuth()
+    const { userDetails, getUserDetailsUsingID } = useUserStore()
+    const { getItem } = useDataStore()
     const navigation = useNavigation<NavigationProp>();
+    const showToast = useToastMessage();
+    const [totalPaid,setTotalPaid] = useState(0)
+    const [totalAmount,setTotalAmount] = useState(0)
 
     const options = [
         {
@@ -74,6 +84,67 @@ const Profile = () => {
         }
     ];
 
+    const getInvoiceList = async (userId:string) => {
+        if(!userId){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found please login again",
+            })
+        }
+        const payload:SearchQueryRequest = {
+            filters:{
+                userId:userId
+            },
+            getAll:true,
+            requiredFields:["invoiceId","amountPaid"]
+        }
+        const invoiceListResponse = await getInvoiceListBasedOnFiltersAPI(payload)
+        if(!invoiceListResponse?.success){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: invoiceListResponse.message ?? "Something went wrong",
+            })
+        }
+        const totalPaid=invoiceListResponse.data.reduce((total,invoice)=>total+invoice.amountPaid,0)
+        setTotalPaid(totalPaid)
+    }
+
+    const getOrderList=async(userId:string)=>{
+        if(!userId){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found please login again",
+            })
+        }
+        const payload:SearchQueryRequest = {
+            filters:{
+                userId:userId
+            },
+            getAll:true,
+            requiredFields:["orderId","totalPrice"]
+        }
+        const orderListResponse = await getOrderDataListAPI(payload)
+        if(!orderListResponse?.success){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: orderListResponse.message ?? "Something went wrong",
+            })
+        }
+        const totalAmount=orderListResponse?.data?.reduce((total,order)=>total+order.totalPrice,0)
+        setTotalAmount(totalAmount)
+    }
+
+    useEffect(() => {
+        const userId = getItem("USERID")
+        getUserDetailsUsingID(userId, showToast);
+        getInvoiceList(userId)
+        getOrderList(userId)
+    }, [])
+
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
@@ -94,7 +165,7 @@ const Profile = () => {
                                 Total Amount
                             </Text>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                $0.00
+                                ${totalPaid || 0}
                             </Text>
                         </View>
 
@@ -103,31 +174,31 @@ const Profile = () => {
                             style={styles.logoContainer}
                         >
                             <Image
-                                source={Background}
+                                source={{uri:userDetails?.userBusinessInfo?.companyLogoURL}}
                                 style={styles.logo}
                             />
                         </View>
                     </ImageBackground>
                     <View>
                         <View className='flex flex-col justify-center items-center' style={{ marginTop: hp('6%'), marginVertical: hp('2%') }}>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Hello sopi</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Track your growth, manage funds, and update your info.</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Hello {userDetails?.userAuthInfo?.username}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText,{marginHorizontal: wp('5%')}]}>Manage your profile, update contact details, and keep your information current</Text>
 
                             <Card style={[globalStyles.cardShadowEffect, { marginTop: hp('1%'), width: wp('80%') }]} >
                                 <View className='flex flex-row justify-between items-center' style={{ padding: wp('2%') }}>
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Income</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>$0</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${totalPaid || 0}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Income</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>$0</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Total Quoted</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${totalAmount || 0}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Income</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>$0</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Total Balance</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${(totalAmount-totalPaid)<0?0:(totalAmount-totalPaid)}</Text>
                                     </View>
                                 </View>
                             </Card>

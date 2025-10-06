@@ -272,6 +272,18 @@ export function openDaialler(phoneNumber: string) {
   Linking.openURL(phoneUrl);
 }
 
+export function openMessageBox(phoneNumber: string, message?: string) {
+  // Encode the message (in case it has spaces or special characters)
+  const encodedMessage = message ? encodeURIComponent(message) : "";
+  const smsUrl = encodedMessage
+    ? `sms:${phoneNumber}?body=${encodedMessage}`
+    : `sms:${phoneNumber}`;
+
+  Linking.openURL(smsUrl).catch((err) =>
+    console.error("Failed to open message box:", err)
+  );
+}
+
 export function openEmailClient(email: string) {
   let emailUrl = `mailto:${email}`;
   Linking.openURL(emailUrl);

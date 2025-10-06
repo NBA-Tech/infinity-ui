@@ -84,7 +84,7 @@ export interface SearchQueryRequest {
 }
 
 export interface RootStackParamList extends ParamListBase {
-  OneTimePassword: {authData:AuthModel};
+  OneTimePassword: {authData:AuthModel,otpCode:string};
   useronboarding: undefined;
   OrderDetails: { orderId: string };
   InvoiceDetails: { invoiceId: string };

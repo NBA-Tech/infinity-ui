@@ -27,6 +27,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { useAuth } from '@/src/context/auth-context/auth-context';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("1%"),
@@ -108,8 +109,8 @@ const UserOnBoarding = () => {
             parentKey: "userBusinessInfo",
             key: "businessType",
             label: "Business Type",
-            placeholder: "Select Business Type",
-            icon: <Feather name="layers" size={wp("5%")} color="#8B5CF6" />,
+            placeholder: "Eg : IT Services",
+            icon: <Feather name="layers" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -176,7 +177,7 @@ const UserOnBoarding = () => {
             key: "gstNumber",
             label: "GST Number",
             placeholder: "Eg : 1234567890",
-            icon: <Feather name="file-text" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="file" size={wp("5%")} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -205,8 +206,8 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "country",
             label: "Country",
-            placeholder: "Select Country",
-            icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
+            placeholder: "Eg : India",
+            icon: <MaterialIcons name="public" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -224,8 +225,8 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "state",
             label: "State",
-            placeholder: "Select State",
-            icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
+            placeholder: "Eg : Maharashtra",
+            icon: <Feather name="map-pin" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: false,
@@ -244,7 +245,7 @@ const UserOnBoarding = () => {
             key: "city",
             label: "City",
             placeholder: "Eg : Mumbai",
-            icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
+            icon: <MaterialIcons name="location-city" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -259,7 +260,7 @@ const UserOnBoarding = () => {
             key: "address",
             label: "Address",
             placeholder: "Eg : 123 Street, Mumbai",
-            icon: <Feather name="map" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="home" size={wp("5%")} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -417,9 +418,10 @@ const UserOnBoarding = () => {
             title: "Success",
             message: updateBusinessDetails.message ?? "Successfully registered",
         })
-        setTimeout(() => {
-            login()
-        }, 2000);
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "AuthStack", params: { screen: "MainTabs" } }],
+        })
     }
 
 

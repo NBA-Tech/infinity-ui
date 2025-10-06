@@ -14,14 +14,16 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }: any) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { isInitialized,getItem, setItem,removeItem } = useDataStore();
+    const { isInitialized, getItem, setItem, removeItem } = useDataStore();
 
     useEffect(() => {
         const loadAuthState = async () => {
-            if(!isInitialized) return;
+            if (!isInitialized) return;
             try {
                 const storedAuth = getItem('isAuthenticated');
                 const createdAt = getItem("CREATEDAT");
+                console.log("clearing",storedAuth,createdAt)
+
 
                 if (storedAuth === 'true' && createdAt) {
                     const now = new Date();

@@ -22,20 +22,24 @@ const InvoiceInfo = () => {
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>hello</Text>
                             </View>
                             <View>
-                                <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Invoice ID</Text>
-                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>#123123</Text>
-                            </View>
-                            <View>
                                 <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Quotation ID</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>#123123</Text>
                             </View>
 
                         </View>
-                         <View className='flex flex-row justify-between items-center'>
+                        <View className='flex flex-row justify-between items-center'>
+                            <View>
+                                <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Invoice ID</Text>
+                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>#123123</Text>
+                            </View>
                             <View>
                                 <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Invoice Date</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>12/09/2025</Text>
                             </View>
+
+                        </View>
+                        <View className='flex flex-row justify-between items-center'>
+
                             <View>
                                 <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Payment Method</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>bank</Text>

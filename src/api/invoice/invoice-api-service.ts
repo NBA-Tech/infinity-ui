@@ -44,3 +44,14 @@ export const getInvoiceMetaInfoDetailsAPI=async(userId:string,headers?:Record<st
     })
     return getInvoiceMetaInfoDetailsResponse
 }
+
+export const getInvoiceDetailsAPI=async(invoiceId:string,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const getInvoiceDetailsResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/invoice/get_invoice_details?invoiceId=${invoiceId}`,
+        options: {
+            method: 'GET',
+            headers
+        },
+    })
+    return getInvoiceDetailsResponse
+}

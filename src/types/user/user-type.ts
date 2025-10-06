@@ -1,3 +1,4 @@
+import { AuthModel } from "../auth/auth-type";
 
 export interface UserApiResponse{
   message: string;
@@ -12,6 +13,7 @@ export interface UserModel {
   userBusinessInfo?: UserBusinessInfo;
   userBillingInfo?: UserBillingInfo;
   userSettingInfo?: UserSettingInfo;
+  userAuthInfo?:AuthModel
 }
 
 export interface UserBusinessInfo {

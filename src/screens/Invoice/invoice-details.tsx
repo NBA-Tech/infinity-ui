@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
@@ -6,13 +6,16 @@ import BackHeader from '@/src/components/back-header';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonText } from '@/components/ui/button';
-import { RootStackParamList } from '@/src/types/common';
+import { ApiGeneralRespose, RootStackParamList } from '@/src/types/common';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import CustomerInfo from './details-component/customer-info';
 import InvoiceInfo from './details-component/invoice-info';
 import LineItemsInfo from './details-component/line-items-info';
+import { getInvoiceDetailsAPI } from '@/src/api/invoice/invoice-api-service';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { Invoice } from '@/src/types/invoice/invoice-type';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "InvoiceDetails">;
@@ -21,24 +24,30 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
     const { invoiceId } = route?.params;
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const [invoiceDetails, setInvoiceDetails] = useState<Invoice>();
+    const showToast = useToastMessage();
 
     const actionButtons = [
-        {
-            id: 1,
-            label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-        {
-            id: 2,
-            label: 'Invoice',
-            icon: <Feather name="file" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
         {
             id: 3,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
         }
     ]
+
+
+    const getInvoiceDetails=async()=>{
+        const invoiceDetails:ApiGeneralRespose= await getInvoiceDetailsAPI(invoiceId as string)
+        if(!invoiceDetails.success){
+            showToast({type:"error",title:"Error",message:invoiceDetails.message})
+        }
+        else{
+            setInvoiceDetails(invoiceDetails?.data)
+        }
+    }
+    useEffect(()=>{
+        getInvoiceDetails()
+    },[invoiceId])
     return (
         <SafeAreaView style={globalStyles.appBackground}>
             <BackHeader>
@@ -75,14 +84,14 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
 
                 <View className='flex flex-col gap-5'>
                     <View>
-                        <CustomerInfo customerData={undefined} orderBasicInfo={undefined} />
+                        <CustomerInfo customerData={invoiceDetails?.billingInfo} />
                     </View>
                     <View>
                         <InvoiceInfo />
                     </View>
-                    <View>
+                    {/* <View>
                         <LineItemsInfo />
-                    </View>
+                    </View> */}
 
                 </View>
             </ScrollView>

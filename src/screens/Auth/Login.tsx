@@ -83,6 +83,7 @@ const Login = ({ setCurrScreen }: any) => {
         setItem("CREATEDAT",new Date().toISOString());
         if (isOnBoarded) {
             //navigate to home
+            await login()
             navigation.navigate("AuthStack", { screen: "MainTabs" });
             
         }

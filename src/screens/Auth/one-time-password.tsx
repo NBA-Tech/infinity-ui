@@ -8,6 +8,10 @@ import { useRoute } from '@react-navigation/native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { WaveHandIcon } from '@/src/assets/Icons/SvgIcons';
 import Background from '../../assets/images/Background.png'
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { AuthResponse } from '@/src/types/auth/auth-type';
+import { registerUser } from '@/src/api/auth/auth-api-service';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 const styles = StyleSheet.create({
     otpBodyContainer: {
         flex: 1,
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     }
 });
 const OneTimePassword = ({ navigation, route }: { navigation: any, route: any }) => {
-    const { authData } = route?.params || {};
+    const { authData, otpCode } = route?.params || {};
     const [loading, setLoading] = useState(false);
     const [timer, setTimer] = useState(60);
     const numInputs = 4;
@@ -74,6 +78,8 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
     const inputRefs = useRef(Array(numInputs).fill(null));
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const globalStyle = useContext(StyleContext);
+    const showToast = useToastMessage();
+    const { setItem } = useDataStore();
 
     useEffect(() => {
         let interval = setInterval(() => {
@@ -98,7 +104,6 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
 
             // Move focus to next input
             if (index < numInputs - 1) {
-                console.log("index", inputRefs, newOtp,index)
                 inputRefs.current[index + 1]?.focus();
             }
         } else if (text === "") {
@@ -107,6 +112,27 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
             setOtp(newOtp);
         }
     };
+    const handleSubmit = async () => {
+        if (otpCode !== otp.join('')) {
+            return showToast({ type: "error", title: "Error", message: "Invalid OTP" })
+        }
+        setLoading(true)
+        const register: AuthResponse = await registerUser(authData);
+        if (!register?.success) {
+            setLoading(false)
+            return showToast({ type: "error", title: "Error", message: register?.message ?? "Something went wrong" })
+        } else {
+            setLoading(false)
+            showToast({ type: "success", title: "Success", message: register?.message ?? "Successfully registered" })
+            await setItem("USERID", register?.userId);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "UserOnBoarding" }],
+            });
+
+        }
+
+    }
 
 
     return (
@@ -148,7 +174,9 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
                                 ))}
                             </View>
 
-                            <Button size="lg" variant="solid" action="primary" style={[globalStyle.purpleBackground, { marginVertical: hp('3%') }]}>
+                            <Button size="lg" variant="solid" action="primary" style={[globalStyle.purpleBackground, { marginVertical: hp('3%') }]} onPress={handleSubmit} isDisabled={loading}>
+                                {loading && <ButtonSpinner color={"#fff"} size={wp("4%")} />}
+
                                 <ButtonText style={globalStyle.buttonText}>Verify OTP</ButtonText>
                             </Button>
 

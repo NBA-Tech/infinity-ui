@@ -19,7 +19,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
-import { registerUser } from '@/src/api/auth/auth-api-service';
+import { getOtpAPI, registerUser } from '@/src/api/auth/auth-api-service';
 import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useNavigation } from '@react-navigation/native';
@@ -126,7 +126,21 @@ const Register = ({ setCurrScreen }: any) => {
 
     const handleRegister = async (payload: AuthModel) => {
         if(payload.authType === "EMAIL_PASSWORD"){
-            navigation.navigate("OneTimePassword", { authData: payload });
+            const otpApiResponse = await getOtpAPI(payload.email);
+            if(!otpApiResponse?.success){
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: otpApiResponse?.message ?? "Something went wrong",
+                });
+            }
+            showToast({
+                type: "success",
+                title: "Success",
+                message: otpApiResponse?.message ?? "OTP sent successfully",
+            })
+
+            navigation.navigate("OneTimePassword", { authData: payload,otpCode:otpApiResponse?.data });
             return
         }
         const register: AuthResponse = await registerUser(payload);
