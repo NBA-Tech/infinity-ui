@@ -71,5 +71,6 @@ export interface OrderModel {
   quotationHtmlInfo?: QuotaionHtmlInfo[]
   statusHistory?:StatusHistory[]
   deliverables?:Deliverable[]
+  totalAmountCanPay:number
 
 }

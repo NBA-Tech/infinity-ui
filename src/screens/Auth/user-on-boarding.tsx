@@ -348,10 +348,6 @@ const UserOnBoarding = () => {
 
     }
 
-
-
-
-
     const openGallery = async () => {
         try {
             const image = await ImagePicker.openPicker({

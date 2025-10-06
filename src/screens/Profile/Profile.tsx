@@ -52,7 +52,7 @@ const Profile = () => {
         {
             label: "Business Information",
             icon: <Feather name="briefcase" size={wp('6%')} color="#6B7280" />,
-            onPress: () => { }
+            onPress: () => { navigation.navigate('BusinessDetails') }
         },
         {
             label: "Services & Packages",

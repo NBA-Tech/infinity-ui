@@ -28,7 +28,7 @@ import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getInvoiceListBasedOnFiltersAPI, getInvoiceMetaInfoDetailsAPI } from '@/src/api/invoice/invoice-api-service';
+import { deleteInvoiceAPI, getInvoiceListBasedOnFiltersAPI, getInvoiceMetaInfoDetailsAPI } from '@/src/api/invoice/invoice-api-service';
 import debounce from "lodash.debounce";
 import FilterComponent from '@/src/components/filter-component';
 const styles = StyleSheet.create({
@@ -170,35 +170,34 @@ const InvoiceList = () => {
 
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
-    const deleteCustomer = async () => {
-        if (!currID) return;
+    const deleteInvoice = async () => {
+        if(!currID) return
         setLoadingDelete(true);
-        const deleteCustomerResponse = await deleteCustomerAPI(currID);
-        if (!deleteCustomerResponse?.success) {
+        const deleteInvoiceResponse = await deleteInvoiceAPI(currID);
+        if (!deleteInvoiceResponse?.success) {
             showToast({
                 type: 'error',
                 title: 'Error',
-                message: deleteCustomerResponse?.message || 'Failed to delete customer'
+                message: deleteInvoiceResponse?.message
             })
             setLoadingDelete(false);
             return
         }
-        setLoadingDelete(false);
-        setInvoiceData(prev => prev.filter(item => item.invoiceId !== currID));
-        deleteCustomerMetaInfo(currID);
         showToast({
             type: 'success',
             title: 'Success',
-            message: 'Customer deleted successfully'
+            message: deleteInvoiceResponse?.message
         })
         setOpenDelete(false);
+        setLoadingDelete(false);
+        setFilters(prev => ( {...prev, page: 1,pageSize: 10}));
     }
 
 
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1;
-            getInvoiceListData(reset);
+            getInvoiceListData(reset || refresh);
 
             return () => {
                 setInvoiceData([]);
@@ -216,7 +215,7 @@ const InvoiceList = () => {
         useCallback(() => {
             const userId = getItem("USERID")
             loadInvoiceMetaData(userId)
-        },[])
+        }, [])
     )
 
 
@@ -272,8 +271,15 @@ const InvoiceList = () => {
                             <TouchableOpacity onPress={() => navigation.navigate('InvoiceDetails', { invoiceId: item?.invoiceId })}>
                                 <Feather name="eye" size={wp('5%')} color="#3B82F6" />
                             </TouchableOpacity>
-                            <Feather name="edit" size={wp('5%')} color="#22C55E" />
-                            <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
+                            <TouchableOpacity onPress={() => navigation.navigate('CreateInvoice', { invoiceId: item?.invoiceId })}>
+                                <Feather name="edit" size={wp('5%')} color="#22C55E" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>{
+                                setOpenDelete(true)
+                                setCurrID(item?.invoiceId)
+                            }}>
+                                <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -290,7 +296,7 @@ const InvoiceList = () => {
                     openDelete={openDelete}
                     setOpenDelete={setOpenDelete}
                     loading={loadingDelete}
-                    handleDelete={deleteCustomer}
+                    handleDelete={deleteInvoice}
                 />
             )
 
@@ -303,19 +309,19 @@ const InvoiceList = () => {
                     setFilters={setFilters}
                     openFilter={openFilter}
                     setOpenFilter={setOpenFilter}
-                    setRefresh={setRefresh} 
+                    setRefresh={setRefresh}
                     extraValue={{
-                        customerList:customerMetaInfoList?.filter(
-                            c=>customerListFilter?.some((f) => f === c.customerID)
-                        )?.map((c)=>({
-                            label:`${c.firstName} ${c.lastName}`,
-                            value:c.customerID
+                        customerList: customerMetaInfoList?.filter(
+                            c => customerListFilter?.some((f) => f === c.customerID)
+                        )?.map((c) => ({
+                            label: `${c.firstName} ${c.lastName}`,
+                            value: c.customerID
                         })),
-                        orderList:orderTypeFilter && Object?.keys(orderTypeFilter)?.map((key) => ({
+                        orderList: orderTypeFilter && Object?.keys(orderTypeFilter)?.map((key) => ({
                             label: orderTypeFilter[key],
                             value: key
                         }))
-                    }}/>
+                    }} />
 
                 <View className={isDark ? 'bg-[#1F2028]' : 'bg-[#fff]'} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>

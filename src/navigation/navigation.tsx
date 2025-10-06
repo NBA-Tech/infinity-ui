@@ -26,6 +26,7 @@ import {
   CreateInvoice,
   InvoiceDetails,
   Profile,
+  BusinessDetails,
 } from "../screens";
 
 const RootStack = createNativeStackNavigator();
@@ -60,6 +61,7 @@ function ProfileNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileView" component={Profile} />
       <Stack.Screen name="Services" component={Services} />
+      <Stack.Screen name="BusinessDetails" component={BusinessDetails}/>
     </Stack.Navigator>
   );
 }

@@ -170,11 +170,12 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { justifyContent: "center", backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#3A3B47" : "#ccc" },
+                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#3A3B47" : "#ccc" },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                     disabled={field.isDisabled || field?.isLoading}
                 >
+                    <Feather name="calendar" size={wp("5%")} style={{paddingRight: wp("3%")}} color={"#8B5CF6"} />
                     <Text
                         style={[
                             globalStyles.labelText,
@@ -184,7 +185,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     >
                         {field.value
                             ? field.type === "date"
-                                ? new Date(field.value + "T00:00:00").toLocaleDateString()
+                                ? new Date(field.value).toLocaleDateString()
                                 : new Date(`1970-01-01T${field.value}:00`).toLocaleTimeString([], {
                                     hour: "2-digit",
                                     minute: "2-digit",

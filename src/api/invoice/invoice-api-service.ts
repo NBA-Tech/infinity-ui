@@ -55,3 +55,29 @@ export const getInvoiceDetailsAPI=async(invoiceId:string,headers?:Record<string,
     })
     return getInvoiceDetailsResponse
 }
+
+export const deleteInvoiceAPI=async(invoiceId:string,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const deleteInvoiceResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/invoice/delete_invoice?invoiceId=${invoiceId}`,
+        options: {
+            method: 'DELETE',
+            headers
+        },
+    })
+    return deleteInvoiceResponse
+}
+
+export const updateInvoiceAPI=async(payload:Invoice,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const updateInvoiceResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/invoice/update_invoice`,
+        options: {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        }
+    })
+    return updateInvoiceResponse
+}
