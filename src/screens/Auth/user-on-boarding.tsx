@@ -288,43 +288,6 @@ const UserOnBoarding = () => {
     }),[businessDetails]);
 
 
-    const settingInfoFields: FormFields = useMemo(() => ({
-        currency: {
-            parentKey: "userSettingInfo",
-            key: "currency",
-            label: "Default Currency",
-            placeholder: "Eg : INR",
-            icon: <Feather name="dollar-sign" size={wp("5%")} color="#8B5CF6" />,
-            type: "text",
-            style: "w-full",
-            isRequired: false,
-            isDisabled: true,
-            value: Country.getCountryByCode("IN")?.currency || "INR",
-            onChange: (value: string) => {
-                patchState("userSettingInfo", "currency", value,true,setBusinessDetails,setErrors);
-            },
-        },
-        notificationPreference: {
-            parentKey: "userSettingInfo",
-            key: "notificationPreference",
-            label: "Notification Preference",
-            placeholder: "Select Preference",
-            icon: <Feather name="bell" size={wp("5%")} color="#8B5CF6" />,
-            type: "select",
-            style: "w-full",
-            isRequired: true,
-            isDisabled: false,
-            dropDownItems: ["Email", "Push Notification"].map((state) => ({
-                label: state,
-                value: state,
-            })),
-            onChange: (value: string) => {
-                patchState("userSettingInfo", "notificationPreference", value,true,setBusinessDetails,setErrors);
-            },
-        },
-    }),[businessDetails]);
-
-
     // const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
 
     const handleNext = () => {
@@ -442,7 +405,7 @@ const UserOnBoarding = () => {
                 <View className="flex-1">
                     <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
                         <View className="flex flex-row align-middle items-center">
-                            {[0, 1, 2].map((step, index) => (
+                            {[0, 1].map((step, index) => (
                                 <View className="flex flex-row align-middle items-center" key={index}>
                                     <GradientCard
                                         className='rounded-2xl p-4 mb-4'
@@ -467,7 +430,7 @@ const UserOnBoarding = () => {
                                             }
                                         </View>
                                     </GradientCard>
-                                    {index != 2 && <Divider style={[styles.divider,{ backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
+                                    {index != 1 && <Divider style={[styles.divider,{ backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
                             ))}
                         </View>
@@ -510,7 +473,7 @@ const UserOnBoarding = () => {
                             )
 
                             }
-                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : currStep == 1 ? billingInfoFields : settingInfoFields} errors={errors} />
+                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
 
                         </ScrollView>
                         <View style={[styles.fixedButtonContainer,globalStyles.cardShadowEffect]}>
@@ -518,14 +481,14 @@ const UserOnBoarding = () => {
                                 <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                 <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor,globalStyles.themeTextColor]}>Prev</ButtonText>
                             </Button>
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={currStep == 2 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
+                            <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
                                 {
                                     loading && (
                                         <ButtonSpinner color={"#fff"} size={wp("4%")} />
                                     )
                                 }
-                                <ButtonText style={globalStyles.buttonText}>{currStep == 2 ? "Submit" : "Next"}</ButtonText>
-                                {currStep != 2 && <Feather name="arrow-right" size={wp("5%")} color="#fff" />}
+                                <ButtonText style={globalStyles.buttonText}>{currStep == 1 ? "Submit" : "Next"}</ButtonText>
+                                {currStep != 1 && <Feather name="arrow-right" size={wp("5%")} color="#fff" />}
                             </Button>
                         </View>
                     </Card>

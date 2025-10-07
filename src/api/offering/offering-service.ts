@@ -18,9 +18,9 @@ export const addNewServiceAPI=async(payload:ServiceModel | PackageModel,headers?
     return addNewService
 }
 
-export const getOfferingListAPI=async(customerID:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+export const getOfferingListAPI=async(userId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
     const getOfferingList=await fetchWithTimeout({
-        url:`${API_BASE_URI}/offerings/get_all_offerings?customerID=${customerID}`,
+        url:`${API_BASE_URI}/offerings/get_all_offerings?customerID=${userId}`,
         options: {
             method: 'GET',
             headers

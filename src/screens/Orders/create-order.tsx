@@ -12,7 +12,7 @@ import { BasicInfoFields } from '../customer/types-deprecated';
 import { CustomCheckBox, CustomFieldsComponent } from '@/src/components/fields-component';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ApiGeneralRespose, FormFields, NavigationProp, SearchQueryRequest } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields, NavigationProp, RootStackParamList, SearchQueryRequest } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/types/customer/customer-type';
@@ -20,7 +20,7 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { escapeHtmlForJson, generateRandomString, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
-import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType } from '@/src/types/order/order-type';
+import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType, StatusHistory } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
 import { OfferingModel, OFFERINGTYPE, PackageModel, ServiceInfo, ServiceModel } from '@/src/types/offering/offering-type';
@@ -39,6 +39,7 @@ import { getOrderDetailsAPI, saveNewOrderAPI, updateOrderDetailsAPI } from '@/sr
 import { EmptyState } from '@/src/components/empty-state-data';
 import { useNavigation } from '@react-navigation/native';
 import { getQuotationFields } from '@/src/utils/order/quotation-utils';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -64,14 +65,11 @@ interface CustomerOption {
     value: string;
 }
 
-type CreateOrderProps = {
-    orderId?: string
-}
+type Props = NativeStackScreenProps<RootStackParamList, "CreateOrder">;
 
-const CreateOrder = () => {
+const CreateOrder = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
-    const route = useRoute();
     const { orderId } = route.params ?? {}
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
     const { getItem } = useDataStore()
@@ -100,7 +98,6 @@ const CreateOrder = () => {
         time: false,
         modal: false
     })
-    const navigation = useNavigation<NavigationProp>();
 
     const getCustomerNameList = async (userID: string) => {
         const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
@@ -118,7 +115,7 @@ const CreateOrder = () => {
             key: "customerID",
             label: "Customer Name",
             placeholder: "Choose Customer",
-            icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -151,7 +148,7 @@ const CreateOrder = () => {
             key: "specialInstructions",
             label: "Special Instruction",
             placeholder: "Enter Special Instruction",
-            icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="info" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
@@ -163,7 +160,7 @@ const CreateOrder = () => {
                 patchState('orderBasicInfo', 'specialInstructions', value, false, setOrderDetails, setErrors)
             },
         }
-    }), [customerList, orderDetails,loadingProvider?.intialLoading]);
+    }), [customerList, orderDetails, loadingProvider]);
 
 
     const eventInfo: FormFields = useMemo(() => ({
@@ -297,17 +294,17 @@ const CreateOrder = () => {
         },
     }), [orderDetails]);
 
-    const quotationFields =useMemo(
-    () =>
-      getQuotationFields(
-        userDetails,
-        orderDetails,
-        customerList,
-        packageData,
-        findServicePrice
-      ),
-    [orderDetails]
-  );
+    const quotationFields = useMemo(
+        () =>
+            getQuotationFields(
+                userDetails,
+                orderDetails,
+                customerList,
+                packageData,
+                findServicePrice
+            ),
+        [orderDetails]
+    );
 
     const formOrders = [userInfo, eventInfo, eventTypes]
 
@@ -737,7 +734,7 @@ const CreateOrder = () => {
                             )
                             }
                             <ButtonText style={globalStyles.buttonText}>
-                                {!isAllLoadingFalse(loadingProvider) ? 'Creating...' : currStep == 3 ? 'Create Order' : 'Next'}
+                                {!isAllLoadingFalse(loadingProvider) ? (orderId ? 'Updating...' : 'Creating...') : currStep == 3 ? (orderId ? 'Update Order' : 'Create Order') : 'Next'}
                             </ButtonText>
                             {currStep != 3 && isAllLoadingFalse(loadingProvider) &&
                                 <Feather name="arrow-right" size={wp("5%")} color="#fff" />

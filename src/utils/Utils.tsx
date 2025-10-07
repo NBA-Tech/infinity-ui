@@ -284,6 +284,35 @@ export function openMessageBox(phoneNumber: string, message?: string) {
   );
 }
 
+export function openAddressInMap(address: string) {
+  if (!address) return;
+
+  const query = encodeURIComponent(address);
+  const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+
+  Linking.openURL(url).catch(err => {
+    console.error("Failed to open map:", err);
+  });
+}
+
+export async function openInBrowser(url: string) {
+  try {
+    if (!url) return;
+
+    // Ensure the URL has a protocol
+    const validUrl = url.startsWith("http") ? url : `https://${url}`;
+
+    const supported = await Linking.canOpenURL(validUrl);
+    if (supported) {
+      await Linking.openURL(validUrl);
+    } else {
+      console.warn("Can't open this URL:", validUrl);
+    }
+  } catch (error) {
+    console.error("Failed to open browser:", error);
+  }
+}
+
 export function openEmailClient(email: string) {
   let emailUrl = `mailto:${email}`;
   Linking.openURL(emailUrl);
@@ -293,7 +322,7 @@ export function isAllLoadingFalse(loadingObj: any) {
   return Object.values(loadingObj).every(value => value === false);
 }
 
-export const resetAllStoreDetails=()=>{
+export const resetAllStoreDetails = () => {
   useUserStore.getState().resetUserDetails()
   useCustomerStore.getState().resetCustomerDetailsInfo()
   useCustomerStore.getState().resetCustomerMetaInfoList()
@@ -333,11 +362,11 @@ export const getNextStatus = (status: GlobalStatus) => {
   return GLOBALSTATUS[nextStatus]; // return the object {label, color, icon}
 };
 
-export const getPercentageOfCompletion=(offeringInfo:OfferingInfo):number=>{
-  if(offeringInfo?.orderType==OrderType.PACKAGE){
-    return offeringInfo?.isCompleted?100:0
+export const getPercentageOfCompletion = (offeringInfo: OfferingInfo): number => {
+  if (offeringInfo?.orderType == OrderType.PACKAGE) {
+    return offeringInfo?.isCompleted ? 100 : 0
   }
-  else{
+  else {
     const completedServicesCount = offeringInfo?.services?.filter((service) => service?.isCompleted)?.length ?? 0;
     return Math.floor((completedServicesCount / (offeringInfo?.services?.length ?? 1)) * 100);
   }

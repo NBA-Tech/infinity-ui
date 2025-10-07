@@ -335,7 +335,6 @@ const Customer = () => {
                             <Menu
                                 placement="bottom"
                                 offset={5}
-                                style={{ backgroundColor: isDark ? '#1E1E2A' : '#fff' }}
                                 trigger={({ ...triggerProps }) => {
                                     return (
                                         <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>

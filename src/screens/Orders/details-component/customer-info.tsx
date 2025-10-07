@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { OrderBasicInfo } from '@/src/types/order/order-type';
 import Skeleton from '@/components/ui/skeleton';
+import { openDaialler, openEmailClient, openMessageBox } from '@/src/utils/utils';
 
 
 type CustomerInfoProps = {
@@ -40,8 +41,14 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                     <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber}</Text>
                                 </View>
                                 <View className='flex flex-row gap-4'>
-                                    <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
-                                    <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
+                                    <TouchableOpacity onPress={() => openDaialler(props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber)}>
+                                        <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => {
+                                        openMessageBox(props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber, `Hi ${props?.customerData?.firstName} ${props?.customerData?.lastName} Hope you are doing good.`)
+                                    }}>
+                                        <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
+                                    </TouchableOpacity>
                                 </View>
 
                             </View>
@@ -51,7 +58,9 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                     <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
                                 </View>
                                 <View className='flex flex-row gap-4'>
-                                    <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
+                                    <TouchableOpacity onPress={()=>openEmailClient(props?.customerData?.email)}>
+                                        <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
+                                    </TouchableOpacity>
                                 </View>
 
                             </View>

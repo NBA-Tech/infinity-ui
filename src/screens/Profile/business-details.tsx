@@ -42,7 +42,7 @@ const BusinessDetails = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const showToast = useToastMessage();
     const { getItem } = useDataStore()
-    const { userDetails, getUserDetailsUsingID } = useUserStore();
+    const { userDetails, getUserDetailsUsingID,setUserDetails } = useUserStore();
     const [loading,setLoading] = useState(false)
 
     const businessInfoFields: FormFields = useMemo(() => ({
@@ -280,10 +280,13 @@ const BusinessDetails = () => {
     };
 
     const handleSubmit=async()=>{
+        setLoading(true)
         const updateBusinessDetailsResponse=await updateBusinessDetailsApi(businessDetails);
+        setLoading(false)
         if(!updateBusinessDetailsResponse.success){
             return showToast({type:"error",title:"Error",message:updateBusinessDetailsResponse.message??'Something went wrong'})
         }
+        setUserDetails(businessDetails)
         showToast({type:"success",title:"Success",message:updateBusinessDetailsResponse.message??'Successfully registered'})
 
     }
@@ -313,8 +316,8 @@ const BusinessDetails = () => {
                             <View>
                                 <View className="flex justify-center items-center" style={{ marginVertical: hp('2%') }}>
                                     <TouchableOpacity onPress={openGallery}>
-                                        {businessDetails.userBusinessInfo?.companyLogoURL ? (
-                                            <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
+                                        {businessDetails?.userBusinessInfo?.companyLogoURL ? (
+                                            <Image source={{ uri: businessDetails?.userBusinessInfo?.companyLogoURL }} style={styles.image} />
                                         ) : (
                                             <View style={styles.imageUploadContainer}>
                                                 <Feather name="upload" size={wp("10%")} color="#d1d5db" />

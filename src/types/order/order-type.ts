@@ -16,11 +16,6 @@ export enum OrderType {
   PACKAGE = 'PACKAGE'
 }
 
-export interface StatusHistory{
-  status:OrderStatus,
-  changedAt:Date
-}
-
 export interface QuotaionHtmlInfo{
   key:string;
   section:string;
@@ -69,7 +64,6 @@ export interface OrderModel {
   eventInfo: EventInfo;
   offeringInfo: OfferingInfo;
   quotationHtmlInfo?: QuotaionHtmlInfo[]
-  statusHistory?:StatusHistory[]
   deliverables?:Deliverable[]
   totalAmountCanPay:number
 

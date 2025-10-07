@@ -45,8 +45,9 @@ const Profile = () => {
     const { getItem } = useDataStore()
     const navigation = useNavigation<NavigationProp>();
     const showToast = useToastMessage();
-    const [totalPaid,setTotalPaid] = useState(0)
-    const [totalAmount,setTotalAmount] = useState(0)
+    const [totalPaid, setTotalPaid] = useState(0)
+    const [totalAmount, setTotalAmount] = useState(0)
+    const [loading, setLoading] = useState(true)
 
     const options = [
         {
@@ -57,7 +58,7 @@ const Profile = () => {
         {
             label: "Services & Packages",
             icon: <Feather name="package" size={wp('6%')} color="#14B8A6" />,
-            onPress: () => { navigation.navigate('Offering') }
+            onPress: () => { navigation.navigate('Services') }
         },
         {
             label: "Terms & Conditions",
@@ -84,66 +85,81 @@ const Profile = () => {
         }
     ];
 
-    const getInvoiceList = async (userId:string) => {
-        if(!userId){
+    const getInvoiceList = async (userId: string) => {
+        if (!userId) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: "UserID is not found please login again",
             })
         }
-        const payload:SearchQueryRequest = {
-            filters:{
-                userId:userId
+        const payload: SearchQueryRequest = {
+            filters: {
+                userId: userId
             },
-            getAll:true,
-            requiredFields:["invoiceId","amountPaid"]
+            getAll: true,
+            requiredFields: ["invoiceId", "amountPaid"]
         }
         const invoiceListResponse = await getInvoiceListBasedOnFiltersAPI(payload)
-        if(!invoiceListResponse?.success){
+        if (!invoiceListResponse?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: invoiceListResponse.message ?? "Something went wrong",
             })
         }
-        const totalPaid=invoiceListResponse.data.reduce((total,invoice)=>total+invoice.amountPaid,0)
+        const totalPaid = invoiceListResponse.data.reduce((total, invoice) => total + invoice.amountPaid, 0)
         setTotalPaid(totalPaid)
     }
 
-    const getOrderList=async(userId:string)=>{
-        if(!userId){
+    const getOrderList = async (userId: string) => {
+        if (!userId) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: "UserID is not found please login again",
             })
         }
-        const payload:SearchQueryRequest = {
-            filters:{
-                userId:userId
+        const payload: SearchQueryRequest = {
+            filters: {
+                userId: userId
             },
-            getAll:true,
-            requiredFields:["orderId","totalPrice"]
+            getAll: true,
+            requiredFields: ["orderId", "totalPrice"]
         }
         const orderListResponse = await getOrderDataListAPI(payload)
-        if(!orderListResponse?.success){
+        if (!orderListResponse?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
                 message: orderListResponse.message ?? "Something went wrong",
             })
         }
-        const totalAmount=orderListResponse?.data?.reduce((total,order)=>total+order.totalPrice,0)
+        const totalAmount = orderListResponse?.data?.reduce((total, order) => total + order.totalPrice, 0)
         setTotalAmount(totalAmount)
     }
 
     useEffect(() => {
-        const userId = getItem("USERID")
-        getUserDetailsUsingID(userId, showToast);
-        getInvoiceList(userId)
-        getOrderList(userId)
-    }, [])
+        const fetchData = async () => {
+            try {
+                setLoading(true); // Start loading
+
+                const userId = getItem("USERID");
+                await getUserDetailsUsingID(userId, showToast);
+                await getInvoiceList(userId);
+                await getOrderList(userId);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                showToast({ type: "error", title: "Error", message: "Failed to fetch data" });
+            } finally {
+                setLoading(false); // Stop loading
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
 
     return (
@@ -165,7 +181,7 @@ const Profile = () => {
                                 Total Amount
                             </Text>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                ${totalPaid || 0}
+                                 {loading ? "Loading..." : `$ ${totalPaid || 0}`}
                             </Text>
                         </View>
 
@@ -174,31 +190,31 @@ const Profile = () => {
                             style={styles.logoContainer}
                         >
                             <Image
-                                source={{uri:userDetails?.userBusinessInfo?.companyLogoURL}}
+                                source={{ uri: userDetails?.userBusinessInfo?.companyLogoURL }}
                                 style={styles.logo}
                             />
                         </View>
                     </ImageBackground>
                     <View>
                         <View className='flex flex-col justify-center items-center' style={{ marginTop: hp('6%'), marginVertical: hp('2%') }}>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Hello {userDetails?.userAuthInfo?.username}</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText,{marginHorizontal: wp('5%')}]}>Manage your profile, update contact details, and keep your information current</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Hello {loading ? "Loading..." : userDetails?.userAuthInfo?.username || "N/A"}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText, { marginHorizontal: wp('5%') }]}>Manage your profile, update contact details, and keep your information current</Text>
 
                             <Card style={[globalStyles.cardShadowEffect, { marginTop: hp('1%'), width: wp('80%') }]} >
                                 <View className='flex flex-row justify-between items-center' style={{ padding: wp('2%') }}>
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Income</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${totalPaid || 0}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}> {loading ? "Loading..." : `$ ${totalPaid || 0}`}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Total Quoted</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${totalAmount || 0}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quoted</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{loading ? "Loading..." : `$ ${totalAmount || 0}`}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Total Balance</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>${(totalAmount-totalPaid)<0?0:(totalAmount-totalPaid)}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Balance</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>  {loading ? "Loading..." : `$ ${(totalAmount - totalPaid) < 0 ? 0 : (totalAmount - totalPaid)}`}</Text>
                                     </View>
                                 </View>
                             </Card>

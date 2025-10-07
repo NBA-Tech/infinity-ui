@@ -33,7 +33,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   secondaryActionLabel,
   onAction,
   onSecondaryAction,
-  variant = "search",
+  variant,
   style = {},
 }) => {
   const config = useMemo(() => {
@@ -65,7 +65,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             description ||
             "Create your first photography package to start offering services to clients. Include pricing, session details, and deliverables.",
           actionLabel: actionLabel || "Create Package",
-          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(254,242,242,0.8)"],
+          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(2, 2, 2, 0.8)"],
         };
       case "customers":
         return {

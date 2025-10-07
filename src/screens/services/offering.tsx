@@ -317,16 +317,6 @@ const services = () => {
                 patchState("", 'tags', value, true, setPackageDetails, setErrors)
             },
         },
-        status: {
-            key: "status",
-            label: "Active Status",
-            type: "switch",
-            style: "w-full",
-            value: packageDetails.status === STATUS.ACTIVE,
-            onChange(value: boolean) {
-                patchState("", 'status', value ? STATUS.ACTIVE : STATUS.INACTIVE, false, setPackageDetails, setErrors)
-            },
-        },
     }
 
     const serviceInfoFields: FormFields = {
@@ -363,7 +353,7 @@ const services = () => {
             key: "serviceCategory",
             label: "Service Category",
             placeholder: "Select category",
-            icon: <Feather name="image" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="image" size={wp('5%')} style={{paddingRight: wp('3%')}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -392,7 +382,7 @@ const services = () => {
             key: "serviceIcon",
             label: "Service Icon",
             placeholder: "Select Icon",
-            icon: <Feather name="image" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="image" size={wp('5%')} style={{paddingRight: wp('3%')}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: false,
@@ -439,16 +429,6 @@ const services = () => {
             ],
             onChange(value: string[]) {
                 patchState("", 'tags', value, true, setServiceDetails, setErrors)
-            },
-        },
-        status: {
-            key: "status",
-            label: "Active Status",
-            type: "switch",
-            style: "w-full",
-            value: servieDetails.status === STATUS.ACTIVE,
-            onChange(value: boolean) {
-                patchState("", 'status', value ? STATUS.ACTIVE : STATUS.INACTIVE, false, setServiceDetails, setErrors)
             },
         },
     };

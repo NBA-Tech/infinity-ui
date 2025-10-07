@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import GradientCard from '@/src/utils/gradient-card';
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 
 export const StatInfo = ({ item,isLoading,index }: { item: GeneralCardModel;isLoading: boolean;index: number }) => {
   const globalStyles = useContext(StyleContext);
-  const [toolTipVisible, setToolTipVisible] = React.useState(false);
+  const [toolTipVisible, setToolTipVisible] = useState(false);
 
   if(isLoading){
     return (

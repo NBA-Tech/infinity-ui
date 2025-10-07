@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import { EventInfo } from '@/src/types/order/order-type';
-import { formatDate } from '@/src/utils/utils';
+import { formatDate, openAddressInMap } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
 import { Divider } from '@/components/ui/divider';
 
@@ -49,7 +49,9 @@ const EventInfoCard = (props: EventInfoProps) => {
                             <View className='flex flex-row justify-start items-center gap-2' style={{ width: wp('60%') }}>
                                 <Feather name="map-pin" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{props?.eventData?.eventLocation}</Text>
+                                <TouchableOpacity onPress={()=>openAddressInMap(props?.eventData?.eventLocation)}>
                                 <Feather name="external-link" size={wp('5%')} color={'#8B5CF6'} />
+                                </TouchableOpacity>
                             </View>
                             <Divider />
 

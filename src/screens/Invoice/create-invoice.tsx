@@ -22,8 +22,8 @@ import GradientCard from "@/src/utils/gradient-card";
 import { Divider } from "@/components/ui/divider";
 import QuotationDetails from "./step-components/quotation-details";
 import PaymentComponent from "./step-components/payment-component";
-import TemplateBuilderComponent from "../Orders/components/template-builder-component";
-import TemplatePreview from "../Orders/components/template-preview";
+import TemplateBuilderComponent from "../orderscomponents/template-builder-component";
+import TemplatePreview from "../orderscomponents/template-preview";
 import { Card } from "@/components/ui/card";
 import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 
@@ -58,7 +58,7 @@ import {
     patchState,
     validateValues,
 } from "@/src/utils/utils";
-import { buildHtml } from "../Orders/utils/html-builder";
+import { buildHtml } from "../ordersutils/html-builder";
 import { getInvoiceFields } from "@/src/utils/invoice/invoice-utils";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 

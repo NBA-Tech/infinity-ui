@@ -50,6 +50,7 @@ const Orders = () => {
     const [orderData, setOrderData] = useState<OrderModel[]>([]);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
     const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -126,7 +127,7 @@ const Orders = () => {
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
     const handleDelete = async () => {
-        setLoading(true);
+        setDeleteLoading(true);
         const deleteOrderResponse = await deleteOrderAPI(currID);
         if (!deleteOrderResponse.success) {
             showToast({ type: "error", title: "Error", message: deleteOrderResponse.message });
@@ -135,7 +136,7 @@ const Orders = () => {
             showToast({ type: "success", title: "Success", message: deleteOrderResponse.message });
             setRefresh(!refresh);
         }
-        setLoading(false);
+        setDeleteLoading(false);
         setOpenDelete(false);
     }
 
@@ -185,7 +186,7 @@ const Orders = () => {
                 }}
             />
             <View>
-                <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
+                <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
                 <View className={isDark ? "bg-[#1F2028]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>

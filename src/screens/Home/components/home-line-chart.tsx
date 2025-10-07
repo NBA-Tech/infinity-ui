@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card'; // assuming you have a Card component
@@ -7,7 +7,8 @@ import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-s
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import { getMonthlyRevenue } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
-
+import Tooltip, { Placement } from 'react-native-tooltip-2';
+import Feather from 'react-native-vector-icons/Feather';
 type RevenueTrendChartProps = {
     invoiceDetails: Invoice[]
     isLoading: boolean
@@ -16,6 +17,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [revenueData, setRevenueData] = useState<any>(undefined);
+      const [toolTipVisible, setToolTipVisible] = useState(false);
 
     useEffect(() => {
         if (props?.invoiceDetails?.length <= 0 || !props?.invoiceDetails) return
@@ -34,9 +36,23 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
 
     return (
         <Card style={[{ padding: wp('3%'), marginVertical: hp('3%') }]}>
-            <View style={{ marginBottom: 8 }}>
-                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Revenue Trend</Text>
-                <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Monthly revenue over time</Text>
+            <View className='flex flex-row justify-between items-center'>
+                <View style={{ marginBottom: 8 }}>
+                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Revenue Trend</Text>
+                    <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Monthly revenue over time</Text>
+                </View>
+                <View>
+                    <Tooltip
+                        isVisible={toolTipVisible}
+                        content={<Text>This chart shows the revenue trend over time for this year.</Text>}
+                        placement={Placement.BOTTOM}
+                        onClose={() => setToolTipVisible(false)}>
+                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                            <Feather name="info" size={wp('5%')} color="#fff" />
+                        </TouchableOpacity>
+
+                    </Tooltip>
+                </View>
             </View>
             {/* Add Dropdown component for the year */}
             {(props?.isLoading) ? (
@@ -52,7 +68,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         withInnerLines={false}
                         withOuterLines={false}
                         withVerticalLabels={true}
-                        verticalLabelRotation={-90}
+                        verticalLabelRotation={-70}
                         withHorizontalLabels={true}
                         xLabelsOffset={hp('2%')}
                         fromZero={true}

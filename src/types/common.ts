@@ -87,6 +87,7 @@ export interface RootStackParamList extends ParamListBase {
   OneTimePassword: {authData:AuthModel,otpCode:string};
   useronboarding: undefined;
   OrderDetails: { orderId: string };
+  CreateOrder: { orderId: string };
   InvoiceDetails: { invoiceId: string };
   Success: { text?: string };
   CreateInvoice: { invoiceId: string };

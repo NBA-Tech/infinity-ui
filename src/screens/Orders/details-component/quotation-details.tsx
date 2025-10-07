@@ -23,6 +23,7 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import { useNavigation } from '@react-navigation/native';
+import { EmptyState } from '@/src/components/empty-state-data';
 
 const styles = StyleSheet.create({
     statusContainer: {
@@ -56,7 +57,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [open, setOpen] = useState(false);
     const showToast = useToastMessage();
-    const { userDetails,getUserDetailsUsingID } = useUserStore();
+    const { userDetails, getUserDetailsUsingID } = useUserStore();
     const { getItem } = useDataStore();
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
     const [customerList, setCustomerList] = useState<any[]>();
@@ -113,7 +114,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
 
     useEffect(() => {
         const userID = getItem("USERID")
-        getUserDetailsUsingID(userID,showToast)
+        getUserDetailsUsingID(userID, showToast)
         loadCustomerData()
     }, [])
     const quotationFields = useMemo(
@@ -128,12 +129,12 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
         [customerMetaInfoList, props?.orderDetails, props?.packageData, userDetails]
     );
 
-      const actionButtons = [
+    const actionButtons = [
         {
             id: 1,
             label: 'Share',
             icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-            onPress: ()=>{
+            onPress: () => {
                 handleShareQuotation()
             }
         },
@@ -167,38 +168,44 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Quotation</Text>
                         </View>
                     </View>
-                    <Card
-                        style={[
-                            styles.card,
-                            globalStyles.cardShadowEffect,
-                            {
-                                borderLeftWidth: 4,
-                                borderLeftColor: props?.borderColor,
-                            },
-                        ]}
-                    >
+                    {props?.orderDetails?.length <= 0 ? (
+                        <EmptyState variant='orders' />
+                    ) : (
+                        <Card
+                            style={[
+                                styles.card,
+                                globalStyles.cardShadowEffect,
+                                {
+                                    borderLeftWidth: 4,
+                                    borderLeftColor: props?.borderColor,
+                                },
+                            ]}
+                        >
 
-                        <View className='flex flex-row justify-between items-center'>
-                            <View className='flex flex-col'>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quotation Preview</Text>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Created On: {formatDate(props?.createdOn)}</Text>
+
+                            <View className='flex flex-row justify-between items-center'>
+                                <View className='flex flex-col'>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quotation Preview</Text>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Created On: {formatDate(props?.createdOn)}</Text>
+                                </View>
+
+                                <TouchableOpacity onPress={() => setOpen(true)}>
+                                    <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                                </TouchableOpacity>
                             </View>
 
-                            <TouchableOpacity onPress={() => setOpen(true)}>
-                                <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                            </TouchableOpacity>
-                        </View>
+                            <View className='flex flex-row justify-between items-center' >
+                                {actionButtons.map((action) => (
+                                    <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
+                                        {action.icon}
+                                        <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
+                                    </Button>
+                                ))
+                                }
+                            </View>
+                        </Card>
+                    )}
 
-                        <View className='flex flex-row justify-between items-center' >
-                            {actionButtons.map((action) => (
-                                <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
-                                    {action.icon}
-                                    <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
-                                </Button>
-                            ))
-                            }
-                        </View>
-                    </Card>
 
                 </View>
 

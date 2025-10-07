@@ -19,6 +19,8 @@ import { getInvoiceFields } from '@/src/utils/invoice/invoice-utils';
 import Modal from 'react-native-modal';
 import TemplatePreview from '../components/template-preview';
 import { buildHtml } from '../utils/html-builder';
+import { EmptyState } from '@/src/components/empty-state-data';
+import { useNavigation } from '@react-navigation/native';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -51,7 +53,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
     const [currId, setCurrId] = useState<string>('');
     const { userDetails, getUserDetailsUsingID } = useUserStore();
     const [open, setOpen] = useState(false);
-
+    const navigation = useNavigation();
     const actionButtons = [
         {
             id: 1,
@@ -105,7 +107,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: ${item?.amountPaid}</Text>
                     </View>
                     <View>
-                        <TouchableOpacity onPress={()=>{handlePreview(item?.invoiceId)}}>
+                        <TouchableOpacity onPress={() => { handlePreview(item?.invoiceId) }}>
                             <Feather name="eye" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
                     </View>
@@ -144,16 +146,25 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                         </View>
                     </View>
                     {loading && <Skeleton height={hp('25%')} />}
+                    {props?.invoiceDetails?.length <= 0 ? (
+                        <EmptyState variant='invoices' onAction={() => {
+                            navigation.navigate("Invoice", {
+                                screen: "CreateInvoice",
+                            });
 
-                    <FlatList
-                        data={props?.invoiceDetails}
-                        style={{ height: hp("60%") }}
-                        renderItem={invoiceCardComponent}
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingVertical: hp("1%") }}
-                        keyExtractor={(item) => item?.invoiceId}
-                        onEndReachedThreshold={0.7}
-                    />
+                        }} />
+                    ) : (
+                        <FlatList
+                            data={props?.invoiceDetails}
+                            style={{ height: hp("60%") }}
+                            renderItem={invoiceCardComponent}
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{ paddingVertical: hp("1%") }}
+                            keyExtractor={(item) => item?.invoiceId}
+                            onEndReachedThreshold={0.7}
+                        />
+
+                    )}
 
 
                 </View>

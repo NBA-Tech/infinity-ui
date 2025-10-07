@@ -1,9 +1,4 @@
 import { ApiGeneralRespose } from "../common";
-
-export enum STATUS {
-    ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE",
-}
 export enum OFFERINGTYPE {
     SERVICE = "SERVICE",
     PACKAGE = "PACKAGE"
@@ -28,7 +23,6 @@ export interface OfferingModel {
     id?: string;
     customerID: string;
     createdDate?: Date;
-    status: STATUS;
     type: OFFERINGTYPE;
 }
 export interface ServiceModel extends OfferingModel {

@@ -179,7 +179,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     borderColor={"#3B82F6"} />
             case "invoice":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 16 }}>
+                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
                         <InvoiceDetails
                             key={orderDetails?.orderId}
                             orderDetails={orderDetails}
@@ -188,7 +188,11 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     </ScrollView>
                 )
             case "links":
-                return <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+                        <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
+                    </ScrollView>
+                )
             default:
                 return null;
         }

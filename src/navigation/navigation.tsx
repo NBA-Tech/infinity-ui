@@ -116,8 +116,6 @@ function UnauthStack() {
       <Stack.Screen name="Authentication" component={Authentication} />
       <Stack.Screen name="OneTimePassword" component={OneTimePassword} />
       <Stack.Screen name="UserOnBoarding" component={UserOnBoarding} />
-      <Stack.Screen name="Services" component={Services} />
-      <Stack.Screen name="TemplateEditor" component={TemplateEditor} />
     </Stack.Navigator>
   );
 }
