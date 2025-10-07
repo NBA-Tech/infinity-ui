@@ -61,6 +61,9 @@ import {
 import { buildHtml } from "../orders/utils/html-builder";
 import { getInvoiceFields } from "@/src/utils/invoice/invoice-utils";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { createNewActivityAPI } from "@/src/services/activity/user-activity-service";
+import { ACTIVITY_TYPE } from "@/src/types/activity/user-activity-type";
+import { useReloadContext } from "@/src/providers/reload/reload-context";
 
 const styles = StyleSheet.create({
     userOnBoardBody: { margin: hp("2%") },
@@ -78,6 +81,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     const { getItem } = useDataStore();
     const { userDetails, getUserDetailsUsingID } = useUserStore();
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
+    const { triggerReloadInvoices } = useReloadContext()
 
     const [currStep, setCurrStep] = useState(0);
     const stepIcon = ["user", "calendar", "clock", "dollar-sign"];
@@ -320,11 +324,29 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         }
         setLoadingProvider((p) => ({ ...p, saveLoading: false }));
 
-        if (res.success) {
+        if (payload?.invoiceId) {
+            createNewActivityAPI({
+                userId: getItem("USERID"),
+                activityType: ACTIVITY_TYPE.INFO,
+                activityTitle: "Invoice Updated",
+                activityMessage: "Invoice Updated for Event: " + orderDetails?.eventInfo?.eventTitle
+            })
+        }
+        else {
+            createNewActivityAPI({
+                userId: getItem("USERID"),
+                activityType: ACTIVITY_TYPE.SUCCESS,
+                activityTitle: "Invoice Created",
+                activityMessage: "Invoice Created for Event: " + orderDetails?.eventInfo?.eventTitle
+            })
+        }
+
+        if (res?.success) {
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {
                 text: res.message ?? "Invoice created successfully",
             });
+            triggerReloadInvoices();
             setCurrStep(0);
             setInvoiceDetails({ userId: getItem("USERID") });
             setOrderDetails(undefined);

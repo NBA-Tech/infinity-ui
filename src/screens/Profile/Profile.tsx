@@ -56,11 +56,6 @@ const Profile = () => {
             onPress: () => { navigation.navigate('BusinessDetails') }
         },
         {
-            label: "Services & Packages",
-            icon: <Feather name="package" size={wp('6%')} color="#14B8A6" />,
-            onPress: () => { navigation.navigate('Services') }
-        },
-        {
             label: "Terms & Conditions",
             icon: <Feather name="file-text" size={wp('6%')} color="#8B5CF6" />,
             onPress: () => { }

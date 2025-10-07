@@ -60,8 +60,7 @@ function ProfileNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileView" component={Profile} />
-      <Stack.Screen name="Services" component={Services} />
-      <Stack.Screen name="BusinessDetails" component={BusinessDetails}/>
+      <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
     </Stack.Navigator>
   );
 }
@@ -89,7 +88,8 @@ function TabNavigator() {
       <Tab.Screen name="Customer" component={CustomerNavigator} />
       <Tab.Screen name="Orders" component={OrderNavigator} />
       <Tab.Screen name="Invoice" component={InvoiceNavigator} />
-      <Tab.Screen name="Profile" component={ProfileNavigator} />
+      <Tab.Screen name="Services" component={Services} />
+
     </Tab.Navigator>
   );
 }
@@ -101,6 +101,7 @@ function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={TabNavigator} />
+      <Tab.Screen name="Profile" component={ProfileNavigator} />
       <Stack.Screen name="Success" component={Success} />
     </Stack.Navigator>
   );

@@ -1,4 +1,10 @@
 import { ApiGeneralRespose } from "../common";
+
+export enum STATUS{
+    ACTIVE="ACTIVE",
+    INACTIVE="INACTIVE"
+}
+
 export enum OFFERINGTYPE {
     SERVICE = "SERVICE",
     PACKAGE = "PACKAGE"

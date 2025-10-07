@@ -9,6 +9,8 @@ import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { OrderModel } from '@/src/types/order/order-type';
 import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
+import { EmptyState } from '@/src/components/empty-state-data';
+import { useNavigation } from '@react-navigation/native';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -26,6 +28,7 @@ const Popularity = (props: PopularityProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [percentageStat, setPercentageStat] = useState<{ eventType: string; percentage: number; value: number }[]>([]);
     const [toolTipVisible, setToolTipVisible] = useState(false);
+    const navigation = useNavigation();
 
 
 
@@ -72,6 +75,11 @@ const Popularity = (props: PopularityProps) => {
                     </Tooltip>
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
+                {!props?.isLoading && percentageStat?.length<=0 &&(
+                    <EmptyState title="No Data Found" onAction={()=>navigation.navigate('Services')}/>
+                )
+
+                }
                 {props?.isLoading ? (
                     <Skeleton height={hp('30%')} width={wp('88%')} />
                 ) : (

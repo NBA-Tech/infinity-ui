@@ -32,6 +32,9 @@ import { Card } from '@/components/ui/card';
 import BackHeader from '@/src/components/back-header';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { ACTIVITY_TYPE, UserActivity } from '@/src/types/activity/user-activity-type';
+import { createNewActivityAPI } from '@/src/services/activity/user-activity-service';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -56,6 +59,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { customerID } = route.params || {};
     const { isDark } = useContext(ThemeToggleContext);
+    const {triggerReloadCustomer}=useReloadContext()
     const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
         userId: "",
         leadSource: undefined,
@@ -343,14 +347,29 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                 title: "Success",
                 message: addNewCustomerResponse?.message ?? "Successfully created customer",
             })
+            triggerReloadCustomer()
             if (customerID) {
                 updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
                 updateCustomerDetailsInfo(customerDetails)
+                const activityPayload:UserActivity={
+                    userId:userId,
+                    activityType:ACTIVITY_TYPE.INFO,
+                    activityTitle:"Updated Cutomer",
+                    activityMessage:`Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                }
+                createNewActivityAPI(activityPayload)
+               
             }
             else {
                 customerDetails.customerID = addNewCustomerResponse.data
                 addCustomerDetailsInfo(customerDetails)
                 updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+                createNewActivityAPI(({
+                    userId:userId,
+                    activityType:ACTIVITY_TYPE.SUCCESS,
+                    activityTitle:"Created Cutomer",
+                    activityMessage:`Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                }))
 
             }
             setloadingProvider({ ...loadingProvider, saveLoading: false });

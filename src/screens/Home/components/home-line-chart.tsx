@@ -9,6 +9,7 @@ import { getMonthlyRevenue } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
 import Feather from 'react-native-vector-icons/Feather';
+import { EmptyState } from '@/src/components/empty-state-data';
 type RevenueTrendChartProps = {
     invoiceDetails: Invoice[]
     isLoading: boolean
@@ -54,6 +55,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                     </Tooltip>
                 </View>
             </View>
+
             {/* Add Dropdown component for the year */}
             {(props?.isLoading) ? (
                 <Skeleton height={hp('30%')} width={wp('90%')} />

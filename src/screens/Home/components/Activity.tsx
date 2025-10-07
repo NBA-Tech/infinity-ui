@@ -1,11 +1,16 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ScrollView, FlatList } from 'react-native';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { getActivityDataAPI } from '@/src/services/activity/user-activity-service';
+import { UserActivity } from '@/src/types/activity/user-activity-type';
+import { formatDate } from '@/src/utils/utils';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: wp('2%'),
@@ -32,9 +37,50 @@ const styles = StyleSheet.create({
   },
 });
 
+const ICON = {
+  WARNING: 'warning',
+  ERROR: 'alert-circle',
+  INFO: 'info',
+  SUCCESS: 'check-circle'
+}
+
 const Activity = () => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
+  const [recentActivityList, setRecentActivityList] = useState<UserActivity[]>([]);
+  const [loading, setLoading] = useState(false)
+  const { getItem } = useDataStore();
+  const showToast = useToastMessage();
+
+
+  const getRecentActivityList = async (userId: string) => {
+    setLoading(true)
+    const recentActivityData = await getActivityDataAPI(userId, 10)
+    setLoading(false)
+    if (!recentActivityData?.success) {
+      return showToast({
+        type: "error",
+        title: "Error",
+        message: recentActivityData?.message ?? "Something went wrong",
+      });
+    }
+    setRecentActivityList(recentActivityData?.data)
+    console.log(recentActivityData?.data)
+  }
+
+
+  useEffect(() => {
+    const userId = getItem("USERID");
+    if (!userId) {
+      return showToast({
+        type: "error",
+        title: "Error",
+        message: "User not found. Please login again",
+      });
+    }
+    getRecentActivityList(userId)
+
+  }, [])
 
   return (
     <View>
@@ -61,28 +107,43 @@ const Activity = () => {
           contentContainerStyle={{ paddingBottom: hp('2%') }}
           nestedScrollEnabled={true}
         >
-          {Array.from({ length: 10 }).map((_, index) => (
-            <View style={styles.activityRow} key={index}>
-              <View style={styles.statusWrapper}>
-                <Feather name="check" size={wp('5%')} color="#228B22" />
-              </View>
-
-              <View style={styles.textWrapper}>
-                <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
-                  Pre-Wedding PhotoShoot
-                </Text>
-                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                  Wedding Photography
-                </Text>
-              </View>
-
-              <View style={styles.timeWrapper}>
-                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
-                  1 day ago
-                </Text>
-              </View>
+          {loading ? (
+            <View>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton style={{ height: hp('10%'), borderRadius: wp('2%') }} />
+              ))
+              }
             </View>
-          ))}
+          ) : (
+            <FlatList
+              data={recentActivityList}
+              renderItem={({ item }) => (
+                <View style={styles.activityRow} key={item?.activityId}>
+                  <View style={styles.statusWrapper}>
+                    <Feather name={item?.activityType} size={wp('5%')} color="#228B22" />
+                  </View>
+
+                  <View style={styles.textWrapper}>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
+                      {item?.activityTitle}
+                    </Text>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                      {item?.activityMessage}
+                    </Text>
+                  </View>
+
+                  <View style={styles.timeWrapper}>
+                    <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                      {formatDate(item?.createdDate)}
+                    </Text>
+                  </View>
+                </View>
+              )}
+            />
+          )
+
+          }
+
         </ScrollView>
       </Card>
     </View>

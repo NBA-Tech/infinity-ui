@@ -25,6 +25,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
+import Header from '@/src/components/header';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -522,7 +523,7 @@ const services = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
-            <BackHeader screenName='Services' />
+            <Header/>
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => setIsOpen(false)}

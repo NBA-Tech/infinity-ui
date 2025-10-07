@@ -111,11 +111,6 @@ const ServiceTab = (props: ServiceTabProps) => {
                     </Text>
 
                     <View style={styles.rightHeader}>
-                        <View style={[styles.status, service?.status === STATUS.ACTIVE ? styles.activeStatus : styles.inactiveStatus]}>
-                            <Text style={[globalStyles.themeTextColor, globalStyles.smallText]}>
-                                {service?.status}
-                            </Text>
-                        </View>
                         <Menu
                             placement="bottom"
                             offset={5}

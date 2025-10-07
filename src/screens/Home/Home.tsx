@@ -27,6 +27,7 @@ import { OrderModel } from '@/src/types/order/order-type';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import RevenueTrendChart from './components/home-line-chart';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -38,6 +39,7 @@ const Home = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
+    const { reloadCustomer, reloadOrders, reloadInvoices } = useReloadContext()
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
@@ -178,46 +180,52 @@ const Home = () => {
         setInvoiceDetails(orderMetaDataResponse?.data)
     }
 
+
+    // ----------------- Customer -----------------
     useEffect(() => {
-        const fetchData = async () => {
+        const loadCustomerData = async () => {
             const userId = await getItem("USERID");
-            if (!userId) {
-                return showToast({
-                    type: "error",
-                    title: "Error",
-                    message: "User not found. Please login again",
-                });
-            }
-
-            // Set all loading to true
-            setLoadingProvider(prev => ({ ...prev, allLoading: true }));
+            if (!userId) return showToast({ type: "error", title: "Error", message: "User not found" });
             setLoadingProvider(prev => ({ ...prev, customerLoading: true }));
-            setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
-            setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
-
-
-
-
             try {
-                // Load customer info
                 await loadCustomerMetaInfoList(userId, showToast);
-                setLoadingProvider(prev => ({ ...prev, customerLoading: false }));
-
-                // Load orders
-                await getOrderDetails(userId);
-                setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
-
-                // Load invoices
-                await getInvoiceDetails(userId);
-                setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
             } finally {
-                // Turn off overall loading
-                setLoadingProvider(prev => ({ ...prev, allLoading: false }));
+                setLoadingProvider(prev => ({ ...prev, customerLoading: false }));
             }
         };
+        loadCustomerData();
+    }, [reloadCustomer]);
 
-        fetchData();
-    }, []);
+    // ----------------- Orders -----------------
+    useEffect(() => {
+        const loadOrdersData = async () => {
+            const userId = await getItem("USERID");
+            if (!userId) return;
+            setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
+            try {
+                await getOrderDetails(userId);
+            } finally {
+                setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
+            }
+        };
+        loadOrdersData();
+    }, [reloadOrders]);
+
+    // ----------------- Invoices -----------------
+    useEffect(() => {
+        const loadInvoicesData = async () => {
+            const userId = await getItem("USERID");
+            if (!userId) return;
+            setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
+            try {
+                await getInvoiceDetails(userId);
+            } finally {
+                setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
+            }
+        };
+        loadInvoicesData();
+    }, [reloadInvoices]);
+
 
 
     return (

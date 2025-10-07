@@ -19,8 +19,9 @@ import { useNavigation } from '@react-navigation/native';
 import { ThemeToggleContext, StyleContext } from '../providers/theme/global-style-provider';
 import { NotificationIcon } from '../assets/Icons/SvgIcons';
 import Logo from '../assets/images/logo.png'
+import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from '@/components/ui/avatar';
 const styles = StyleSheet.create({
-    headerContainer:{
+    headerContainer: {
         borderBottomRightRadius: wp('5%'),
         borderBottomLeftRadius: wp('5%'),
         shadowColor: "#000",
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
 const Header = () => {
     const [notificationData, setNotificationData] = useState([]);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
-    const globalStyle = useContext(StyleContext);
+    const globalStyles = useContext(StyleContext);
 
     const ICONSMAPPING = {
         info: {
@@ -89,28 +90,61 @@ const Header = () => {
 
 
     return (
-        <View style={[styles.headerContainer,{backgroundColor:isDark?"#12121A":"#fff"}]}>
+        <View style={[styles.headerContainer, { backgroundColor: isDark ? "#12121A" : "#fff" }]}>
             <View style={styles.headerBody}>
                 <View >
                     <View style={styles.appLogoContainer}>
                         <Image style={{ width: wp('15%'), height: hp('7%') }} source={Logo} />
-                        <Text style={[globalStyle.heading2Text,globalStyle.themeTextColor]}>INFINITY</Text>
+                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>INFINITY</Text>
                     </View>
                 </View>
 
                 <View style={[styles.appLogoContainer, styles.actionContainer]}>
 
-
-                    <NotificationIcon width={wp('10%')} height={hp('10%')} />
-
-
                     <TouchableOpacity onPress={() => { toggleTheme() }}>
                         <MaterialIcons
                             name={isDark ? "light-mode" : "dark-mode"}
-                            size={wp('7%')}
+                            size={wp('8%')}
                             style={{ color: isDark ? '#FFD700' : '#000000' }}
                         />
                     </TouchableOpacity>
+
+                    <Menu
+                        placement="bottom left"
+                        offset={-15}
+                        trigger={({ ...triggerProps }) => (
+                           <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
+                                <Avatar size="md">
+                                    <AvatarImage
+                                        source={{
+                                            uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
+                                        }}
+                                    />
+                                    <AvatarBadge />
+                                </Avatar>
+                            </Button>
+                        )}
+                    >
+                        <MenuItem key="view">
+                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                View
+                            </MenuItemLabel>
+                        </MenuItem>
+
+                        <MenuItem key="edit">
+                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Edit
+                            </MenuItemLabel>
+                        </MenuItem>
+
+                        <MenuItem key="delete">
+                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Delete
+                            </MenuItemLabel>
+                        </MenuItem>
+                    </Menu>
+
+
                 </View>
             </View>
         </View>

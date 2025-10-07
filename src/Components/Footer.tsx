@@ -117,20 +117,20 @@ const Footer = (props: FooterProps) => {
                 />
             ),
         },
-        profile: {
+        services: {
             active: (
                 <View>
                     <MaterialCommunityIcons
-                        name="account-circle"
-                        size={hp("3%")}
-                        color="#8B5CF6"
+                        name="camera-iris" // updated icon
+                        size={hp("3.5%")} // slightly bigger
+                        color="#8B5CF6" // new active color
                     />
                     <Divider
                         style={{
-                            marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
-                            height: 2,
-                            width: wp("7%"),
+                            marginTop: hp("0.2%"),
+                            backgroundColor: "#8B5CF6", // match icon color
+                            height: 3, // slightly thicker
+                            width: wp("8%"), // slightly wider
                             alignSelf: "center",
                         }}
                     />
@@ -138,12 +138,13 @@ const Footer = (props: FooterProps) => {
             ),
             inactive: (
                 <MaterialCommunityIcons
-                    name="account-circle-outline"
-                    size={hp("3.2%")}
-                    color="#888"
+                    name="camera-outline" // updated inactive icon
+                    size={hp("3.5%")}
+                    color="#AAA" // lighter grey
                 />
             ),
         },
+
     };
 
 

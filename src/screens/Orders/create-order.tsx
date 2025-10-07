@@ -40,6 +40,10 @@ import { EmptyState } from '@/src/components/empty-state-data';
 import { useNavigation } from '@react-navigation/native';
 import { getQuotationFields } from '@/src/utils/order/quotation-utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { createNewActivityAPI } from '@/src/services/activity/user-activity-service';
+import { ACTIVITY_TYPE } from '@/src/types/activity/user-activity-type';
+import { createNewNotificationAPI } from '@/src/services/activity/notification-service';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -77,6 +81,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const showToast = useToastMessage();
     const { loadCustomerMetaInfoList } = useCustomerStore();
     const { serviceData, packageData, loadOfferings } = useOfferingStore()
+    const { triggerReloadOrders } = useReloadContext()
     const { userDetails, getUserDetailsUsingID } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: getItem("USERID") as string,
@@ -422,7 +427,23 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 message: saveNewOrder?.message ?? "Something went wrong",
             });
         }
-
+        triggerReloadOrders();
+        if (orderId) {
+            createNewActivityAPI({
+                userId: orderDetails?.userId,
+                activityType: ACTIVITY_TYPE.INFO,
+                activityTitle: "Order Updated",
+                activityMessage: "Order updated successfully for " + orderDetails?.eventInfo?.eventTitle
+            })
+        }
+        else {
+            createNewActivityAPI({
+                userId: orderDetails?.userId,
+                activityType: ACTIVITY_TYPE.SUCCESS,
+                activityTitle: "Order Created",
+                activityMessage: "Order created successfully for " + orderDetails?.eventInfo?.eventTitle
+            })
+        }
         showToast({
             type: "success",
             title: "Success",
@@ -619,7 +640,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
-                                            <EmptyState variant='orders' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
+                                            <EmptyState variant='orders' onAction={() => navigation.navigate('Services')} />
                                         )
                                         }
                                         <FlatList
@@ -662,7 +683,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {isAllLoadingFalse(loadingProvider) && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={() => navigation.navigate('profile', { screen: 'Offering' })} />
+                                            <EmptyState variant='services' onAction={() => navigation.navigate('Services')} />
                                         )
 
                                         }

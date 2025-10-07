@@ -161,11 +161,6 @@ const PackageTab = (props: PackageProps) => {
                         {pkg.packageName}
                     </Text>
                     <View style={styles.rightHeader}>
-                        <View style={[styles.status, pkg.status === STATUS.ACTIVE ? styles.activeStatus : styles.inactiveStatus]}>
-                            <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>
-                                {pkg.status}
-                            </Text>
-                        </View>
                         <Menu
                             placement="bottom"
                             offset={5}
