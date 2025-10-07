@@ -204,6 +204,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                             }
                             themeVariant={isDark ? "dark" : "light"}
                             mode={field.type}
+                            maximumDate={field?.maxDate}
                             display={Platform.OS === "ios" ? "spinner" : "default"}
                             onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
                                 field.setIsOpen?.(false);

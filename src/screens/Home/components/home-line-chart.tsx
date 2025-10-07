@@ -17,7 +17,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [revenueData, setRevenueData] = useState<any>(undefined);
-      const [toolTipVisible, setToolTipVisible] = useState(false);
+    const [toolTipVisible, setToolTipVisible] = useState(false);
 
     useEffect(() => {
         if (props?.invoiceDetails?.length <= 0 || !props?.invoiceDetails) return

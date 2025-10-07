@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, FlatList } from 'react-native';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
@@ -10,6 +10,7 @@ import { OrderModel } from '@/src/types/order/order-type';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
+import Tooltip, { Placement } from 'react-native-tooltip-2';
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -30,6 +31,7 @@ type TopClientProps = {
 const TopClient = (props: TopClientProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const [toolTipVisible, setToolTipVisible] = useState(false);
     const [topCustomers, setTopCustomers] = useState([]);
 
     const getTopCustomersSummary = (orders: OrderModel[], topN: number = 10) => {
@@ -101,7 +103,16 @@ const TopClient = (props: TopClientProps) => {
                             Highest revenue contributors
                         </Text>
                     </View>
-                    <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                    <Tooltip
+                        isVisible={toolTipVisible}
+                        content={<Text>This Widget displays the top 10 customers based on the total number of orders placed.</Text>}
+                        placement={Placement.BOTTOM}
+                        onClose={() => setToolTipVisible(false)}>
+                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                            <Feather name="info" size={wp('5%')} color="#fff" />
+                        </TouchableOpacity>
+
+                    </Tooltip>
                 </View>
 
                 <Divider style={{ marginVertical: hp('1.5%') }} />

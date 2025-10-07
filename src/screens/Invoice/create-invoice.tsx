@@ -22,8 +22,8 @@ import GradientCard from "@/src/utils/gradient-card";
 import { Divider } from "@/components/ui/divider";
 import QuotationDetails from "./step-components/quotation-details";
 import PaymentComponent from "./step-components/payment-component";
-import TemplateBuilderComponent from "../orderscomponents/template-builder-component";
-import TemplatePreview from "../orderscomponents/template-preview";
+import TemplateBuilderComponent from "../orders/components/template-builder-component";
+import TemplatePreview from "../orders/components/template-preview";
 import { Card } from "@/components/ui/card";
 import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 
@@ -58,7 +58,7 @@ import {
     patchState,
     validateValues,
 } from "@/src/utils/utils";
-import { buildHtml } from "../ordersutils/html-builder";
+import { buildHtml } from "../orders/utils/html-builder";
 import { getInvoiceFields } from "@/src/utils/invoice/invoice-utils";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -239,6 +239,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 placeholder: "Eg: 12/02/2003",
                 icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
                 type: "date",
+                maxDate: new Date(),
                 value: invoiceDetails?.invoiceDate
                     ? new Date(invoiceDetails.invoiceDate)
                     : undefined,

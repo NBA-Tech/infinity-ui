@@ -72,7 +72,7 @@ const Home = () => {
                     "invoiceDate",
                     "month"
                 ).formatted,
-                tooltip: "Gets the total revenue of all orders"
+                tooltip: "Gets the total revenue of all orders in this month"
             },
             upcomingShoots: {
                 label: "Upcoming Shoots",
@@ -81,7 +81,7 @@ const Home = () => {
                 gradientColors: ["#EF4444", "#F87171"],
                 isTrending: false,
                 count: getUpcomingByTimeframe(orderDetails, "eventDate", "month")?.length || 0,
-                tooltip: "Gets the total number of upcoming shoots in the month",
+                tooltip: "Gets the total number of upcoming shoots in theis month",
             },
             deliveredOrders: {
                 label: "Delivered Orders",
@@ -95,7 +95,7 @@ const Home = () => {
                     "createdDate",
                     "month"
                 )?.formatted,
-                tooltip: "Gets the total number of delivered orders",
+                tooltip: "Gets the total number of delivered orders in this month",
             },
             pendingOrders: {
                 label: "Pending Orders",
@@ -109,7 +109,7 @@ const Home = () => {
                     "createdDate",
                     "month"
                 )?.formatted,
-                tooltip: "Gets the total number of pending orders",
+                tooltip: "Gets the total number of pending orders in this month",
             },
             totalInvoice: {
                 label: "Total Invoice",
@@ -123,7 +123,7 @@ const Home = () => {
                     "invoiceDate",
                     "month"
                 )?.formatted,
-                tooltip: "Gets the total number of invoices",
+                tooltip: "Gets the total number of invoices in this month",
             },
         };
     }, [customerMetaInfoList, orderStatus, orderDetails]);
@@ -152,7 +152,6 @@ const Home = () => {
                 ...orderBasicInfo
             };
         })
-        console.log(normalisedOrders)
         setOrderDetails(normalisedOrders)
         setOrderStatus({
             delivered: orderMetaDataResponse?.data?.filter((order: OrderModel) => order?.status === GlobalStatus.DELIVERED),

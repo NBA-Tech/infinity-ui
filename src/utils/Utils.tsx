@@ -513,6 +513,8 @@ export function getMonthlyRevenue<T extends { [key: string]: any }>(
   dateKey: keyof T,
   amountKey: keyof T
 ): { month: string; value: number }[] {
+  const currentYear = new Date().getFullYear();
+
   // Initialize all months with 0
   const monthlyTotals: { [key: string]: number } = {};
   MONTH_NAMES.forEach((m) => (monthlyTotals[m] = 0));
@@ -522,8 +524,11 @@ export function getMonthlyRevenue<T extends { [key: string]: any }>(
     if (!dateValue) return;
 
     const date = new Date(dateValue as any);
-    const monthName = MONTH_NAMES[date.getMonth()];
 
+    // Only include data from the current year
+    if (date.getFullYear() !== currentYear) return;
+
+    const monthName = MONTH_NAMES[date.getMonth()];
     monthlyTotals[monthName] += Number(item[amountKey]) || 0;
   });
 

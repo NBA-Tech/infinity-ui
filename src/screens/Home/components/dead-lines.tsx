@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -8,6 +8,7 @@ import { Divider } from '@/components/ui/divider';
 import { OrderModel } from '@/src/types/order/order-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
+import Tooltip, { Placement } from 'react-native-tooltip-2';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -41,6 +42,7 @@ const DeadLines = (props: DeadLinesProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [weeklyOrderData, setWeeklyOrderData] = useState([]);
+    const [toolTipVisible, setToolTipVisible] = useState(false);
 
     const getTimeToEvent = (eventDateStr: string) => {
         const eventDate = new Date(eventDateStr);
@@ -104,7 +106,16 @@ const DeadLines = (props: DeadLinesProps) => {
                             Deliverables due soon
                         </Text>
                     </View>
-                    <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                    <Tooltip
+                        isVisible={toolTipVisible}
+                        content={<Text>This Widget will show you the Upcoming Deadlines.</Text>}
+                        placement={Placement.BOTTOM}
+                        onClose={() => setToolTipVisible(false)}>
+                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                            <Feather name="info" size={wp('5%')} color="#fff" />
+                        </TouchableOpacity>
+
+                    </Tooltip>
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
                 {props?.isLoading ? (

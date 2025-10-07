@@ -1,12 +1,13 @@
 import { Card } from '@/components/ui/card';
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Divider } from '@/components/ui/divider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { OrderModel } from '@/src/types/order/order-type';
 import Skeleton from '@/components/ui/skeleton';
+import Tooltip, { Placement } from 'react-native-tooltip-2';
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -47,6 +48,7 @@ type HeatMapYearProps = {
 const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
+  const [toolTipVisible, setToolTipVisible] = useState(false);
 
   const currentYear = new Date().getFullYear();
 
@@ -78,7 +80,16 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
               Busiest month of the year
             </Text>
           </View>
-          <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+          <Tooltip
+            isVisible={toolTipVisible}
+            content={<Text>This Widget displays the busiest month of the year.</Text>}
+            placement={Placement.BOTTOM}
+            onClose={() => setToolTipVisible(false)}>
+            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+              <Feather name="info" size={wp('5%')} color="#fff" />
+            </TouchableOpacity>
+
+          </Tooltip>
         </View>
 
         {/* Divider */}

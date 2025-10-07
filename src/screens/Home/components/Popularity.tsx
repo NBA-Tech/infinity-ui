@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
@@ -8,6 +8,7 @@ import { Divider } from '@/components/ui/divider';
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { OrderModel } from '@/src/types/order/order-type';
 import Skeleton from '@/components/ui/skeleton';
+import Tooltip, { Placement } from 'react-native-tooltip-2';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -24,6 +25,7 @@ const Popularity = (props: PopularityProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [percentageStat, setPercentageStat] = useState<{ eventType: string; percentage: number; value: number }[]>([]);
+    const [toolTipVisible, setToolTipVisible] = useState(false);
 
 
 
@@ -58,7 +60,16 @@ const Popularity = (props: PopularityProps) => {
                             Distribution of bookings
                         </Text>
                     </View>
-                    <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                    <Tooltip
+                        isVisible={toolTipVisible}
+                        content={<Text>This Widget helps you understand how popular your services are.</Text>}
+                        placement={Placement.BOTTOM}
+                        onClose={() => setToolTipVisible(false)}>
+                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                            <Feather name="info" size={wp('5%')} color="#fff" />
+                        </TouchableOpacity>
+
+                    </Tooltip>
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
                 {props?.isLoading ? (

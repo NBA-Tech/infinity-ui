@@ -15,6 +15,7 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { TouchableOpacity } from 'react-native';
 import { createNewEventAPI, deleteEventAPI, getEventBasedMonthYearAPI, updateEventAPI } from '@/src/api/event/event-api-service';
+import Tooltip, { Placement } from 'react-native-tooltip-2';
 const styles = StyleSheet.create({
   dot: {
     width: wp('3%'),
@@ -37,11 +38,12 @@ const EventDateKeeper = () => {
   const { isDark } = useContext(ThemeToggleContext);
   const [open, setOpen] = useState(false);
   const [currEventDetails, setCurrEventDetails] = useState<EventModel>();
-  const [loadingProvider, setLoadingProvider] = useState({ intialLoading: false, saveLoading: false,deleteLoading:false });
+  const [loadingProvider, setLoadingProvider] = useState({ intialLoading: false, saveLoading: false, deleteLoading: false });
   const [errors, setErrors] = useState({});
   const [eventDetails, setEventDetails] = useState<EventModel[]>([]);
   const [eventMarkedDate, setEventMarkedDate] = useState({});
   const { getItem } = useDataStore();
+  const [toolTipVisible, setToolTipVisible] = useState(false);
   const showToast = useToastMessage();
 
 
@@ -52,7 +54,7 @@ const EventDateKeeper = () => {
       label: "Event Title",
       placeholder: "Eg : Birthday Party",
       type: "text",
-      icon: <Feather name="event" size={wp("5%")} color="#8B5CF6" />,
+      icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -68,7 +70,7 @@ const EventDateKeeper = () => {
       label: "Event Description",
       placeholder: "Eg : Birthday Party",
       type: "text",
-      icon: <Feather name="event" size={wp("5%")} color="#8B5CF6" />,
+      icon: <Feather name="clipboard" size={wp("5%")} color="#8B5CF6" />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -84,7 +86,7 @@ const EventDateKeeper = () => {
       label: "Event Priority",
       placeholder: "Eg : Birthday Party",
       type: "select",
-      icon: <Feather name="event" size={wp("5%")} color="#8B5CF6" />,
+      icon: <Feather name="flag" size={wp("5%")} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -156,7 +158,7 @@ const EventDateKeeper = () => {
 
     setLoadingProvider((prev) => ({ ...prev, deleteLoading: false }));
     resetEvent();
-    const eventSplit= currEventDetails?.eventDate.split('-')
+    const eventSplit = currEventDetails?.eventDate.split('-')
     console.log(eventSplit)
     await getMonthEvents(Number(eventSplit?.[1]), Number(eventSplit?.[0]));
   }
@@ -278,7 +280,7 @@ const EventDateKeeper = () => {
                 variant="solid"
                 action="primary"
                 onPress={handleDelete}
-                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444',borderRadius: wp("2%"),borderWidth: wp("0.5%"),borderColor: 'transparent' }]}
+                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444', borderRadius: wp("2%"), borderWidth: wp("0.5%"), borderColor: 'transparent' }]}
                 isDisabled={loadingProvider.deleteLoading}
               >
                 {loadingProvider.deleteLoading && (
@@ -312,9 +314,25 @@ const EventDateKeeper = () => {
 
       </Modal>
       {/* Header */}
-      <View className="mb-2">
-        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Event Calendar</Text>
-        <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Upcoming shoots and meetings</Text>
+      <View className="mb-2" style={{ marginBottom: hp('1%') }}>
+        <View className='flex flex-row justify-between items-center'>
+          <View>
+            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Event Calendar</Text>
+            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Upcoming shoots and meetings</Text>
+          </View>
+          <View>
+            <Tooltip
+              isVisible={toolTipVisible}
+              content={<Text>This Widget helps you keep track of your events</Text>}
+              placement={Placement.BOTTOM}
+              onClose={() => setToolTipVisible(false)}>
+              <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                <Feather name="info" size={wp('5%')} color="#fff" />
+              </TouchableOpacity>
+
+            </Tooltip>
+          </View>
+        </View>
       </View>
 
       {/* Calendar */}
@@ -329,13 +347,32 @@ const EventDateKeeper = () => {
           maxDate={`${new Date().getFullYear() + 1}-12-31`}
           enableSwipeMonths={true}
           theme={{
-            todayTextColor: isDark ? '#BB86FC' : '#fff',
-            arrowColor: isDark ? '#BB86FC' : '#fff',
-            monthTextColor: isDark ? '#FFFFFF' : '#fff',
+            backgroundColor: isDark ? '#1F2028' : '#fff',   // calendar background
+            calendarBackground: isDark ? '#1F2028' : '#fff',
+            textSectionTitleColor: isDark ? '#BBBBBB' : '#222', // day headers (Mon, Tue..)
+            selectedDayBackgroundColor: '#BB86FC',
+            selectedDayTextColor: '#fff',
+            todayTextColor: '#BB86FC',
+            dayTextColor: isDark ? '#FFFFFF' : '#000000',
+            textDisabledColor: '#555555',
+            dotColor: '#BB86FC',      // small dot under marked day
+            selectedDotColor: '#fff',
+            arrowColor: '#BB86FC',
+            monthTextColor: '#FFFFFF',
             textDayFontWeight: '500',
             textMonthFontWeight: 'bold',
             textDayHeaderFontWeight: '600',
-            backgroundColor: isDark ? '#1F2028' : '#fff',
+            indicatorColor: '#BB86FC',
+            stylesheet: {
+              calendar: {
+                main: {
+                  backgroundColor: '#1F2028',
+                },
+                header: {
+                  backgroundColor: '#1F2028',
+                }
+              }
+            }
           }}
           displayLoadingIndicator={loadingProvider.intialLoading}
         />

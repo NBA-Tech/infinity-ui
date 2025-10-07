@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import OrderCard from '../orderscomponents/order-card';
+import OrderCard from '../orders/components/order-card';
 import { OrderModel } from '@/src/types/order/order-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
