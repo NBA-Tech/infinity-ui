@@ -28,6 +28,8 @@ import { NavigationProp } from '@/src/types/common';
 import { useAuth } from '@/src/context/auth-context/auth-context';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useUserStore } from '@/src/store/user/user-store';
+import { sendWelcomeEmailAPI } from '@/src/api/auth/auth-api-service';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("1%"),
@@ -84,6 +86,7 @@ const UserOnBoarding = () => {
     const { getItem } = useDataStore();
     const navigation = useNavigation<NavigationProp>();
     const { login } = useAuth()
+    const {userDetails,getUserDetailsUsingID}=useUserStore()
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [businessDetails, setBusinessDetails] = useState<UserModel>({});
@@ -291,6 +294,13 @@ const UserOnBoarding = () => {
     // const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
 
     const handleNext = () => {
+        if(!businessDetails?.userBusinessInfo?.companyLogoURL){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please upload company logo",
+            })
+        }
         if(errors && Object.keys(errors).length > 0){
             return showToast({
                 type: "warning",
@@ -371,6 +381,10 @@ const UserOnBoarding = () => {
             })
         }
         setLoading(false);
+        sendWelcomeEmailAPI(
+            userDetails?.userAuthInfo?.email,
+            userDetails?.userAuthInfo?.username
+        )
 
         showToast({
             type: "success",
@@ -382,6 +396,12 @@ const UserOnBoarding = () => {
             routes: [{ name: "AuthStack", params: { screen: "MainTabs" } }],
         })
     }
+    
+    useEffect(()=>{
+        const userId=getItem("USERID")
+        getUserDetailsUsingID(userId,showToast);
+
+    },[])
 
 
     return (

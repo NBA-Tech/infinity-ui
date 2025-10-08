@@ -43,3 +43,14 @@ export const getOtpAPI=async(email:string,headers?:Record<string,any>):Promise<A
     return getOtpResponse
     
 }
+
+export const sendWelcomeEmailAPI=async(email:string,name:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const sendWelcomeEmailResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/send_welcome_email?email=${email}&name=${name}`,
+        options: {
+            method: 'GET'
+        }
+    });
+    return sendWelcomeEmailResponse
+    
+}
