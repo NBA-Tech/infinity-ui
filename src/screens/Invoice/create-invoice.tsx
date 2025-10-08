@@ -231,7 +231,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         return showToast({
                             type: "error",
                             title: "Error",
-                            message: `Amount can't exceed ₹${orderDetails.totalAmountCanPay}`,
+                            message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails.totalAmountCanPay}`,
                         });
 
                     patchState("", "amountPaid", value, true, setInvoiceDetails, setErrors);

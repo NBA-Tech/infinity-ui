@@ -11,6 +11,7 @@ import { StyleContext } from "@/src/providers/theme/global-style-provider";
 import { Card } from "@/components/ui/card";
 import { CustomerModel } from "@/src/types/customer/customer-type";
 import Skeleton from "@/components/ui/skeleton";
+import { useUserStore } from "@/src/store/user/user-store";
 
 
 const styles = StyleSheet.create({
@@ -34,6 +35,7 @@ type GeneralInfoProps = {
 }
 export const GeneralInfo = (props: GeneralInfoProps) => {
     const globalStyles = useContext(StyleContext);
+    const {userDetails}=useUserStore()
     return (
         <ScrollView style={styles.scene} showsVerticalScrollIndicator={false}>
             <View className="flex flex-col">
@@ -159,7 +161,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                                     { color: "#059669" },
                                                 ]}
                                             >
-                                                {props?.isLoading ? "Loading..." : `₹ ${props?.paymentDetails?.totalAmount || 0}`}
+                                                {props?.isLoading ? "Loading..." : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalAmount || 0}`}
                                             </Text>
                                         </View>
                                     </View>
@@ -185,7 +187,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                                     { color: "#4F46E5" },
                                                 ]}
                                             >
-                                                {props?.isLoading ? "Loading..." : `₹ ${props?.paymentDetails?.totalPaid || 0}`}
+                                                {props?.isLoading ? "Loading..." : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalPaid || 0}`}
                                             </Text>
                                         </View>
                                     </View>

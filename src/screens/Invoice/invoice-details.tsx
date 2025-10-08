@@ -26,6 +26,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice>();
     const showToast = useToastMessage();
+    const [loading,setLoading]=useState(false)
 
     const actionButtons = [
         {
@@ -37,11 +38,14 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
 
 
     const getInvoiceDetails=async()=>{
+        setLoading(true)
         const invoiceDetails:ApiGeneralRespose= await getInvoiceDetailsAPI(invoiceId as string)
+        setLoading(false)
         if(!invoiceDetails.success){
             showToast({type:"error",title:"Error",message:invoiceDetails.message})
         }
         else{
+            console.log(invoiceDetails?.data)
             setInvoiceDetails(invoiceDetails?.data)
         }
     }
@@ -84,10 +88,10 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
 
                 <View className='flex flex-col gap-5'>
                     <View>
-                        <CustomerInfo customerData={invoiceDetails?.billingInfo} />
+                        <CustomerInfo customerData={invoiceDetails?.billingInfo} loading={loading}/>
                     </View>
                     <View>
-                        <InvoiceInfo />
+                        <InvoiceInfo invoiceDetails={invoiceDetails} loading={loading}/>
                     </View>
                     {/* <View>
                         <LineItemsInfo />

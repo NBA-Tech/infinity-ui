@@ -15,6 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { updateServiceCompletionStatus } from '@/src/api/order/order-api-service';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import Skeleton from '@/components/ui/skeleton';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -81,6 +82,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const showToast = useToastMessage();
     const { triggerConfetti } = useConfetti();
     const [loading, setLoading] = useState(false)
+    const {userDetails}=useUserStore()
 
 
     // const getServiceList = async () => {
@@ -274,7 +276,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                     {item.name} x{item.value}
                                                 </Text>
                                                 <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                                    ${item.price}
+                                                    {userDetails?.currencyIcon} {item.price}
                                                 </Text>
                                                 <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
                                                     {loading && (

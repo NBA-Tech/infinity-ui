@@ -33,6 +33,7 @@ import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-s
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import { getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -56,6 +57,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const { serviceData, packageData, loadOfferings } = useOfferingStore();
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
+    const {userDetails}=useUserStore()
     const [routes] = useState([
         { key: "customer", title: "Customer", icon: "user" },
         { key: "event", title: "Event", icon: "calendar" },
@@ -278,7 +280,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Amount</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `$ ${orderDetails?.totalPrice}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${orderDetails?.totalPrice}`}</Text>
 
                         </View>
                     </Card>
@@ -287,7 +289,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Paid</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `$ ${invoiceDetails?.reduce((total, invoice) => total + invoice.amountPaid, 0)}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((total, invoice) => total + invoice.amountPaid, 0)}`}</Text>
 
                         </View>
                     </Card>

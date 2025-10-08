@@ -104,7 +104,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                     <View className='flex flex-col'>
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Invoice #{item?.invoiceId}</Text>
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Invoice Date: {formatDate(item?.invoiceDate)}</Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: ${item?.amountPaid}</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: {userDetails?.currencyIcon} {item?.amountPaid}</Text>
                     </View>
                     <View>
                         <TouchableOpacity onPress={() => { handlePreview(item?.invoiceId) }}>

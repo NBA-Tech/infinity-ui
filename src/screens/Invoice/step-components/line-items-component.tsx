@@ -9,6 +9,7 @@ import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
 import { InvoiceItem } from '@/src/types/invoice/invoice-type';
 import { Button, ButtonText } from '@/components/ui/button';
 import { patchState } from '@/src/utils/utils';
+import { useUserStore } from '@/src/store/user/user-store';
 
 const styles = StyleSheet.create({
     actionButton: {
@@ -41,6 +42,7 @@ type LineItemsComponentProps = {
 const LineItemsComponent = (props: LineItemsComponentProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const {userDetails}=useUserStore()
     const [localItems, setLocalItems] = useState<InvoiceItem[]>(props.items || []);
 
     const handlePriceChangeCalculation = (id: string, newQuantity: number) => {
@@ -146,7 +148,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                                             {item.itemName}
                                         </Text>
                                         <Text style={[globalStyles.normalText, globalStyles.greyTextColor]}>
-                                            Unit Price: ${item.unitPrice}
+                                            Unit Price: {userDetails?.currencyIcon} {item.unitPrice}
                                         </Text>
                                     </View>
                                     <TouchableOpacity onPress={() => handleDeleteLineItem(item.itemId)}>
@@ -204,7 +206,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
 
                                 <View className='flex flex-row justify-between items-center'>
                                     <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Total</Text>
-                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>${item.amountPaying}</Text>
+                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>{userDetails?.currencyIcon} {item.amountPaying}</Text>
                                 </View>
                             </View>
                         </Card>

@@ -39,7 +39,7 @@ const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) 
           ) : (
             // Default mode → back button + text
             <>
-              <TouchableOpacity onPress={() => navigation.getParent()?.goBack()}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Feather name="arrow-left" size={wp('7%')} color={isDark ? "#fff" : "#000"} />
               </TouchableOpacity>
               {screenName && (

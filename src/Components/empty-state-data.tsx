@@ -24,6 +24,7 @@ interface EmptyStateProps {
   onSecondaryAction?: () => void;
   variant?: Variant;
   style?: object;
+  noAction?: boolean; // 👈 NEW PROP
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -35,6 +36,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onSecondaryAction,
   variant,
   style = {},
+  noAction = false, // 👈 DEFAULT VALUE (false)
 }) => {
   const config = useMemo(() => {
     switch (variant) {
@@ -55,17 +57,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             description ||
             "Create your first photography package to start offering bundled services to clients. Include pricing, session details, and deliverables.",
           actionLabel: actionLabel || "Create Package",
-          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(254,249,231,0.8)"],
+          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(220,252,231,0.8)"],
         };
       case "services":
         return {
           icon: <MaterialCommunityIcons name="package-variant" size={80} color="rgba(139,92,246,0.6)" />,
-          title: title || "No photography packages yet",
+          title: title || "No photography services yet",
           description:
             description ||
-            "Create your first photography package to start offering services to clients. Include pricing, session details, and deliverables.",
-          actionLabel: actionLabel || "Create Package",
-          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(2, 2, 2, 0.8)"],
+            "Create your first photography service to start offering bundled services to clients. Include pricing, session details, and deliverables.",
+          actionLabel: actionLabel || "Create Service",
+          bgGradientColors: ["rgba(243,244,246,0.8)", "rgba(220,252,231,0.8)"],
         };
       case "customers":
         return {
@@ -128,17 +130,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       <Text style={styles.title}>{config.title}</Text>
       <Text style={styles.description}>{config.description}</Text>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity onPress={onAction} style={[styles.buttonPrimary, { width: width * 0.6 }]}>
-          <Text style={styles.buttonText}>{config.actionLabel}</Text>
-        </TouchableOpacity>
-
-        {config.secondaryActionLabel && (
-          <TouchableOpacity onPress={onSecondaryAction} style={[styles.buttonSecondary, { width: width * 0.5 }]}>
-            <Text style={styles.buttonSecondaryText}>{config.secondaryActionLabel}</Text>
+      {/* 👇 Only show buttons if noAction is false */}
+      {!noAction && (
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity onPress={onAction} style={[styles.buttonPrimary, { width: width * 0.6 }]}>
+            <Text style={styles.buttonText}>{config.actionLabel}</Text>
           </TouchableOpacity>
-        )}
-      </View>
+
+          {config.secondaryActionLabel && (
+            <TouchableOpacity onPress={onSecondaryAction} style={[styles.buttonSecondary, { width: width * 0.5 }]}>
+              <Text style={styles.buttonSecondaryText}>{config.secondaryActionLabel}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </ScrollView>
   );
 };

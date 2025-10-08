@@ -86,7 +86,7 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
             placement={Placement.BOTTOM}
             onClose={() => setToolTipVisible(false)}>
             <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-              <Feather name="info" size={wp('5%')} color="#fff" />
+              <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
             </TouchableOpacity>
 
           </Tooltip>

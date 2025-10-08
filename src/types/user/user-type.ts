@@ -14,6 +14,7 @@ export interface UserModel {
   userBillingInfo?: UserBillingInfo;
   userSettingInfo?: UserSettingInfo;
   userAuthInfo?:AuthModel
+  currencyIcon?:string
 }
 
 export interface UserBusinessInfo {

@@ -16,6 +16,7 @@ import { useUserStore } from '@/src/store/user/user-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import BackHeader from '@/src/components/back-header';
 const styles = StyleSheet.create({
     amountContainer: {
         padding: wp('5%'),
@@ -159,7 +160,7 @@ const Profile = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <Header />
+            <BackHeader screenName="Profile" />
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View className="flex flex-col">
                     <ImageBackground
@@ -176,7 +177,7 @@ const Profile = () => {
                                 Total Amount
                             </Text>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                 {loading ? "Loading..." : `$ ${totalPaid || 0}`}
+                                 {loading ? "Loading..." : `${userDetails?.currencyIcon} ${totalPaid || 0}`}
                             </Text>
                         </View>
 
@@ -199,17 +200,17 @@ const Profile = () => {
                                 <View className='flex flex-row justify-between items-center' style={{ padding: wp('2%') }}>
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Income</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}> {loading ? "Loading..." : `$ ${totalPaid || 0}`}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}> {loading ? "Loading..." : `${userDetails?.currencyIcon} ${totalPaid || 0}`}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Quoted</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{loading ? "Loading..." : `$ ${totalAmount || 0}`}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{loading ? "Loading..." : `${userDetails?.currencyIcon} ${totalAmount || 0}`}</Text>
                                     </View>
                                     <Divider orientation='vertical' style={{ height: hp('4%'), marginHorizontal: wp('5%') }} />
                                     <View className='flex flex-col justify-center items-center'>
                                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Balance</Text>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>  {loading ? "Loading..." : `$ ${(totalAmount - totalPaid) < 0 ? 0 : (totalAmount - totalPaid)}`}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>  {loading ? "Loading..." : `${userDetails?.currencyIcon} ${(totalAmount - totalPaid) < 0 ? 0 : (totalAmount - totalPaid)}`}</Text>
                                     </View>
                                 </View>
                             </Card>

@@ -22,7 +22,7 @@ import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { getOtpAPI, registerUser } from '@/src/api/auth/auth-api-service';
 import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 const styles = StyleSheet.create({
     registerCardContainer: {
@@ -125,9 +125,9 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     const handleRegister = async (payload: AuthModel) => {
-        if(payload.authType === "EMAIL_PASSWORD"){
+        if (payload.authType === "EMAIL_PASSWORD") {
             const otpApiResponse = await getOtpAPI(payload.email);
-            if(!otpApiResponse?.success){
+            if (!otpApiResponse?.success) {
                 return showToast({
                     type: "error",
                     title: "Error",
@@ -140,7 +140,7 @@ const Register = ({ setCurrScreen }: any) => {
                 message: otpApiResponse?.message ?? "OTP sent successfully",
             })
 
-            navigation.navigate("OneTimePassword", { authData: payload,otpCode:otpApiResponse?.data });
+            navigation.navigate("OneTimePassword", { authData: payload, otpCode: otpApiResponse?.data });
             return
         }
         const register: AuthResponse = await registerUser(payload);
@@ -159,7 +159,12 @@ const Register = ({ setCurrScreen }: any) => {
             await setItem("USERID", register?.userId);
         }
 
-        navigation.navigate("useronboarding");
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'UserOnBoarding' }],
+            })
+        );
     };
 
     const handleEmailRegister = async () => {

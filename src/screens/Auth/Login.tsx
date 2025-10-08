@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -13,7 +13,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { loginUser } from '@/src/api/auth/auth-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { UserApiResponse } from '@/src/types/user/user-type';
 import { useAuth } from '@/src/context/auth-context/auth-context';
@@ -36,8 +36,8 @@ const Login = ({ setCurrScreen }: any) => {
     const showToast = useToastMessage();
     const navigation = useNavigation<NavigationProp>();
     const [showPassword, setShowPassword] = useState(false);
-    const {login}=useAuth()
-    const { getItem,setItem } = useDataStore();
+    const { login } = useAuth()
+    const { getItem, setItem } = useDataStore();
     const userLoginRefs = useRef<Record<string, string>>({
         email: "",
         password: ""
@@ -80,15 +80,20 @@ const Login = ({ setCurrScreen }: any) => {
         setLoadingProvider(null);
         const isOnBoarded = loginResponse?.userInfo?.onboarded;
         setItem("USERID", loginResponse?.userInfo?.userId);
-        setItem("CREATEDAT",new Date().toISOString());
+        setItem("CREATEDAT", new Date().toISOString());
         if (isOnBoarded) {
             //navigate to home
             await login()
             navigation.navigate("AuthStack", { screen: "MainTabs" });
-            
+
         }
         else {
-            navigation.navigate("UserOnBoarding");
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'UserOnBoarding' }],
+                })
+            );
         }
 
     }
@@ -115,7 +120,7 @@ const Login = ({ setCurrScreen }: any) => {
     }
 
     const handleEmailLogin = async () => {
-        if(!userLoginRefs.current.email || !userLoginRefs.current.password) return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
+        if (!userLoginRefs.current.email || !userLoginRefs.current.password) return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
         setLoadingProvider("email");
         const payload: AuthModel = {
             email: userLoginRefs.current.email,
@@ -161,17 +166,17 @@ const Login = ({ setCurrScreen }: any) => {
                     </FormControl>
                 ))}
                 <View style={styles.forgotPasswordContainer}>
-                    <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Forgot Password?</Text>
+                    <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Forgot Password?</Text>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
-                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider!=null}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
                         <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center'>
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin} isDisabled={loadingProvider!=null}>
-                        {loadingProvider=="google"&&(
+                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin} isDisabled={loadingProvider != null}>
+                        {loadingProvider == "google" && (
                             <ButtonSpinner color={"#fff"} size={wp("4%")} />
                         )
 
@@ -180,9 +185,9 @@ const Login = ({ setCurrScreen }: any) => {
                         <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
-                        <Text style={[globalStyles.labelText,globalStyles.themeTextColor]}>Don't have an account? </Text>
+                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('signup')}>
-                            <Text style={[globalStyles.underscoreText,globalStyles.themeTextColor]}>Sign Up</Text>
+                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
                         </TouchableOpacity>
 
                     </View>

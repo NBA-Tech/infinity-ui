@@ -11,6 +11,7 @@ import { getActivityDataAPI } from '@/src/services/activity/user-activity-servic
 import { UserActivity } from '@/src/types/activity/user-activity-type';
 import { formatDate } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
+import { EmptyState } from '@/src/components/empty-state-data';
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: wp('2%'),
@@ -36,13 +37,25 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 });
+const ICONS = {
+  WARNING: {
+    icon: 'alert-triangle', // Feather icon
+    color: '#F59E0B',       // Amber/Yellow
+  },
+  ERROR: {
+    icon: 'alert-circle',   // Feather icon
+    color: '#EF4444',       // Red
+  },
+  INFO: {
+    icon: 'info',           // Feather icon
+    color: '#3B82F6',       // Blue
+  },
+  SUCCESS: {
+    icon: 'check-circle',   // Feather icon
+    color: '#10B981',       // Green
+  },
+};
 
-const ICON = {
-  WARNING: 'warning',
-  ERROR: 'alert-circle',
-  INFO: 'info',
-  SUCCESS: 'check-circle'
-}
 
 const Activity = () => {
   const globalStyles = useContext(StyleContext);
@@ -100,6 +113,15 @@ const Activity = () => {
 
         {/* Divider */}
         <Divider style={{ marginVertical: hp('1.5%') }} />
+        {!loading && recentActivityList?.length === 0 && (
+          <EmptyState
+            title="No Activity Found"
+            description="You have no recent activity."
+            noAction={true}
+          />
+        )
+
+        }
 
         {/* Scrollable Activities */}
         <ScrollView
@@ -120,7 +142,7 @@ const Activity = () => {
               renderItem={({ item }) => (
                 <View style={styles.activityRow} key={item?.activityId}>
                   <View style={styles.statusWrapper}>
-                    <Feather name={item?.activityType} size={wp('5%')} color="#228B22" />
+                    <Feather name={ICONS[item?.activityType]?.icon} size={wp('5%')} color={ICONS[item?.activityType]?.color} />
                   </View>
 
                   <View style={styles.textWrapper}>

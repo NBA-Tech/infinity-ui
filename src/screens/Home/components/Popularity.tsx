@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
         borderRadius: wp('2%'),
         marginVertical: hp('2%'),
         padding: wp('4%'),
-        height: hp('40%'), // fixed height for scroll
+        height: hp('50%'), // fixed height for scroll
     },
 })
 type PopularityProps = {
@@ -69,14 +69,14 @@ const Popularity = (props: PopularityProps) => {
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Feather name="info" size={wp('5%')} color="#fff" />
+                            <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
 
                     </Tooltip>
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
                 {!props?.isLoading && percentageStat?.length<=0 &&(
-                    <EmptyState title="No Data Found" onAction={()=>navigation.navigate('Services')}/>
+                    <EmptyState title="No Services Booked" noAction={true} />
                 )
 
                 }

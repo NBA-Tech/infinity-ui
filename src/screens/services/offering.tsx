@@ -75,7 +75,7 @@ const OfferingCardSkeleton = () => (
 const services = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
-    const { serviceData, packageData, loadOfferings,addService,updateService,addPackage,updatePackage } = useOfferingStore();
+    const { serviceData, packageData, loadOfferings, addService, updateService, addPackage, updatePackage } = useOfferingStore();
     const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
     const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState('services');
@@ -186,9 +186,12 @@ const services = () => {
                                     value={String(packageDetails.price)}
                                     keyboardType="numeric"
                                     onChangeText={(value) => {
+                                        // Remove non-numeric characters except '.'
+                                        const numericValue = value.replace(/[^0-9.]/g, "");
+
                                         setPackageDetails((prev) => ({
                                             ...prev,
-                                            price: Number(value) // fallback
+                                            price: numericValue === "" ? 0 : parseFloat(numericValue),
                                         }));
                                     }}
                                 />
@@ -246,7 +249,7 @@ const services = () => {
             key: "packageIcon",
             label: "Package Icon",
             placeholder: "Enter Package Icon",
-            icon: <Feather name="gender-male" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             value: packageDetails.icon,
@@ -354,7 +357,7 @@ const services = () => {
             key: "serviceCategory",
             label: "Service Category",
             placeholder: "Select category",
-            icon: <Feather name="image" size={wp('5%')} style={{paddingRight: wp('3%')}} color="#8B5CF6" />,
+            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -383,7 +386,7 @@ const services = () => {
             key: "serviceIcon",
             label: "Service Icon",
             placeholder: "Select Icon",
-            icon: <Feather name="image" size={wp('5%')} style={{paddingRight: wp('3%')}} color="#8B5CF6" />,
+            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: false,
@@ -492,11 +495,11 @@ const services = () => {
                 message: serviceResponse?.message ?? "Successfully created service",
             })
             if (isUpdate) {
-                activeTab==="services"?updateService(currDetails):updatePackage(currDetails)
+                activeTab === "services" ? updateService(currDetails) : updatePackage(currDetails)
             }
             else {
                 currDetails.id = serviceResponse?.data
-                activeTab==="services"?addService(currDetails):addPackage(currDetails)
+                activeTab === "services" ? addService(currDetails) : addPackage(currDetails)
             }
             resetActiveDetails()
         }
@@ -507,7 +510,7 @@ const services = () => {
         setSearchText(text);
         let filteredData = []
         if (activeTab == "services") {
-            filteredData=serviceData?.filter((item) => item?.serviceName.toLowerCase().includes(text.toLowerCase()));
+            filteredData = serviceData?.filter((item) => item?.serviceName.toLowerCase().includes(text.toLowerCase()));
         }
         else {
             filteredData = packageData?.filter((item) => item?.packageName.toLowerCase().includes(text.toLowerCase()));
@@ -517,13 +520,13 @@ const services = () => {
 
     useEffect(() => {
         const userId = getItem("USERID")
-        loadOfferings(userId,showToast);
+        loadOfferings(userId, showToast);
     }, []);
 
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
-            <Header/>
+            <Header />
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => setIsOpen(false)}
@@ -533,7 +536,7 @@ const services = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: hp("2%") }}
                 >
-                    <View className={"rounded-t-2xl max-h-[85%] p-4"} style={{ borderRadius: wp('3%'),backgroundColor: isDark ? "#1F2028" : "#f5f5f5" }}>
+                    <View className={"rounded-t-2xl max-h-[85%] p-4"} style={{ borderRadius: wp('3%'), backgroundColor: isDark ? "#1F2028" : "#f5f5f5" }}>
                         {/* Header */}
                         <View className="flex flex-col items-start mb-4">
                             <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText]}>
@@ -551,7 +554,7 @@ const services = () => {
                             <CustomFieldsComponent
                                 infoFields={activeTab === "services" ? serviceInfoFields : packageInfoFields}
                                 errors={errors}
-                                cardStyle={{padding:wp('2%')}}
+                                cardStyle={{ padding: wp('2%') }}
                             />
                         </View>
 
@@ -581,7 +584,7 @@ const services = () => {
                                     <ButtonSpinner color={"#fff"} size={wp("4%")} />
                                 )}
                                 <Feather name="save" size={wp("5%")} color="#fff" />
-                                <ButtonText style={[globalStyles.buttonText,{color:"#fff"}]}>Save</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText, { color: "#fff" }]}>Save</ButtonText>
                             </Button>
                         </View>
                     </View>
@@ -621,17 +624,17 @@ const services = () => {
 
                     <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                         <TouchableOpacity style={[styles.tabContainer, activeTab === 'services' && styles.activeTab]} onPress={() => setActiveTab('services')}>
-                            <Text style={[globalStyles.normalBoldText,globalStyles.themeTextColor]}>Services</Text>
+                            <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Services</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.tabContainer, activeTab === 'packages' && styles.activeTab]} onPress={() => setActiveTab('packages')}>
-                            <Text style={[globalStyles.normalBoldText,globalStyles.themeTextColor]}>Packages</Text>
+                            <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Packages</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
                     <View>
-                        <Text style={[globalStyles.sideHeading,globalStyles.themeTextColor]}>
+                        <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
                             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                             (
                             {activeTab === "services"
@@ -648,7 +651,7 @@ const services = () => {
                             setIsOpen(true)
                         }}>
                             <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={[globalStyles.buttonText,{color: '#fff'}]}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
+                            <ButtonText style={[globalStyles.buttonText, { color: '#fff' }]}>Add {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</ButtonText>
                         </Button>
                     </View>
 
@@ -660,7 +663,7 @@ const services = () => {
                     {/* Services Tab */}
                     {!loadingProvider && activeTab === 'services' && (
                         serviceData?.length === 0 ? (
-                            <EmptyState variant='services' />
+                            <EmptyState variant='services' onAction={() => setIsOpen(true)} />
                         ) : (
                             <ServiceTab
                                 serviceData={searchText !== '' ? filteredOfferingList : serviceData}
@@ -672,7 +675,7 @@ const services = () => {
                     {/* Packages Tab */}
                     {!loadingProvider && activeTab === 'packages' && (
                         packageData?.length === 0 ? (
-                            <EmptyState variant='packages' />
+                            <EmptyState variant='packages' onAction={() => setIsOpen(true)} />
                         ) : (
                             <PackageTab
                                 packageData={searchText !== '' ? filteredOfferingList : packageData}

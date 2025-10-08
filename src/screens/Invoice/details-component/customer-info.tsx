@@ -8,10 +8,12 @@ import { Divider } from '@/components/ui/divider';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { OrderBasicInfo } from '@/src/types/order/order-type';
 import { openDaialler } from '@/src/utils/utils';
+import Skeleton from '@/components/ui/skeleton';
 
 
 type CustomerInfoProps = {
     customerData: CustomerMetaModel;
+    loading: boolean
 }
 const CustomerInfo = (props: CustomerInfoProps) => {
     console.log(props)
@@ -26,34 +28,43 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                         <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Billing Information</Text>
 
                     </View>
-                    <View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.customerData?.name}</Text>
-                    </View>
-                    <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row gap-2'>
-                            <Feather name="phone" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.mobileNumber}</Text>
-                        </View>
-                        <View className='flex flex-row gap-4'>
-                            <TouchableOpacity onPress={() => openDaialler(props?.customerData?.mobileNumber)}>
-                                <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
-                            </TouchableOpacity>
-                        </View>
+                    {props?.loading ? (
+                        <Skeleton style={{ width: wp('88%'), height: hp('25%') }} />
+                    ) : (
+                        <View className='flex flex-col' style={{ gap: hp('2%') }}>
+                            <View>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.customerData?.name}</Text>
+                            </View>
+                            <View className='flex flex-row justify-between items-center'>
+                                <View className='flex flex-row gap-2'>
+                                    <Feather name="phone" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.mobileNumber}</Text>
+                                </View>
+                                <View className='flex flex-row gap-4'>
+                                    <TouchableOpacity onPress={() => openDaialler(props?.customerData?.mobileNumber)}>
+                                        <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
+                                    </TouchableOpacity>
+                                </View>
 
-                    </View>
-                    <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row gap-2'>
-                            <Feather name="mail" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
-                        </View>
-                        <View className='flex flex-row gap-4'>
-                            <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
-                        </View>
+                            </View>
+                            <View className='flex flex-row justify-between items-center'>
+                                <View className='flex flex-row gap-2'>
+                                    <Feather name="mail" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
+                                </View>
+                                <View className='flex flex-row gap-4'>
+                                    <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
+                                </View>
 
-                    </View>
+                            </View>
+                        </View>
+                    )
+
+                    }
+
                 </View>
 
             </View>

@@ -377,7 +377,6 @@ const InvoiceList = () => {
                         style={{ height: hp('60%') }}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingVertical: hp("1%") }}
                         renderItem={({ item }) => (
                             <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                                 <InvoiceCardComponent item={item} />

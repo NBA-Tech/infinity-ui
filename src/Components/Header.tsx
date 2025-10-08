@@ -15,11 +15,15 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Menu, MenuItem, MenuItemLabel } from "@/components/ui/menu"
 import { Button } from "@/components/ui/button"
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { ThemeToggleContext, StyleContext } from '../providers/theme/global-style-provider';
-import { NotificationIcon } from '../assets/Icons/SvgIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import Logo from '../assets/images/logo.png'
 import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from '@/components/ui/avatar';
+import { useUserStore } from '../store/user/user-store';
+import { useDataStore } from '../providers/data-store/data-store-provider';
+import { useToastMessage } from './toast/toast-message';
+import { useAuth } from '../context/auth-context/auth-context';
 const styles = StyleSheet.create({
     headerContainer: {
         borderBottomRightRadius: wp('5%'),
@@ -67,7 +71,12 @@ const styles = StyleSheet.create({
 const Header = () => {
     const [notificationData, setNotificationData] = useState([]);
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
+    const { userDetails, getUserDetailsUsingID } = useUserStore();
+    const { getItem } = useDataStore()
     const globalStyles = useContext(StyleContext);
+    const showToast = useToastMessage()
+    const navigation = useNavigation()
+    const { logout } = useAuth()
 
     const ICONSMAPPING = {
         info: {
@@ -87,6 +96,12 @@ const Header = () => {
             color: "#F44336",
         }
     };
+
+    useEffect(() => {
+        const userId = getItem("USERID")
+        getUserDetailsUsingID(userId, showToast);
+
+    }, [])
 
 
     return (
@@ -112,34 +127,42 @@ const Header = () => {
                     <Menu
                         placement="bottom left"
                         offset={-15}
+                        style={globalStyles.appBackground}
                         trigger={({ ...triggerProps }) => (
-                           <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
+                            <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
                                 <Avatar size="md">
                                     <AvatarImage
                                         source={{
-                                            uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
+                                            uri: userDetails?.userBusinessInfo?.companyLogoURL,
                                         }}
                                     />
                                     <AvatarBadge />
+                                    {!userDetails?.userBusinessInfo?.companyLogoURL &&
+                                        <AvatarFallbackText>{userDetails?.userAuthInfo?.username?.charAt(0).toUpperCase()}</AvatarFallbackText>
+                                    }
                                 </Avatar>
                             </Button>
                         )}
                     >
-                        <MenuItem key="view">
+                        <MenuItem key="profile" onPress={() => navigation.navigate("Profile")}>
+                            <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#3B82F6" />
                             <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
-                                View
+                                Profile
                             </MenuItemLabel>
                         </MenuItem>
 
-                        <MenuItem key="edit">
+                        <MenuItem key="logout" onPress={async () => {
+                            await logout()
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: 'UnauthStack', params: { screen: 'Authentication' } }],
+                                })
+                            )
+                        }}>
+                            <Feather name="log-out" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#EF4444" />
                             <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
-                                Edit
-                            </MenuItemLabel>
-                        </MenuItem>
-
-                        <MenuItem key="delete">
-                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
-                                Delete
+                                Logout
                             </MenuItemLabel>
                         </MenuItem>
                     </Menu>

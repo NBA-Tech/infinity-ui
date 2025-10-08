@@ -10,6 +10,7 @@ import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
 import Feather from 'react-native-vector-icons/Feather';
 import { EmptyState } from '@/src/components/empty-state-data';
+import { useUserStore } from '@/src/store/user/user-store';
 type RevenueTrendChartProps = {
     invoiceDetails: Invoice[]
     isLoading: boolean
@@ -19,6 +20,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [revenueData, setRevenueData] = useState<any>(undefined);
     const [toolTipVisible, setToolTipVisible] = useState(false);
+    const {userDetails}=useUserStore()
 
     useEffect(() => {
         if (props?.invoiceDetails?.length <= 0 || !props?.invoiceDetails) return
@@ -49,12 +51,14 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Feather name="info" size={wp('5%')} color="#fff" />
+                            <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
 
                     </Tooltip>
                 </View>
             </View>
+            {!props?.isLoading && !revenueData && <EmptyState title={'No data available'} noAction={true} />}
+
 
             {/* Add Dropdown component for the year */}
             {(props?.isLoading) ? (
@@ -74,7 +78,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         withHorizontalLabels={true}
                         xLabelsOffset={hp('2%')}
                         fromZero={true}
-                        yAxisLabel="$"
+                        yAxisLabel={userDetails?.currencyIcon}
                         chartConfig={{
                             backgroundGradientFrom: isDark ? "#272932" : "#ffffffcc",
                             backgroundGradientTo: isDark ? "#272932" : "#ffffffcc",

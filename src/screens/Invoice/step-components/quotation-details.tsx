@@ -9,6 +9,7 @@ import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { Divider } from '@/components/ui/divider';
 import { formatDate } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
+import { useUserStore } from '@/src/store/user/user-store';
 
 type QuotationDetailsProps = {
     orderForm?: FormFields
@@ -18,6 +19,7 @@ type QuotationDetailsProps = {
 const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
+    const {userDetails}=useUserStore()
 
     const listItems = useMemo(() => {
         return [
@@ -25,7 +27,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
             { label: 'Customer Name', value: props?.orderDetails?.customerInfo ? `${props?.orderDetails?.customerInfo?.firstName} ${props?.orderDetails?.customerInfo?.lastName}` : "N/A" },
             { label: 'Event Created Date', value: formatDate(props?.orderDetails?.eventInfo?.eventDate) || "N/A" },
             { label: 'Event Status', value: props?.orderDetails?.status || "N/A" },
-            { label: 'Quotation Amount', value: `$ ${props?.orderDetails?.totalPrice}` || "N/A" },
+            { label: 'Quotation Amount', value: `${userDetails?.currencyIcon} ${props?.orderDetails?.totalPrice}` || "N/A" },
             { label: 'Event Type', value: props?.orderDetails?.eventInfo?.eventType || "N/A" },
             { label: 'Customer Email', value: props?.orderDetails?.customerInfo?.email || "N/A" },
             { label: 'Customer Phone', value: props?.orderDetails?.customerInfo?.mobileNumber || "N/A" },

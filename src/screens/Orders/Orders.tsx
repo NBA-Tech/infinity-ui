@@ -221,6 +221,8 @@ const Orders = () => {
                 </View>
 
                 {loading && <OrderCardSkeleton count={4} />}
+                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "orders" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
+
                 <FlatList
                     data={orderData ?? []}
                     style={{ height: hp("60%") }}
@@ -250,7 +252,6 @@ const Orders = () => {
                         setFilters(prev => ({ ...prev, page: 1 }));
                     }}
                 />
-                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "order" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 {/* <Fab size="lg" placement="bottom right" style={{ backgroundColor: '#8B5CF6' }}>
                     <Feather name="plus" size={wp('6%')} color="#fff" />

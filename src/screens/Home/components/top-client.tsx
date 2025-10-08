@@ -11,6 +11,7 @@ import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
+import { EmptyState } from '@/src/components/empty-state-data';
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -109,13 +110,18 @@ const TopClient = (props: TopClientProps) => {
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Feather name="info" size={wp('5%')} color="#fff" />
+                            <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
 
                     </Tooltip>
                 </View>
 
                 <Divider style={{ marginVertical: hp('1.5%') }} />
+                {!props?.isLoading && topCustomers?.length<=0 && (
+                    <EmptyState title="No Customers Found" noAction={true}/>
+                )
+
+                }
                 {(props?.isLoading) ? (
                     <View className='flex flex-row items-center gap-3'>
                         <FlatList

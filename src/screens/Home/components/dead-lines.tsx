@@ -9,6 +9,7 @@ import { OrderModel } from '@/src/types/order/order-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
+import { EmptyState } from '@/src/components/empty-state-data';
 const styles = StyleSheet.create({
     cardContainer: {
         borderRadius: wp('2%'),
@@ -112,12 +113,17 @@ const DeadLines = (props: DeadLinesProps) => {
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Feather name="info" size={wp('5%')} color="#fff" />
+                            <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                         </TouchableOpacity>
 
                     </Tooltip>
                 </View>
                 <Divider style={{ marginVertical: hp('1.5%') }} />
+                {!props?.isLoading && weeklyOrderData?.length <= 0 && (
+                    <EmptyState title='No Upcoming Deadlines' description='Hooray!! You have no upcoming deadlines' noAction={true}/>
+                )
+
+                }
                 {props?.isLoading ? (
                     <Skeleton height={hp('30%')} width={wp('88%')} />
                 ) : (

@@ -7,6 +7,7 @@ import { useCustomerStore } from "../store/customer/customer-store";
 import { useOfferingStore } from "../store/offering/offering-store";
 import { OfferingInfo, OrderType } from "../types/order/order-type";
 import { isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
+import { COUNTRY_CURRENCY_SYMBOLS } from "../constant/constants";
 
 
 export const getCountries = (): ICountry[] => {
@@ -26,7 +27,9 @@ export const formatDate = (dateStr?: string) => {
 };
 
 
-
+export const getCurrencySymbol = (countryCode: string): string => {
+  return COUNTRY_CURRENCY_SYMBOLS[countryCode] || "$";
+};
 
 export const checkValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

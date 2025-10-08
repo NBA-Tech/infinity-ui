@@ -19,7 +19,7 @@ import TopClient from './components/top-client';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { calculateImprovement, getUpcomingByTimeframe } from '@/src/utils/utils';
+import { calculateImprovement, getCurrencySymbol, getUpcomingByTimeframe } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
@@ -28,6 +28,7 @@ import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import RevenueTrendChart from './components/home-line-chart';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -44,6 +45,7 @@ const Home = () => {
     const showToast = useToastMessage();
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
+    const {userDetails,setUserDetails,getUserDetailsUsingID}=useUserStore()
     const [orderStatus, setOrderStatus] = useState();
     const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false });
     const generalStatData = useMemo<GeneralStatInfoModel>(() => {
@@ -68,7 +70,7 @@ const Home = () => {
                 icon: <Feather name="dollar-sign" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#22C55E", "#10B981"],
                 isTrending: true,
-                count: `$ ${invoiceDetails?.reduce((a, b) => a + b.amountPaid, 0) || 0}`,
+                count: `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((a, b) => a + b.amountPaid, 0) || 0}`,
                 percentageOfChange: calculateImprovement<ApiGeneralRespose>(
                     invoiceDetails,
                     "invoiceDate",
@@ -179,6 +181,24 @@ const Home = () => {
         }
         setInvoiceDetails(orderMetaDataResponse?.data)
     }
+
+    // ----------------- User -----------------
+
+    useEffect(()=>{
+        const userId=getItem("USERID")
+        if(!userId) showToast({type:"error",title:"Error",message:"User not found please login again"})
+        getUserDetailsUsingID(userId,showToast)
+    },[])
+
+    useEffect(()=>{
+        console.log(userDetails)
+        if(!userDetails?.currencyIcon){
+            setUserDetails({
+                ...userDetails,
+                currencyIcon:getCurrencySymbol(userDetails?.userBillingInfo?.country)
+            })
+        }
+    },[userDetails])
 
 
     // ----------------- Customer -----------------

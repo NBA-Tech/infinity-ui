@@ -327,7 +327,7 @@ const EventDateKeeper = () => {
               placement={Placement.BOTTOM}
               onClose={() => setToolTipVisible(false)}>
               <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                <Feather name="info" size={wp('5%')} color="#fff" />
+                <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
               </TouchableOpacity>
 
             </Tooltip>
@@ -339,7 +339,10 @@ const EventDateKeeper = () => {
       <View style={[styles.container, { backgroundColor: isDark ? "#1F2028" : "#fff" }]}>
         <Calendar
           onDayPress={onDayPress}
-          style={{ backgroundColor: isDark ? "#1F2028" : "#fff" }}
+          style={{
+            backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
+            borderRadius: 10,
+          }}
           markedDates={eventMarkedDate}
           onMonthChange={(value) => getMonthEvents(value?.month, value?.year)}
           markingType={'custom'}
@@ -347,35 +350,50 @@ const EventDateKeeper = () => {
           maxDate={`${new Date().getFullYear() + 1}-12-31`}
           enableSwipeMonths={true}
           theme={{
-            backgroundColor: isDark ? '#1F2028' : '#fff',   // calendar background
-            calendarBackground: isDark ? '#1F2028' : '#fff',
-            textSectionTitleColor: isDark ? '#BBBBBB' : '#222', // day headers (Mon, Tue..)
-            selectedDayBackgroundColor: '#BB86FC',
-            selectedDayTextColor: '#fff',
-            todayTextColor: '#BB86FC',
-            dayTextColor: isDark ? '#FFFFFF' : '#000000',
-            textDisabledColor: '#555555',
-            dotColor: '#BB86FC',      // small dot under marked day
-            selectedDotColor: '#fff',
-            arrowColor: '#BB86FC',
-            monthTextColor: '#FFFFFF',
-            textDayFontWeight: '500',
-            textMonthFontWeight: 'bold',
-            textDayHeaderFontWeight: '600',
-            indicatorColor: '#BB86FC',
+            // === Base Backgrounds ===
+            backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
+            calendarBackground: isDark ? "#1F2028" : "#FFFFFF",
+
+            // === Header (Month / Weekdays) ===
+            textSectionTitleColor: isDark ? "#9CA3AF" : "#374151", // Mon, Tue, etc.
+            monthTextColor: isDark ? "#F5F5F5" : "#111827",        // Month title
+            arrowColor: isDark ? "#A78BFA" : "#6D28D9",            // Navigation arrows
+            indicatorColor: isDark ? "#A78BFA" : "#6D28D9",
+
+            // === Day Cells ===
+            dayTextColor: isDark ? "#E5E7EB" : "#111827",
+            textDisabledColor: isDark ? "#4B5563" : "#9CA3AF",
+            todayTextColor: isDark ? "#A78BFA" : "#7C3AED",        // Highlight today's date
+
+            // === Selected Day ===
+            selectedDayBackgroundColor: isDark ? "#8B5CF6" : "#7C3AED",
+            selectedDayTextColor: "#FFFFFF",
+
+            // === Dots / Events ===
+            dotColor: isDark ? "#C084FC" : "#7C3AED",
+            selectedDotColor: "#FFFFFF",
+
+            // === Fonts ===
+            textDayFontWeight: "500",
+            textMonthFontWeight: "bold",
+            textDayHeaderFontWeight: "600",
+
+            // === Extra Stylesheets ===
             stylesheet: {
               calendar: {
                 main: {
-                  backgroundColor: '#1F2028',
+                  backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
                 },
                 header: {
-                  backgroundColor: '#1F2028',
-                }
-              }
-            }
+                  backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
+                  color: isDark ? "#000" : "#fff",
+                },
+              },
+            },
           }}
           displayLoadingIndicator={loadingProvider.intialLoading}
         />
+
       </View>
 
       {/* Appointment List (Vertical FlatList) */}

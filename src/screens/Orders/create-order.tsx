@@ -590,7 +590,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             {/* Header */}
                             <View style={{ backgroundColor: isDark ? "#701A3D" : "#FDF2F8", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#500724" : "#8B5CF6"} />
+                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#FDF2F8" : "#8B5CF6"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -640,7 +640,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
-                                            <EmptyState variant='orders' onAction={() => navigation.navigate('Services')} />
+                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Services')} />
                                         )
                                         }
                                         <FlatList
