@@ -14,6 +14,7 @@ import OneTimePassword from './one-time-password';
 import Background from '../../assets/images/Background.png'
 import { Divider } from '@/components/ui/divider';
 import { configureGoogleSignin } from '@/src/services/auth/auth-service';
+import ForgotPassword from './forgot-password';
 const styles = StyleSheet.create({
     headingContainer: {
         marginVertical: hp("0.1%")
@@ -32,7 +33,7 @@ const Authentication = () => {
 
     useEffect(() => {
         configureGoogleSignin();
-        return () => { 
+        return () => {
         };
     }, []);
 
@@ -56,7 +57,13 @@ const Authentication = () => {
                                 Welcome to Infinity ColorLab
                             </Text>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                Sign In
+                                {
+                                    currScreen === 'login'
+                                        ? 'Login'
+                                        : currScreen === 'register'
+                                            ? 'Register'
+                                            : 'Forgot Password'
+                                }
                             </Text>
                             <Divider style={{ height: hp('0.5%') }} width={wp('20%')} />
                         </View>
@@ -65,9 +72,11 @@ const Authentication = () => {
                     {/* Login Card - Aligned to bottom */}
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                         {currScreen === 'login' ? (
-                            <Login setCurrScreen={setCurrScreen}/>
+                            <Login setCurrScreen={setCurrScreen} />
+                        ) : currScreen === 'register' ? (
+                            <Register setCurrScreen={setCurrScreen} />
                         ) : (
-                            <Register setCurrScreen={setCurrScreen}/>
+                            <ForgotPassword setCurrScreen={setCurrScreen} />
                         )
 
                         }

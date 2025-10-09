@@ -56,14 +56,13 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
     const navigation = useNavigation();
     const actionButtons = [
         {
-            id: 1,
-            label: 'Share',
-            icon: <Feather name="share-2" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
-        },
-        {
             id: 2,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress: (id: string) => navigation.navigate('Invoice', {
+                screen: 'CreateInvoice',
+                params: { invoiceId: id },
+            })
         },
     ]
 
@@ -115,7 +114,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
 
                 <View className='flex flex-row justify-between items-center' >
                     {actionButtons.map((action) => (
-                        <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
+                        <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={() => action.onPress(item?.invoiceId)}>
                             {action.icon}
                             <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
                         </Button>

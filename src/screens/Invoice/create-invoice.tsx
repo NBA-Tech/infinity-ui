@@ -114,6 +114,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * LOAD INVOICE (EDIT MODE)
      * ───────────────────────────────*/
     useEffect(() => {
+        console.log(invoiceDetails)
         if (invoiceId) getInvoiceDetails(invoiceId);
     }, [invoiceId]);
 
@@ -148,7 +149,16 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         if (!res.success)
             return showToast({ type: "error", title: "Error", message: res.message });
 
-        setOrderDetails(res.data);
+        const customerID = res?.data?.orderBasicInfo?.customerID;
+
+        const customerInfo = customerMetaInfoList?.find(
+            (meta) => meta.customerID === customerID
+        );
+
+        setOrderDetails({
+            ...(res?.data ?? {}),
+            customerInfo,
+        });
     };
 
     const getInvoiceDetailsList = async (orderId: string) => {
@@ -307,7 +317,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             email: orderDetails?.customerInfo?.email,
             mobileNumber: orderDetails?.customerInfo?.mobileNumber,
         };
-        console.log("billingInfo", billingInfo);
 
         const payload: Invoice = {
             ...invoiceDetails,
@@ -324,29 +333,29 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         }
         setLoadingProvider((p) => ({ ...p, saveLoading: false }));
 
-        if (payload?.invoiceId) {
-            createNewActivityAPI({
-                userId: getItem("USERID"),
-                activityType: ACTIVITY_TYPE.INFO,
-                activityTitle: "Invoice Updated",
-                activityMessage: "Invoice Updated for Event: " + orderDetails?.eventInfo?.eventTitle
-            })
-        }
-        else {
-            createNewActivityAPI({
-                userId: getItem("USERID"),
-                activityType: ACTIVITY_TYPE.SUCCESS,
-                activityTitle: "Invoice Created",
-                activityMessage: "Invoice Created for Event: " + orderDetails?.eventInfo?.eventTitle
-            })
-        }
-
         if (res?.success) {
+            triggerReloadInvoices();
+            if (payload?.invoiceId) {
+                createNewActivityAPI({
+                    userId: getItem("USERID"),
+                    activityType: ACTIVITY_TYPE.INFO,
+                    activityTitle: "Invoice Updated",
+                    activityMessage: "Invoice Updated for Event: " + orderDetails?.eventInfo?.eventTitle
+                })
+            }
+            else {
+                createNewActivityAPI({
+                    userId: getItem("USERID"),
+                    activityType: ACTIVITY_TYPE.SUCCESS,
+                    activityTitle: "Invoice Created",
+                    activityMessage: "Invoice Created for Event: " + orderDetails?.eventInfo?.eventTitle
+                })
+            }
+
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {
                 text: res.message ?? "Invoice created successfully",
             });
-            triggerReloadInvoices();
             setCurrStep(0);
             setInvoiceDetails({ userId: getItem("USERID") });
             setOrderDetails(undefined);

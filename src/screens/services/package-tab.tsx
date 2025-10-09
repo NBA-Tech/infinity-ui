@@ -230,7 +230,7 @@ const PackageTab = (props: PackageProps) => {
     return (
         <View style={{ margin: wp('2%') }}>
            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-            <View>
+             <View style={{ height: hp('50%') }}>
                 <FlatList
                     data={props?.packageData}
                     keyExtractor={(item) => item.id + ''}

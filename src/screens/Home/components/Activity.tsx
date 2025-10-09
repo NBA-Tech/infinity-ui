@@ -12,6 +12,7 @@ import { UserActivity } from '@/src/types/activity/user-activity-type';
 import { formatDate } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: wp('2%'),
@@ -64,6 +65,7 @@ const Activity = () => {
   const [loading, setLoading] = useState(false)
   const { getItem } = useDataStore();
   const showToast = useToastMessage();
+  const {reloadActivity}=useReloadContext()
 
 
   const getRecentActivityList = async (userId: string) => {
@@ -84,6 +86,7 @@ const Activity = () => {
 
   useEffect(() => {
     const userId = getItem("USERID");
+    console.log("recent activity")
     if (!userId) {
       return showToast({
         type: "error",
@@ -93,7 +96,7 @@ const Activity = () => {
     }
     getRecentActivityList(userId)
 
-  }, [])
+  }, [reloadActivity])
 
   return (
     <View>

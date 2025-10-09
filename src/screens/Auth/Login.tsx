@@ -166,7 +166,9 @@ const Login = ({ setCurrScreen }: any) => {
                     </FormControl>
                 ))}
                 <View style={styles.forgotPasswordContainer}>
-                    <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Forgot Password?</Text>
+                    <TouchableOpacity onPress={()=>setCurrScreen("forgot")}>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Forgot Password?</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
                     <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
@@ -186,7 +188,7 @@ const Login = ({ setCurrScreen }: any) => {
                     </Button>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
                         <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
-                        <TouchableOpacity onPress={() => setCurrScreen('signup')}>
+                        <TouchableOpacity onPress={() => setCurrScreen('register')}>
                             <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
                         </TouchableOpacity>
 

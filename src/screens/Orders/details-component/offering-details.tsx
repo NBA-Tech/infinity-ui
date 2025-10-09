@@ -82,7 +82,9 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const showToast = useToastMessage();
     const { triggerConfetti } = useConfetti();
     const [loading, setLoading] = useState(false)
-    const {userDetails}=useUserStore()
+    const { userDetails } = useUserStore()
+    const [offeringData, setOfferingData] = useState<OfferingInfo[]>([]);
+    console.log(props)
 
 
     // const getServiceList = async () => {
@@ -158,56 +160,86 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
     const handleStatusChange = async (item: ServiceInfo | OfferingInfo) => {
         if (!item) return;
-        setLoading(true)
-        const updateStatusResponse = await updateServiceCompletionStatus(props?.orderId ?? '', props?.offeringData?.orderType === OrderType.PACKAGE ? item?.packageId ?? '' : item?.id ?? '', !item?.isCompleted ?? false, props?.offeringData?.orderType ?? OrderType.SERVICE)
+
+        setLoading(true);
+
+        const updateStatusResponse = await updateServiceCompletionStatus(
+            props?.orderId ?? '',
+            item?.id ?? '',
+            !item?.isCompleted, // toggle status
+            props?.offeringData?.orderType ?? OrderType.SERVICE
+        );
+
         if (!updateStatusResponse?.success) {
             showToast({
                 type: "error",
                 title: "Error",
                 message: updateStatusResponse?.message ?? "Something went wrong",
             });
+            setLoading(false);
             return;
         }
+
         props?.setOrderDetails((prev) => {
             if (!prev?.offeringInfo) return prev;
 
-            // Case 1: Service order
-            if (prev.offeringInfo.orderType === "SERVICE") {
+            const isServiceOrder = prev.offeringInfo.orderType === OrderType.SERVICE;
+            const isPackageOrder = prev.offeringInfo.orderType === OrderType.PACKAGE;
+
+            if (isServiceOrder) {
                 return {
                     ...prev,
                     offeringInfo: {
                         ...prev.offeringInfo,
-                        services: prev.offeringInfo.services?.map((service) => {
-                            if (service?.id === item?.id) {
-                                return {
-                                    ...service,
-                                    isCompleted: !service?.isCompleted,
-                                };
-                            }
-                            return service;
-                        }),
+                        services: prev.offeringInfo.services?.map((service) =>
+                            service?.id === item?.id
+                                ? { ...service, isCompleted: !service.isCompleted }
+                                : service
+                        ),
                     },
                 };
             }
 
-            // Case 2: Package order
-            if (prev.offeringInfo.orderType === "PACKAGE") {
+            if (isPackageOrder) {
                 return {
                     ...prev,
                     offeringInfo: {
-                        isCompleted: !prev.offeringInfo.isCompleted
+                        ...prev.offeringInfo,
+                        isCompleted: !prev.offeringInfo.isCompleted,
+                        // Also update the services array if you want consistent logic
+                        services: prev.offeringInfo.services?.map((service) => ({
+                            ...service,
+                            isCompleted: !service.isCompleted,
+                        })),
                     },
                 };
             }
 
             return prev;
         });
-        setLoading(false)
-        triggerConfetti()
 
+        setLoading(false);
+        triggerConfetti();
+    };
 
-        // getServiceList();
-    }
+    useEffect(() => {
+        if (props?.offeringData?.orderType === OrderType.PACKAGE) {
+            setOfferingData({
+                ...offeringData,
+                services: [{
+                    id: props?.offeringData?.packageId,
+                    name: props?.offeringData?.packageName,
+                    value: 1,
+                    isCompleted: props?.offeringData?.isCompleted,
+                    price: props?.offeringData?.packagePrice
+                }]
+            })
+        }
+        else {
+            setOfferingData(props?.offeringData)
+        }
+
+    }, [props?.offeringData])
     return (
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View>
@@ -263,7 +295,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
                                     {/* Rows */}
                                     <FlatList
-                                        data={props?.offeringData?.services}
+                                        data={offeringData?.services}
                                         keyExtractor={(item) => item.id}
                                         renderItem={({ item }) => (
                                             <View

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BackHeader from '@/src/components/back-header';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { Button, ButtonText } from '@/components/ui/button';
 import CustomerInfo from './details-component/customer-info';
@@ -57,7 +57,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const { serviceData, packageData, loadOfferings } = useOfferingStore();
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
-    const {userDetails}=useUserStore()
+    const { userDetails } = useUserStore()
     const [routes] = useState([
         { key: "customer", title: "Customer", icon: "user" },
         { key: "event", title: "Event", icon: "calendar" },
@@ -247,7 +247,9 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     <View className="flex flex-row justify-between items-center w-full">
                         {/* Left side */}
                         <View className="flex flex-row items-center gap-3">
-                            <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
+                            </TouchableOpacity>
                             <View className="flex flex-col">
                                 <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Order Details</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>

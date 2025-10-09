@@ -40,7 +40,7 @@ const Home = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
-    const { reloadCustomer, reloadOrders, reloadInvoices } = useReloadContext()
+    const { reloadCustomer, reloadOrders, reloadInvoices,triggerReloadActivity } = useReloadContext()
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
@@ -210,6 +210,7 @@ const Home = () => {
             try {
                 await loadCustomerMetaInfoList(userId, showToast);
             } finally {
+                triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, customerLoading: false }));
             }
         };
@@ -219,12 +220,14 @@ const Home = () => {
     // ----------------- Orders -----------------
     useEffect(() => {
         const loadOrdersData = async () => {
+            console.log("loadOrdersData")
             const userId = await getItem("USERID");
             if (!userId) return;
             setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
             try {
                 await getOrderDetails(userId);
             } finally {
+                triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
             }
         };
@@ -234,12 +237,14 @@ const Home = () => {
     // ----------------- Invoices -----------------
     useEffect(() => {
         const loadInvoicesData = async () => {
+            console.log("loadInvoicesData")
             const userId = await getItem("USERID");
             if (!userId) return;
             setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
             try {
                 await getInvoiceDetails(userId);
             } finally {
+                triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
             }
         };
