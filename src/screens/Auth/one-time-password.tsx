@@ -113,7 +113,6 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
         }
     };
     const handleSubmit = async () => {
-        console.log(otpCode, otp.join(''))
         if (otpCode !== otp.join('')) {
             return showToast({ type: "error", title: "Error", message: "Invalid OTP" })
         }

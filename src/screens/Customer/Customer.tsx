@@ -224,7 +224,6 @@ const Customer = () => {
             setCustomerData((prev) =>
                 reset ? updatedCustomers : [...prev, ...updatedCustomers]
             );
-            console.log(customers.length, filters.pageSize)
             setHasMore(customers.length === (filters.pageSize || 10));
         } catch (err) {
             console.error("Error fetching customer details:", err);
@@ -280,7 +279,6 @@ const Customer = () => {
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1 || !filters?.page;
-            console.log(filters)
             getCustomerDetails(reset || refresh);
         }, [filters, refresh])
     );

@@ -160,6 +160,7 @@ const FilterComponent = (props: FilterComponentProps) => {
                 label: orderStatus,
                 value: orderStatus
             })),
+            value: props?.filters?.filters?.status ?? "",
             onChange: (value: string) => {
                 props?.setRefresh(true)
                 props?.setFilters(prev => ({
@@ -279,7 +280,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             }
 
         }
-    }))
+    }),[props?.filters,props?.extraValue])
 
     const filterComponents = {
         customer: {

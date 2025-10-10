@@ -176,7 +176,6 @@ const Deliverables = (props: DeliverablesProps) => {
     }
 
     const handleEdit = async (deliverableId: string) => {
-        console.log(deliverableId, props?.orderDetails)
         setCurrDeliverable(props?.orderDetails?.deliverables?.find(deliverable => deliverable?.id === deliverableId));
         setOpen(true);
     }

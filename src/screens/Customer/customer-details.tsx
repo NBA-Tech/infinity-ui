@@ -136,7 +136,6 @@ export default function CustomerDetails({ navigation, route }: Props) {
                     "Failed to fetch customer details",
             });
         }
-        console.log(customerDetailsResponse.data)
         setCustomerDetails(customerDetailsResponse.data as CustomerModel)
     }
 

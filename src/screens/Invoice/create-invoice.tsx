@@ -114,7 +114,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * LOAD INVOICE (EDIT MODE)
      * ───────────────────────────────*/
     useEffect(() => {
-        console.log(invoiceDetails)
         if (invoiceId) getInvoiceDetails(invoiceId);
     }, [invoiceId]);
 
@@ -321,8 +320,10 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         const payload: Invoice = {
             ...invoiceDetails,
             billingInfo,
+            customerId: orderDetails?.customerInfo?.customerID,
             totalAmount: orderDetails?.totalPrice ?? 0,
         };
+        console.log("payload",payload)
         let res;
 
         if (payload?.invoiceId) {

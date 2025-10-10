@@ -45,7 +45,6 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
             showToast({type:"error",title:"Error",message:invoiceDetails.message})
         }
         else{
-            console.log(invoiceDetails?.data)
             setInvoiceDetails(invoiceDetails?.data)
         }
     }

@@ -80,13 +80,11 @@ const Activity = () => {
       });
     }
     setRecentActivityList(recentActivityData?.data)
-    console.log(recentActivityData?.data)
   }
 
 
   useEffect(() => {
     const userId = getItem("USERID");
-    console.log("recent activity")
     if (!userId) {
       return showToast({
         type: "error",

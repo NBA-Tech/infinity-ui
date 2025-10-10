@@ -49,7 +49,6 @@ type InvoiceInfoProps = {
     isLoading: boolean
 }
 const InvoiceInfo = (props: InvoiceInfoProps) => {
-    console.log(props.invoiceDetails);
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const navigation = useNavigation();

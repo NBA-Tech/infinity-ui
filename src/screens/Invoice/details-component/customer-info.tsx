@@ -16,7 +16,6 @@ type CustomerInfoProps = {
     loading: boolean
 }
 const CustomerInfo = (props: CustomerInfoProps) => {
-    console.log(props)
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     return (

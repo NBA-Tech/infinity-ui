@@ -10,7 +10,8 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import Feather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getOtpAPI } from '@/src/api/auth/auth-api-service';
+import { checkEmailExistsAPI, getOtpAPI, resetPasswordAPI } from '@/src/api/auth/auth-api-service';
+import { AuthModel } from '@/src/types/auth/auth-type';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
@@ -61,7 +62,8 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [forgotPasswordDetails, setForgotPasswordDetails] = useState({
         email: "",
-        password: ""
+        password: "",
+        confirmPassword: "",
     });
     const [errors, setErrors] = useState({});
     const [otp, setOtp] = useState(Array(numInputs).fill(""));
@@ -69,6 +71,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [apiOtp, setApiOtp] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
     const showToast = useToastMessage();
 
     const forgotPasswordFields: FormFields = useMemo(() => ({
@@ -81,13 +84,46 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             type: "text",
             style: "w-full",
             isRequired: true,
-            isDisabled: false,
+            isDisabled: isVerified,
             value: forgotPasswordDetails?.email,
             onChange: (value: string) => {
                 patchState("", "email", value, true, setForgotPasswordDetails, setErrors);
             }
         }
-    }), [forgotPasswordDetails])
+    }), [forgotPasswordDetails, isVerified])
+
+    const forgotPasswordResetFields:FormFields = useMemo(() => ({
+        password: {
+            parentKey: "password",
+            key: "password",
+            label: "Password",
+            placeholder: "Password",
+            icon: <Feather name="lock" size={wp('5%')} color="#8B5CF6" />,
+            type: "password",
+            style: "w-full",
+            isRequired: true,
+            isDisabled: false,
+            value: forgotPasswordDetails?.password,
+            onChange: (value: string) => {
+                patchState("", "password", value, true, setForgotPasswordDetails, setErrors);
+            }
+        },
+        confirmPassword: {
+            parentKey: "confirmPassword",
+            key: "confirmPassword",
+            label: "Confirm Password",
+            placeholder: "Confirm Password",
+            icon: <Feather name="lock" size={wp('5%')} color="#8B5CF6" />,
+            type: "password",
+            style: "w-full",
+            isRequired: true,
+            isDisabled: false,
+            value: forgotPasswordDetails?.confirmPassword,
+            onChange: (value: string) => {
+                patchState("", "confirmPassword", value, true, setForgotPasswordDetails, setErrors);
+            }
+        }
+    }),[forgotPasswordDetails])
 
     const handleChange = (text: string, index: number) => {
         if (/^\d$/.test(text)) {
@@ -106,8 +142,42 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
         }
     };
 
+    const handleResetPassword = async () => {
+        if(forgotPasswordDetails?.password!==forgotPasswordDetails?.confirmPassword){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "Password and confirm password should be same"
+            })
+        }
+        setLoading(true);
+        const payload:AuthModel={
+            email:forgotPasswordDetails?.email,
+            password:forgotPasswordDetails?.password,
+            authType:'EMAIL_PASSWORD'
+        }
+        const resetPassword=await resetPasswordAPI(payload);
+        setLoading(false);
+        if(!resetPassword?.success){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: resetPassword?.message ?? "Something went wrong"
+            })
+        }
+        showToast({
+            type: "success",
+            title: "Success",
+            message: "Password reset successfully"
+        })
+        setCurrScreen("login");
+    }
+
     const verifyOtp=()=>{
-        console.log("otp",otp,apiOtp)
+        if(otp.join("")===apiOtp){
+            setIsVerified(true);
+            setIsOpen(false);
+        }
     }
 
 
@@ -120,6 +190,15 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             })
         }
         setLoading(true);
+        const isEmailExists=await checkEmailExistsAPI(forgotPasswordDetails?.email);
+        if(!isEmailExists?.success){
+            setLoading(false);
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: isEmailExists?.message ?? "User not found"
+            })
+        }
         const sendOtp = await getOtpAPI(forgotPasswordDetails?.email);
         if (!sendOtp?.success) {
             setLoading(false);
@@ -182,12 +261,15 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             <Card style={[styles.loginContainer, globalStyles.cardShadowEffect]}>
                 <View style={{ paddingBottom: hp("20%") }}>
                     <CustomFieldsComponent infoFields={forgotPasswordFields} cardStyle={{ padding: hp("1%") }} />
+                    {isVerified && <CustomFieldsComponent infoFields={forgotPasswordResetFields} cardStyle={{ padding: hp("1%") }} />
+
+                    }
                     <Button
                         size="lg"
                         variant="solid"
                         action="primary"
                         style={globalStyles.purpleBackground}
-                        onPress={handleForgotPasswordPopUp}
+                        onPress={isVerified ? handleResetPassword : handleForgotPasswordPopUp}
                         isDisabled={loading}
                     >
                         {loading && (

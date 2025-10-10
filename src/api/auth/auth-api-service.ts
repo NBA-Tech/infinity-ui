@@ -54,3 +54,32 @@ export const sendWelcomeEmailAPI=async(email:string,name:string,headers?:Record<
     return sendWelcomeEmailResponse
     
 }
+
+export const checkEmailExistsAPI=async(email:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const checkEmailExistsResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/check_email_exists?email=${email}`,
+        options: {
+            method: 'GET'
+        }
+    });
+    return checkEmailExistsResponse
+    
+}
+
+
+export const resetPasswordAPI=async(payload:AuthModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const resetPasswordResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/reset_password`,
+        options: {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        },
+        
+    });
+    return resetPasswordResponse
+    
+}

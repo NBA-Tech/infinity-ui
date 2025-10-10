@@ -191,7 +191,6 @@ const Home = () => {
     },[])
 
     useEffect(()=>{
-        console.log(userDetails)
         if(!userDetails?.currencyIcon){
             setUserDetails({
                 ...userDetails,
@@ -220,7 +219,6 @@ const Home = () => {
     // ----------------- Orders -----------------
     useEffect(() => {
         const loadOrdersData = async () => {
-            console.log("loadOrdersData")
             const userId = await getItem("USERID");
             if (!userId) return;
             setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
@@ -237,7 +235,6 @@ const Home = () => {
     // ----------------- Invoices -----------------
     useEffect(() => {
         const loadInvoicesData = async () => {
-            console.log("loadInvoicesData")
             const userId = await getItem("USERID");
             if (!userId) return;
             setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));

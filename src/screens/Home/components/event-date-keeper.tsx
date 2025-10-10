@@ -159,7 +159,6 @@ const EventDateKeeper = () => {
     setLoadingProvider((prev) => ({ ...prev, deleteLoading: false }));
     resetEvent();
     const eventSplit = currEventDetails?.eventDate.split('-')
-    console.log(eventSplit)
     await getMonthEvents(Number(eventSplit?.[1]), Number(eventSplit?.[0]));
   }
 
