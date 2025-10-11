@@ -236,14 +236,16 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
-                    if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay)
+                    if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay){
                         return showToast({
                             type: "error",
                             title: "Error",
                             message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails.totalAmountCanPay}`,
                         });
-
+                    }
+                    else{
                     patchState("", "amountPaid", value, true, setInvoiceDetails, setErrors);
+                    }
                 },
             },
             invoiceDate: {

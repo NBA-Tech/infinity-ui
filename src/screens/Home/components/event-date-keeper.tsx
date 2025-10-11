@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableNativeFeedbackComponent } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     padding: wp('3%'),
     borderRadius: wp('3%'),
-    backgroundColor: '#1E1E2A'
   },
 });
 
@@ -45,6 +44,52 @@ const EventDateKeeper = () => {
   const { getItem } = useDataStore();
   const [toolTipVisible, setToolTipVisible] = useState(false);
   const showToast = useToastMessage();
+
+  const calendarStyleTheme = useMemo(
+    () => ({
+      // === Base ===
+      backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
+      calendarBackground: isDark ? "#1F2028" : "#FFFFFF",
+
+      // === Header ===
+      textSectionTitleColor: isDark ? "#9CA3AF" : "#374151",
+      monthTextColor: isDark ? "#F5F5F5" : "#111827",
+      arrowColor: isDark ? "#A78BFA" : "#6D28D9",
+      indicatorColor: isDark ? "#A78BFA" : "#6D28D9",
+
+      // === Days ===
+      dayTextColor: isDark ? "#E5E7EB" : "#111827",
+      textDisabledColor: isDark ? "#4B5563" : "#9CA3AF",
+      todayTextColor: isDark ? "#A78BFA" : "#7C3AED",
+
+      // === Selected Day ===
+      selectedDayBackgroundColor: isDark ? "#8B5CF6" : "#7C3AED",
+      selectedDayTextColor: "#FFFFFF",
+
+      // === Dots / Events ===
+      dotColor: isDark ? "#C084FC" : "#7C3AED",
+      selectedDotColor: "#FFFFFF",
+
+      // === Fonts ===
+      textDayFontWeight: "500",
+      textMonthFontWeight: "bold",
+      textDayHeaderFontWeight: "600",
+
+      // === Force text coloring ===
+      textDayStyle: { color: isDark ? "#E5E7EB" : "#111827" },
+
+      // === Internal stylesheet overrides (supported form) ===
+      'stylesheet.calendar.header': {
+        week: {
+          marginTop: 5,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        },
+      },
+    }),
+    [isDark]
+  );
+
 
 
   const eventFields: FormFields = {
@@ -269,7 +314,7 @@ const EventDateKeeper = () => {
         onBackdropPress={resetEvent}
         onBackButtonPress={resetEvent}
       >
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer,globalStyles.transparentBackground]}>
           <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Deliverable</Text>
           <CustomFieldsComponent infoFields={eventFields} cardStyle={{ padding: hp("2%") }} />
           <View className='flex flex-row justify-end items-center'>
@@ -337,6 +382,7 @@ const EventDateKeeper = () => {
       {/* Calendar */}
       <View style={[styles.container, { backgroundColor: isDark ? "#1F2028" : "#fff" }]}>
         <Calendar
+          key={isDark ? 'dark' : 'light'}
           onDayPress={onDayPress}
           style={{
             backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
@@ -348,48 +394,7 @@ const EventDateKeeper = () => {
           minDate={`${new Date().getFullYear()}-01-01`}
           maxDate={`${new Date().getFullYear() + 1}-12-31`}
           enableSwipeMonths={true}
-          theme={{
-            // === Base Backgrounds ===
-            backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
-            calendarBackground: isDark ? "#1F2028" : "#FFFFFF",
-
-            // === Header (Month / Weekdays) ===
-            textSectionTitleColor: isDark ? "#9CA3AF" : "#374151", // Mon, Tue, etc.
-            monthTextColor: isDark ? "#F5F5F5" : "#111827",        // Month title
-            arrowColor: isDark ? "#A78BFA" : "#6D28D9",            // Navigation arrows
-            indicatorColor: isDark ? "#A78BFA" : "#6D28D9",
-
-            // === Day Cells ===
-            dayTextColor: isDark ? "#E5E7EB" : "#111827",
-            textDisabledColor: isDark ? "#4B5563" : "#9CA3AF",
-            todayTextColor: isDark ? "#A78BFA" : "#7C3AED",        // Highlight today's date
-
-            // === Selected Day ===
-            selectedDayBackgroundColor: isDark ? "#8B5CF6" : "#7C3AED",
-            selectedDayTextColor: "#FFFFFF",
-
-            // === Dots / Events ===
-            dotColor: isDark ? "#C084FC" : "#7C3AED",
-            selectedDotColor: "#FFFFFF",
-
-            // === Fonts ===
-            textDayFontWeight: "500",
-            textMonthFontWeight: "bold",
-            textDayHeaderFontWeight: "600",
-
-            // === Extra Stylesheets ===
-            stylesheet: {
-              calendar: {
-                main: {
-                  backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
-                },
-                header: {
-                  backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
-                  color: isDark ? "#000" : "#fff",
-                },
-              },
-            },
-          }}
+          theme={calendarStyleTheme}
           displayLoadingIndicator={loadingProvider.intialLoading}
         />
 

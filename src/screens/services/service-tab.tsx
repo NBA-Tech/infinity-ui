@@ -14,6 +14,7 @@ import { deleteOfferingApi } from '@/src/api/offering/offering-service';
 import { generateRandomString } from '@/src/utils/utils';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
 })
 type ServiceTabProps = {
     serviceData: ServiceModel[];
+    isLoading: boolean
     handleEdit: (id: string) => void
 }
 const ServiceTab = (props: ServiceTabProps) => {
@@ -106,7 +108,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                 <View style={styles.headerRow}>
                     <MaterialCommunityIcons name={service?.icon || "camera"} size={wp('5%')} color={isDark ? '#fff' : '#000'} />
 
-                    <Text style={[globalStyles.heading3Text, styles.title,globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
+                    <Text style={[globalStyles.heading3Text, styles.title, globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
                         {service?.serviceName}
                     </Text>
 
@@ -125,14 +127,14 @@ const ServiceTab = (props: ServiceTabProps) => {
                         >
                             <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => props.handleEdit(service?.id || "")}>
                                 <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                <MenuItemLabel style={globalStyles.labelText} >Edit</MenuItemLabel>
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
                             </MenuItem>
                             <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => {
                                 setCurrId(service.id);
                                 setOpenDelete(true);
                             }}>
                                 <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                <MenuItemLabel style={globalStyles.labelText}>Delete</MenuItemLabel>
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
                             </MenuItem>
                         </Menu>
                     </View>
@@ -152,7 +154,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                         {service?.description}
                     </Text>
 
-                    <Text style={[styles.price,globalStyles.subHeadingText]}>
+                    <Text style={[styles.price, globalStyles.subHeadingText]}>
                         Rs. {service?.price}
                     </Text>
                 </View>
@@ -173,18 +175,32 @@ const ServiceTab = (props: ServiceTabProps) => {
 
     return (
         <View style={{ margin: wp('2%') }}>
-            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete}  />
+            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
             <View style={{ height: hp('75%') }}>
-                <FlatList
-                    data={props.serviceData}
-                    keyExtractor={(item) => item.id || ''}
-                    renderItem={({ item }) => (
-                        <View style={{ gap: wp('0.5%') }}>
-                            <ServiceCard service={item} />
-                        </View>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                />
+                {props?.isLoading ? (
+                    Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            style={{
+                                width: wp('95%'),
+                                height: hp('15%'),
+                                marginHorizontal: wp('2%'),
+                            }}
+                        />
+                    ))
+                ) : (
+                    <FlatList
+                        data={props.serviceData}
+                        keyExtractor={(item) => item.id?.toString() || index.toString()}
+                        renderItem={({ item }) => (
+                            <View style={{ gap: wp('0.5%') }}>
+                                <ServiceCard service={item} />
+                            </View>
+                        )}
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
+
 
             </View>
         </View>

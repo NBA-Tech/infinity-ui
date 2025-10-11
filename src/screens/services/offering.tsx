@@ -519,8 +519,10 @@ const services = () => {
     }
 
     useEffect(() => {
+        setloadingProvider(activeTab)
         const userId = getItem("USERID")
         loadOfferings(userId, showToast);
+        setloadingProvider(null)
     }, []);
 
 
@@ -668,6 +670,7 @@ const services = () => {
                             <ServiceTab
                                 serviceData={searchText !== '' ? filteredOfferingList : serviceData}
                                 handleEdit={handleEdit}
+                                isLoading={loadingProvider!==null}
                             />
                         )
                     )}
@@ -680,6 +683,7 @@ const services = () => {
                             <PackageTab
                                 packageData={searchText !== '' ? filteredOfferingList : packageData}
                                 handleEdit={handleEdit}
+                                isLoading={loadingProvider!==null}
                             />
                         )
                     )}

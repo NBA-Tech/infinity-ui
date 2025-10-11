@@ -15,6 +15,7 @@ import { deleteOfferingApi } from '@/src/api/offering/offering-service';
 import Modal from 'react-native-modal';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { COLORCODES } from '@/src/constant/constants';
+import Skeleton from '@/components/ui/skeleton';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
 });
 type PackageProps = {
     packageData: PackageModel[];
+    isLoading: boolean
     handleEdit: (id: string) => void
 }
 const PackageTab = (props: PackageProps) => {
@@ -157,7 +159,7 @@ const PackageTab = (props: PackageProps) => {
                 ]}
             >
                 <View style={styles.headerRow}>
-                    <Text style={[globalStyles.heading3Text, styles.title,globalStyles.themeTextColor,{ width: wp('70%') }]} numberOfLines={1}>
+                    <Text style={[globalStyles.heading3Text, styles.title, globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
                         {pkg.packageName}
                     </Text>
                     <View style={styles.rightHeader}>
@@ -175,14 +177,14 @@ const PackageTab = (props: PackageProps) => {
                         >
                             <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => props.handleEdit(pkg?.id || "")}>
                                 <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                <MenuItemLabel style={globalStyles.labelText} >Edit</MenuItemLabel>
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
                             </MenuItem>
                             <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => {
                                 setCurrId(pkg.id);
                                 setOpenDelete(true);
                             }}>
                                 <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                <MenuItemLabel style={globalStyles.labelText}>Delete</MenuItemLabel>
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
                             </MenuItem>
                         </Menu>
                     </View>
@@ -229,18 +231,32 @@ const PackageTab = (props: PackageProps) => {
     };
     return (
         <View style={{ margin: wp('2%') }}>
-           <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-             <View style={{ height: hp('50%') }}>
-                <FlatList
-                    data={props?.packageData}
-                    keyExtractor={(item) => item.id + ''}
-                    renderItem={({ item }) => (
-                        <View style={{ gap: wp('0.5%') }}>
-                            <PackageCard pkg={item} />
-                        </View>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                />
+            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
+            <View style={{ height: hp('50%') }}>
+
+                {props?.isLoading ? (
+                    Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            style={{
+                                width: wp('95%'),
+                                height: hp('15%'),
+                                marginHorizontal: wp('2%'),
+                            }}
+                        />
+                    ))
+                ) : (
+                    <FlatList
+                        data={props?.packageData}
+                        keyExtractor={(item) => item.id + ''}
+                        renderItem={({ item }) => (
+                            <View style={{ gap: wp('0.5%') }}>
+                                <PackageCard pkg={item} />
+                            </View>
+                        )}
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
 
             </View>
 
