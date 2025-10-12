@@ -5,10 +5,12 @@ interface ReloadContextType {
   reloadOrders: boolean;
   reloadInvoices: boolean;
   reloadActivity: boolean;
+  reloadInvestments: boolean;
   triggerReloadCustomer: () => void;
   triggerReloadOrders: () => void;
   triggerReloadInvoices: () => void;
   triggerReloadActivity: () => void;
+  triggerReloadInvestments: () => void;
   resetAllReloads: () => void;
 }
 
@@ -21,17 +23,20 @@ function ReloadProvider({ children }: { children: React.ReactNode }) {
   const [reloadOrders, setReloadOrders] = useState(false);
   const [reloadInvoices, setReloadInvoices] = useState(false);
   const [reloadActivity, setReloadActivity] = useState(false);
+  const [reloadInvestments, setReloadInvestments] = useState(false);
 
   const triggerReloadCustomer = () => setReloadCustomer(prev => !prev);
   const triggerReloadOrders = () => setReloadOrders(prev => !prev);
   const triggerReloadInvoices = () => setReloadInvoices(prev => !prev);
   const triggerReloadActivity = () => setReloadActivity(prev => !prev);
+  const triggerReloadInvestments = () => setReloadInvestments(prev => !prev);
 
   const resetAllReloads = () => {
     setReloadCustomer(false);
     setReloadOrders(false);
     setReloadInvoices(false);
     setReloadActivity(false);
+    setReloadInvestments(false);
   };
 
   // ✅ Memoize context value
@@ -41,9 +46,11 @@ function ReloadProvider({ children }: { children: React.ReactNode }) {
       reloadOrders,
       reloadInvoices,
       reloadActivity,
+      reloadInvestments,
       triggerReloadCustomer,
       triggerReloadOrders,
       triggerReloadInvoices,
+      triggerReloadInvestments,
       resetAllReloads,
       triggerReloadActivity
     }),

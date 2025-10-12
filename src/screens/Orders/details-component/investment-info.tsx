@@ -1,18 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
 import { Card } from "@/components/ui/card";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Modal from "react-native-modal";
 import { CustomFieldsComponent } from "@/src/components/fields-component";
-import { FormFields } from "@/src/types/common";
+import { ApiGeneralRespose, FormFields } from "@/src/types/common";
 import { InvestmentModel, InvestmentType } from "@/src/types/investment/investment-type";
-import { patchState } from "@/src/utils/utils";
+import { formatDate, getCurrencySymbol, patchState, validateValues } from "@/src/utils/utils";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
-import { addUpdateInvestmentAPI } from "@/src/api/investment/investment-api-service";
+import { addUpdateInvestmentAPI, deleteInvestmentAPI, getInvestmentDetailsUsingInvestmentIdAPI, getInvestmentDetailsUsingORderIdAPI, updateInvestmentDetailsApi } from "@/src/api/investment/investment-api-service";
 import { useToastMessage } from "@/src/components/toast/toast-message";
+import { useUserStore } from "@/src/store/user/user-store";
+import DeleteConfirmation from "@/src/components/delete-confirmation";
 
 
 const styles = StyleSheet.create({
@@ -30,19 +32,25 @@ const styles = StyleSheet.create({
 
 type InvestmentInfoProps = {
     orderId: string
+    investmentDataList: InvestmentModel[]
+    setInvestmentDataList: (value: InvestmentModel[]) => void
 }
 const InvestmentInfo = (props: InvestmentInfoProps) => {
     const globalStyles = useContext(StyleContext);
     const [open, setOpen] = useState(false);
-    const [investmentDataList, setInvestmentDataList] = useState([]);
     const [investmentDetails, setInvestmentDetails] = useState<InvestmentModel>();
     const { isDark } = useContext(ThemeToggleContext);
     const [errors, setErrors] = useState({});
     const [openDate, setOpenDate] = useState(false);
+    const [loading, setLoading] = useState(false)
     const { getItem } = useDataStore()
+    const [editCurrId, setEditCurrId] = useState<string>('');
+    const [deleteCurrId, setDeleteCurrId] = useState<string>('');
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const showToast = useToastMessage()
+    const { userDetails, getUserDetailsUsingID } = useUserStore()
 
-    const investmentFormFields: FormFields = {
+    const investmentFormFields: FormFields = useMemo(() => ({
         investmentName: {
             parentKey: "",
             key: "investmentName",
@@ -124,27 +132,164 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 patchState("", "investmentType", value, true, setInvestmentDetails, setErrors);
             },
         }
-    }
+    }), [investmentDetails])
 
     const handleCreateOrUpdateInvestment = async () => {
-        if(!props?.orderId){
-            return showToast({ type: "error", title: "Error", message: "OrderId is not found" });
+        const validateInput=validateValues(investmentDetails,investmentFormFields)
+        if(!validateInput?.success){
+            return showToast({ type: "warning", title: "Oops!!", message: validateInput?.message ?? "Please fill all the required fields" });
         }
+        if (!props?.orderId) {
+            return showToast({ type: "error", title: "Error", message: "Order ID is not found" });
+        }
+
+        setLoading(true);
+
         const userId = getItem("USERID");
         const payload: InvestmentModel = {
-            userId: userId,
+            userId,
             orderId: props?.orderId,
-            ...investmentDetails
+            ...investmentDetails,
+        };
+
+        let response;
+        if (investmentDetails?.investmentId) {
+            response = await updateInvestmentDetailsApi(payload);
+        } else {
+            response = await addUpdateInvestmentAPI(payload);
         }
-        const addUpdateInvestmentResponse = await addUpdateInvestmentAPI(payload);
-        if (!addUpdateInvestmentResponse?.success) {
-            return showToast({ type: "error", title: "Error", message: addUpdateInvestmentResponse.message });
+
+        setLoading(false);
+
+        if (!response?.success) {
+            return showToast({ type: "error", title: "Error", message: response.message });
         }
-        showToast({ type: "success", title: "Success", message: addUpdateInvestmentResponse.message });
+
+        if (investmentDetails?.investmentId) {
+            // ✅ Update existing investment in the list
+            props?.setInvestmentDataList((prev) =>
+                prev.map((inv) =>
+                    inv.investmentId === payload.investmentId ? payload : inv
+                )
+            );
+        } else {
+            // ✅ Add new investment
+            props?.setInvestmentDataList((prev) => [...prev, payload]);
+        }
+
+        showToast({ type: "success", title: "Success", message: response.message });
         setOpen(false);
+        setEditCurrId("");
+    };
+
+
+
+    const getInvestmentDetails = async () => {
+        setLoading(true);
+        const investmentDetails: ApiGeneralRespose = await getInvestmentDetailsUsingInvestmentIdAPI(editCurrId)
+        setLoading(false);
+        if (!investmentDetails?.success) {
+            return showToast({ type: "error", title: "Error", message: investmentDetails.message });
+        }
+        setInvestmentDetails(investmentDetails.data)
+        setOpen(true);
     }
+
+    const deleteInvestment = async () => {
+        if (!deleteCurrId) {
+            return
+        }
+        setLoading(true)
+        console.log("fuck",deleteCurrId)
+        const deleteInvestment: ApiGeneralRespose = await deleteInvestmentAPI(deleteCurrId)
+        setLoading(false)
+        if (!deleteInvestment?.success) {
+            return showToast({ type: "error", title: "Error", message: deleteInvestment.message })
+        }
+        showToast({ type: "success", title: "Success", message: deleteInvestment.message })
+        props?.setInvestmentDataList((prev) => prev.filter((inv) => inv.investmentId !== deleteCurrId));
+        setDeleteCurrId("")
+        setDeleteOpen(false)
+    }
+
+    useEffect(() => {
+        const userdId = getItem("USERID");
+        getUserDetailsUsingID(userdId, showToast);
+
+    }, [])
+
+    useEffect(() => {
+        if (editCurrId) {
+            getInvestmentDetails();
+        }
+    }, [editCurrId])
+
+    const InvestmentCardComponent = ({ investment }: { investment: InvestmentModel }) => {
+        return (
+            <Card
+                style={[
+                    styles.card,
+                    globalStyles.cardShadowEffect,
+                    {
+                        borderLeftWidth: 4,
+                        borderLeftColor: "#3B82F6",
+                    },
+                ]}
+            >
+                <View className="flex flex-col gap-3">
+                    <View className="flex flex-row justify-between items-center">
+                        <View>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Name</Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentName}</Text>
+                        </View>
+                        <View>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Date</Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{formatDate(investment?.investmentDate)}</Text>
+                        </View>
+
+                    </View>
+                    <View className="flex flex-row justify-between items-center">
+                        <View>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Type</Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentType}</Text>
+                        </View>
+                        <View>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Amount</Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{getCurrencySymbol(userDetails?.userBillingInfo?.country)} {investment?.investedAmount}</Text>
+                        </View>
+
+                    </View>
+                    <View className="flex flex-row justify-between items-center">
+                        <View>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Description</Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentDescription}</Text>
+                        </View>
+                        <View className="flex flex-row items-center gap-4">
+                            <TouchableOpacity onPress={() => setEditCurrId(investment?.investmentId)} disabled={loading}>
+                                <Feather name="edit" size={wp('5%')} color="#22C55E" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>{
+                                setDeleteCurrId(investment?.investmentId)
+                                setDeleteOpen(true)
+                            }}
+                            disabled={loading}
+                            >
+                                <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+
+                </View>
+
+            </Card>
+        )
+
+    }
+
     return (
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
+            {deleteOpen && <DeleteConfirmation openDelete={deleteOpen} setOpenDelete={setDeleteOpen} loading={loading} handleDelete={deleteInvestment} />}
             <Modal
                 isVisible={open}
                 onBackdropPress={() => setOpen(false)}
@@ -160,7 +305,9 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                         action="primary"
                         style={[globalStyles.purpleBackground, { marginVertical: hp('2%') }]}
                         onPress={handleCreateOrUpdateInvestment}
+                        isDisabled={loading}
                     >
+                        {loading && <ButtonSpinner color={"#fff"} size={wp("4%")} />}
 
                         <Feather name="save" size={wp('5%')} color={'#fff'} />
                         <ButtonText style={globalStyles.buttonText}>
@@ -193,6 +340,15 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
 
                         </View>
                     </View>
+                    <FlatList
+                        scrollEnabled={false}
+                        contentContainerStyle={{ gap: hp('2%') }}
+                        data={props?.investmentDataList}
+                        renderItem={({ item }) => (
+                            <InvestmentCardComponent investment={item} />
+                        )}
+                        keyExtractor={(item) => item?.investmentId}
+                    />
 
                 </View>
 

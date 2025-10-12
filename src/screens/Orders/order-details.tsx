@@ -35,6 +35,8 @@ import { getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import { useUserStore } from '@/src/store/user/user-store';
 import InvestmentInfo from './details-component/investment-info';
+import { InvestmentModel } from '@/src/types/investment/investment-type';
+import { getInvestmentDetailsUsingOrderIdAPI } from '@/src/api/investment/investment-api-service';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -54,6 +56,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [index, setIndex] = useState(0);
+    const [investmentDataList, setInvestmentDataList] = useState<InvestmentModel[]>([]);
     const { customerMetaInfoList, getCustomerMetaInfoList, setCustomerMetaInfoList } = useCustomerStore();
     const { serviceData, packageData, loadOfferings } = useOfferingStore();
     const { getItem } = useDataStore();
@@ -149,6 +152,15 @@ const OrderDetails = ({ route, navigation }: Props) => {
         setLoadingProvider({ ...loadingProvider, intialLoading: false });
     }
 
+    const getInvestmentList = async (orderId: string) => {
+        const invesmentResponse: ApiGeneralRespose = await getInvestmentDetailsUsingOrderIdAPI(orderId);
+        if (!invesmentResponse?.success) {
+            return showToast({ type: "error", title: "Error", message: invesmentResponse.message });
+        }
+        console.log(invesmentResponse);
+        setInvestmentDataList(invesmentResponse.data);
+    }
+
     const renderScene = ({ route }: any) => {
         switch (route.key) {
             case "customer":
@@ -183,7 +195,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     borderColor={"#3B82F6"} />
             case "invoice":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
                         <InvoiceDetails
                             key={orderDetails?.orderId}
                             orderDetails={orderDetails}
@@ -193,14 +205,14 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 )
             case "links":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
                         <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
                     </ScrollView>
                 )
             case "investments":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
-                        <InvestmentInfo orderId={orderDetails?.orderId}/>
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                        <InvestmentInfo orderId={orderDetails?.orderId} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList}/>
                     </ScrollView>
                 )
             default:
@@ -237,6 +249,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         const userId = getItem("USERID")
         getCustomerNameList()
         getOrderDetails(orderId)
+        getInvestmentList(orderId)
         loadOfferings(userId, showToast)
     }, [])
 
@@ -287,19 +300,27 @@ const OrderDetails = ({ route, navigation }: Props) => {
             <View>
                 <View className='flex flex-row justify-between items-center'>
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
+                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Amount</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Quoted</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${orderDetails?.totalPrice}`}</Text>
 
                         </View>
                     </Card>
 
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('45%'), height: hp('15%'), marginHorizontal: wp('2%') }]}>
+                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>Total Paid</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((total, invoice) => total + invoice.amountPaid, 0)}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Paid</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((total, invoice) => total + invoice?.amountPaid, 0)}`}</Text>
+
+                        </View>
+                    </Card>
+                    <Card
+                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
+                        <View className='flex flex-col justify-center items-center'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Invested</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0)}`}</Text>
 
                         </View>
                     </Card>
