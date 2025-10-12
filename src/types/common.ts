@@ -111,7 +111,7 @@ export interface FormField {
   isRequired?: boolean;
   dropDownItems?: Record<string, string>[];
   extraStyles?: object,
-  maxDate: Date;
+  maxDate?: Date;
   isInvalid?: boolean;
   errorMessage?: string;
   isOpen?: boolean;

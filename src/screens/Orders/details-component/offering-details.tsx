@@ -84,7 +84,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const [loading, setLoading] = useState(false)
     const { userDetails } = useUserStore()
     const [offeringData, setOfferingData] = useState<OfferingInfo[]>([]);
-    console.log(props)
 
 
     // const getServiceList = async () => {

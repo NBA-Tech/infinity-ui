@@ -34,6 +34,7 @@ import { Invoice } from '@/src/types/invoice/invoice-type';
 import { getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import { useUserStore } from '@/src/store/user/user-store';
+import InvestmentInfo from './details-component/investment-info';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -64,6 +65,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         { key: "deliverables", title: "Deliverables", icon: "package" },
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
+        { key: "investments", title: "Investments", icon: "dollar-sign" },
         { key: "links", title: "Links", icon: "link" },
     ]);
     const { triggerConfetti } = useConfetti()
@@ -193,6 +195,12 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 return (
                     <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
                         <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
+                    </ScrollView>
+                )
+            case "investments":
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+                        <InvestmentInfo orderId={orderDetails?.orderId}/>
                     </ScrollView>
                 )
             default:
