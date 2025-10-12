@@ -79,8 +79,8 @@ const Login = ({ setCurrScreen }: any) => {
         }
         setLoadingProvider(null);
         const isOnBoarded = loginResponse?.userInfo?.onboarded;
-        setItem("USERID", loginResponse?.userInfo?.userId);
-        setItem("CREATEDAT", new Date().toISOString());
+        await setItem("USERID", loginResponse?.userInfo?.userId);
+        await setItem("CREATEDAT", new Date().toISOString());
         if (isOnBoarded) {
             //navigate to home
             await login()

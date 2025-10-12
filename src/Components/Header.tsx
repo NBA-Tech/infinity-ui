@@ -99,6 +99,7 @@ const Header = () => {
 
     useEffect(() => {
         const userId = getItem("USERID")
+        console.log("userId", userId)
         getUserDetailsUsingID(userId, showToast);
 
     }, [])

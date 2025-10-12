@@ -141,6 +141,7 @@ const Home = () => {
             requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
+        console.log("orderMetaDataResponse", orderMetaDataResponse)
         if (!orderMetaDataResponse.success) {
             return showToast({
                 type: "error",

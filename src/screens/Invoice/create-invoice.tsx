@@ -50,7 +50,7 @@ import {
     SearchQueryRequest,
 } from "@/src/types/common";
 import { BillingInfo, Invoice } from "@/src/types/invoice/invoice-type";
-import { OrderModel } from "@/src/types/order/order-type";
+import { OrderModel, OrderStatus } from "@/src/types/order/order-type";
 
 import {
     formatDate,
@@ -132,11 +132,15 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     const getOrderMetaData = async (userId: string) => {
         const filter: SearchQueryRequest = {
             filters: { userId },
-            requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle"],
+            requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle", "status"],
             getAll: true,
         };
         const res = await getOrderDataListAPI(filter);
-        if (res.success) setOrderInfo(res.data || []);
+        if (res.success) {
+            const filteredData = res.data.filter((item: any) => item.status != OrderStatus.CANCELLED || item?.status != OrderStatus.PENDING)
+            setOrderInfo(filteredData || [])
+        }
+
         else showToast({ type: "error", title: "Error", message: res.message });
     };
 
@@ -236,15 +240,15 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
-                    if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay){
+                    if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay) {
                         return showToast({
                             type: "error",
                             title: "Error",
                             message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails.totalAmountCanPay}`,
                         });
                     }
-                    else{
-                    patchState("", "amountPaid", value, true, setInvoiceDetails, setErrors);
+                    else {
+                        patchState("", "amountPaid", value, true, setInvoiceDetails, setErrors);
                     }
                 },
             },
@@ -325,7 +329,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             customerId: orderDetails?.customerInfo?.customerID,
             totalAmount: orderDetails?.totalPrice ?? 0,
         };
-        console.log("payload",payload)
+        console.log("payload", payload)
         let res;
 
         if (payload?.invoiceId) {
