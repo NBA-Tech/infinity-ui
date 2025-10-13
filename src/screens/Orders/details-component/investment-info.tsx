@@ -15,6 +15,7 @@ import { addUpdateInvestmentAPI, deleteInvestmentAPI, getInvestmentDetailsUsingI
 import { useToastMessage } from "@/src/components/toast/toast-message";
 import { useUserStore } from "@/src/store/user/user-store";
 import DeleteConfirmation from "@/src/components/delete-confirmation";
+import { useReloadContext } from "@/src/providers/reload/reload-context";
 
 
 const styles = StyleSheet.create({
@@ -45,6 +46,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
     const [loading, setLoading] = useState(false)
     const { getItem } = useDataStore()
     const [editCurrId, setEditCurrId] = useState<string>('');
+    const { triggerReloadInvestments } = useReloadContext()
     const [deleteCurrId, setDeleteCurrId] = useState<string>('');
     const [deleteOpen, setDeleteOpen] = useState(false);
     const showToast = useToastMessage()
@@ -135,8 +137,8 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
     }), [investmentDetails])
 
     const handleCreateOrUpdateInvestment = async () => {
-        const validateInput=validateValues(investmentDetails,investmentFormFields)
-        if(!validateInput?.success){
+        const validateInput = validateValues(investmentDetails, investmentFormFields)
+        if (!validateInput?.success) {
             return showToast({ type: "warning", title: "Oops!!", message: validateInput?.message ?? "Please fill all the required fields" });
         }
         if (!props?.orderId) {
@@ -160,6 +162,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         }
 
         setLoading(false);
+        triggerReloadInvestments()
 
         if (!response?.success) {
             return showToast({ type: "error", title: "Error", message: response.message });
@@ -200,7 +203,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             return
         }
         setLoading(true)
-        console.log("fuck",deleteCurrId)
+        console.log("fuck", deleteCurrId)
         const deleteInvestment: ApiGeneralRespose = await deleteInvestmentAPI(deleteCurrId)
         setLoading(false)
         if (!deleteInvestment?.success) {
@@ -268,11 +271,11 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                             <TouchableOpacity onPress={() => setEditCurrId(investment?.investmentId)} disabled={loading}>
                                 <Feather name="edit" size={wp('5%')} color="#22C55E" />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>{
+                            <TouchableOpacity onPress={() => {
                                 setDeleteCurrId(investment?.investmentId)
                                 setDeleteOpen(true)
                             }}
-                            disabled={loading}
+                                disabled={loading}
                             >
                                 <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
                             </TouchableOpacity>

@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, Dimensions, TouchableOpacity,StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
@@ -9,47 +9,83 @@ import Feather from 'react-native-vector-icons/Feather';
 import { EmptyState } from '@/src/components/empty-state-data';
 import { BarChart } from 'react-native-gifted-charts';
 import { Invoice } from '@/src/types/invoice/invoice-type';
+import { InvestmentModel } from '@/src/types/investment/investment-type';
 
 
-const styles=StyleSheet.create({
-    roundDotContainer:{
-        width:wp('3%'),
-        height:wp('3%'),
-        borderRadius:wp('100%'),
-        backgroundColor:'gray'
+const styles = StyleSheet.create({
+    roundDotContainer: {
+        width: wp('3%'),
+        height: wp('3%'),
+        borderRadius: wp('100%'),
+        backgroundColor: 'gray'
     }
 })
 type RevenueTrendChartProps = {
     isLoading: boolean;
     invoiceDetails: Invoice[];
+    investmentDetails: InvestmentModel[]
 };
 
 const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const [toolTipVisible, setToolTipVisible] = useState(false);
-    console.log(props?.invoiceDetails)
+    const [barData, setBarData] = useState<any[]>([]);
+    console.log(props)
 
-    const barData = [
-        // Jan
-        { value: 4000, label: 'Jan', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 2500, frontColor: '#C4B5FD' },
-        // Feb
-        { value: 3000, label: 'Feb', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 2000, frontColor: '#C4B5FD' },
-        // Mar
-        { value: 2000, label: 'Mar', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 3200, frontColor: '#C4B5FD' },
-        // Apr
-        { value: 3500, label: 'Apr', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 2700, frontColor: '#C4B5FD' },
-        // May
-        { value: 3800, label: 'May', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 2900, frontColor: '#C4B5FD' },
-        // Jun
-        { value: 4200, label: 'Jun', spacing: 2, labelWidth: 30, labelTextStyle: { color: 'gray' }, frontColor: '#7C3AED' },
-        { value: 3100, frontColor: '#C4B5FD' },
-    ];
+    const getMonthlyTotals = (
+        data: any[],
+        amountField: string,
+        dateField: string
+    ) => {
+        const totals = new Array(12).fill(0);
+        data?.forEach((item) => {
+            if (item[dateField]) {
+                const month = new Date(item[dateField]).getMonth();
+                totals[month] += Number(item[amountField]) || 0;
+            }
+        });
+        console.log("totals", totals)
+        return totals;
+    };
+
+    useEffect(() => {
+        if (props.isLoading) return;
+
+        const { invoiceDetails, investmentDetails } = props;
+
+        // ✅ Step 1: Compute totals per month
+        const profitByMonth = getMonthlyTotals(invoiceDetails, "amountPaid", "invoiceDate");
+        const expenseByMonth = getMonthlyTotals(investmentDetails, "investedAmount", "investmentDate");
+
+        // ✅ Step 2: Build bar chart data (Jan → Dec)
+        const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        const formattedData = monthLabels.flatMap((label, index) => [
+            {
+                value: profitByMonth[index],
+                label,
+                spacing: 2,
+                labelWidth: 30,
+                labelTextStyle: { color: "gray" },
+                frontColor: "#22C55E",
+                topLabelComponent: () => (
+                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{profitByMonth[index]}</Text>
+                ),
+            },
+            {
+                value: expenseByMonth[index],
+                frontColor: "#EF4444",
+                topLabelComponent: () => (
+                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{expenseByMonth[index]}</Text>
+                ),
+            },
+        ]);
+
+        setBarData(formattedData);
+    }, [props.invoiceDetails, props.investmentDetails]);
+
+    const maxValue = Math.max(...barData.map((d) => d.value || 0), 5000);
 
 
     return (
@@ -71,12 +107,12 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         </TouchableOpacity>
                     </Tooltip>
                     <View className='flex flex-row justify-center items-center gap-3'>
-                        <View style={[styles.roundDotContainer,{backgroundColor:'#22C55E'}]}></View>
+                        <View style={[styles.roundDotContainer, { backgroundColor: '#22C55E' }]}></View>
                         <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Profit</Text>
 
                     </View>
                     <View className='flex flex-row justify-center items-center gap-3'>
-                        <View style={[styles.roundDotContainer,{backgroundColor:'#EF4444'}]}></View>
+                        <View style={[styles.roundDotContainer, { backgroundColor: '#EF4444' }]}></View>
                         <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Expenses</Text>
 
                     </View>
@@ -93,13 +129,12 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         barWidth={16}
                         spacing={16}
                         roundedTop
-                        roundedBottom
                         hideRules
                         xAxisThickness={0}
                         yAxisThickness={0}
                         yAxisTextStyle={{ color: 'gray' }}
                         noOfSections={5}
-                        maxValue={5000}
+                        maxValue={maxValue+1000}
                     />
                 ) : (
                     <EmptyState title={'No data available'} noAction={true} />

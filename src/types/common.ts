@@ -80,6 +80,9 @@ export interface SearchQueryRequest {
   sortField?: string;
   sortOrder?: SORT_ORDER
   getAll?: boolean
+  dateField?: string
+  startDate?: Date
+  endDate?: Date
 
 }
 

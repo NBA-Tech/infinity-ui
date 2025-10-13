@@ -36,7 +36,7 @@ import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import { useUserStore } from '@/src/store/user/user-store';
 import InvestmentInfo from './details-component/investment-info';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
-import { getInvestmentDetailsUsingOrderIdAPI } from '@/src/api/investment/investment-api-service';
+import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -153,7 +153,11 @@ const OrderDetails = ({ route, navigation }: Props) => {
     }
 
     const getInvestmentList = async (orderId: string) => {
-        const invesmentResponse: ApiGeneralRespose = await getInvestmentDetailsUsingOrderIdAPI(orderId);
+        const payload: SearchQueryRequest = {
+            filters: { orderId: orderId },
+            getAll: true
+        }
+        const invesmentResponse: ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload);
         if (!invesmentResponse?.success) {
             return showToast({ type: "error", title: "Error", message: invesmentResponse.message });
         }
@@ -212,7 +216,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             case "investments":
                 return (
                     <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
-                        <InvestmentInfo orderId={orderDetails?.orderId} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList}/>
+                        <InvestmentInfo orderId={orderDetails?.orderId} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList} />
                     </ScrollView>
                 )
             default:

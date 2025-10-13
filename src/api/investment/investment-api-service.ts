@@ -1,5 +1,5 @@
 import { API_BASE_URI } from "@/src/config/app-config";
-import { ApiGeneralRespose } from "@/src/types/common";
+import { ApiGeneralRespose, SearchQueryRequest } from "@/src/types/common";
 import { InvestmentModel } from "@/src/types/investment/investment-type";
 import { fetchWithTimeout } from "@/src/utils/utils";
 
@@ -30,12 +30,17 @@ export const getInvestmentDetailsUsingOrderIdAPI=(orderId:string,headers?:Record
     return getInvestmentDetailsResponse
 }
 
-export const getInvestmentDetailsUsingUserIdAPI=(userId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
-    const getInvestmentDetailsResponse=fetchWithTimeout({
-        url:`${API_BASE_URI}/investment/get_investment_details?userId=${userId}`,
+
+export const getInvestmentDetailsBasedOnFiltersAPI=async(payload:SearchQueryRequest,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const getInvestmentDetailsResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/investment/get_investments_based_on_filters`,
         options: {
-            method: 'GET',
-            headers
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
         }
     })
     return getInvestmentDetailsResponse

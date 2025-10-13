@@ -28,6 +28,8 @@ import { Invoice } from '@/src/types/invoice/invoice-type';
 import RevenueTrendChart from './components/home-line-chart';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { useUserStore } from '@/src/store/user/user-store';
+import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
+import { InvestmentModel } from '@/src/types/investment/investment-type';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -39,14 +41,15 @@ const Home = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
-    const { reloadCustomer, reloadOrders, reloadInvoices,triggerReloadActivity } = useReloadContext()
+    const { reloadCustomer, reloadOrders, reloadInvoices, reloadInvestments, triggerReloadActivity } = useReloadContext()
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
     const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
-    const {userDetails,setUserDetails,getUserDetailsUsingID}=useUserStore()
+    const { userDetails, setUserDetails, getUserDetailsUsingID } = useUserStore()
+    const [investmentDataList, setInvestmentDataList] = useState<InvestmentModel[]>([]);
     const [orderStatus, setOrderStatus] = useState();
-    const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false });
+    const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false, investmentLoading: false });
     const generalStatData = useMemo<GeneralStatInfoModel>(() => {
         return {
             customer: {
@@ -164,12 +167,18 @@ const Home = () => {
     }
 
     const getInvoiceDetails = async (userId: string) => {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      // Jan 1, 00:00:00
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   // Dec 31, 23:59:59
         const payload: SearchQueryRequest = {
             filters: {
                 userId: userId
             },
             getAll: true,
-            requiredFields: ["invoiceId", "amountPaid", "invoiceDate"]
+            requiredFields: ["invoiceId", "amountPaid", "invoiceDate"],
+            dateField: "invoiceDate",
+            startDate: startOfYear,
+            endDate: endOfYear
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(payload)
         if (!orderMetaDataResponse.success) {
@@ -182,22 +191,49 @@ const Home = () => {
         setInvoiceDetails(orderMetaDataResponse?.data)
     }
 
-    // ----------------- User -----------------
+    const getInvestmentDetails = async (userId: string) => {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      // Jan 1, 00:00:00
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   // Dec 31, 23:59:59
 
-    useEffect(()=>{
-        const userId=getItem("USERID")
-        if(!userId) showToast({type:"error",title:"Error",message:"User not found please login again"})
-        getUserDetailsUsingID(userId,showToast)
-    },[])
-
-    useEffect(()=>{
-        if(!userDetails?.currencyIcon){
-            setUserDetails({
-                ...userDetails,
-                currencyIcon:getCurrencySymbol(userDetails?.userBillingInfo?.country)
+        const payload: SearchQueryRequest = {
+            filters: {
+                userId: userId,
+            },
+            getAll: true,
+            requiredFields: ["investmentId", "investedAmount", "investmentDate"],
+            dateField: "investmentDate",
+            startDate: startOfYear,
+            endDate: endOfYear,
+        };
+        const investmentDetails:ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload)
+        if (!investmentDetails.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: investmentDetails.message,
             })
         }
-    },[userDetails])
+        setInvestmentDataList(investmentDetails?.data as InvestmentModel[])
+
+    }
+
+    // ----------------- User -----------------
+
+    useEffect(() => {
+        const userId = getItem("USERID")
+        if (!userId) showToast({ type: "error", title: "Error", message: "User not found please login again" })
+        getUserDetailsUsingID(userId, showToast)
+    }, [])
+
+    useEffect(() => {
+        if (!userDetails?.currencyIcon) {
+            setUserDetails({
+                ...userDetails,
+                currencyIcon: getCurrencySymbol(userDetails?.userBillingInfo?.country)
+            })
+        }
+    }, [userDetails])
 
 
     // ----------------- Customer -----------------
@@ -248,6 +284,22 @@ const Home = () => {
         loadInvoicesData();
     }, [reloadInvoices]);
 
+    //----------------- Investments -----------------
+    useEffect(() => {
+        const loadInvestmentsData = async () => {
+            const userId = await getItem("USERID");
+            if (!userId) return;
+            setLoadingProvider(prev => ({ ...prev, investmentLoading: true }));
+            try {
+                await getInvestmentDetails(userId);
+            } finally {
+                triggerReloadActivity()
+                setLoadingProvider(prev => ({ ...prev, investmentLoading: false }));
+            }
+        }
+        loadInvestmentsData()
+    },[reloadInvestments])
+
 
 
     return (
@@ -269,7 +321,7 @@ const Home = () => {
 
                         </View>
                         <View>
-                            <RevenueTrendChart invoiceDetails={invoiceDetails} isLoading={loadingProvider.invoiceLoading} />
+                            <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} isLoading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
                         </View>
                         <View>
                             <EventDateKeeper />
