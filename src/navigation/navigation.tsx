@@ -27,6 +27,7 @@ import {
   InvoiceDetails,
   Profile,
   BusinessDetails,
+  Subscription,
 } from "../screens";
 
 const RootStack = createNativeStackNavigator();
@@ -135,6 +136,7 @@ export default function Navigation() {
         <RootStack.Screen name="Splash" component={SplashScreen} />
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="UnauthStack" component={UnauthStack} />
+        <RootStack.Screen name="Subscription" component={Subscription} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

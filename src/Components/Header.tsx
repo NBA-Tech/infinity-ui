@@ -24,6 +24,7 @@ import { useUserStore } from '../store/user/user-store';
 import { useDataStore } from '../providers/data-store/data-store-provider';
 import { useToastMessage } from './toast/toast-message';
 import { useAuth } from '../context/auth-context/auth-context';
+
 const styles = StyleSheet.create({
     headerContainer: {
         borderBottomRightRadius: wp('5%'),
@@ -66,6 +67,16 @@ const styles = StyleSheet.create({
         gap: 8,
         marginBottom: 4,
     },
+    subscriptionAlert: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderWidth: 2,               // thicker border
+        borderColor: "#B71C1C",       // dark red for warning
+        borderRadius: 6,
+        padding: 12,
+        marginBottom: 12,
+        backgroundColor: "#FFCDD2",   // light red/pink background
+    },
 });
 
 const Header = () => {
@@ -106,70 +117,78 @@ const Header = () => {
 
 
     return (
-        <View style={[styles.headerContainer, { backgroundColor: isDark ? "#12121A" : "#fff" }]}>
-            <View style={styles.headerBody}>
-                <View >
-                    <View style={styles.appLogoContainer}>
-                        <Image style={{ width: wp('15%'), height: hp('7%') }} source={Logo} />
-                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>INFINITY</Text>
+        <View>
+            <View style={[styles.headerContainer, { backgroundColor: isDark ? "#12121A" : "#fff" }]}>
+                <View style={styles.headerBody}>
+                    <View >
+                        <View style={styles.appLogoContainer}>
+                            <Image style={{ width: wp('15%'), height: hp('7%') }} source={Logo} />
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>INFINITY</Text>
+                        </View>
+                    </View>
+
+                    <View style={[styles.appLogoContainer, styles.actionContainer]}>
+
+                        <TouchableOpacity onPress={() => { toggleTheme() }}>
+                            <MaterialIcons
+                                name={isDark ? "light-mode" : "dark-mode"}
+                                size={wp('8%')}
+                                style={{ color: isDark ? '#FFD700' : '#000000' }}
+                            />
+                        </TouchableOpacity>
+
+                        <Menu
+                            placement="bottom left"
+                            offset={-15}
+                            style={globalStyles.appBackground}
+                            trigger={({ ...triggerProps }) => (
+                                <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
+                                    <Avatar size="md">
+                                        <AvatarImage
+                                            source={{
+                                                uri: userDetails?.userBusinessInfo?.companyLogoURL,
+                                            }}
+                                        />
+                                        <AvatarBadge />
+                                        {!userDetails?.userBusinessInfo?.companyLogoURL &&
+                                            <AvatarFallbackText>{userDetails?.userAuthInfo?.username?.charAt(0).toUpperCase()}</AvatarFallbackText>
+                                        }
+                                    </Avatar>
+                                </Button>
+                            )}
+                        >
+                            <MenuItem key="profile" onPress={() => navigation.navigate("Profile")}>
+                                <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#3B82F6" />
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                    Profile
+                                </MenuItemLabel>
+                            </MenuItem>
+
+                            <MenuItem key="logout" onPress={async () => {
+                                await logout()
+                                navigation.dispatch(
+                                    CommonActions.reset({
+                                        index: 0,
+                                        routes: [{ name: 'UnauthStack', params: { screen: 'Authentication' } }],
+                                    })
+                                )
+                            }}>
+                                <Feather name="log-out" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#EF4444" />
+                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                    Logout
+                                </MenuItemLabel>
+                            </MenuItem>
+                        </Menu>
+
+
                     </View>
                 </View>
-
-                <View style={[styles.appLogoContainer, styles.actionContainer]}>
-
-                    <TouchableOpacity onPress={() => { toggleTheme() }}>
-                        <MaterialIcons
-                            name={isDark ? "light-mode" : "dark-mode"}
-                            size={wp('8%')}
-                            style={{ color: isDark ? '#FFD700' : '#000000' }}
-                        />
-                    </TouchableOpacity>
-
-                    <Menu
-                        placement="bottom left"
-                        offset={-15}
-                        style={globalStyles.appBackground}
-                        trigger={({ ...triggerProps }) => (
-                            <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                <Avatar size="md">
-                                    <AvatarImage
-                                        source={{
-                                            uri: userDetails?.userBusinessInfo?.companyLogoURL,
-                                        }}
-                                    />
-                                    <AvatarBadge />
-                                    {!userDetails?.userBusinessInfo?.companyLogoURL &&
-                                        <AvatarFallbackText>{userDetails?.userAuthInfo?.username?.charAt(0).toUpperCase()}</AvatarFallbackText>
-                                    }
-                                </Avatar>
-                            </Button>
-                        )}
-                    >
-                        <MenuItem key="profile" onPress={() => navigation.navigate("Profile")}>
-                            <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#3B82F6" />
-                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
-                                Profile
-                            </MenuItemLabel>
-                        </MenuItem>
-
-                        <MenuItem key="logout" onPress={async () => {
-                            await logout()
-                            navigation.dispatch(
-                                CommonActions.reset({
-                                    index: 0,
-                                    routes: [{ name: 'UnauthStack', params: { screen: 'Authentication' } }],
-                                })
-                            )
-                        }}>
-                            <Feather name="log-out" size={wp('5%')} style={{ paddingRight: wp('2%') }} color="#EF4444" />
-                            <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>
-                                Logout
-                            </MenuItemLabel>
-                        </MenuItem>
-                    </Menu>
-
-
-                </View>
+            </View>
+            <View style={styles.subscriptionAlert}>
+                <Feather name="alert-triangle" size={20} color="#B71C1C" style={{ marginRight: 8 }} />
+                <Text style={globalStyles.labelText}>
+                    Your subscription ends soon
+                </Text>
             </View>
         </View>
     );

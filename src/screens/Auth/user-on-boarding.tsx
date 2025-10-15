@@ -393,7 +393,7 @@ const UserOnBoarding = () => {
         })
         navigation.reset({
             index: 0,
-            routes: [{ name: "AuthStack", params: { screen: "MainTabs" } }],
+            routes: [{ name: "Subscription" }],
         })
     }
     

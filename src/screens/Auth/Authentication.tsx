@@ -7,7 +7,6 @@ import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import UserOnBoarding from './user-on-boarding';
 import Login from './login';
 import Register from './register';
 import OneTimePassword from './one-time-password';
