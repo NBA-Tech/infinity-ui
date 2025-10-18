@@ -329,7 +329,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             customerId: orderDetails?.customerInfo?.customerID,
             totalAmount: orderDetails?.totalPrice ?? 0,
         };
-        console.log("payload", payload)
         let res;
 
         if (payload?.invoiceId) {

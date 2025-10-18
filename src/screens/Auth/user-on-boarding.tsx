@@ -308,7 +308,7 @@ const UserOnBoarding = () => {
                 message: "Please fix all the errors before proceeding",
             })
         }
-        if(validateValues(businessDetails, currStep == 0 ? businessInfoFields : currStep == 1 ? billingInfoFields : settingInfoFields).success){
+        if(validateValues(businessDetails,businessInfoFields).success){
             setCurrStep(currStep + 1);
         }
         else{
@@ -360,6 +360,21 @@ const UserOnBoarding = () => {
 
     const handleSubmit = async () => {
         const userId = getItem("USERID")
+        const validate = validateValues(businessDetails, billingInfoFields);
+        if(!validate.success){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: validate.message ?? "Please fill all required fields",
+            })
+        }
+        if(errors && Object.keys(errors).length > 0){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please fix all the errors before proceeding",
+            })
+        }
         if (!userId) {
             return showToast({
                 type: "error",

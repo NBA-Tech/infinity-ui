@@ -29,10 +29,14 @@ import {
   BusinessDetails,
   Subscription,
 } from "../screens";
+import { useSubscription } from "../providers/subscription/subscription-context";
+import SubscriptionLockOverlay from "../components/subscription-overlay";
+import { View } from "react-native";
 
 const RootStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 
 // ===================
 // Nested Stack Navigators
@@ -80,17 +84,62 @@ function InvoiceNavigator() {
 // Tab Navigator
 // ===================
 function TabNavigator() {
+  const { isSubscribed } = useSubscription();
+
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <Footer {...props} />}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Customer" component={CustomerNavigator} />
-      <Tab.Screen name="Orders" component={OrderNavigator} />
-      <Tab.Screen name="Invoice" component={InvoiceNavigator} />
-      <Tab.Screen name="Services" component={Services} />
+      <Tab.Screen name="Home">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <Home />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
 
+      <Tab.Screen name="Customer">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <CustomerNavigator />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen name="Orders">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <OrderNavigator />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen name="Invoice">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <InvoiceNavigator />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen name="Services">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <Services />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
@@ -127,6 +176,7 @@ function UnauthStack() {
 // ===================
 export default function Navigation() {
   const { isAuthenticated } = useAuth();
+
 
   if (isAuthenticated === null) return null; // loading state
 

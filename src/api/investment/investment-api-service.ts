@@ -19,18 +19,6 @@ export const addUpdateInvestmentAPI=(payload:InvestmentModel,headers?:Record<str
     return addInvestmentResponse
 }
 
-export const getInvestmentDetailsUsingOrderIdAPI=(orderId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
-    const getInvestmentDetailsResponse=fetchWithTimeout({
-        url:`${API_BASE_URI}/investment/get_investment_by_order_id?orderId=${orderId}`,
-        options: {
-            method: 'GET',
-            headers
-        }
-    })
-    return getInvestmentDetailsResponse
-}
-
-
 export const getInvestmentDetailsBasedOnFiltersAPI=async(payload:SearchQueryRequest,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
     const getInvestmentDetailsResponse=await fetchWithTimeout({
         url:`${API_BASE_URI}/investment/get_investments_based_on_filters`,

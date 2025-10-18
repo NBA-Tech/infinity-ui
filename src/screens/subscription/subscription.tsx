@@ -32,7 +32,7 @@ const Subscription = () => {
         let payload: SubscriptionModel = {
             userId: getItem("USERID"),
             startDate: new Date(),
-
+            createdAt: new Date(),
         }
         if (!payload?.userId) {
             showToast({

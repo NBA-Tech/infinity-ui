@@ -24,6 +24,10 @@ import { useUserStore } from '../store/user/user-store';
 import { useDataStore } from '../providers/data-store/data-store-provider';
 import { useToastMessage } from './toast/toast-message';
 import { useAuth } from '../context/auth-context/auth-context';
+import { getSubscriptionDetailsUsingUserIdAPI } from '../api/subscription/subscription-api-service';
+import { formatDate } from '../utils/utils';
+import { SubscriptionModel } from '../types/subscription/subscription-type-';
+import { useSubscription } from '../providers/subscription/subscription-context';
 
 const styles = StyleSheet.create({
     headerContainer: {
@@ -81,13 +85,14 @@ const styles = StyleSheet.create({
 
 const Header = () => {
     const [notificationData, setNotificationData] = useState([]);
+    const { subscriptionDetails } = useSubscription()
     const { isDark, toggleTheme } = useContext(ThemeToggleContext);
     const { userDetails, getUserDetailsUsingID } = useUserStore();
-    const { getItem } = useDataStore()
+    const { isInitialized,getItem } = useDataStore()
     const globalStyles = useContext(StyleContext);
     const showToast = useToastMessage()
     const navigation = useNavigation()
-    const { logout } = useAuth()
+    const { isAuthenticated,logout } = useAuth()
 
     const ICONSMAPPING = {
         info: {
@@ -110,10 +115,8 @@ const Header = () => {
 
     useEffect(() => {
         const userId = getItem("USERID")
-        console.log("userId", userId)
         getUserDetailsUsingID(userId, showToast);
-
-    }, [])
+    }, [isInitialized,isAuthenticated])
 
 
     return (
@@ -187,7 +190,7 @@ const Header = () => {
             <View style={styles.subscriptionAlert}>
                 <Feather name="alert-triangle" size={20} color="#B71C1C" style={{ marginRight: 8 }} />
                 <Text style={globalStyles.labelText}>
-                    Your subscription ends soon
+                    Your subscription ends on {formatDate(subscriptionDetails?.endDate)}
                 </Text>
             </View>
         </View>

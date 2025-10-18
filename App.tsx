@@ -19,6 +19,9 @@ import { DataStoreProvider } from './src/providers/data-store/data-store-provide
 import { AuthProvider } from './src/context/auth-context/auth-context';
 import { ConfettiProvider } from './src/providers/confetti/confetti-provider';
 import ReloadProvider from './src/providers/reload/reload-context';
+import NotificationProvider from './src/providers/notification/notification-provider';
+import { SubscriptionProvider } from './src/providers/subscription/subscription-context';
+import SubscriptionLockOverlay from './src/components/subscription-overlay';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -32,7 +35,11 @@ function App() {
               <AuthProvider>
                 <GlobalStyleProvider>
                   <ConfettiProvider>
-                    <Navigation />
+                    <NotificationProvider>
+                      <SubscriptionProvider>
+                        <Navigation />
+                      </SubscriptionProvider>
+                    </NotificationProvider>
                   </ConfettiProvider>
                 </GlobalStyleProvider>
               </AuthProvider>

@@ -27,3 +27,18 @@ export const getUserDetailsApi=async (userID:string):Promise<ApiGeneralRespose>=
     })
     return getUserDetailsResponse
 }
+
+export const updateUserFcmTokenAPI=async(payload:Record<string,any>,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const updateUserFcmTokenResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/update_fcm_token`,
+        options: {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify(payload)
+        }
+    })
+    return updateUserFcmTokenResponse
+}

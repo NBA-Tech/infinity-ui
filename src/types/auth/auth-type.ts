@@ -2,7 +2,8 @@ export interface AuthModel {
     username?: string;
     email: string;
     password?: string;
-    firebaseIdToken?: string
+    firebaseIdToken?: string;
+    firebaseFcmToken?:string;
     authType: "EMAIL_PASSWORD"| "GOOGLE";
 
 }

@@ -3,6 +3,7 @@ export interface SubscriptionModel {
   subscriptionId: string;
   userId: string;
   planDetails: Plan;
+  createdAt: Date;
   startDate: Date;
   endDate: Date;
   status: SubscriptionStatus;

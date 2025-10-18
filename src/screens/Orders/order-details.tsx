@@ -161,7 +161,6 @@ const OrderDetails = ({ route, navigation }: Props) => {
         if (!invesmentResponse?.success) {
             return showToast({ type: "error", title: "Error", message: invesmentResponse.message });
         }
-        console.log(invesmentResponse);
         setInvestmentDataList(invesmentResponse.data);
     }
 

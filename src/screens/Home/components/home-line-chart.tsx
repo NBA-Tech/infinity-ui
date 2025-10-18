@@ -31,7 +31,6 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const [barData, setBarData] = useState<any[]>([]);
-    console.log(props)
 
     const getMonthlyTotals = (
         data: any[],
@@ -45,7 +44,6 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                 totals[month] += Number(item[amountField]) || 0;
             }
         });
-        console.log("totals", totals)
         return totals;
     };
 

@@ -11,7 +11,7 @@ import { ApiGeneralRespose, FormFields } from "@/src/types/common";
 import { InvestmentModel, InvestmentType } from "@/src/types/investment/investment-type";
 import { formatDate, getCurrencySymbol, patchState, validateValues } from "@/src/utils/utils";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
-import { addUpdateInvestmentAPI, deleteInvestmentAPI, getInvestmentDetailsUsingInvestmentIdAPI, getInvestmentDetailsUsingORderIdAPI, updateInvestmentDetailsApi } from "@/src/api/investment/investment-api-service";
+import { addUpdateInvestmentAPI, deleteInvestmentAPI, getInvestmentDetailsUsingInvestmentIdAPI, updateInvestmentDetailsApi } from "@/src/api/investment/investment-api-service";
 import { useToastMessage } from "@/src/components/toast/toast-message";
 import { useUserStore } from "@/src/store/user/user-store";
 import DeleteConfirmation from "@/src/components/delete-confirmation";
@@ -202,8 +202,6 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         if (!deleteCurrId) {
             return
         }
-        setLoading(true)
-        console.log("fuck", deleteCurrId)
         const deleteInvestment: ApiGeneralRespose = await deleteInvestmentAPI(deleteCurrId)
         setLoading(false)
         if (!deleteInvestment?.success) {

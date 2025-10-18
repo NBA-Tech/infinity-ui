@@ -30,6 +30,7 @@ import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { useUserStore } from '@/src/store/user/user-store';
 import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
+import { NotificationContext } from '@/src/providers/notification/notification-provider';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -49,6 +50,7 @@ const Home = () => {
     const { userDetails, setUserDetails, getUserDetailsUsingID } = useUserStore()
     const [investmentDataList, setInvestmentDataList] = useState<InvestmentModel[]>([]);
     const [orderStatus, setOrderStatus] = useState();
+    const { setReqPermission } = useContext(NotificationContext)
     const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false, investmentLoading: false });
     const generalStatData = useMemo<GeneralStatInfoModel>(() => {
         return {
@@ -143,7 +145,6 @@ const Home = () => {
             requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
-        console.log("orderMetaDataResponse", orderMetaDataResponse)
         if (!orderMetaDataResponse.success) {
             return showToast({
                 type: "error",
@@ -206,7 +207,7 @@ const Home = () => {
             startDate: startOfYear,
             endDate: endOfYear,
         };
-        const investmentDetails:ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload)
+        const investmentDetails: ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload)
         if (!investmentDetails.success) {
             return showToast({
                 type: "error",
@@ -298,7 +299,11 @@ const Home = () => {
             }
         }
         loadInvestmentsData()
-    },[reloadInvestments])
+    }, [reloadInvestments])
+
+    useEffect(()=>{
+        setReqPermission(true)
+    },[])
 
 
 

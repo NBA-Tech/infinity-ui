@@ -26,7 +26,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
     if(!userDetails){
 
         const userDetailsApi: ApiGeneralRespose = await getUserDetailsApi(userID)
-        console.log("userDetailsApi",userDetailsApi)
         if(!userDetailsApi?.success){
             showToast({
                 type: "error",

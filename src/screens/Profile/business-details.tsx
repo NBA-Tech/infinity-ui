@@ -297,7 +297,6 @@ const BusinessDetails = () => {
     }, [])
 
     useEffect(() => {
-        console.log (userDetails)
         setBusinessDetails(userDetails);
     }, [userDetails])
 
