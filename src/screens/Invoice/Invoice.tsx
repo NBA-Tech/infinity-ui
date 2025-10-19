@@ -31,6 +31,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { deleteInvoiceAPI, getInvoiceListBasedOnFiltersAPI, getInvoiceMetaInfoDetailsAPI } from '@/src/api/invoice/invoice-api-service';
 import debounce from "lodash.debounce";
 import FilterComponent from '@/src/components/filter-component';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -110,6 +111,7 @@ const InvoiceList = () => {
     const { customerMetaInfoList, deleteCustomerMetaInfo, loadCustomerMetaInfoList } = useCustomerStore();
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
+    const { triggerReloadInvoices } = useReloadContext();
 
 
 
@@ -171,7 +173,7 @@ const InvoiceList = () => {
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
     const deleteInvoice = async () => {
-        if(!currID) return
+        if (!currID) return
         setLoadingDelete(true);
         const deleteInvoiceResponse = await deleteInvoiceAPI(currID);
         if (!deleteInvoiceResponse?.success) {
@@ -190,7 +192,8 @@ const InvoiceList = () => {
         })
         setOpenDelete(false);
         setLoadingDelete(false);
-        setFilters(prev => ( {...prev, page: 1,pageSize: 10}));
+        setFilters(prev => ({ ...prev, page: 1, pageSize: 10 }));
+        triggerReloadInvoices()
     }
 
 
@@ -274,7 +277,7 @@ const InvoiceList = () => {
                             <TouchableOpacity onPress={() => navigation.navigate('CreateInvoice', { invoiceId: item?.invoiceId })}>
                                 <Feather name="edit" size={wp('5%')} color="#22C55E" />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>{
+                            <TouchableOpacity onPress={() => {
                                 setOpenDelete(true)
                                 setCurrID(item?.invoiceId)
                             }}>
@@ -370,7 +373,7 @@ const InvoiceList = () => {
                 )
                 }
                 {!loading && invoiceData?.length === 0 ? (
-                    <EmptyState variant={"invoices"} onAction={() => navigation.navigate('CreateCustomer')} />
+                    <EmptyState variant={"invoices"} onAction={() => navigation.navigate('CreateInvoice')} />
                 ) : (
                     <FlatList
                         data={invoiceData}

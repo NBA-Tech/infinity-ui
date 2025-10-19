@@ -14,6 +14,7 @@ interface DataStoreContextType {
   setItem: (key: string, value: any) => Promise<void>;
   updateItem: (key: string, updaterFn: (prev: any) => any) => Promise<void>;
   removeItem: (key: string) => Promise<void>;
+  clearPersistedData: () => Promise<void>;
   isInitialized: boolean;
   store: Store;
   setStore: React.Dispatch<React.SetStateAction<Store>>;
@@ -69,6 +70,24 @@ export const DataStoreProvider: React.FC<ProviderProps> = ({
 
     loadPersistedData();
   }, [baseKey, isPersist]);
+
+  const clearPersistedData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const appKeys = keys.filter((k) => k.startsWith(baseKey));
+  
+      if (appKeys.length > 0) {
+        await AsyncStorage.multiRemove(appKeys);
+        console.log(`🗑️ Cleared ${appKeys.length} persisted keys`);
+      }
+  
+      // Optional: also clear from local state
+      setStore({});
+      setIsInitialized(false);
+    } catch (err) {
+      console.error('Error clearing persisted data:', err);
+    }
+  };
 
   const setItem = async (key: string, value: any) => {
     setStore((prev) => ({ ...prev, [key]: value }));
@@ -131,6 +150,7 @@ export const DataStoreProvider: React.FC<ProviderProps> = ({
         isInitialized,
         store,
         setStore,
+        clearPersistedData
       }}
     >
       {children}

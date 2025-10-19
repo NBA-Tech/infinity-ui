@@ -241,6 +241,21 @@ const BusinessDetails = () => {
                 patchState("userBillingInfo", "zipCode", value, true, setBusinessDetails, setErrors);
             },
         },
+        termsAndConditions: {
+            parentKey: "UserBusinessInfo",
+            key: "termsAndConditions",
+            label: "Terms and Conditions",
+            placeholder: "Eg : Terms and Conditions",
+            icon: <Feather name="clipboard" size={wp("5%")} color="#8B5CF6" />,
+            type: "text",
+            style: "w-full",
+            isRequired: false,
+            isDisabled: false,
+            value: businessDetails?.userBusinessInfo?.termsAndConditions ?? "",
+            onChange: (value: string) => {
+                patchState("userBusinessInfo", "termsAndConditions", value, true, setBusinessDetails, setErrors);
+            }
+        }
     }), [businessDetails]);
 
     const openGallery = async () => {

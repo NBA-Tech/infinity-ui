@@ -123,7 +123,7 @@ const InvoiceInfo = (props: InvoiceInfoProps) => {
                     </View>
 
                 </View>
-                <Divider style={{ marginVertical: hp('2%') }} />
+                {/* <Divider style={{ marginVertical: hp('2%') }} />
                 <View className='flex flex-1 flex-row justify-end items-center gap-3'>
                     <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
                         <Feather name="eye" size={wp("5%")} color={isDark ? '#fff' : '#000'} />
@@ -135,7 +135,7 @@ const InvoiceInfo = (props: InvoiceInfoProps) => {
                         <ButtonText style={[globalStyles.buttonText, globalStyles.whiteTextColor]}>Send Reminder</ButtonText>
                     </Button>
 
-                </View>
+                </View> */}
             </Card>
 
 

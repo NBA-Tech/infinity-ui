@@ -23,7 +23,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
   getUserDetailsUsingID: async (userID,showToast) => {
     let userDetails = get().userDetails;
-    if(!userDetails){
+    if(!userDetails?.userId){
 
         const userDetailsApi: ApiGeneralRespose = await getUserDetailsApi(userID)
         if(!userDetailsApi?.success){

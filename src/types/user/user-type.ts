@@ -12,7 +12,6 @@ export interface UserModel {
   onboarded?: boolean;
   userBusinessInfo?: UserBusinessInfo;
   userBillingInfo?: UserBillingInfo;
-  userSettingInfo?: UserSettingInfo;
   userAuthInfo?:AuthModel
   currencyIcon?:string
 }
@@ -24,6 +23,7 @@ export interface UserBusinessInfo {
   businessPhoneNumber?: string;
   businessEmail?: string;
   websiteURL?: string;
+  termsAndConditions?: string;
 }
 
 export interface UserBillingInfo {
@@ -34,9 +34,4 @@ export interface UserBillingInfo {
   city: string;
   zipCode: string;
   address: string;
-}
-
-export interface UserSettingInfo {
-  currency: string;
-  notificationPreference?: string;
 }

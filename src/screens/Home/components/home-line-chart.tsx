@@ -10,6 +10,7 @@ import { EmptyState } from '@/src/components/empty-state-data';
 import { BarChart } from 'react-native-gifted-charts';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
+import { Divider } from '@/components/ui/divider';
 
 
 const styles = StyleSheet.create({
@@ -67,16 +68,10 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                 labelWidth: 30,
                 labelTextStyle: { color: "gray" },
                 frontColor: "#22C55E",
-                topLabelComponent: () => (
-                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{profitByMonth[index]}</Text>
-                ),
             },
             {
                 value: expenseByMonth[index],
                 frontColor: "#EF4444",
-                topLabelComponent: () => (
-                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{expenseByMonth[index]}</Text>
-                ),
             },
         ]);
 
@@ -104,16 +99,6 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                             <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                         </TouchableOpacity>
                     </Tooltip>
-                    <View className='flex flex-row justify-center items-center gap-3'>
-                        <View style={[styles.roundDotContainer, { backgroundColor: '#22C55E' }]}></View>
-                        <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Profit</Text>
-
-                    </View>
-                    <View className='flex flex-row justify-center items-center gap-3'>
-                        <View style={[styles.roundDotContainer, { backgroundColor: '#EF4444' }]}></View>
-                        <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Expenses</Text>
-
-                    </View>
                 </View>
             </View>
 
@@ -126,18 +111,84 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                         data={barData}
                         barWidth={16}
                         spacing={16}
-                        roundedTop
                         hideRules
                         xAxisThickness={0}
                         yAxisThickness={0}
                         yAxisTextStyle={{ color: 'gray' }}
                         noOfSections={5}
-                        maxValue={maxValue+1000}
+                        maxValue={maxValue + 1000}
                     />
                 ) : (
                     <EmptyState title={'No data available'} noAction={true} />
                 )
             )}
+            <Divider style={{ marginVertical: hp('2%') }} />
+            <View className="flex flex-row justify-between items-center px-3 mt-3">
+                {/* Profit Card */}
+                <Card
+                    style={[
+                        globalStyles.cardShadowEffect,
+                        {
+                            width: wp("42%"),
+                            paddingVertical: 14,
+                            paddingHorizontal: 10,
+                            borderRadius: 12,
+                        },
+                    ]}
+                >
+                    <View className="flex flex-col items-center justify-center">
+                        <View className="flex flex-row items-center gap-2 mb-1">
+                            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
+                                Profit
+                            </Text>
+                            <View
+                                style={[styles.roundDotContainer, { backgroundColor: "#22C55E" }]}
+                            />
+                        </View>
+                        <Text
+                            style={[
+                                globalStyles.heading3Text,
+                                globalStyles.themeTextColor,
+                            ]}
+                        >
+                            ${props?.invoiceDetails?.reduce((total, item) => total + item.amountPaid, 0)}
+                        </Text>
+                    </View>
+                </Card>
+
+                {/* Expenses Card */}
+                <Card
+                    style={[
+                        globalStyles.cardShadowEffect,
+                        {
+                            width: wp("42%"),
+                            paddingVertical: 14,
+                            paddingHorizontal: 10,
+                            borderRadius: 12,
+                        },
+                    ]}
+                >
+                    <View className="flex flex-col items-center justify-center">
+                        <View className="flex flex-row items-center gap-2 mb-1">
+                            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
+                                Expenses
+                            </Text>
+                            <View
+                                style={[styles.roundDotContainer, { backgroundColor: "#EF4444" }]}
+                            />
+                        </View>
+                        <Text
+                            style={[
+                                globalStyles.heading3Text,
+                                globalStyles.themeTextColor,
+                            ]}
+                        >
+                            ${props?.investmentDetails?.reduce((total, item) => total + item.investedAmount, 0)}
+                        </Text>
+                    </View>
+                </Card>
+            </View>
+
         </Card>
     );
 };

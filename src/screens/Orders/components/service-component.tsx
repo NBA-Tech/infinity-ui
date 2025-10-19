@@ -67,7 +67,7 @@ const ServiceComponent = ({
 
     const updateValue: OfferingInfo = {
       ...offeringInfo,
-      orderType: OrderType.SERVICE,
+      orderType: updatedServices.length > 0 ? OrderType.SERVICE : null,
       packageId: undefined,
       services: updatedServices,
     };

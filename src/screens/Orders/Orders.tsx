@@ -25,6 +25,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import FilterComponent from '@/src/components/filter-component';
 import { isFilterApplied } from '@/src/utils/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -61,6 +62,7 @@ const Orders = () => {
     const [customerListFilter, setCustomerListFilter] = useState<string[]>();
     const [eventTypeFilter, setEventTypeFilter] = useState<string[]>();
     const [totalCount, setTotalCount] = useState(0);
+    const { triggerReloadOrders } = useReloadContext()
 
     const getOrderListData = async (reset: boolean = false) => {
         setLoading(true);
@@ -138,6 +140,7 @@ const Orders = () => {
         }
         setDeleteLoading(false);
         setOpenDelete(false);
+        triggerReloadOrders();
     }
 
     const handleDeletePopUp = (orderId: string) => {
@@ -177,8 +180,7 @@ const Orders = () => {
                 setRefresh={setRefresh}
                 extraValue={{
                     customerList: customerMetaInfoList
-                        ?.filter(c => customerListFilter?.some(cust => cust === c.customerID))
-                        .map(c => ({
+                        ?.map(c => ({
                             label: `${c.firstName} ${c.lastName}`,
                             value: c.customerID
                         })),

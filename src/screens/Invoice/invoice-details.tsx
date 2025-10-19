@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import BackHeader from '@/src/components/back-header';
@@ -26,7 +26,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice>();
     const showToast = useToastMessage();
-    const [loading,setLoading]=useState(false)
+    const [loading, setLoading] = useState(false)
 
     const actionButtons = [
         {
@@ -37,20 +37,20 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
     ]
 
 
-    const getInvoiceDetails=async()=>{
+    const getInvoiceDetails = async () => {
         setLoading(true)
-        const invoiceDetails:ApiGeneralRespose= await getInvoiceDetailsAPI(invoiceId as string)
+        const invoiceDetails: ApiGeneralRespose = await getInvoiceDetailsAPI(invoiceId as string)
         setLoading(false)
-        if(!invoiceDetails.success){
-            showToast({type:"error",title:"Error",message:invoiceDetails.message})
+        if (!invoiceDetails.success) {
+            showToast({ type: "error", title: "Error", message: invoiceDetails.message })
         }
-        else{
+        else {
             setInvoiceDetails(invoiceDetails?.data)
         }
     }
-    useEffect(()=>{
+    useEffect(() => {
         getInvoiceDetails()
-    },[invoiceId])
+    }, [invoiceId])
     return (
         <SafeAreaView style={globalStyles.appBackground}>
             <BackHeader>
@@ -58,7 +58,9 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
                     <View className="flex flex-row justify-between items-center w-full">
                         {/* Left side */}
                         <View className="flex flex-row items-center gap-3">
-                            <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Feather name="arrow-left" size={wp('7%')} color={isDark ? '#fff' : '#000'} />
+                            </TouchableOpacity>
                             <View className="flex flex-col">
                                 <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Invoice Details</Text>
                                 <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
@@ -87,10 +89,10 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
 
                 <View className='flex flex-col gap-5'>
                     <View>
-                        <CustomerInfo customerData={invoiceDetails?.billingInfo} loading={loading}/>
+                        <CustomerInfo customerData={invoiceDetails?.billingInfo} loading={loading} />
                     </View>
                     <View>
-                        <InvoiceInfo invoiceDetails={invoiceDetails} loading={loading}/>
+                        <InvoiceInfo invoiceDetails={invoiceDetails} loading={loading} />
                     </View>
                     {/* <View>
                         <LineItemsInfo />

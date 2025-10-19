@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { generateRandomString } from '@/src/utils/utils';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import Skeleton from '@/components/ui/skeleton';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -84,6 +85,7 @@ const ServiceTab = (props: ServiceTabProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const { deleteService } = useOfferingStore();
     const showToast = useToastMessage();
+    const { userDetails } = useUserStore()
 
 
     const handleDelete = async () => {
@@ -155,7 +157,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                     </Text>
 
                     <Text style={[styles.price, globalStyles.subHeadingText]}>
-                        Rs. {service?.price}
+                        {userDetails?.currencyIcon} {service?.price}
                     </Text>
                 </View>
 
@@ -174,36 +176,44 @@ const ServiceTab = (props: ServiceTabProps) => {
     };
 
     return (
-        <View style={{ margin: wp('2%') }}>
-            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-            <View style={{ height: hp('75%') }}>
-                {props?.isLoading ? (
-                    Array.from({ length: 4 }).map((_, index) => (
-                        <Skeleton
-                            key={index}
-                            style={{
-                                width: wp('95%'),
-                                height: hp('15%'),
-                                marginHorizontal: wp('2%'),
-                            }}
-                        />
-                    ))
-                ) : (
-                    <FlatList
-                        data={props.serviceData}
-                        keyExtractor={(item) => item.id?.toString() || index.toString()}
-                        renderItem={({ item }) => (
-                            <View style={{ gap: wp('0.5%') }}>
-                                <ServiceCard service={item} />
-                            </View>
-                        )}
-                        showsVerticalScrollIndicator={false}
+        <ScrollView
+            style={{ margin: wp('2%'),height:hp('48%') }}
+            contentContainerStyle={{ paddingBottom: hp('5%') }}
+            showsVerticalScrollIndicator={false}
+        >
+            {/* Delete confirmation at the top */}
+            <DeleteConfirmation
+                openDelete={openDelete}
+                loading={loading}
+                setOpenDelete={setOpenDelete}
+                handleDelete={handleDelete}
+            />
+
+            {props?.isLoading ? (
+                // Skeletons when loading
+                Array.from({ length: 4 }).map((_, index) => (
+                    <Skeleton
+                        key={index}
+                        style={{
+                            width: wp('95%'),
+                            height: hp('15%'),
+                            marginHorizontal: wp('2%'),
+                            marginBottom: hp('1%'),
+                        }}
                     />
-                )}
-
-
-            </View>
-        </View>
+                ))
+            ) : (
+                // Render the list of services
+                props.serviceData.map((item, index) => (
+                    <View
+                        key={item.id?.toString() || index.toString()}
+                        style={{ gap: wp('0.5%'), marginBottom: hp('1%') }}
+                    >
+                        <ServiceCard service={item} />
+                    </View>
+                ))
+            )}
+        </ScrollView>
     );
 };
 

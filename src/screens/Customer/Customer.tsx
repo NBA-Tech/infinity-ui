@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from '
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
-import Header from '@/src/components/header';
+import Header from '@/src/components/Header';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
@@ -31,6 +31,8 @@ import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-s
 import FilterComponent from '@/src/components/filter-component';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import debounce from "lodash.debounce";
+import { useUserStore } from '@/src/store/user/user-store';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -104,8 +106,10 @@ const Customer = () => {
     const [hasMore, setHasMore] = useState(true);
     const [openFilter, setOpenFilter] = useState(false);
     const { deleteCustomerMetaInfo } = useCustomerStore();
+    const { userDetails } = useUserStore()
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
+    const { triggerReloadCustomer } = useReloadContext()
 
 
     const getCustomerDetails = async (reset: boolean = false) => {
@@ -260,8 +264,7 @@ const Customer = () => {
             message: 'Customer deleted successfully'
         })
         setOpenDelete(false);
-
-
+        triggerReloadCustomer()
     }
 
     const handleSearch = (value: string) => {
@@ -314,16 +317,16 @@ const Customer = () => {
                                 </View>
 
                                 <View style={styles.detailRow}>
-                                    <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
+                                    <MaterialIcons name="money" size={wp('4%')} color="#6B7280" />
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Total Package : ₹ {item?.totalQuotation || 0}
+                                        Total Package : {userDetails?.currencyIcon || "$"} {item?.totalQuotation || 0}
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
-                                    <MaterialIcons name="currency-rupee" size={wp('4%')} color="#6B7280" />
+                                    <MaterialIcons name="money" size={wp('4%')} color="#6B7280" />
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Balance : ₹ {item?.totalInvoice || 0}
+                                        Total Paid : {userDetails?.currencyIcon || "$"} {item?.totalInvoice || 0}
                                     </Text>
                                 </View>
                             </View>

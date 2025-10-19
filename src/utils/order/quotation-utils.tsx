@@ -84,7 +84,7 @@ export const getQuotationFields = (
                     container: "card",
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Client Name:</span>${customerList?.find((customer) => customer?.value === orderDetails?.orderBasicInfo?.customerID)?.label}</div>`,
+                    html: `<div class="field"><span>Client Name: </span>${customerList?.find((customer) => customer?.value === orderDetails?.orderBasicInfo?.customerID)?.label}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "clientName"),
                 },
                 {
@@ -93,7 +93,7 @@ export const getQuotationFields = (
                     container: "card",
                     description: "Type of event (wedding, birthday, corporate, etc.)",
                     icon: <Feather name="camera" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Type:</span> ${orderDetails?.eventInfo?.eventType}</div>`,
+                    html: `<div class="field"><span>Event Type: </span> ${orderDetails?.eventInfo?.eventType}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventType"),
                 },
                 {
@@ -102,7 +102,7 @@ export const getQuotationFields = (
                     container: "card",
                     description: "Scheduled date and time of the shoot",
                     icon: <Feather name="calendar" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Date & Time:</span>${formatDate(orderDetails?.eventInfo?.eventDate)} : ${orderDetails?.eventInfo?.eventTime}</div>`,
+                    html: `<div class="field"><span>Event Date & Time: </span>${formatDate(orderDetails?.eventInfo?.eventDate)} : ${orderDetails?.eventInfo?.eventTime}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventDate"),
                 },
                 {
@@ -111,7 +111,7 @@ export const getQuotationFields = (
                     container: "card",
                     description: "Venue or location of the event",
                     icon: <Feather name="map" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Event Location:</span>${orderDetails?.eventInfo?.eventLocation}</div>`,
+                    html: `<div class="field"><span>Event Location: </span>${orderDetails?.eventInfo?.eventLocation}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "eventLocation"),
                 },
                 {
@@ -186,7 +186,7 @@ export const getQuotationFields = (
                     heading: "Terms & Conditions",
                     description: "Payment terms, delivery timeline, rights",
                     icon: <Feather name="file-text" size={wp("5%")} color="#F59E0B" />,
-                    html: `<div class="card"><span>Terms & Conditions:</span> {{terms}}</div>`,
+                    html: `<div class="card"><span>Terms & Conditions:</span> ${userDetails?.userBusinessInfo?.termsAndConditions}</div>`,
                     isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms"),
                 },
                 {

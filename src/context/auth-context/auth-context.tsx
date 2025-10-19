@@ -14,7 +14,7 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }: any) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { isInitialized, getItem, setItem, removeItem } = useDataStore();
+    const { isInitialized, getItem, setItem, removeItem,clearPersistedData } = useDataStore();
 
     useEffect(() => {
         const loadAuthState = async () => {
@@ -61,9 +61,7 @@ export const AuthProvider = ({ children }: any) => {
     const logout = async () => {
         resetAllStoreDetails()
         setIsAuthenticated(false);
-        await removeItem('isAuthenticated');
-        await removeItem('CREATEDAT');
-        await removeItem('USERID');
+        await clearPersistedData()
     };
 
     if (loading) {

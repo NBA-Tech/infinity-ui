@@ -53,7 +53,7 @@ const NotificationProvider: React.FC<Props> = ({ children }) => {
 
       const storedToken = getItem('FCM_TOKEN');
 
-      if (enabled) {
+      if (enabled && !storedToken) {
         const token = await messaging().getToken();
         setFcmToken(token);
         setHasPermission(true);

@@ -234,7 +234,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             icon: <MaterialIcons name="hourglass-empty" size={wp("5%")} color="#8B5CF6" />,
             type: "number",
             style: "w-1/2",
-            isRequired: true,
+            isRequired: false,
             isDisabled: false,
             isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.numberOfHours ?? 0,
@@ -317,12 +317,19 @@ const CreateOrder = ({ navigation, route }: Props) => {
         let validateInput
         if (currStep! - 2) {
             validateInput = validateValues(orderDetails, formOrders[currStep])
+            if (!validateInput?.success) {
+                return showToast({
+                    type: "warning",
+                    title: "Oops!!",
+                    message: validateInput?.message ?? "Please fill all the required fields",
+                })
+            }
         }
-        if (!validateInput?.success && !orderDetails?.eventInfo?.eventType) {
+        else if (!orderDetails?.offeringInfo?.orderType) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
-                message: validateInput?.message ?? "Please fill all the required fields",
+                message:"Please fill all the required fields",
             })
         }
         setCurrStep(currStep + 1)
@@ -580,7 +587,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             </View>
 
                             {/* Body */}
-                            <CustomFieldsComponent infoFields={userInfo} cardStyle={{ padding: wp("2%") }} />
+                            <CustomFieldsComponent infoFields={userInfo} cardStyle={{ padding: wp("2%") }} errors={errors}/>
 
                         </Card>
                     )}
@@ -600,7 +607,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             </View>
 
                             {/* Body */}
-                            <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} />
+                            <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors}/>
                             <View style={{ marginLeft: wp('3%') }}>
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Event Type</Text>

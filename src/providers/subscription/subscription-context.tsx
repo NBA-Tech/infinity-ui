@@ -36,7 +36,6 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
         if (!subscriptionDetails?.success) {
             return showToast({ type: "error", title: "Error", message: subscriptionDetails?.message ?? "Something went wrong" });
         }
-        console.log("subscriptionDetails", subscriptionDetails)
         setSubscriptionDetails(subscriptionDetails?.data)
     }
 
@@ -49,7 +48,6 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
     useEffect(() => {
         const currDate = new Date()
         const subscriptionEndDate = new Date(subscriptionDetails?.endDate)
-        console.log("currDate", currDate, "subscriptionEndDate", subscriptionEndDate)
         if (currDate > subscriptionEndDate) {
             setIsSubscribed(false)
         }

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import Modal from 'react-native-modal';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { COLORCODES } from '@/src/constant/constants';
 import Skeleton from '@/components/ui/skeleton';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -127,6 +128,7 @@ const PackageTab = (props: PackageProps) => {
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const { deletePackage } = useOfferingStore();
+    const { userDetails } = useUserStore()
     const showToast = useToastMessage();
     const handleDelete = async () => {
         if (!currId) return;
@@ -200,7 +202,7 @@ const PackageTab = (props: PackageProps) => {
                         <Text style={styles.description} numberOfLines={2}>
                             {pkg.description}
                         </Text>
-                        <Text style={styles.price}>{!pkg?.calculatedPrice ? `Rs. {pkg.price}` : 'AUTO PRICING'}</Text>
+                        <Text style={styles.price}>{!pkg?.calculatedPrice ? `${userDetails?.currencyIcon} ${pkg?.price}` : 'AUTO PRICING'}</Text>
 
                         <View style={styles.tagsRow}>
                             {pkg.tags && pkg?.tags.map((tag) => (
@@ -230,37 +232,44 @@ const PackageTab = (props: PackageProps) => {
         );
     };
     return (
-        <View style={{ margin: wp('2%') }}>
-            <DeleteConfirmation openDelete={openDelete} loading={loading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-            <View style={{ height: hp('50%') }}>
+        <ScrollView
+            style={{ margin: wp('2%'),height:hp('48%') }}
+            contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
+            showsVerticalScrollIndicator={false}
+        >
+            <DeleteConfirmation
+                openDelete={openDelete}
+                loading={loading}
+                setOpenDelete={setOpenDelete}
+                handleDelete={handleDelete}
+            />
 
-                {props?.isLoading ? (
-                    Array.from({ length: 4 }).map((_, index) => (
-                        <Skeleton
-                            key={index}
-                            style={{
-                                width: wp('95%'),
-                                height: hp('15%'),
-                                marginHorizontal: wp('2%'),
-                            }}
-                        />
-                    ))
-                ) : (
-                    <FlatList
-                        data={props?.packageData}
-                        keyExtractor={(item) => item.id + ''}
-                        renderItem={({ item }) => (
-                            <View style={{ gap: wp('0.5%') }}>
-                                <PackageCard pkg={item} />
-                            </View>
-                        )}
-                        showsVerticalScrollIndicator={false}
+            {props?.isLoading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                    <Skeleton
+                        key={index}
+                        style={{
+                            width: wp('95%'),
+                            height: hp('15%'),
+                            marginHorizontal: wp('2%'),
+                            marginBottom: hp('1%'), // spacing between skeletons
+                        }}
                     />
-                )}
-
-            </View>
-
-        </View>
+                ))
+            ) : (
+                <FlatList
+                    data={props?.packageData}
+                    keyExtractor={(item) => item.id + ''}
+                    renderItem={({ item }) => (
+                        <View style={{ gap: wp('0.5%'), marginBottom: hp('1%') }}>
+                            <PackageCard pkg={item} />
+                        </View>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    scrollEnabled={false} // disable FlatList scrolling because ScrollView will scroll
+                />
+            )}
+        </ScrollView>
     );
 };
 

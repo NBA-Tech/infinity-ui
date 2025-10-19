@@ -35,7 +35,7 @@ type GeneralInfoProps = {
 }
 export const GeneralInfo = (props: GeneralInfoProps) => {
     const globalStyles = useContext(StyleContext);
-    const {userDetails}=useUserStore()
+    const { userDetails } = useUserStore()
     return (
         <ScrollView style={styles.scene} showsVerticalScrollIndicator={false}>
             <View className="flex flex-col">
@@ -235,32 +235,36 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
 
                             </View>
                         </View>
+                        {props?.customerDetails?.customerBillingInfo?.country && (
+                            <View style={styles.detailsContainer}>
+                                {/* First Row */}
+                                <View className="flex-row justify-between gap-4">
+                                    {/* Customer Id */}
+                                    <View className="flex-1">
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
+                                            Address
+                                        </Text>
+                                        {props?.isLoading ? (
+                                            <Skeleton width={wp('90%')} height={wp('10%')} />
+                                        ) : (
+                                            <View className="flex-row items-center gap-2 mt-1">
+                                                <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />
+                                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                                    {props?.customerDetails?.customerBillingInfo?.street} {props?.customerDetails?.customerBillingInfo?.city} {props?.customerDetails?.customerBillingInfo?.state} {props?.customerDetails?.customerBillingInfo?.country} {props?.customerDetails?.customerBillingInfo?.zipCode}
+                                                </Text>
+                                            </View>
+                                        )
 
-                        <View style={styles.detailsContainer}>
-                            {/* First Row */}
-                            <View className="flex-row justify-between gap-4">
-                                {/* Customer Id */}
-                                <View className="flex-1">
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
-                                        Address
-                                    </Text>
-                                    {props?.isLoading ? (
-                                        <Skeleton width={wp('90%')} height={wp('10%')} />
-                                    ) : (
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                                {props?.customerDetails?.customerBillingInfo?.street} {props?.customerDetails?.customerBillingInfo?.city} {props?.customerDetails?.customerBillingInfo?.state} {props?.customerDetails?.customerBillingInfo?.country} {props?.customerDetails?.customerBillingInfo?.zipCode}
-                                            </Text>
-                                        </View>
-                                    )
+                                        }
 
-                                    }
+                                    </View>
 
                                 </View>
-
                             </View>
-                        </View>
+                        )
+
+                        }
+
                     </Card>
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
@@ -270,29 +274,34 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
 
                             </View>
                         </View>
+                        {props?.customerDetails?.customerBasicInfo?.notes && (
+                            <View style={styles.detailsContainer}>
+                                {/* First Row */}
+                                <View className="flex-row justify-between gap-4">
+                                    {/* Customer Id */}
+                                    <View className="flex-1">
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
+                                            Notes
+                                        </Text>
+                                        {props?.isLoading ? (
+                                            <Skeleton width={wp('90%')} height={wp('10%')} />
+                                        ) : (
+                                            <View className="flex-row items-center gap-2 mt-1">
+                                                <Feather name="edit" size={wp("5%")} color="#8B5CF6" />
+                                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                                    {props?.customerDetails?.customerBasicInfo?.notes}
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
 
-                        <View style={styles.detailsContainer}>
-                            {/* First Row */}
-                            <View className="flex-row justify-between gap-4">
-                                {/* Customer Id */}
-                                <View className="flex-1">
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
-                                        Notes
-                                    </Text>
-                                    {props?.isLoading ? (
-                                        <Skeleton width={wp('90%')} height={wp('10%')} />
-                                    ) : (
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Feather name="edit" size={wp("5%")} color="#8B5CF6" />
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                                {props?.customerDetails?.customerBasicInfo?.notes}
-                                            </Text>
-                                        </View>
-                                    )}
                                 </View>
-
                             </View>
-                        </View>
+                        )
+
+                        }
+
+
                     </Card>
                 </View>
 
