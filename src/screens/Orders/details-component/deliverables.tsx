@@ -276,7 +276,7 @@ const Deliverables = (props: DeliverablesProps) => {
                         </View>
                     </View>
                     {!props?.orderDetails?.deliverables || props?.orderDetails?.deliverables?.length <= 0 ? (
-                        <EmptyState/>
+                        <EmptyState onAction={() => setOpen(true)}/>
                     ) : (
                         <FlatList
                             scrollEnabled={false}

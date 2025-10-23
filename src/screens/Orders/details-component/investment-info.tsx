@@ -16,6 +16,7 @@ import { useToastMessage } from "@/src/components/toast/toast-message";
 import { useUserStore } from "@/src/store/user/user-store";
 import DeleteConfirmation from "@/src/components/delete-confirmation";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
+import { EmptyState } from "@/src/components/empty-state-data";
 
 
 const styles = StyleSheet.create({
@@ -341,6 +342,9 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
 
                         </View>
                     </View>
+                    {!props?.investmentDataList?.length &&
+                        <EmptyState onAction={() => { setOpen(true) }} />
+                    }
                     <FlatList
                         scrollEnabled={false}
                         contentContainerStyle={{ gap: hp('2%') }}

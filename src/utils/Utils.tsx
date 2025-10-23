@@ -541,3 +541,16 @@ export function getMonthlyRevenue<T extends { [key: string]: any }>(
     value: monthlyTotals[month],
   }));
 }
+
+export function isExpiringSoon(expiryDate: Date | string): boolean {
+  const now = new Date();
+  const expiry = typeof expiryDate === 'string' ? new Date(expiryDate) : expiryDate;
+
+  // Calculate difference in milliseconds
+  const diffMs = expiry.getTime() - now.getTime();
+
+  // Convert milliseconds to days
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  return diffDays < 1;
+}
