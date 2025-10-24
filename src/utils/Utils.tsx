@@ -543,6 +543,7 @@ export function getMonthlyRevenue<T extends { [key: string]: any }>(
 }
 
 export function isExpiringSoon(expiryDate: Date | string): boolean {
+  if(!expiryDate) return false
   const now = new Date();
   const expiry = typeof expiryDate === 'string' ? new Date(expiryDate) : expiryDate;
 
@@ -552,5 +553,5 @@ export function isExpiringSoon(expiryDate: Date | string): boolean {
   // Convert milliseconds to days
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-  return diffDays < 1;
+  return diffDays < 10;
 }

@@ -111,27 +111,35 @@ const FeatureSlide = () => {
                     <Text style={styles.description}>{item.description}</Text>
                 </View>
             </GradientCard>
+            {currentIndex < slides.length - 1 ? (
+                <View style={[styles.continueButton,{backgroundColor:'transparent'}]}>
+                    <Text style={[styles.continueText,{color:'#fff'}]}>
+                        {"Swipe Right ->"}
+                    </Text>
+                </View>
+            ) : (
+                <TouchableOpacity
+                    style={styles.continueButton}
+                    onPress={async () => {
+                        if (currentIndex < slides.length - 1) {
+                            flatListRef.current?.scrollToIndex({
+                                index: currentIndex + 1,
+                                animated: true,
+                            });
+                            setCurrentIndex(currentIndex + 1);
+                        } else {
+                            await setItem("IS_NEW_DEVICE", true);
+                            navigation.replace("Authentication"); // use replace for auth flow
+                        }
+                    }}
+                >
+                    <Text style={styles.continueText}>
+                        {currentIndex < slides.length - 1 ? "Next →" : "Register →"}
+                    </Text>
+                </TouchableOpacity>
+            )
+            }
 
-            {/* Continue Button */}
-            <TouchableOpacity
-                style={styles.continueButton}
-                onPress={async () => {
-                    if (currentIndex < slides.length - 1) {
-                        flatListRef.current?.scrollToIndex({
-                            index: currentIndex + 1,
-                            animated: true,
-                        });
-                        setCurrentIndex(currentIndex + 1);
-                    } else {
-                        await setItem("IS_NEW_DEVICE", true);
-                        navigation.replace("Authentication"); // use replace for auth flow
-                    }
-                }}
-            >
-                <Text style={styles.continueText}>
-                    {currentIndex < slides.length - 1 ? "Next →" : "Register →"}
-                </Text>
-            </TouchableOpacity>
         </View>
     );
 
