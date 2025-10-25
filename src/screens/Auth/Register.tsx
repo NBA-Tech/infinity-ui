@@ -186,7 +186,8 @@ const Register = ({ setCurrScreen }: any) => {
             username: userRegisterRefs.current.username,
             email: userRegisterRefs.current.email,
             password: userRegisterRefs.current.password,
-            authType: "EMAIL_PASSWORD"
+            authType: "EMAIL_PASSWORD",
+            createdDate: new Date()
         }
         await handleRegister(payload);
         setLoadingProvider(null);

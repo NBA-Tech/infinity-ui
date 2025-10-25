@@ -59,7 +59,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { customerID } = route.params || {};
     const { isDark } = useContext(ThemeToggleContext);
-    const {triggerReloadCustomer}=useReloadContext()
+    const { triggerReloadCustomer } = useReloadContext()
     const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
         userId: "",
         leadSource: undefined,
@@ -331,6 +331,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             addNewCustomerResponse = await updateCustomerAPI(customerDetails)
         }
         else {
+            customerDetails.createdDate = new Date();
             addNewCustomerResponse = await addNewCustomerAPI(customerDetails)
 
         }
@@ -351,24 +352,24 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             if (customerID) {
                 updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
                 updateCustomerDetailsInfo(customerDetails)
-                const activityPayload:UserActivity={
-                    userId:userId,
-                    activityType:ACTIVITY_TYPE.INFO,
-                    activityTitle:"Updated Cutomer",
-                    activityMessage:`Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                const activityPayload: UserActivity = {
+                    userId: userId,
+                    activityType: ACTIVITY_TYPE.INFO,
+                    activityTitle: "Updated Cutomer",
+                    activityMessage: `Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
                 }
                 createNewActivityAPI(activityPayload)
-               
+
             }
             else {
                 customerDetails.customerID = addNewCustomerResponse.data
                 addCustomerDetailsInfo(customerDetails)
                 updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
                 createNewActivityAPI(({
-                    userId:userId,
-                    activityType:ACTIVITY_TYPE.SUCCESS,
-                    activityTitle:"Created Cutomer",
-                    activityMessage:`Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                    userId: userId,
+                    activityType: ACTIVITY_TYPE.SUCCESS,
+                    activityTitle: "Created Cutomer",
+                    activityMessage: `Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
                 }))
 
             }

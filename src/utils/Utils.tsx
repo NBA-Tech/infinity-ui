@@ -555,3 +555,34 @@ export function isExpiringSoon(expiryDate: Date | string): boolean {
 
   return diffDays < 10;
 }
+
+export function generateRandomStringBasedType(length: number, inputType: string): string {
+  // Prefix: INPUTTYPE + yyyyMMdd
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+
+  const prefix = inputType.toUpperCase() + yyyy + mm + dd;
+
+  // Remaining random length
+  const remainingLength = length - prefix.length;
+  if (remainingLength < 0) {
+    throw new Error("Length is too short for the risk format.");
+  }
+
+  const randomPart = getRandomAlphaNumeric(remainingLength);
+  return prefix + randomPart;
+}
+
+// Helper function to generate random alphanumeric string
+function getRandomAlphaNumeric(length: number): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Example usage:

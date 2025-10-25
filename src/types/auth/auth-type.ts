@@ -5,6 +5,8 @@ export interface AuthModel {
     firebaseIdToken?: string;
     firebaseFcmToken?:string;
     authType: "EMAIL_PASSWORD"| "GOOGLE";
+    notificationStatus?:boolean
+    createdDate?:Date
 
 }
 export interface AuthResponse{

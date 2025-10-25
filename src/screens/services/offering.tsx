@@ -519,11 +519,21 @@ const services = () => {
     }
 
     useEffect(() => {
-        setloadingProvider(activeTab)
-        const userId = getItem("USERID")
-        loadOfferings(userId, showToast);
-        setloadingProvider(null)
+        const fetchOfferings = async () => {
+            try {
+                setloadingProvider(activeTab);
+                const userId = getItem("USERID");
+                await loadOfferings(userId, showToast);
+            } catch (error) {
+                console.error("Error loading offerings:", error);
+            } finally {
+                setloadingProvider(null);
+            }
+        };
+
+        fetchOfferings();
     }, []);
+
 
 
     return (
@@ -670,7 +680,7 @@ const services = () => {
                             <ServiceTab
                                 serviceData={searchText !== '' ? filteredOfferingList : serviceData}
                                 handleEdit={handleEdit}
-                                isLoading={loadingProvider!==null}
+                                isLoading={loadingProvider !== null}
                             />
                         )
                     )}
@@ -683,7 +693,7 @@ const services = () => {
                             <PackageTab
                                 packageData={searchText !== '' ? filteredOfferingList : packageData}
                                 handleEdit={handleEdit}
-                                isLoading={loadingProvider!==null}
+                                isLoading={loadingProvider !== null}
                             />
                         )
                     )}

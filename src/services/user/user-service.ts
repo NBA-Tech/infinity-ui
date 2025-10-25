@@ -42,3 +42,14 @@ export const updateUserFcmTokenAPI=async(payload:Record<string,any>,headers?:Rec
     })
     return updateUserFcmTokenResponse
 }
+
+export const updateNotificationStatusAPI=async(userId:string,status:boolean,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const updateNotificationStatusResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/users/update_notification_status?userId=${userId}&status=${status}`,
+        options: {
+            method: 'PATCH',
+            headers
+        }
+    })
+    return updateNotificationStatusResponse
+}

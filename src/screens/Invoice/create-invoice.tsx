@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
     ScrollView,
     View,
@@ -54,6 +54,7 @@ import { OrderModel, OrderStatus } from "@/src/types/order/order-type";
 
 import {
     formatDate,
+    generateRandomStringBasedType,
     isAllLoadingFalse,
     patchState,
     validateValues,
@@ -64,6 +65,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { createNewActivityAPI } from "@/src/services/activity/user-activity-service";
 import { ACTIVITY_TYPE } from "@/src/types/activity/user-activity-type";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
     userOnBoardBody: { margin: hp("2%") },
@@ -125,6 +127,14 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         getOrderDetails(invoiceDetails.orderId);
         getInvoiceDetailsList(invoiceDetails.orderId);
     }, [invoiceDetails?.orderId]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            setInvoiceDetails({ ...invoiceDetails, invoiceId: generateRandomStringBasedType(20, "INVOICE") });
+        }, [])
+    );
+
 
     /** ───────────────────────────────
      * FETCH FUNCTIONS
@@ -230,6 +240,25 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
     const paymentForm: FormFields = useMemo(
         () => ({
+            invoiceDescription: {
+                key: "invoiceDescription",
+                label: "Invoice Description",
+                placeholder: "Eg: Invoice Description",
+                icon: (
+                    <Feather
+                        name="camera"
+                        size={wp("5%")}
+                        style={{ paddingRight: wp("3%") }}
+                        color="#8B5CF6"
+                    />
+                ),
+                type: "text",
+                isRequired: true,
+                value: invoiceDetails?.invoiceDescription,
+                onChange(value: string) {
+                    patchState("", "invoiceDescription", value, true, setInvoiceDetails, setErrors);
+                },
+            },
             amountPaid: {
                 key: "amountPaid",
                 label: "Amount Paid",
@@ -335,6 +364,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             res = await updateInvoiceAPI(payload);
         }
         else {
+            payload.invoiceDate=new Date()
             res = await createInvoiceAPI(payload);
         }
         setLoadingProvider((p) => ({ ...p, saveLoading: false }));
@@ -372,7 +402,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
     const handleShareQuotation = async () => {
         try {
-            const html = buildHtml("1", new Date().toLocaleDateString(), invoiceFields);
+            const html = buildHtml(invoiceDetails?.invoiceId,  formatDate(new Date()), invoiceFields);
             const pdf = await generatePDF({
                 html,
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle || "Invoice"}`,
@@ -400,9 +430,10 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             <Modal
                 isVisible={isOpen.modal}
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
+                onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
                 <TemplatePreview
-                    html={buildHtml("1", formatDate(new Date()), invoiceFields)}
+                    html={buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields)}
                 />
             </Modal>
 

@@ -101,7 +101,7 @@ const FilterComponent = (props: FilterComponentProps) => {
                 props?.setFilters(prev => ({
                     ...prev,
                     page: 1,
-                    sortField: "createdDate",
+                    sortField: "UserAuthInfo.createdDate",
                     sortOrder: value === "LATEST" ? "DESC" : "ASC"
                 }))
             }

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, ImageBackground, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { View, Text, ImageBackground, Image, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -17,6 +17,8 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import BackHeader from '@/src/components/back-header';
+import { updateNotificationStatusAPI } from '@/src/services/user/user-service';
+import { UserModel } from '@/src/types/user/user-type';
 const styles = StyleSheet.create({
     amountContainer: {
         padding: wp('5%'),
@@ -42,7 +44,7 @@ const Profile = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { logout } = useAuth()
-    const { userDetails, getUserDetailsUsingID } = useUserStore()
+    const { userDetails, getUserDetailsUsingID,setUserDetails } = useUserStore()
     const { getItem } = useDataStore()
     const navigation = useNavigation<NavigationProp>();
     const showToast = useToastMessage();
@@ -50,25 +52,57 @@ const Profile = () => {
     const [totalAmount, setTotalAmount] = useState(0)
     const [loading, setLoading] = useState(true)
 
-    const options = [
+    const handleNotificationToggle = async (userId: string,value: boolean) => {
+        console.log(userDetails)
+        if(!userId){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "UserID is not found please login again",
+            })
+        }
+        const updateNotificationStatusResponse = await updateNotificationStatusAPI(userId,value)
+        if (!updateNotificationStatusResponse?.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: updateNotificationStatusResponse?.message ?? "Something went wrong",
+            })
+        }
+        const updatedUserDetails={...userDetails,userAuthInfo:{...userDetails?.userAuthInfo,notificationStatus:value}}
+        setUserDetails(updatedUserDetails);
+          
+    }
+
+    const options = useMemo(() => [
         {
             label: "Business Information",
             icon: <Feather name="briefcase" size={wp('6%')} color="#6B7280" />,
-            onPress: () => { navigation.navigate('BusinessDetails') }
+            onPress: () => navigation.navigate('BusinessDetails'),
         },
         {
             label: "Terms & Conditions",
             icon: <Feather name="file-text" size={wp('6%')} color="#8B5CF6" />,
-            onPress: () => { }
+            onPress: () => { }, // Add navigation or modal logic here if needed
         },
         {
-            label: "Privacy Policy",
-            icon: <Feather name="lock" size={wp('6%')} color="#F59E0B" />,
-            onPress: () => { }
+            label: "Notifications",
+            icon: <Feather name="bell" size={wp('6%')} color={isDark ? '#fff' : '#000'} />,
+            rightElement: (
+                <Switch
+                    trackColor={{ false: "#d4d4d4", true: "#8B5CF6" }}
+                    thumbColor="#fafafa"
+                    ios_backgroundColor="#d4d4d4"
+                    value={userDetails?.userAuthInfo?.notificationStatus ?? false}
+                    onValueChange={async (value:boolean)=>{
+                        await handleNotificationToggle(userDetails?.userId ?? '',value)
+                    }}
+                />
+            ),
         },
         {
             label: "Logout",
-            icon: <Feather name="log-out" size={wp('6%')} color="#EF4444" />, // red accent for logout
+            icon: <Feather name="log-out" size={wp('6%')} color="#EF4444" />,
             onPress: async () => {
                 await logout();
                 navigation.dispatch(
@@ -77,9 +111,9 @@ const Profile = () => {
                         routes: [{ name: 'UnauthStack', params: { screen: 'Authentication' } }],
                     })
                 );
-            }
-        }
-    ];
+            },
+        },
+    ], [userDetails]); // ✅ dependencies here
 
     const getInvoiceList = async (userId: string) => {
         if (!userId) {
@@ -177,7 +211,7 @@ const Profile = () => {
                                 Total Amount
                             </Text>
                             <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                 {loading ? "Loading..." : `${userDetails?.currencyIcon} ${totalPaid || 0}`}
+                                {loading ? "Loading..." : `${userDetails?.currencyIcon} ${totalPaid || 0}`}
                             </Text>
                         </View>
 
@@ -223,9 +257,12 @@ const Profile = () => {
                                             <View className='flex flex-row justify-start items-center gap-2'>
                                                 {option.icon}
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.sideHeading]}>{option.label}</Text>
-
                                             </View>
-                                            <Feather name="chevron-right" size={wp('6%')} color={isDark ? "#fff" : "#000"} />
+                                            {option?.rightElement ? (
+                                                option?.rightElement
+                                            ) : (
+                                                <Feather name="chevron-right" size={wp('6%')} color={isDark ? "#fff" : "#000"} />
+                                            )}
 
                                         </View>
                                     </Card>

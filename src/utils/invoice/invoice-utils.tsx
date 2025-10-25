@@ -132,22 +132,21 @@ export const getInvoiceFields = (
                     icon: <Feather name="dollar-sign" size={wp("5%")} color="#10B981" />,
                     html: `<div class="pricing-container">
                   <div class="pricing-row header-row">
-                    <div class="col name heading">Service</div>
-                    <div class="col count heading">Qty</div>
-                    <div class="col price heading">Unit Price</div>
-                    <div class="col total heading">Total</div>
+                    <div class="col name heading">Service Info</div>
+                    <div class="col count heading">Date</div>
+                    <div class="col price heading">Price</div>
                   </div>
-                  ${invoiceDetails?.items
-                            ?.map(
-                                (item) => `
-                        <div class="pricing-row">
-                          <div class="col name">${item?.itemName}</div>
-                          <div class="col count">${item?.quantity}</div>
-                          <div class="col price">₹ ${item?.unitPrice}</div>
-                          <div class="col total">₹ ${item?.totalPaid}</div>
-                        </div>`
-                            )
-                            .join("")}
+                  <div class="pricing-row" style="flex-wrap">
+                  <div 
+                  class="col name" 
+                  style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                >
+                  ${invoiceDetails?.invoiceDescription}
+                </div>
+                
+                    <div class="col count">${invoiceDetails?.invoiceDate}</div>
+                    <div class="col price">${userDetails?.currencyIcon || "$"} ${invoiceDetails?.amountPaid}</div>
+                  </div>
                   <div class="pricing-row grand-total">
                     <div class="col name heading">Grand Total</div>
                     <div class="col count"></div>
@@ -169,7 +168,7 @@ export const getInvoiceFields = (
                     heading: "Terms & Conditions",
                     description: "Payment terms, delivery timeline, rights",
                     icon: <Feather name="file-text" size={wp("5%")} color="#F59E0B" />,
-                    html: `<div class="card"><span>Terms & Conditions:</span> {{terms}}</div>`,
+                    html: `<div class="card"><span>Terms & Conditions:</span>${userDetails?.userBusinessInfo?.termsAndConditions || ""}</div>`,
                     isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "terms"),
                 },
                 {

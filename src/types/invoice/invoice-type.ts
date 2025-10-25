@@ -10,16 +10,16 @@ export interface BillingInfo {
   mobileNumber: string;
 }
 
-export interface InvoiceItem {
-  itemId: string;           // Optional: link to Service/Package
-  itemName: string;
-  itemType:OrderType
-  quantity: number;         // total quantity (e.g., 20)
-  unitPrice: number;        // price per unit
-  total: number;            // quantity * unitPrice
-  quantityPaying: number;     // how many units paid
-  amountPaying: number;        // quantityPaid * unitPrice
-}
+// export interface InvoiceItem {
+//   itemId: string;           // Optional: link to Service/Package
+//   itemName: string;
+//   itemType:OrderType
+//   quantity: number;         // total quantity (e.g., 20)
+//   unitPrice: number;        // price per unit
+//   total: number;            // quantity * unitPrice
+//   quantityPaying: number;     // how many units paid
+//   amountPaying: number;        // quantityPaid * unitPrice
+// }
 
 export interface Invoice {
   invoiceId: string;
@@ -33,5 +33,6 @@ export interface Invoice {
   billingInfo: BillingInfo;
   totalAmount: number;
   amountPaid: number;
+  invoiceDescription: string;
   quotationHtmlInfo?: InvoiceHtmlInfo[]
 }

@@ -11,6 +11,7 @@ import { BarChart } from 'react-native-gifted-charts';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
 import { Divider } from '@/components/ui/divider';
+import { useUserStore } from '@/src/store/user/user-store';
 
 
 const styles = StyleSheet.create({
@@ -32,6 +33,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const [toolTipVisible, setToolTipVisible] = useState(false);
     const [barData, setBarData] = useState<any[]>([]);
+    const { userDetails } = useUserStore()
 
     const getMonthlyTotals = (
         data: any[],
@@ -151,7 +153,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                                 globalStyles.themeTextColor,
                             ]}
                         >
-                            ${props?.invoiceDetails?.reduce((total, item) => total + item.amountPaid, 0)}
+                            {userDetails?.currencyIcon} {props?.invoiceDetails?.reduce((total, item) => total + item.amountPaid, 0)}
                         </Text>
                     </View>
                 </Card>
@@ -183,7 +185,7 @@ const RevenueTrendChart = (props: RevenueTrendChartProps) => {
                                 globalStyles.themeTextColor,
                             ]}
                         >
-                            ${props?.investmentDetails?.reduce((total, item) => total + item.investedAmount, 0)}
+                            {userDetails?.currencyIcon || "$"} {props?.investmentDetails?.reduce((total, item) => total + item.investedAmount, 0)}
                         </Text>
                     </View>
                 </Card>

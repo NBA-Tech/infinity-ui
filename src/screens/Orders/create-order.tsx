@@ -19,7 +19,7 @@ import { CustomerApiResponse, CustomerMetaModel, CustomerModel } from '@/src/typ
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { escapeHtmlForJson, generateRandomString, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
+import { escapeHtmlForJson, formatDate, generateRandomString, generateRandomStringBasedType, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
 import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType, StatusHistory } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
@@ -329,7 +329,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
-                message:"Please fill all the required fields",
+                message: "Please fill all the required fields",
             })
         }
         setCurrStep(currStep + 1)
@@ -386,7 +386,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         `;
 
             const options = {
-                html: buildHtml("1", new Date().toLocaleDateString(), quotationFields),
+                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -422,6 +422,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         if (orderId) {
             saveNewOrder = await updateOrderDetailsAPI(orderDetails);
         } else {
+            orderDetails.createdDate = new Date();
             saveNewOrder = await saveNewOrderAPI(orderDetails);
         }
 
@@ -488,6 +489,12 @@ const CreateOrder = ({ navigation, route }: Props) => {
             const fetchData = async () => {
                 try {
                     setloadingProvider(prev => ({ ...prev, intialLoading: true }));
+                    setOrderDetails((prev) => {
+                        return {
+                            ...prev,
+                            orderId: generateRandomStringBasedType(20, "ORDER"),
+                        }
+                    })
 
                     const userID = await getItem("USERID"); // if async
                     await loadOfferings(userID, showToast);
@@ -512,7 +519,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
         if (orderId) {
             getOrderDetails(orderId)
         }
-
     }, [])
 
     return (
@@ -523,7 +529,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
-                <TemplatePreview html={buildHtml("1", new Date().toLocaleDateString(), quotationFields)} />
+                <TemplatePreview html={buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields)} />
 
             </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
@@ -587,7 +593,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             </View>
 
                             {/* Body */}
-                            <CustomFieldsComponent infoFields={userInfo} cardStyle={{ padding: wp("2%") }} errors={errors}/>
+                            <CustomFieldsComponent infoFields={userInfo} cardStyle={{ padding: wp("2%") }} errors={errors} />
 
                         </Card>
                     )}
@@ -607,7 +613,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             </View>
 
                             {/* Body */}
-                            <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors}/>
+                            <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors} />
                             <View style={{ marginLeft: wp('3%') }}>
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Event Type</Text>
