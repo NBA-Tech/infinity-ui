@@ -22,7 +22,7 @@ import { calculateImprovement, getCurrencySymbol, getUpcomingByTimeframe } from 
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
-import { OrderModel } from '@/src/types/order/order-type';
+import { OrderModel, OrderStatus } from '@/src/types/order/order-type';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import RevenueTrendChart from './components/home-line-chart';
@@ -88,7 +88,7 @@ const Home = () => {
                 icon: <Feather name="calendar" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#EF4444", "#F87171"],
                 isTrending: false,
-                count: getUpcomingByTimeframe(orderDetails, "eventDate", "month")?.length || 0,
+                count: getUpcomingByTimeframe(orderDetails?.filter((item) => item.status !== OrderStatus.PENDING), "eventDate", "month")?.length || 0,
                 tooltip: "Gets the total number of upcoming shoots in theis month",
             },
             deliveredOrders: {
@@ -334,10 +334,10 @@ const Home = () => {
                         </View>
 
                         <View>
-                            <Popularity orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
+                            <Popularity orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
                         </View>
                         <View>
-                            <DeadLines orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
+                            <DeadLines orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
 
                         </View>
                         <View>
@@ -347,7 +347,7 @@ const Home = () => {
                             <Activity />
                         </View>
                         <View>
-                            <HeatmapYear orderDetails={orderDetails} isLoading={loadingProvider.orderLoading} />
+                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
                         </View>
                     </View>
                 </View>

@@ -6,7 +6,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import Feather from 'react-native-vector-icons/Feather';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from 'react-native-modal';
-import { ApiGeneralRespose, FormFields } from '@/src/types/common';
+import { ApiGeneralRespose, FormFields, GlobalStatus } from '@/src/types/common';
 import { Deliverable, OrderModel } from '@/src/types/order/order-type';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { generateRandomString, openInBrowser } from '@/src/utils/utils';
@@ -171,10 +171,6 @@ const Deliverables = (props: DeliverablesProps) => {
         setCurrDeliverable(undefined);
     }
 
-    const handleDeleteConfirmation = async () => {
-
-    }
-
     const handleEdit = async (deliverableId: string) => {
         setCurrDeliverable(props?.orderDetails?.deliverables?.find(deliverable => deliverable?.id === deliverableId));
         setOpen(true);
@@ -183,6 +179,17 @@ const Deliverables = (props: DeliverablesProps) => {
     const handleDelete = async (deliverableId: string) => {
         setDeleteConfirmation(true);
         setDeleteId(deliverableId);
+    }
+
+    const verifyAndOpenAddModal = () => {
+        if(props?.orderDetails?.status==GlobalStatus.PENDING){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please confirm the order before adding Links",
+            })
+        }
+        setOpen(true);
     }
 
     const DeliverabelCardComponent = ({ deliverable }: { deliverable: Deliverable }) => {
@@ -265,7 +272,7 @@ const Deliverables = (props: DeliverablesProps) => {
                                 variant="solid"
                                 action="primary"
                                 style={globalStyles.purpleBackground}
-                                onPress={() => setOpen(true)}
+                                onPress={() => verifyAndOpenAddModal()}
                             >
                                 <Feather name="plus" size={wp('5%')} color={'#fff'} />
                                 <ButtonText style={globalStyles.buttonText}>
@@ -276,7 +283,7 @@ const Deliverables = (props: DeliverablesProps) => {
                         </View>
                     </View>
                     {!props?.orderDetails?.deliverables || props?.orderDetails?.deliverables?.length <= 0 ? (
-                        <EmptyState onAction={() => setOpen(true)}/>
+                        <EmptyState onAction={() => verifyAndOpenAddModal()}/>
                     ) : (
                         <FlatList
                             scrollEnabled={false}

@@ -46,7 +46,9 @@ import { useToastMessage } from "@/src/components/toast/toast-message";
 import {
     ApiGeneralRespose,
     FormFields,
+    GlobalStatus,
     RootStackParamList,
+    SEARCH_MODE,
     SearchQueryRequest,
 } from "@/src/types/common";
 import { BillingInfo, Invoice } from "@/src/types/invoice/invoice-type";
@@ -144,6 +146,10 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             filters: { userId },
             requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle", "status"],
             getAll: true,
+            searchField:"status",
+            searchMode:SEARCH_MODE.EXCLUDE,
+            searchQuery:GlobalStatus.PENDING
+
         };
         const res = await getOrderDataListAPI(filter);
         if (res.success) {

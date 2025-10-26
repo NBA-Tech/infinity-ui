@@ -142,10 +142,10 @@ export const getQuotationFields = (
                                 ?.serviceList?.map(
                                     (service) => `
                                         <div class="pricing-row">
-                                            <div class="col name">${service.name}</div>
-                                            <div class="col count">${service.value}</div>
-                                            <div class="col price">₹ ${findServicePrice(service.id)}</div>
-                                            <div class="col total">₹ ${service.value * (findServicePrice(service.id) ?? 0)}</div>
+                                            <div class="col name">${service?.name}</div>
+                                            <div class="col count">${service?.value}</div>
+                                            <div class="col price">₹ ${service?.price}</div>
+                                            <div class="col total">₹ ${service.value * (service?.price ?? 0)}</div>
                                         </div>
                                         `
                                 )

@@ -169,7 +169,7 @@ const EventDateKeeper = () => {
 
         {/* Row: Date & Time */}
         <View className="mt-3 flex flex-row items-center space-x-4">
-          <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>📅 {item.eventDate}</Text>
+          <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>📅 {item.eventDateString}</Text>
           <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>⏰ {item.eventPriority}</Text>
         </View>
       </View>
@@ -203,7 +203,7 @@ const EventDateKeeper = () => {
 
     setLoadingProvider((prev) => ({ ...prev, deleteLoading: false }));
     resetEvent();
-    const eventSplit = currEventDetails?.eventDate.split('-')
+    const eventSplit = currEventDetails?.eventDateString.split('-')
     await getMonthEvents(Number(eventSplit?.[1]), Number(eventSplit?.[0]));
   }
 
@@ -249,7 +249,7 @@ const EventDateKeeper = () => {
     // Update marked date
     setEventMarkedDate((prev) => ({
       ...prev,
-      [payload?.eventDate]: {
+      [payload?.eventDateString]: {
         customStyles: PRIORITY_STYLES[payload?.eventPriority],
       },
     }));
@@ -273,8 +273,9 @@ const EventDateKeeper = () => {
 
 
   const onDayPress = (day: any) => {
+    const selectedDateObj = new Date(day.dateString);
     setSelectedDate(day.dateString);
-    setCurrEventDetails((prevDetails) => ({ ...prevDetails, eventDate: day.dateString }));
+    setCurrEventDetails((prevDetails) => ({ ...prevDetails, eventDateString: day.dateString, eventDate: selectedDateObj }));
     setOpen(true);
   };
 
@@ -289,8 +290,8 @@ const EventDateKeeper = () => {
     setEventDetails(eventBasedMonthResponse.data)
     setEventMarkedDate(
       eventBasedMonthResponse.data.reduce((acc: any, event: any) => {
-        if (event.eventDate && event.eventPriority) {
-          acc[event.eventDate] = {
+        if (event.eventDateString && event.eventPriority) {
+          acc[event.eventDateString] = {
             customStyles: PRIORITY_STYLES[event.eventPriority] || PRIORITY_STYLES["LOW"]
           };
         }

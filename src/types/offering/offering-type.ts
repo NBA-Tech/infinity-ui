@@ -10,6 +10,11 @@ export enum OFFERINGTYPE {
     PACKAGE = "PACKAGE"
 }
 
+export enum SERVICETYPE{
+    SERVICE = "SERVICE",
+    DELIVERABLE = "DELIVERABLE"
+}
+
 export enum SERVICECATEGORY {
     PORTRAIT="PORTRAIT",
     EVENT="EVENT",
@@ -23,7 +28,7 @@ export interface ServiceInfo{
     name:string;
     value:number;
     price?:number;
-    isCompleted?: boolean
+    serviceType?:SERVICETYPE
 }
 export interface OfferingModel {
     id?: string;
@@ -38,6 +43,7 @@ export interface ServiceModel extends OfferingModel {
     serviceCategory:SERVICECATEGORY;
     icon?: string;
     tags?: string[];
+    serviceType?:SERVICETYPE
 }
 export interface PackageModel extends OfferingModel {
     packageName: string;

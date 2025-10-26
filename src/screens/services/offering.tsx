@@ -14,7 +14,7 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { OFFERINGTYPE, PackageModel, SERVICECATEGORY, ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import { OFFERINGTYPE, PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, STATUS } from '@/src/types/offering/offering-type';
 import { clearState, generateRandomString, patchState, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -78,7 +78,7 @@ const services = () => {
     const { serviceData, packageData, loadOfferings, addService, updateService, addPackage, updatePackage } = useOfferingStore();
     const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
     const [searchText, setSearchText] = useState('');
-    const [activeTab, setActiveTab] = useState('services');
+    const [activeTab, setActiveTab] = useState('offering');
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -111,7 +111,7 @@ const services = () => {
 
 
     const resetActiveDetails = () => {
-        if (activeTab === "services") {
+        if (activeTab === "offering") {
             clearState<ServiceModel>(servieDetails, setServiceDetails, {
                 status: STATUS.ACTIVE,
                 type: OFFERINGTYPE.SERVICE,
@@ -129,7 +129,7 @@ const services = () => {
     const handleEdit = (id: string) => {
         if (id == "") return;
 
-        if (activeTab === "services") {
+        if (activeTab === "offering") {
             const filteredData: ServiceModel = serviceData?.find((item) => item.id === id) as ServiceModel;
             setServiceDetails(filteredData);
         } else {
@@ -212,7 +212,7 @@ const services = () => {
         packageName: {
             key: "packageName",
             label: "Package Name",
-            placeholder: "Enter Package Name",
+            placeholder: "Eg: King Package",
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
@@ -226,7 +226,7 @@ const services = () => {
         description: {
             key: "description",
             label: "Description",
-            placeholder: "Enter Description",
+            placeholder: "Eg: King Package with all services",
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
@@ -240,7 +240,7 @@ const services = () => {
         },
         serviceList: {
             key: "serviceList",
-            label: "Choose Services",
+            label: "Choose Offerings",
             type: "custom",
             isRequired: true,
             customComponent: <CustomServiceAddComponent serviceList={serviceData} onChange={handleServiceChange} value={packageDetails.serviceList} />
@@ -248,7 +248,7 @@ const services = () => {
         packageIcon: {
             key: "packageIcon",
             label: "Package Icon",
-            placeholder: "Enter Package Icon",
+            placeholder: "Eg: Specialized",
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
@@ -277,7 +277,7 @@ const services = () => {
         additionalNotes: {
             key: "additionalNotes",
             label: "Additional Notes (Optional)",
-            placeholder: "Enter Additional Notes",
+            placeholder: "Eg: Additional notes",
             icon: <Feather name="package" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
@@ -326,8 +326,8 @@ const services = () => {
     const serviceInfoFields: FormFields = {
         serviceName: {
             key: "serviceName",
-            label: "Service Name",
-            placeholder: "Enter Service Name",
+            label: "Offering Name",
+            placeholder: "Eg: Photoshoot",
             icon: <Feather name="edit" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             value: servieDetails.serviceName,
@@ -341,7 +341,7 @@ const services = () => {
         description: {
             key: "description",
             label: "Description",
-            placeholder: "Enter Description",
+            placeholder: "Eg: Photoshoot with professional photographer",
             icon: <Feather name="file-text" size={wp('5%')} color="#8B5CF6" />,
             type: "text",
             style: "w-full",
@@ -353,10 +353,25 @@ const services = () => {
                 patchState("", 'description', value, true, setServiceDetails, setErrors)
             }
         },
+        offeringType: {
+            key: "serviceType",
+            label: "Offering Type",
+            placeholder: "Eg: deliverable",
+            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            type: "select",
+            style: "w-full",
+            isRequired: true,
+            isDisabled: false,
+            value: servieDetails?.serviceType,
+            dropDownItems: Object.values(SERVICETYPE).map((item) => { return { label: item, value: item } }),
+            onChange(value: string) {
+                patchState("", 'serviceType', value, true, setServiceDetails, setErrors)
+            }
+        },
         serviceCategory: {
             key: "serviceCategory",
-            label: "Service Category",
-            placeholder: "Select category",
+            label: "Offering Category",
+            placeholder: "Eg: Wedding",
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
@@ -371,7 +386,7 @@ const services = () => {
         price: {
             key: "price",
             label: "Price",
-            placeholder: "Enter Price",
+            placeholder: "Eg: 1000",
             icon: <Feather name="dollar-sign" size={wp('5%')} color="#8B5CF6" />,
             type: "number",
             style: "w-full",
@@ -384,8 +399,8 @@ const services = () => {
         },
         serviceIcon: {
             key: "serviceIcon",
-            label: "Service Icon",
-            placeholder: "Select Icon",
+            label: "Offering Icon",
+            placeholder: "Eg: Specialized",
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
@@ -438,12 +453,11 @@ const services = () => {
     };
 
     const handleSaveService = async () => {
-        const currDetails = activeTab === "services" ? servieDetails : packageDetails
-        const currFields = activeTab === "services" ? serviceInfoFields : packageInfoFields
+        const currDetails = activeTab === "offering" ? servieDetails : packageDetails
+        const currFields = activeTab === "offering" ? serviceInfoFields : packageInfoFields
         const isUpdate = Boolean(currDetails.id)
         let serviceResponse: ApiGeneralRespose;
         let updateServiceResponse: ApiGeneralRespose;
-
 
         const validateInput = validateValues(currDetails, currFields)
         if (!validateInput.success) {
@@ -463,21 +477,11 @@ const services = () => {
             return
         }
         setloadingProvider(activeTab)
-        if (activeTab == "services") {
-            if (isUpdate) {
-                serviceResponse = await updateOfferingServiceAPI(servieDetails)
-            }
-            else {
-                serviceResponse = await addNewServiceAPI(servieDetails)
-            }
+        if (isUpdate) {
+            serviceResponse = await updateOfferingServiceAPI(activeTab === "offering" ? servieDetails : packageDetails)
         }
         else {
-            if (isUpdate) {
-                serviceResponse = await updateOfferingServiceAPI(packageDetails)
-            }
-            else {
-                serviceResponse = await addNewServiceAPI(packageDetails)
-            }
+            serviceResponse = await addNewServiceAPI(activeTab === "offering" ? servieDetails : packageDetails)
         }
         setIsOpen(false)
 
@@ -495,11 +499,11 @@ const services = () => {
                 message: serviceResponse?.message ?? "Successfully created service",
             })
             if (isUpdate) {
-                activeTab === "services" ? updateService(currDetails) : updatePackage(currDetails)
+                activeTab === "offering" ? updateService(currDetails) : updatePackage(currDetails)
             }
             else {
                 currDetails.id = serviceResponse?.data
-                activeTab === "services" ? addService(currDetails) : addPackage(currDetails)
+                activeTab === "offering" ? addService(currDetails) : addPackage(currDetails)
             }
             resetActiveDetails()
         }
@@ -509,7 +513,7 @@ const services = () => {
     const handleSearch = (text: string) => {
         setSearchText(text);
         let filteredData = []
-        if (activeTab == "services") {
+        if (activeTab == "offering") {
             filteredData = serviceData?.filter((item) => item?.serviceName.toLowerCase().includes(text.toLowerCase()));
         }
         else {
@@ -552,11 +556,11 @@ const services = () => {
                         {/* Header */}
                         <View className="flex flex-col items-start mb-4">
                             <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText]}>
-                                {activeTab === "services" ? "Add Services" : "Add Package"}
+                                {activeTab === "offering" ? "Add Offering" : "Add Package"}
                             </Text>
                             <Text style={[globalStyles.themeTextColor, globalStyles.normalText]}>
-                                {activeTab === "services"
-                                    ? "Create Services Details"
+                                {activeTab === "offering"
+                                    ? "Create Offering Details"
                                     : "Create Package Details"}
                             </Text>
                         </View>
@@ -564,7 +568,7 @@ const services = () => {
 
                         <View style={{ marginVertical: hp("1%") }}>
                             <CustomFieldsComponent
-                                infoFields={activeTab === "services" ? serviceInfoFields : packageInfoFields}
+                                infoFields={activeTab === "offering" ? serviceInfoFields : packageInfoFields}
                                 errors={errors}
                                 cardStyle={{ padding: wp('2%') }}
                             />
@@ -607,7 +611,7 @@ const services = () => {
                 <View className={isDark ? "bg-[#000]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
                     <View className='flex-row justify-between items-center'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Services & Package</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Offering & Package</Text>
                             <GradientCard style={{ width: wp('25%') }}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </GradientCard>
@@ -627,7 +631,7 @@ const services = () => {
                             </InputSlot>
                             <InputField
                                 type="text"
-                                placeholder="Search Services/Packages"
+                                placeholder="Search Offering/Packages"
                                 onChangeText={handleSearch}
                             />
 
@@ -635,8 +639,8 @@ const services = () => {
                     </View>
 
                     <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'services' && styles.activeTab]} onPress={() => setActiveTab('services')}>
-                            <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Services</Text>
+                        <TouchableOpacity style={[styles.tabContainer, activeTab === 'offering' && styles.activeTab]} onPress={() => setActiveTab('offering')}>
+                            <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Offerings</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.tabContainer, activeTab === 'packages' && styles.activeTab]} onPress={() => setActiveTab('packages')}>
@@ -649,7 +653,7 @@ const services = () => {
                         <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
                             {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                             (
-                            {activeTab === "services"
+                            {activeTab === "offering"
                                 ? serviceData.length
                                 : packageData.length
                             }
@@ -672,10 +676,10 @@ const services = () => {
                     {/* Loading Skeleton */}
                     {loadingProvider != null && <OfferingCardSkeleton />}
 
-                    {/* Services Tab */}
-                    {!loadingProvider && activeTab === 'services' && (
+                    {/* offering Tab */}
+                    {!loadingProvider && activeTab === 'offering' && (
                         serviceData?.length === 0 ? (
-                            <EmptyState variant='services' onAction={() => setIsOpen(true)} />
+                            <EmptyState variant='offering' onAction={() => setIsOpen(true)} />
                         ) : (
                             <ServiceTab
                                 serviceData={searchText !== '' ? filteredOfferingList : serviceData}

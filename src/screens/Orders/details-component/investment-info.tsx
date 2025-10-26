@@ -7,7 +7,7 @@ import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Modal from "react-native-modal";
 import { CustomFieldsComponent } from "@/src/components/fields-component";
-import { ApiGeneralRespose, FormFields } from "@/src/types/common";
+import { ApiGeneralRespose, FormFields, GlobalStatus } from "@/src/types/common";
 import { InvestmentModel, InvestmentType } from "@/src/types/investment/investment-type";
 import { formatDate, getCurrencySymbol, patchState, validateValues } from "@/src/utils/utils";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
 
 type InvestmentInfoProps = {
     orderId: string
+    orderStatus:GlobalStatus
     investmentDataList: InvestmentModel[]
     setInvestmentDataList: (value: InvestmentModel[]) => void
 }
@@ -226,6 +227,17 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         }
     }, [editCurrId])
 
+    const verifyAndOpenAddModal = () => {
+        if(props?.orderStatus==GlobalStatus.PENDING){
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please confirm the order before adding investments",
+            })
+        }
+        setOpen(true);
+    }
+
     const InvestmentCardComponent = ({ investment }: { investment: InvestmentModel }) => {
         return (
             <Card
@@ -332,7 +344,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                                 variant="solid"
                                 action="primary"
                                 style={globalStyles.purpleBackground}
-                                onPress={() => { setOpen(true) }}
+                                onPress={() =>  {verifyAndOpenAddModal()} }
                             >
                                 <Feather name="plus" size={wp('5%')} color={'#fff'} />
                                 <ButtonText style={globalStyles.buttonText}>
@@ -343,7 +355,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                         </View>
                     </View>
                     {!props?.investmentDataList?.length &&
-                        <EmptyState onAction={() => { setOpen(true) }} />
+                        <EmptyState onAction={() =>  {verifyAndOpenAddModal()} } />
                     }
                     <FlatList
                         scrollEnabled={false}

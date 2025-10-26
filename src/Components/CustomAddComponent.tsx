@@ -6,6 +6,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { StyleContext, ThemeToggleContext } from "../providers/theme/global-style-provider";
+import { ServiceInfo, ServiceModel } from "../types/offering/offering-type";
 
 const styles = StyleSheet.create({
   dropdown: {
@@ -18,26 +19,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("2%"),
   },
 })
-interface Service {
-  id: string;
-  serviceName: string;
-  type: string;
-}
-
-export interface SelectedService {
-  id: string;
-  name: string;
-  value: number;
-}
 
 interface Props {
-  serviceList?: Service[] | null; // allow null/undefined
-  value?: SelectedService[];      // ✅ accept prefilled values
-  onChange?: (selected: SelectedService[]) => void;
+  serviceList?: ServiceModel[] | null; // allow null/undefined
+  value?: ServiceModel[];      // ✅ accept prefilled values
+  onChange?: (selected: ServiceModel[]) => void;
 }
 
 const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = [], onChange }) => {
-  const [rows, setRows] = useState<SelectedService[]>(value);
+  const [rows, setRows] = useState<ServiceModel[]>(value);
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
@@ -52,13 +42,13 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
     const selectedIds = new Set(rows.map((r) => r.id));
     return serviceList
       .filter((s) => !selectedIds.has(s.id))
-      .map((s) => ({ label: s.serviceName, value: s.id }));
+      .map((s) => ({ label: s.serviceName, value: s.id, price: s.price, serviceType: s.serviceType }));
   }, [serviceList, rows]);
 
   const handleAddRow = () => {
     if (!availableServices.length) return;
     const firstOption = availableServices[0];
-    const newRows = [...rows, { id: firstOption.value, name: firstOption.label, value: 1 }];
+    const newRows = [...rows, { id: firstOption.value, name: firstOption.label, value: 1, price: firstOption.price, serviceType: firstOption.serviceType }];
     setRows(newRows);
     onChange?.(newRows);
   };
@@ -72,10 +62,12 @@ const CustomServiceAddComponent: React.FC<Props> = ({ serviceList = [], value = 
           id: service.id,
           name: service.serviceName,
           value: updated[index].value,
+          price: service.price,
+          serviceType: service.serviceType
         };
       }
     } else if (field === "value") {
-      updated[index] = { ...updated[index], value: Number(newValue) || 0 };
+      updated[index] = { ...updated[index], value: Number(newValue) || 0, price: updated[index].price, serviceType: updated[index].serviceType };
     }
     setRows(updated);
     onChange?.(updated);

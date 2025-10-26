@@ -183,6 +183,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             case "deliverables":
                 return <OfferingDetails
                     key={orderDetails?.orderId}
+                    orderStatus={orderDetails?.status}
                     orderId={orderDetails?.orderId}
                     offeringData={orderDetails?.offeringInfo}
                     totalPrice={orderDetails?.totalPrice}
@@ -215,7 +216,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             case "investments":
                 return (
                     <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
-                        <InvestmentInfo orderId={orderDetails?.orderId} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList} />
+                        <InvestmentInfo orderId={orderDetails?.orderId} orderStatus={orderDetails?.status} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList} />
                     </ScrollView>
                 )
             default:

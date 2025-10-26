@@ -5,10 +5,9 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
-import { ServiceInfo } from '@/src/types/offering/offering-type';
-
+import { ServiceInfo } from '@/src/types/order/order-type';
 type ServiceComponentProps = {
   eventType: any;
   index: number;
@@ -57,8 +56,8 @@ const ServiceComponent = ({
     if (checked) {
       // add/replace service
       updatedServices = [
-        ...(offeringInfo.services || []).filter((s) => s.id !== eventType.id),
-        { id: eventType.id, name: eventType.serviceName, value: qty, price: eventType.price,isCompleted: false },
+        ...(offeringInfo?.orderType!=OrderType.PACKAGE && offeringInfo.services || []).filter((s) => s.id !== eventType.id),
+        { id: eventType.id, name: eventType.serviceName, value: qty, price: eventType.price, isCompleted: false, serviceType: eventType?.serviceType },
       ];
     } else {
       // remove service
@@ -69,6 +68,8 @@ const ServiceComponent = ({
       ...offeringInfo,
       orderType: updatedServices.length > 0 ? OrderType.SERVICE : null,
       packageId: undefined,
+      packageName: undefined,
+      packagePrice: undefined,
       services: updatedServices,
     };
 
@@ -102,7 +103,7 @@ const ServiceComponent = ({
   return (
     <CustomCheckBox
       key={index}
-      selectedStyle={{ backgroundColor: isDark? '#064E3B' : '#ECFDF5', borderColor: '#06B6D4' }}
+      selectedStyle={{ backgroundColor: isDark ? '#064E3B' : '#ECFDF5', borderColor: '#06B6D4' }}
       selected={selected}
       onPress={() => handleChange(!selected)}
       styles={{ margin: 0, marginVertical: hp('2%') }}
@@ -133,7 +134,7 @@ const ServiceComponent = ({
               style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
               numberOfLines={1}
             >
-              {eventType?.serviceName}
+              {eventType?.serviceName} ({eventType?.serviceType?.toLowerCase()})
             </Text>
             <Text
               style={[globalStyles.normalTextColor, globalStyles.labelText]}

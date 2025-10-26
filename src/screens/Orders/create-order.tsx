@@ -340,13 +340,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     }
 
     const handleCalculatePrice = (serviceInfo: ServiceInfo[]) => {
-        const totalPrice = serviceInfo.reduce((sum, sel) => {
-            const service = serviceData.find((s) => s.id === sel.id);
-            if (service) {
-                return sum + service.price * sel.value;
-            }
-            return sum;
-        }, 0);
+        const totalPrice = serviceInfo.reduce((total, service) => total + service?.price * service?.value, 0);
         return totalPrice
     }
 
@@ -659,7 +653,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                         <FlatList
                                             horizontal
                                             data={packageData}
-                                            renderItem={({ item }) => <PackageComponent pkg={item} isSelected={item?.id == orderDetails?.offeringInfo?.packageId || false} handleCalculatePrice={handleCalculatePrice} handleCheckboxChange={handleCheckboxChange} handleTotalPriceCharges={handleTotalPriceCharges} />}
+                                            renderItem={({ item }) => <PackageComponent pkg={item} serviceData={serviceData} isSelected={item?.id == orderDetails?.offeringInfo?.packageId || false} handleCalculatePrice={handleCalculatePrice} handleCheckboxChange={handleCheckboxChange} handleTotalPriceCharges={handleTotalPriceCharges} />}
                                             showsHorizontalScrollIndicator={false}
                                             contentContainerStyle={{ paddingBottom: hp('2%') }}
                                             style={{
@@ -702,7 +696,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                         }
                                         <FlatList
                                             data={serviceData}
-                                            renderItem={({ item, index }) => <ServiceComponent eventType={item} index={index} offeringInfo={orderDetails?.offeringInfo} selectedElement={orderDetails?.offeringInfo?.services?.find((s) => s.id === item.id)} handleTotalPriceCharges={handleTotalPriceCharges} handleCheckboxChange={handleCheckboxChange} />}
+                                            renderItem={({ item, index }) => <ServiceComponent eventType={item} index={index} offeringInfo={orderDetails?.offeringInfo} selectedElement={orderDetails?.offeringInfo?.orderType == OrderType.SERVICE && orderDetails?.offeringInfo?.services?.find((s) => s.id === item.id)} handleTotalPriceCharges={handleTotalPriceCharges} handleCheckboxChange={handleCheckboxChange} />}
                                         />
                                     </View>
                                 </View>

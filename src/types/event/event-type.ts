@@ -8,8 +8,9 @@ export interface EventModel {
   createdDate?: Date;      // Date in ISO string (e.g., "2025-10-05T00:00:00.000Z")
   eventTitle: string;
   eventDescription: string;
-  eventDate: string;        // stored as string in your Java model
+  eventDateString: string;        // stored as string in your Java model
   eventPriority: EventPriority;
+  eventDate:Date;
 }
 
 type PriorityStyles = {

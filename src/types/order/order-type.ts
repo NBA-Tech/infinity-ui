@@ -1,7 +1,8 @@
 
 // Order Basic Info
 
-import { ServiceInfo } from "../offering/offering-type";
+import { SERVICETYPE } from "../offering/offering-type";
+
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -19,6 +20,15 @@ export enum OrderType {
 export interface QuotaionHtmlInfo{
   key:string;
   section:string;
+}
+
+export interface ServiceInfo{
+  id:string;
+  name:string;
+  value:number;
+  price?:number;
+  isCompleted?: boolean
+  serviceType?:SERVICETYPE
 }
 
 export interface Deliverable {

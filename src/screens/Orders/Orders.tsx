@@ -227,7 +227,7 @@ const Orders = () => {
 
                 <FlatList
                     data={orderData ?? []}
-                    style={{ height: hp("60%") }}
+                    style={{ height: hp("65%") }}
                     keyExtractor={(_, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}

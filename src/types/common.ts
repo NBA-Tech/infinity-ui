@@ -70,6 +70,11 @@ export enum SORT_ORDER {
   DESC = "DESC"
 }
 
+export enum SEARCH_MODE {
+  MATCH="MATCH",
+  EXCLUDE="EXCLUDE"
+}
+
 export interface SearchQueryRequest {
   filters?: Object;
   page?: number;
@@ -82,6 +87,7 @@ export interface SearchQueryRequest {
   getAll?: boolean
   dateField?: string
   startDate?: Date
+  searchMode ?:SEARCH_MODE
   endDate?: Date
 
 }
