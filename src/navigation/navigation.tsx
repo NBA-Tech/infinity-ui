@@ -28,6 +28,7 @@ import {
   Profile,
   BusinessDetails,
   Subscription,
+  PaymentGateway,
 } from "../screens";
 import { useSubscription } from "../providers/subscription/subscription-context";
 import SubscriptionLockOverlay from "../components/subscription-overlay";
@@ -187,6 +188,7 @@ export default function Navigation() {
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="UnauthStack" component={UnauthStack} />
         <RootStack.Screen name="Subscription" component={Subscription} />
+        <RootStack.Screen name="PaymentGateway" component={PaymentGateway} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

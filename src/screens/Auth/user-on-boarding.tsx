@@ -232,7 +232,7 @@ const UserOnBoarding = () => {
             icon: <Feather name="map-pin" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
-            isRequired: false,
+            isRequired: true,
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.state ?? "",
             dropDownItems: getStates(businessDetails?.userBillingInfo?.country as string).map((state) => ({

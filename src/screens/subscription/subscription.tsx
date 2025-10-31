@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, Text, ImageBackground, Image, StyleSheet } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
@@ -14,6 +14,11 @@ import { useToastMessage } from "@/src/components/toast/toast-message";
 import { addOrUpdateSubscriptionDetailsAPI } from "@/src/api/subscription/subscription-api-service";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@/src/types/common";
+import { useSubscription } from "@/src/providers/subscription/subscription-context";
+import { PaymentRequestModel } from "@/src/types/payment/payment-request-type";
+import { generateRandomString } from "@/src/utils/utils";
+import { useUserStore } from "@/src/store/user/user-store";
+import { generatePaymentLinkAPI } from "@/src/api/payment/payment-api-service";
 const Subscription = () => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
@@ -21,10 +26,61 @@ const Subscription = () => {
     const { getItem } = useDataStore();
     const showToast = useToastMessage()
     const navigation = useNavigation<NavigationProp>()
+    const { refetchSubscription } = useSubscription()
+    const { userDetails, getUserDetailsUsingID } = useUserStore()
+    const [paymentGatewayDetails, setPaymentGatewayDetails] = useState<any>()
 
 
     const handlePayment = async () => {
         return true
+    }
+
+    const generatePaymentPayload = async () => {
+        const payload: PaymentRequestModel = {
+            linkId: generateRandomString(20),
+            linkAmount: yearly ? 99 : 9,
+            linkCurrency: "INR",
+            linkPurpose: "Subscription Payment",
+            linkExpiryTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
+            linkAutoReminders: true,
+            linkPartialPayments: false,
+            linkMinimumPartialAmount: 0,
+            linkNotify: {
+                send_email: true,
+                send_sms: true
+            },
+            linkMeta: {
+                notify_url: "https://ee08e626ecd88c61c85f5c69c0418cb5.m.pipedream.net",
+                return_url: "https://www.cashfree.com/devstudio/thankyou",
+            },
+            customerDetails: {
+                customer_email: userDetails?.userAuthInfo?.email,
+                customer_name: userDetails?.userAuthInfo?.username,
+                customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber
+            }
+        }
+        return payload
+    }
+
+    const updateSubscriptionDetails = async (payload: SubscriptionModel) => {
+        const addOrUpdateSubscriptionDetailsResponse = await addOrUpdateSubscriptionDetailsAPI(payload);
+        if (!addOrUpdateSubscriptionDetailsResponse.success) {
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: addOrUpdateSubscriptionDetailsResponse.message,
+            })
+        }
+        showToast({
+            type: "success",
+            title: "Success",
+            message: addOrUpdateSubscriptionDetailsResponse.message,
+        })
+        refetchSubscription()
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "AuthStack", params: { screen: "MainTabs" } }],
+        })
     }
 
 
@@ -43,52 +99,58 @@ const Subscription = () => {
             return
         }
         if (subscription_type == "paid") {
-            const isPaid = await handlePayment()
-            if (isPaid) {
-                payload = {
-                    ...payload,
-                    endDate: yearly ? new Date(new Date().setFullYear(new Date().getFullYear() + 1)) : new Date(new Date().setDate(new Date().getDate() + 30)),
-                    status: SubscriptionStatus.ACTIVE,
-                    planDetails: {
-                        planName: "Premium Plan",
-                        planDescription: yearly ? "1 year premium plan" : "30 days premium plan",
-                        durationInDays: yearly ? 365 : 30,
-                        price: yearly ? 99 : 9
-                    }
-                }
+            const payload = await generatePaymentPayload()
+            console.log(payload);
+            const getPaymentLinkResponse = await generatePaymentLinkAPI(payload)
+            console.log(getPaymentLinkResponse);
+            if (!getPaymentLinkResponse.success) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: getPaymentLinkResponse.message,
+                })
             }
+            return navigation.navigate("PaymentGateway", {
+                paymentData: getPaymentLinkResponse?.data
+            })
+            // if (isPaid) {
+            //     payload = {
+            //         ...payload,
+            //         endDate: yearly ? new Date(new Date().setFullYear(new Date().getFullYear() + 1)) : new Date(new Date().setDate(new Date().getDate() + 30)),
+            //         status: SubscriptionStatus.ACTIVE,
+            //         planDetails: {
+            //             planId: "PREMIUM",
+            //             planName: "Premium Plan",
+            //             planDescription: yearly ? "1 year premium plan" : "30 days premium plan",
+            //             durationInDays: yearly ? 365 : 30,
+            //             price: yearly ? 99 : 9
+            //         }
+            //     }
+            // }
         }
         else if (subscription_type == "free") {
             payload = {
                 ...payload,
                 endDate: new Date(new Date().setDate(new Date().getDate() + 15)),
-                status: SubscriptionStatus.TRIAL,
                 planDetails: {
+                    planId: "FREE",
                     planName: "Free Trial",
                     planDescription: "15 days free trial",
                     durationInDays: 15,
                     price: 0
                 }
             }
+            payload['isTrialUsed'] = true
         }
-        const updateSubscription = await addOrUpdateSubscriptionDetailsAPI(payload)
-        if (!updateSubscription.success) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: updateSubscription.message ?? "Something went wrong"
-            })
-        }
-        showToast({
-            type: "success",
-            title: "Success",
-            message: updateSubscription.message ?? "Successfully subscribed"
-        })
-        navigation.reset({
-            index: 0,
-            routes: [{ name: "AuthStack", params: { screen: "MainTabs" } }],
-        })
+        updateSubscriptionDetails(payload)
+       
     }
+
+    useEffect(() => {
+        const userId = getItem("USERID")
+        getUserDetailsUsingID(userId, showToast)
+    }, [])
+
 
     return (
         <ImageBackground source={Background} resizeMode="cover" style={{ flex: 1 }}>

@@ -7,6 +7,8 @@ import LottieView from 'lottie-react-native';
 import { widthPercentageToDP as wp,heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Button, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '../types/common';
 type Props = {
     children?: ReactNode;
 };
@@ -14,6 +16,7 @@ type Props = {
 const SubscriptionLockOverlay: React.FC<Props> = ({ children }) => {
     const { isSubscribed } = useSubscription();
     const globalStyles = useContext(StyleContext);
+    const navigation = useNavigation<NavigationProp>();
 
     // If subscribed, just render children
     if (isSubscribed) return <>{children}</>;
@@ -37,7 +40,7 @@ const SubscriptionLockOverlay: React.FC<Props> = ({ children }) => {
                         style={[globalStyles.purpleBackground,{marginVertical: hp('2%')}]}
                     >
                         <FontAwesome name="envelope" size={wp("5%")} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>
+                        <ButtonText style={globalStyles.buttonText} onPress={() => navigation.navigate("Subscription")}>
                             Subscribe
                         </ButtonText>
                     </Button>

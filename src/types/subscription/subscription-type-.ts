@@ -7,9 +7,11 @@ export interface SubscriptionModel {
   startDate: Date;
   endDate: Date;
   status: SubscriptionStatus;
+  isTrialUsed: boolean;
 }
 
 export interface Plan {
+  planId: string;
   planName: string;
   planDescription: string;
   durationInDays: number;
@@ -20,5 +22,4 @@ export enum SubscriptionStatus {
   ACTIVE = "ACTIVE",
   EXPIRED = "EXPIRED",
   CANCELLED = "CANCELLED",
-  TRIAL = "TRIAL",
 }

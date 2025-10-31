@@ -71,8 +71,8 @@ export enum SORT_ORDER {
 }
 
 export enum SEARCH_MODE {
-  MATCH="MATCH",
-  EXCLUDE="EXCLUDE"
+  MATCH = "MATCH",
+  EXCLUDE = "EXCLUDE"
 }
 
 export interface SearchQueryRequest {
@@ -87,13 +87,13 @@ export interface SearchQueryRequest {
   getAll?: boolean
   dateField?: string
   startDate?: Date
-  searchMode ?:SEARCH_MODE
+  searchMode?: SEARCH_MODE
   endDate?: Date
 
 }
 
 export interface RootStackParamList extends ParamListBase {
-  OneTimePassword: {authData:AuthModel,otpCode:string};
+  OneTimePassword: { authData: AuthModel, otpCode: string };
   useronboarding: undefined;
   OrderDetails: { orderId: string };
   CreateOrder: { orderId: string };
@@ -102,6 +102,7 @@ export interface RootStackParamList extends ParamListBase {
   CreateInvoice: { invoiceId: string };
   CreateCustomer: { customerID: string };
   CustomerDetails: { customerID: string };
+  PaymentGateway: { paymentData:any }
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

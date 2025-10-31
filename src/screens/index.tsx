@@ -20,3 +20,4 @@ export { default as Success } from './success/success';
 export { default as Authentication } from './auth/authentication';
 export { default as BusinessDetails } from './profile/business-details';
 export { default as Subscription } from './subscription/subscription';
+export { default as PaymentGateway } from './subscription/payment-gateway';

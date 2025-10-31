@@ -69,7 +69,7 @@ const createGlobalStyle = (isDark = false) =>
       flexShrink: 1
     },
     buttonText: {
-      fontSize: scaleFont("1.5%"),
+      fontSize: scaleFont("2%"),
       fontFamily: "Poppins-Regular",
       color: "#fff",
       flexWrap: "wrap",
