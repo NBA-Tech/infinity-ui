@@ -2,7 +2,7 @@ import GradientCard from '@/src/utils/gradient-card';
 import React, { use, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Divider } from '@/components/ui/divider';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
@@ -14,7 +14,7 @@ import { FormFields } from '@/src/types/common';
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { BUSINESSTYPE } from '@/src/constant/constants';
-import { getCountries, getStates, patchState, validateValues } from '@/src/utils/utils';
+import { getCountries, getStates, isValidGST, isValidPAN, patchState, validateValues } from '@/src/utils/utils';
 import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { Country } from 'country-state-city';
@@ -79,14 +79,14 @@ const styles = StyleSheet.create({
 
 const UserOnBoarding = () => {
     const globalStyles = useContext(StyleContext);
-    const {isDark}=useContext(ThemeToggleContext);
+    const { isDark } = useContext(ThemeToggleContext);
     const [currStep, setCurrStep] = useState(0);
     const [headings, setHeadings] = useState(["Company Profile (Basic Info)", "Business Address & Tax Info", "Preferences & Accounting Setup"]);
     const showToast = useToastMessage();
     const { getItem } = useDataStore();
     const navigation = useNavigation<NavigationProp>();
     const { login } = useAuth()
-    const {userDetails,getUserDetailsUsingID}=useUserStore()
+    const { userDetails, getUserDetailsUsingID,resetUserDetails } = useUserStore()
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [businessDetails, setBusinessDetails] = useState<UserModel>({});
@@ -105,7 +105,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBusinessInfo?.companyName ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "companyName", value,true,setBusinessDetails,setErrors);
+                patchState("userBusinessInfo", "companyName", value, true, setBusinessDetails, setErrors);
             },
         },
         businessType: {
@@ -113,7 +113,7 @@ const UserOnBoarding = () => {
             key: "businessType",
             label: "Business Type",
             placeholder: "Eg : IT Services",
-            icon: <Feather name="layers" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
+            icon: <Feather name="layers" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -124,7 +124,7 @@ const UserOnBoarding = () => {
                 value: type,
             })),
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessType", value,true,setBusinessDetails,setErrors);
+                patchState("userBusinessInfo", "businessType", value, true, setBusinessDetails, setErrors);
             },
         },
         businessPhoneNumber: {
@@ -139,7 +139,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBusinessInfo?.businessPhoneNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessPhoneNumber", value,true,setBusinessDetails,setErrors);
+                patchState("userBusinessInfo", "businessPhoneNumber", value, true, setBusinessDetails, setErrors);
             },
         },
         businessEmail: {
@@ -154,7 +154,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBusinessInfo?.businessEmail ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "businessEmail", value,true,setBusinessDetails,setErrors);
+                patchState("userBusinessInfo", "businessEmail", value, true, setBusinessDetails, setErrors);
             },
         },
         websiteURL: {
@@ -169,7 +169,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBusinessInfo?.websiteURL ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "websiteURL", value,true,setBusinessDetails,setErrors);
+                patchState("userBusinessInfo", "websiteURL", value, true, setBusinessDetails, setErrors);
             },
         },
     }), [businessDetails]);
@@ -187,7 +187,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.gstNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "gstNumber", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "gstNumber", value, false, setBusinessDetails, setErrors);
             },
         },
         panNumber: {
@@ -202,7 +202,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.panNumber ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "panNumber", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "panNumber", value, false, setBusinessDetails, setErrors);
             },
         },
         country: {
@@ -210,7 +210,7 @@ const UserOnBoarding = () => {
             key: "country",
             label: "Country",
             placeholder: "Eg : India",
-            icon: <MaterialIcons name="public" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
+            icon: <MaterialIcons name="public" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -221,7 +221,7 @@ const UserOnBoarding = () => {
                 value: country.isoCode,
             })),
             onChange: (value: string) => {
-                patchState("userBillingInfo", "country", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "country", value, true, setBusinessDetails, setErrors);
             },
         },
         state: {
@@ -229,7 +229,7 @@ const UserOnBoarding = () => {
             key: "state",
             label: "State",
             placeholder: "Eg : Maharashtra",
-            icon: <Feather name="map-pin" size={wp("5%")} style={{paddingRight: wp("3%")}} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -240,7 +240,7 @@ const UserOnBoarding = () => {
                 value: state.isoCode,
             })),
             onChange: (value: string) => {
-                patchState("userBillingInfo", "state", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "state", value, true, setBusinessDetails, setErrors);
             },
         },
         city: {
@@ -255,7 +255,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.city ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "city", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "city", value, true, setBusinessDetails, setErrors);
             },
         },
         address: {
@@ -270,7 +270,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.address ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "address", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "address", value, true, setBusinessDetails, setErrors);
             },
         },
         zipCode: {
@@ -285,33 +285,33 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBillingInfo?.zipCode ?? "",
             onChange: (value: string) => {
-                patchState("userBillingInfo", "zipCode", value,true,setBusinessDetails,setErrors);
+                patchState("userBillingInfo", "zipCode", value, true, setBusinessDetails, setErrors);
             },
         },
-    }),[businessDetails]);
+    }), [businessDetails]);
 
 
     // const [formFields, setFormFields] = useState([businessInfoFields, billingInfoFields, settingInfoFields]);
 
     const handleNext = () => {
-        if(!businessDetails?.userBusinessInfo?.companyLogoURL){
+        if (!businessDetails?.userBusinessInfo?.companyLogoURL) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
                 message: "Please upload company logo",
             })
         }
-        if(errors && Object.keys(errors).length > 0){
+        if (errors && Object.keys(errors).length > 0) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
                 message: "Please fix all the errors before proceeding",
             })
         }
-        if(validateValues(businessDetails,businessInfoFields).success){
+        if (validateValues(businessDetails, businessInfoFields).success) {
             setCurrStep(currStep + 1);
         }
-        else{
+        else {
             showToast({
                 type: "warning",
                 title: "Oops!!",
@@ -336,7 +336,7 @@ const UserOnBoarding = () => {
                     type: "success",
                     title: "Success"
                 })
-                patchState('userBusinessInfo', 'companyLogoURL', uploadImage.url,true,setBusinessDetails,setErrors);
+                patchState('userBusinessInfo', 'companyLogoURL', uploadImage.url, true, setBusinessDetails, setErrors);
             }
             else {
                 showToast({
@@ -361,14 +361,14 @@ const UserOnBoarding = () => {
     const handleSubmit = async () => {
         const userId = getItem("USERID")
         const validate = validateValues(businessDetails, billingInfoFields);
-        if(!validate.success){
+        if (!validate.success) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
                 message: validate.message ?? "Please fill all required fields",
             })
         }
-        if(errors && Object.keys(errors).length > 0){
+        if (errors && Object.keys(errors).length > 0) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
@@ -380,6 +380,20 @@ const UserOnBoarding = () => {
                 type: "error",
                 title: "Error",
                 message: "UserID is not found",
+            })
+        }
+        if (!isValidGST(businessDetails?.userBillingInfo?.gstNumber ?? "")) {
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please enter valid GST number",
+            })
+        }
+        if (!isValidPAN(businessDetails?.userBillingInfo?.panNumber ?? "")) {
+            return showToast({
+                type: "warning",
+                title: "Oops!!",
+                message: "Please enter valid PAN number",
             })
         }
         setLoading(true);
@@ -395,6 +409,7 @@ const UserOnBoarding = () => {
                 message: updateBusinessDetails.message ?? "Something went wrong",
             })
         }
+        resetUserDetails();
         setLoading(false);
         sendWelcomeEmailAPI(
             userDetails?.userAuthInfo?.email,
@@ -411,16 +426,16 @@ const UserOnBoarding = () => {
             routes: [{ name: "Subscription" }],
         })
     }
-    
-    useEffect(()=>{
-        const userId=getItem("USERID")
-        getUserDetailsUsingID(userId,showToast);
 
-    },[])
+    useEffect(() => {
+        const userId = getItem("USERID")
+        getUserDetailsUsingID(userId, showToast);
+
+    }, [])
 
 
     return (
-        <View style={[styles.body,globalStyles.appBackground]}>
+        <View style={[styles.body, globalStyles.appBackground]}>
             {/* Header */}
             <View style={styles.headingContainer}>
                 <View className="justify-center items-center">
@@ -465,7 +480,7 @@ const UserOnBoarding = () => {
                                             }
                                         </View>
                                     </GradientCard>
-                                    {index != 1 && <Divider style={[styles.divider,{ backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
+                                    {index != 1 && <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
                             ))}
                         </View>
@@ -511,10 +526,10 @@ const UserOnBoarding = () => {
                             <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
 
                         </ScrollView>
-                        <View style={[styles.fixedButtonContainer,globalStyles.cardShadowEffect]}>
+                        <View style={[styles.fixedButtonContainer, globalStyles.cardShadowEffect]}>
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} isDisabled={currStep == 0 || loading} onPress={() => setCurrStep(currStep - 1)}>
                                 <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor,globalStyles.themeTextColor]}>Prev</ButtonText>
+                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Prev</ButtonText>
                             </Button>
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
                                 {

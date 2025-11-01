@@ -331,7 +331,6 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             addNewCustomerResponse = await updateCustomerAPI(customerDetails)
         }
         else {
-            customerDetails.createdDate = new Date();
             addNewCustomerResponse = await addNewCustomerAPI(customerDetails)
 
         }

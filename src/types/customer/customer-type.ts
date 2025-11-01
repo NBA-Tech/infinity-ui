@@ -22,7 +22,6 @@ export interface CustomerBasicInfo {
   email: string;
   notes?: string;
   gender?: GENDER;
-  createdDate?: Date;
 }
 
 export interface CustomerBillingInfo {
@@ -37,6 +36,7 @@ export interface CustomerModel {
   customerID?: string;
   userId: string;
   createdDate?: Date;
+  updatedDate?: Date;
   leadSource?: LEADSOURCE;
   customerBasicInfo: CustomerBasicInfo;
   customerBillingInfo: CustomerBillingInfo;

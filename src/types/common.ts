@@ -102,7 +102,7 @@ export interface RootStackParamList extends ParamListBase {
   CreateInvoice: { invoiceId: string };
   CreateCustomer: { customerID: string };
   CustomerDetails: { customerID: string };
-  PaymentGateway: { paymentData:any }
+  PaymentGateway: { paymentData:any,successCallBack?:Function };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

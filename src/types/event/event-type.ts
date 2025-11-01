@@ -6,6 +6,7 @@ export interface EventModel {
   eventId: string;          // maps from @Id
   userId: string;
   createdDate?: Date;      // Date in ISO string (e.g., "2025-10-05T00:00:00.000Z")
+  updatedDate?: Date;
   eventTitle: string;
   eventDescription: string;
   eventDateString: string;        // stored as string in your Java model

@@ -67,6 +67,7 @@ export interface OrderModel {
   userId: string;
   orderId?: string;
   createdDate?: Date;
+  updatedDate?: Date;
   status: OrderStatus;
   totalPrice: number;
   updatedDate?: Date;

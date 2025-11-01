@@ -9,6 +9,7 @@ import { Button, ButtonText } from '@/components/ui/button';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '../types/common';
+import Header from './header';
 type Props = {
     children?: ReactNode;
 };
@@ -24,6 +25,7 @@ const SubscriptionLockOverlay: React.FC<Props> = ({ children }) => {
     // Otherwise show overlay
     return (
         <View style={globalStyles.appBackground}>
+            <Header/>
             <View className='flex flex-col items-center justify-center h-full'>
                 <LottieView
                     source={require("../assets/animations/profile_lock.json")}

@@ -356,3 +356,53 @@ export const COUNTRY_CURRENCY_SYMBOLS: Record<string, string> = {
   CW: "ƒ",
   SX: "ƒ",
 };
+
+
+export const PLAN_DETAILS={
+  free:{
+    planId:"FREE",
+    planTitle:"15 days free trial",
+    planName:"Free Plan",
+    planDescription:"15 days free trial",
+    durationInDays:15,
+    price:0,
+    featureList:[
+      "Full feature access",
+      "Unlimited projects",
+      "Unlimited team members",
+    ]
+
+  },
+  premium:{
+    monthly:{
+      planId:"PREMIUM_MONTHLY",
+      planName:"Premium Plan",
+      planTitle:"$10/month",
+      planDescription:"30 days premium plan",
+      durationInDays:30,
+      price:30,
+      featureList:[
+        "Full feature access",
+        "Unlimited users",
+        "Unlimited projects",
+        "Unlimited tasks",
+        "Unlimited team members",
+      ]
+    },
+    yearly:{
+      planId:"PREMIUM_YEARLY",
+      planName:"Premium Plan",
+      planTitle:"$100/year",
+      planDescription:"365 days premium plan",
+      durationInDays:365,
+      price:365,
+      featureList:[
+        "Full feature access",
+        "Unlimited users",
+        "Unlimited projects",
+        "Unlimited tasks",
+        "Unlimited team members",
+      ]
+    }
+  }
+}

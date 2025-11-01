@@ -12,6 +12,7 @@ export interface UserActivity{
     activityType: ACTIVITY_TYPE;
     activityMessage: string;
     createdDate?: Date;
+    updatedDate?: Date;
 }
 
 export interface Notification {

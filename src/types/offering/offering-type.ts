@@ -34,6 +34,7 @@ export interface OfferingModel {
     id?: string;
     customerID: string;
     createdDate?: Date;
+    updatedDate?: Date;
     type: OFFERINGTYPE;
 }
 export interface ServiceModel extends OfferingModel {
