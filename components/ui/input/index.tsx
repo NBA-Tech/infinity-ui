@@ -10,8 +10,8 @@ import {
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
-import { ThemeToggleContext,StyleContext } from '@/src/providers/theme/global-style-provider';
-import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 const SCOPE = 'INPUT';
 
 const UIInput = createInput({
@@ -43,10 +43,10 @@ const inputStyle = tva({
       false: 'bg-white text-black placeholder:text-[#595959] border-[#d1d5db]',
     },
     size: {
-      xl: 'h-16',
-      lg: 'h-12',
-      md: 'h-10',
-      sm: 'h-11',
+      sm: 'h-[3vh]',
+      md: 'h-[4vh]',
+      lg: 'h-[5vh]',
+      xl: 'h-[6vh]',
     },
     variant: {
       underlined:

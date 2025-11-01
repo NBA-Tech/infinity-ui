@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "1037505084112",
-    "project_id": "infinity-e4b84",
-    "storage_bucket": "infinity-e4b84.firebasestorage.app"
+    "project_number": "171687015795",
+    "project_id": "infinity-f5a2c",
+    "storage_bucket": "infinity-f5a2c.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1037505084112:android:e913e01f763f4e780c3cd5",
+        "mobilesdk_app_id": "1:171687015795:android:4f53ececbb84df0f5c4106",
         "android_client_info": {
           "package_name": "com.infinity_app_ui"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1037505084112-fmo9smpf94odvqevrjc3ih6crprmqopt.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.infinity_app_ui",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "1037505084112-9bvd7k0mhga4a5iked3v8q7gvrhbk89m.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBlyBqCW7r-MWkxZ1EhgBjIgzgAqIs8mDg"
+          "current_key": "AIzaSyADFPGc6fkNRmT8UIStT9oC-MvrIEbxnTE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1037505084112-9bvd7k0mhga4a5iked3v8q7gvrhbk89m.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
