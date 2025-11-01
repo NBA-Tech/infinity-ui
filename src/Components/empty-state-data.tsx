@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from
 import LinearGradient from "react-native-linear-gradient";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { scaleFont } from "../styles/global";
 
 const { width } = Dimensions.get("window");
 
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: scaleFont("3.5%"),
     fontFamily: "Poppins-Bold",
     textAlign: "center",
     marginBottom: 12,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#6b7280",
     marginBottom: 24,
-    fontSize: 16,
+    fontSize: scaleFont("2%"),
     lineHeight: 22,
   },
   buttonsContainer: {
@@ -193,8 +194,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "600",
     fontFamily: "Inter-Medium",
+    fontSize: scaleFont("2%"),
   },
   buttonSecondary: {
     alignItems: "center",

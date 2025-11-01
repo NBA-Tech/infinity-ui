@@ -366,7 +366,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         };
         let res;
 
-        if (payload?.invoiceId) {
+        if (invoiceId) {
             res = await updateInvoiceAPI(payload);
         }
         else {

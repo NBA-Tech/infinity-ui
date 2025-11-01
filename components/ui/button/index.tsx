@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useContext } from 'react';
 import { createButton } from '@gluestack-ui/button';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
 import {
@@ -59,11 +59,11 @@ const buttonStyle = tva({
     },
 
     size: {
-      xs: 'px-3.5 h-8',
-      sm: 'px-4 h-9',
+      xs: 'px-3.5 h-12',
+      sm: 'px-4 h-13',
       md: 'px-5 h-10',
-      lg: 'px-6 h-11',
-      xl: 'px-7 h-12',
+      lg: 'px-6 h-10',
+      xl: 'px-7 h-18',
     },
   },
   compoundVariants: [

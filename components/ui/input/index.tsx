@@ -10,8 +10,8 @@ import {
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
-import { ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
-
+import { ThemeToggleContext,StyleContext } from '@/src/providers/theme/global-style-provider';
+import { heightPercentageToDP as hp,widthPercentageToDP as wp } from 'react-native-responsive-screen';
 const SCOPE = 'INPUT';
 
 const UIInput = createInput({
@@ -43,10 +43,10 @@ const inputStyle = tva({
       false: 'bg-white text-black placeholder:text-[#595959] border-[#d1d5db]',
     },
     size: {
-      xl: 'h-12',
-      lg: 'h-11',
+      xl: 'h-16',
+      lg: 'h-12',
       md: 'h-10',
-      sm: 'h-9',
+      sm: 'h-11',
     },
     variant: {
       underlined:
@@ -186,6 +186,7 @@ const InputField = React.forwardRef<
   const themeContext = useContext(ThemeToggleContext) || {};
   const isDark = themeContext.isDark ?? false;
   const { variant: parentVariant, size: parentSize } = useStyleContext(SCOPE);
+  const globalStyles = useContext(StyleContext);
 
   return (
     <UIInput.Input
@@ -196,6 +197,7 @@ const InputField = React.forwardRef<
         parentVariants: { variant: parentVariant, size: parentSize },
         class: className,
       })}
+      style={[globalStyles.labelText]}
     />
   );
 });

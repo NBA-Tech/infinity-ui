@@ -18,6 +18,7 @@ import Feather from "react-native-vector-icons/Feather";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { FormField } from "../types/common";
 import { Chips } from "react-native-material-chips";
+import { scaleFont } from "../styles/global";
 
 // Define interfaces for type safety
 interface CustomFieldsProps {
@@ -80,7 +81,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
         >
             {field.type != "switch" && (
                 <FormControlLabel>
-                    <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                    <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText,{marginBottom: hp("1.2%")}]}>
                         {field.label}
                         {field.isRequired && <Text style={{ color: "red" }}>*</Text>}
                     </FormControlLabelText>
@@ -259,7 +260,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     selectedValues={field.value || []}
                     items={field.dropDownItems || []}
                     itemContainerStyle={{ backgroundColor: "transparent", borderColor: "#EDE9FE", borderWidth: wp("0.4%"), borderRadius: wp("4%"), padding: wp("2%") }}
-                    valueStyle={{ fontSize: 14, color: isDark ? "#fff" : "#000" }}
+                    valueStyle={{ fontSize: scaleFont('2%'), color: isDark ? "#fff" : "#000" }}
                     itemLabelStyle={{ color: isDark ? "#fff" : "#000" }}
                     alertRequired={false}
                     itemLeadingIconContainerStyle={{ backgroundColor: isDark ? "#fff" : "#fff",borderRadius: wp("4%") }}
@@ -282,7 +283,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
             {/* Validation */}
             {field.isRequired && !errors?.[field.key] && (
                 <FormControlHelper>
-                    <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText]}>
+                    <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText,{marginBottom: wp("1%")}]}>
                         This field is required
                     </FormControlHelperText>
                 </FormControlHelper>

@@ -35,7 +35,6 @@ const Subscription = () => {
   const paidPlan = yearly ? PLAN_DETAILS.premium.yearly : PLAN_DETAILS.premium.monthly;
 
   const generatePaymentPayload = async (): Promise<PaymentRequestModel> => {
-    console.log(userDetails)
     const payload: PaymentRequestModel = {
       linkId: generateRandomString(20),
       linkAmount: paidPlan.price,

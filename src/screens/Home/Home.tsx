@@ -228,7 +228,6 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        console.log(userDetails,"fuck")
         if (!userDetails?.currencyIcon) {
             setUserDetails({
                 ...userDetails,

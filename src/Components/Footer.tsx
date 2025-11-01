@@ -27,7 +27,7 @@ const Footer = (props: FooterProps) => {
     const iconsMapping: any = {
         home: {
             active: (
-                <View>
+                <View className='items-center'>
                     <Feather name="home" size={hp("3%")} color="#8B5CF6" />
                     <Divider
                         style={{
@@ -46,7 +46,7 @@ const Footer = (props: FooterProps) => {
         },
         customer: {
             active: (
-                <View>
+                <View className='items-center'>
                     <MaterialCommunityIcons
                         name="account-multiple"
                         size={hp("3%")}
@@ -73,7 +73,7 @@ const Footer = (props: FooterProps) => {
         },
         invoice: {
             active: (
-                <View>
+                <View className='items-center'>
                     <Ionicons name="receipt" size={hp("3%")} color="#8B5CF6" />
                     <Divider
                         style={{
@@ -92,7 +92,7 @@ const Footer = (props: FooterProps) => {
         },
         orders: {
             active: (
-                <View>
+                <View className='items-center'>
                     <MaterialCommunityIcons
                         name="clipboard-text"
                         size={hp("3%")}
@@ -119,7 +119,7 @@ const Footer = (props: FooterProps) => {
         },
         services: {
             active: (
-                <View>
+                <View className='items-center'>
                     <MaterialCommunityIcons
                         name="camera-iris" // updated icon
                         size={hp("3.5%")} // slightly bigger

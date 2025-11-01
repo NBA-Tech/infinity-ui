@@ -338,7 +338,7 @@ const EventDateKeeper = () => {
             }
 
             <Button
-              size="sm"
+              size="lg"
               variant="solid"
               action="primary"
               style={[globalStyles.purpleBackground, { marginVertical: hp('2%') }]}

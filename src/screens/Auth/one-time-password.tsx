@@ -147,7 +147,7 @@ const OneTimePassword = ({ navigation, route }: { navigation: any, route: any })
                         <View style={styles.cardContainer}>
                             <View style={styles.heading}>
                                 <WaveHandIcon />
-                                <Text style={globalStyle.themeTextColor}>OTP Verification</Text>
+                                <Text style={[globalStyle.themeTextColor, globalStyle.heading3Text]}>OTP Verification</Text>
                             </View>
                             <View style={styles.subHeading}>
                                 <Text style={[globalStyle.labelText, globalStyle.themeTextColor]}>

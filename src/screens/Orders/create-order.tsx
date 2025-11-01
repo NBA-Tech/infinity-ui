@@ -85,6 +85,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const { userDetails, getUserDetailsUsingID } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: getItem("USERID") as string,
+        orderId:generateRandomStringBasedType(20,"ORDER"),
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
         status: OrderStatus.PENDING,

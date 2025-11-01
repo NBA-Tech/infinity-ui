@@ -53,7 +53,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(true)
 
     const handleNotificationToggle = async (userId: string,value: boolean) => {
-        console.log(userDetails)
         if(!userId){
             return showToast({
                 type: "error",

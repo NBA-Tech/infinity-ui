@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionModel>();
   const { isInitialized, getItem } = useDataStore();
   const { isAuthenticated } = useAuth();
@@ -35,7 +35,6 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
   const getLicenseDetails = useCallback(async (userId: string) => {
     try {
       const subscriptionDetails = await getSubscriptionDetailsUsingUserIdAPI(userId);
-      console.log("subscriptionDetails", subscriptionDetails);
 
       if (!subscriptionDetails?.success) {
         setIsSubscribed(false);

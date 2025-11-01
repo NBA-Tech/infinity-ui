@@ -1,8 +1,9 @@
 // globalStyle.js
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-const scaleFont = (size: string) => {
+const { width } = Dimensions.get("window");
+export const scaleFont = (size: string) => {
   const scaledWidth = wp(size);
   const scaledHeight = hp(size);
   return scaledWidth > scaledHeight ? scaledWidth : scaledHeight;
@@ -74,6 +75,9 @@ const createGlobalStyle = (isDark = false) =>
       color: "#fff",
       flexWrap: "wrap",
       flexShrink: 1
+    },
+    button: {
+      width: width * 0.6
     },
     underscoreText: {
       fontSize: scaleFont("2%"),
