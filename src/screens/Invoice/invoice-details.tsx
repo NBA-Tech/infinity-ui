@@ -33,6 +33,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
             id: 3,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            onPress:()=>navigation.navigate('CreateInvoice', { invoiceId: invoiceId }),
         }
     ]
 
@@ -70,7 +71,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
                         </View>
                         <View className='flex flex-row justify-between items-center gap-2' style={{ marginVertical: hp('2%') }}>
                             {actionButtons.map((action) => (
-                                <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground}>
+                                <Button size="sm" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
                                     {action.icon}
                                 </Button>
                             ))

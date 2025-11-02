@@ -293,7 +293,7 @@ const Customer = () => {
                     <View style={styles.cardContent}>
                         {/* Left Side (Avatar + Details) */}
                         <View style={styles.leftSection}>
-                            <Avatar size={'lg'} style={{ backgroundColor: '#8B5CF6', transform: [{ scale: 1.2 }] }}>
+                            <Avatar size={'md'} style={{ backgroundColor: '#8B5CF6', transform: [{ scale: 1.2 }] }}>
                                 <AvatarFallbackText style={globalStyles.whiteTextColor}>
                                     {item?.customerBasicInfo?.firstName}
                                 </AvatarFallbackText>

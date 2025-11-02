@@ -154,13 +154,16 @@ const Orders = () => {
     const handleView = (orderId: string) => {
         navigation.navigate("OrderDetails", { orderId: orderId });
     }
+    
 
     useFocusEffect(
         useCallback(() => {
+            console.log()
             const reset = filters?.page === 1;
             getOrderListData(reset);
         }, [filters, refresh])
     );
+    
 
     useEffect(() => {
         const userId = getItem("USERID");
