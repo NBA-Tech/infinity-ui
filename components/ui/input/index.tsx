@@ -197,7 +197,7 @@ const InputField = React.forwardRef<
         parentVariants: { variant: parentVariant, size: parentSize },
         class: className,
       })}
-      style={[globalStyles.labelText]}
+      style={[globalStyles.normalText,globalStyles.normalTextColor]}
     />
   );
 });

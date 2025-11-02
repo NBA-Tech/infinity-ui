@@ -438,7 +438,7 @@ const Customer = () => {
 
                 </View>
                 {loading && (
-                    <CustomerCardSkeleton count={4} />
+                    <CustomerCardSkeleton count={5} />
                 )
                 }
                 {!loading && customerData.length === 0 ? (
@@ -446,7 +446,7 @@ const Customer = () => {
                 ) : (
                     <FlatList
                         data={customerData}
-                        style={{ height: hp("60%") }}
+                        style={{ height: hp("70%") }}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -471,7 +471,7 @@ const Customer = () => {
                             }
                         }}
                         onEndReachedThreshold={0.7}
-                        ListFooterComponent={loadingMore && <CustomerCardSkeleton count={1} />}
+                        ListFooterComponent={loadingMore && <CustomerCardSkeleton count={2} />}
 
                     />
                 )

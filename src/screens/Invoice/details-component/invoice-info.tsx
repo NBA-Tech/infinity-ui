@@ -38,14 +38,14 @@ const InvoiceInfo = (props: InvoiceInfoProps) => {
                                 </View>
                                 <View>
                                     <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Quotation ID</Text>
-                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>#{props?.invoiceDetails?.orderId}</Text>
+                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor,{width:wp('20%')}]}>#{props?.invoiceDetails?.orderId}</Text>
                                 </View>
 
                             </View>
                             <View className='flex flex-row justify-between items-center'>
                                 <View>
                                     <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Invoice ID</Text>
-                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>#{props?.invoiceDetails?.invoiceId}</Text>
+                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor,{width:wp('20%')}]}>#{props?.invoiceDetails?.invoiceId}</Text>
                                 </View>
                                 <View>
                                     <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Invoice Date</Text>

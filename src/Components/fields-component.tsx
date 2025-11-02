@@ -81,7 +81,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
         >
             {field.type != "switch" && (
                 <FormControlLabel>
-                    <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText,{marginBottom: hp("1.2%")}]}>
+                    <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                         {field.label}
                         {field.isRequired && <Text style={{ color: "red" }}>*</Text>}
                     </FormControlLabelText>
@@ -283,7 +283,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
             {/* Validation */}
             {field.isRequired && !errors?.[field.key] && (
                 <FormControlHelper>
-                    <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText,{marginBottom: wp("1%")}]}>
+                    <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText]}>
                         This field is required
                     </FormControlHelperText>
                 </FormControlHelper>

@@ -32,6 +32,7 @@ import { deleteInvoiceAPI, getInvoiceListBasedOnFiltersAPI, getInvoiceMetaInfoDe
 import debounce from "lodash.debounce";
 import FilterComponent from '@/src/components/filter-component';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { useUserStore } from '@/src/store/user/user-store';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -112,6 +113,7 @@ const InvoiceList = () => {
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
     const { triggerReloadInvoices } = useReloadContext();
+    const { userDetails } = useUserStore()
 
 
 
@@ -241,11 +243,11 @@ const InvoiceList = () => {
                     <View className="flex flex-row justify-between gap-3">
                         <View>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>#{item?.invoiceId}</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('20%') }]}>#{item?.invoiceId}</Text>
                         </View>
                         <View>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Quotation ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>#{item?.orderId}</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('20%') }]}>#{item?.orderId}</Text>
                         </View>
                     </View>
 
@@ -266,7 +268,7 @@ const InvoiceList = () => {
                     {/* Footer with Amount + Actions */}
                     <View className="flex flex-row justify-between items-center">
                         <View className="flex flex-row items-center gap-2">
-                            <MaterialIcons name="attach-money" size={wp('5%')} color="#22C55E" />
+                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{userDetails?.currencyIcon ?? "$"}</Text>
                             <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{item?.amountPaid ?? 0}</Text>
                         </View>
 

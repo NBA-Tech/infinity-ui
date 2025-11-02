@@ -8,6 +8,7 @@ import { useOfferingStore } from "../store/offering/offering-store";
 import { OfferingInfo, OrderType } from "../types/order/order-type";
 import { isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 import { COUNTRY_CURRENCY_SYMBOLS } from "../constant/constants";
+import { SERVICETYPE } from "../types/offering/offering-type";
 
 
 export const getCountries = (): ICountry[] => {
@@ -365,15 +366,36 @@ export const getNextStatus = (status: GlobalStatus) => {
   return GLOBALSTATUS[nextStatus]; // return the object {label, color, icon}
 };
 
-export const getPercentageOfCompletion = (offeringInfo: OfferingInfo): number => {
-  if (offeringInfo?.orderType == OrderType.PACKAGE) {
-    return offeringInfo?.isCompleted ? 100 : 0
+export const getPercentageOfCompletion = (
+  offeringInfo: OfferingInfo
+): { percentage: number; hasDeliverable: boolean } => {
+  if (offeringInfo?.orderType === OrderType.PACKAGE) {
+    return {
+      percentage: offeringInfo?.isCompleted ? 100 : 0,
+      hasDeliverable: true,
+    };
   }
-  else {
-    const completedServicesCount = offeringInfo?.services?.filter((service) => service?.isCompleted)?.length ?? 0;
-    return Math.floor((completedServicesCount / (offeringInfo?.services?.length ?? 1)) * 100);
+
+  const deliverableServices =
+    offeringInfo?.services?.filter(
+      (s) => s?.serviceType === SERVICETYPE.DELIVERABLE
+    ) ?? [];
+
+  if (deliverableServices.length === 0) {
+    return { percentage: 0, hasDeliverable: false };
   }
-}
+
+  const completedDeliverables = deliverableServices.filter(
+    (s) => s?.isCompleted
+  ).length;
+
+  const percentage = Math.floor(
+    (completedDeliverables / deliverableServices.length) * 100
+  );
+
+  return { percentage, hasDeliverable: true };
+};
+
 
 type Period = "year" | "month" | "week";
 

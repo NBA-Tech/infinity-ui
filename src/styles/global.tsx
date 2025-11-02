@@ -102,10 +102,7 @@ const createGlobalStyle = (isDark = false) =>
       borderColor: "#8B5CF6",
     },
     transparentBackground: {
-      backgroundColor: isDark ? "#1E1E2A" : "#fff",
-      borderRadius: wp("2%"),
-      borderWidth: wp("0.5%"),
-      borderColor: isDark ? "#374151" : "#d1d5db",
+      backgroundColor: "transparent",
     },
     appBackground: { flex: 1, backgroundColor: isDark ? "#1E1E2A" : "#F3F4F6" },
 
