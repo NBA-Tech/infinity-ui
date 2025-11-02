@@ -36,7 +36,7 @@ cssInterop(PrimitiveIcon, {
 
 // ------------------------- TVA STYLES -------------------------
 const inputStyle = tva({
-  base: 'border flex-row items-center overflow-hidden content-center rounded-lg px-3 font-inter',
+  base: 'border flex-row items-center overflow-hidden flex-nowrap flex-shrink-0 content-center rounded-lg px-3 font-inter',
   variants: {
     isDark: {
       true: 'bg-[#1f2937] text-white placeholder:text-[#aaa] border-[#374151]',

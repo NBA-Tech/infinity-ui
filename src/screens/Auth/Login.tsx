@@ -144,7 +144,7 @@ const Login = ({ setCurrScreen }: any) => {
                             </InputSlot>
                             <InputField
                                 onChangeText={(text) => userLoginRefs.current[field?.key] = text}
-                                type={field?.type}
+                                type={field.type === 'password' && showPassword ? "text" : field?.type}
                                 placeholder={field?.placeholder}
                                 keyboardType={
                                     field?.type === "number"

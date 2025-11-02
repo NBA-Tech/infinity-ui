@@ -304,7 +304,7 @@ const Register = ({ setCurrScreen }: any) => {
                         <ButtonText style={globalStyles.buttonText}>
                             {loadingProvider == "email"
                                 ? "Signing Up...."
-                                : "Sign Up with Email"}
+                                : "Sign Up"}
                         </ButtonText>
                     </Button>
 

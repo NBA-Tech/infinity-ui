@@ -238,7 +238,7 @@ const InvoiceList = () => {
                     </View>
 
                     {/* Details */}
-                    <View className="flex flex-row justify-between">
+                    <View className="flex flex-row justify-between gap-3">
                         <View>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
                             <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>#{item?.invoiceId}</Text>

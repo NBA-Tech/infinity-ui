@@ -1,13 +1,14 @@
 // globalStyle.js
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, PixelRatio, StyleSheet } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-const { width } = Dimensions.get("window");
-export const scaleFont = (size: string) => {
-  const widthScaled = wp(size);
-  const heightScaled = hp(size);
-  // Weighted average (height gets slightly more weight)
-  return (widthScaled * 0.4 + heightScaled * 0.6);
+const {  width: SCREEN_WIDTH } = Dimensions.get("window");
+const BASE_WIDTH = 390;
+
+export const scaleFont = (size: number) => {
+const scale = SCREEN_WIDTH / BASE_WIDTH;
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
 const createGlobalStyle = (isDark = false) =>
@@ -23,69 +24,69 @@ const createGlobalStyle = (isDark = false) =>
 
     // text styles
     headingText: {
-      fontSize: scaleFont("4%"),
+      fontSize: scaleFont(22),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     heading2Text: {
-      fontSize: scaleFont("3.2%"),
+      fontSize: scaleFont(18),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     sideHeading: {
-      fontSize: scaleFont("2.5%"),
+      fontSize: scaleFont(18),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     heading3Text: {
-      fontSize: scaleFont("2.3%"),
+      fontSize: scaleFont(16),
       fontFamily: "Poppins-SemiBold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     subHeadingText: {
-      fontSize: scaleFont("2.4%"),
+      fontSize: scaleFont(17),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     labelText: {
-      fontSize: scaleFont("1.9%"),
+      fontSize: scaleFont(13),
       fontFamily: "Inter-Medium",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     normalText: {
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont(14),
       fontFamily: "Inter-Regular",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     normalBoldText: {
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont(14),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     buttonText: {
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont(14),
       fontFamily: "Poppins-Regular",
       color: "#fff",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     underscoreText: {
-      fontSize: scaleFont("1.9%"),
+      fontSize: scaleFont(13),
       fontFamily: "Inter-Medium",
       textDecorationLine: "underline",
       flexWrap: "wrap",
       flexShrink: 1,
     },
     smallText: {
-      fontSize: scaleFont("1.6%"),
+      fontSize: scaleFont(12),
       fontFamily: "Inter-Regular",
       flexWrap: "wrap",
       flexShrink: 1,
