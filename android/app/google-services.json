@@ -12,7 +12,12 @@
           "package_name": "com.infinity_app_ui"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "171687015795-9rmpn6dp4rj6ahjpktb6cr463455o858.apps.googleusercontent.com",
+          "client_type": 1
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyADFPGc6fkNRmT8UIStT9oC-MvrIEbxnTE"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171687015795-9rmpn6dp4rj6ahjpktb6cr463455o858.apps.googleusercontent.com",
+              "client_type": 1
+            }
+          ]
         }
       }
     }

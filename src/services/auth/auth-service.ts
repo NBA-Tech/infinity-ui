@@ -1,6 +1,7 @@
 // authService.ts
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { WEB_CLIENT_ID } from '@/src/config/app-config';
 
 export interface AuthResult {
   user?: FirebaseAuthTypes.User;
@@ -9,7 +10,7 @@ export interface AuthResult {
 }
 
 const GOOGLE_SIGNIN_CONFIG = {
-  webClientId: '1037505084112-9bvd7k0mhga4a5iked3v8q7gvrhbk89m.apps.googleusercontent.com',
+  webClientId: WEB_CLIENT_ID,
   offlineAccess: true,
   scopes: ['profile', 'email'], 
 };

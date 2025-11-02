@@ -295,7 +295,7 @@ const UserOnBoarding = () => {
 
     const handleNext = () => {
         if (!businessDetails?.userBusinessInfo?.companyLogoURL) {
-            return showToast({
+            showToast({
                 type: "warning",
                 title: "Oops!!",
                 message: "Please upload company logo",

@@ -4,9 +4,10 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 
 const { width } = Dimensions.get("window");
 export const scaleFont = (size: string) => {
-  const scaledWidth = wp(size);
-  const scaledHeight = hp(size);
-  return scaledWidth > scaledHeight ? scaledWidth : scaledHeight;
+  const widthScaled = wp(size);
+  const heightScaled = hp(size);
+  // Weighted average (height gets slightly more weight)
+  return (widthScaled * 0.4 + heightScaled * 0.6);
 };
 
 const createGlobalStyle = (isDark = false) =>
@@ -22,76 +23,74 @@ const createGlobalStyle = (isDark = false) =>
 
     // text styles
     headingText: {
-      fontSize: scaleFont("3.5%"),
+      fontSize: scaleFont("4%"),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     heading2Text: {
-      fontSize: scaleFont("3%"),
+      fontSize: scaleFont("3.2%"),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     sideHeading: {
-      fontSize: scaleFont("2.2%"),
+      fontSize: scaleFont("2.5%"),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     heading3Text: {
       fontSize: scaleFont("2.3%"),
       fontFamily: "Poppins-SemiBold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     subHeadingText: {
-      fontSize: scaleFont("2.5%"),
+      fontSize: scaleFont("2.4%"),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     labelText: {
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont("1.9%"),
       fontFamily: "Inter-Medium",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     normalText: {
       fontSize: scaleFont("2%"),
       fontFamily: "Inter-Regular",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     normalBoldText: {
-      fontSize: scaleFont("1.8%"),
+      fontSize: scaleFont("2%"),
       fontFamily: "Poppins-Bold",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     buttonText: {
       fontSize: scaleFont("2%"),
       fontFamily: "Poppins-Regular",
       color: "#fff",
       flexWrap: "wrap",
-      flexShrink: 1
-    },
-    button: {
-      width: width * 0.6
+      flexShrink: 1,
     },
     underscoreText: {
-      fontSize: scaleFont("2%"),
+      fontSize: scaleFont("1.9%"),
       fontFamily: "Inter-Medium",
       textDecorationLine: "underline",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
     smallText: {
-      fontSize: scaleFont("1.5%"),
+      fontSize: scaleFont("1.6%"),
       fontFamily: "Inter-Regular",
       flexWrap: "wrap",
-      flexShrink: 1
+      flexShrink: 1,
     },
+    
 
 
     // background
@@ -138,7 +137,7 @@ const createGlobalStyle = (isDark = false) =>
       height: hp('5.2%'),
       borderRadius: wp('1%'),
       paddingHorizontal: wp('2%'),
-      fontSize: scaleFont("1.8%"),
+      fontSize: scaleFont("1.3%"),
       color: isDark ? "#E5E7EB" : "#2a2a2a",
       width: wp('80%'),
       fontFamily: "Inter-Regular",
