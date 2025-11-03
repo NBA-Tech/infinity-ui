@@ -371,7 +371,7 @@ const InvoiceList = () => {
 
                 </View>
                 {loading && (
-                    <InvoiceCardSkeleton count={4} />
+                    <InvoiceCardSkeleton count={5} />
                 )
                 }
                 {!loading && invoiceData?.length === 0 ? (

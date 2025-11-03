@@ -153,7 +153,8 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         };
         const res = await getOrderDataListAPI(filter);
         if (res.success) {
-            const filteredData = res.data.filter((item: any) => item.status != OrderStatus.CANCELLED || item?.status != OrderStatus.PENDING)
+            console.log(res?.data)
+            const filteredData = res.data.filter((item: any) => (item.status != OrderStatus.CANCELLED || item?.status != OrderStatus.PENDING))
             setOrderInfo(filteredData || [])
         }
 

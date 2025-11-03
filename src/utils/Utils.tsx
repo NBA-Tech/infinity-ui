@@ -183,25 +183,24 @@ export const patchState = (
   isRequired: boolean = true,
   setState: React.Dispatch<React.SetStateAction<any>>,
   setErrors: React.Dispatch<React.SetStateAction<any>>,
-  errorMessage: string = "This field is required"
+  errorMessage: string = "This field is required",
+  validateFn?: (value: any) => string | null // ✅ custom validator (return error message or null)
 ) => {
   setState((prev: any) => {
     let updated;
 
+    // --- Update state ---
     if (!section) {
-      // direct scalar update
       updated = {
         ...prev,
         [key]: value,
       };
     } else if (!key) {
-      // replace the whole object under section
       updated = {
         ...prev,
         [section]: value,
       };
     } else {
-      // nested object update
       updated = {
         ...prev,
         [section]: {
@@ -212,25 +211,32 @@ export const patchState = (
     }
 
     // --- Validation ---
-    if (key && isRequired) {
-      if (
-        value === "" ||
-        value === null ||
-        value === undefined ||
-        Number.isNaN(value) ||
-        value <= 0
-      ) {
-        setErrors((prevErrors: any) => ({
-          ...prevErrors,
-          [key]: errorMessage,
-        }));
-      } else {
-        setErrors((prevErrors: any) => {
-          const { [key]: _, ...rest } = prevErrors;
-          return rest;
-        });
+    setErrors((prevErrors: any) => {
+      let errorMsg: string | null = null;
+
+      if (validateFn) {
+        // ✅ Use custom validation function
+        errorMsg = validateFn(value);
+      } else if (isRequired) {
+        // ✅ Fallback to default check
+        if (
+          value === "" ||
+          value === null ||
+          value === undefined ||
+          Number.isNaN(value) ||
+          value <= 0
+        ) {
+          errorMsg = errorMessage;
+        }
       }
-    }
+
+      if (errorMsg) {
+        return { ...prevErrors, [key]: errorMsg };
+      } else {
+        const { [key]: _, ...rest } = prevErrors;
+        return rest;
+      }
+    });
 
     return updated;
   });

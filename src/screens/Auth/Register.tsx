@@ -173,6 +173,13 @@ const Register = ({ setCurrScreen }: any) => {
             return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
         }
         const hasError = Object.values(errors).some(Boolean);
+        if(userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword){
+            return showToast({
+                type: "error",
+                title: "Error",
+                message: "Password and confirm password do not match",
+            });
+        }
 
         if (hasError) {
             return showToast({

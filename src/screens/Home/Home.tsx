@@ -134,7 +134,7 @@ const Home = () => {
                 tooltip: "Gets the total number of invoices in this month",
             },
         };
-    }, [customerMetaInfoList, orderStatus, orderDetails]);
+    }, [customerMetaInfoList, orderStatus, orderDetails,invoiceDetails]);
 
     const getOrderDetails = async (userId: string) => {
         const payload: SearchQueryRequest = {

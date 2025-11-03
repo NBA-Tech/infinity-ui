@@ -23,7 +23,7 @@ export const getInvoiceFields = (
                     html: `<div>
                 <img src=${userDetails?.userBusinessInfo?.companyLogoURL} width='50%' height='50' alt="Logo" />
               </div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "logo"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "logo" && userDetails?.userBusinessInfo?.companyLogoURL),
                 },
                 {
                     key: "companyName",
@@ -32,7 +32,7 @@ export const getInvoiceFields = (
                     description: "The name of the photography studio or photographer",
                     icon: <Feather name="user" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div style="font-weight:bold;">${userDetails?.userBusinessInfo?.companyName}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "companyName"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "companyName" && userDetails?.userBusinessInfo?.companyName),
                 },
                 {
                     key: "address",
@@ -41,7 +41,7 @@ export const getInvoiceFields = (
                     description: "The official address of the studio/photographer",
                     icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>${userDetails?.userBillingInfo?.address}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "address"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "address" && userDetails?.userBillingInfo?.address),
                 },
                 {
                     key: "contactPhone",
@@ -50,7 +50,7 @@ export const getInvoiceFields = (
                     description: "Primary contact phone number",
                     icon: <Feather name="phone" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>📞 ${userDetails?.userBusinessInfo?.businessPhoneNumber}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactPhone"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactPhone" && userDetails?.userBusinessInfo?.businessPhoneNumber),
                 },
                 {
                     key: "contactEmail",
@@ -59,7 +59,7 @@ export const getInvoiceFields = (
                     description: "Primary contact email address",
                     icon: <Feather name="mail" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>✉️ ${userDetails?.userBusinessInfo?.businessEmail}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactEmail"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactEmail" && userDetails?.userBusinessInfo?.businessEmail),
                 },
                 {
                     key: "contactWebsite",
@@ -68,7 +68,7 @@ export const getInvoiceFields = (
                     description: "Official website link",
                     icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
                     html: `<div>🌐 ${userDetails?.userBusinessInfo?.websiteURL}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactWebsite"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "contactWebsite" && userDetails?.userBusinessInfo?.websiteURL),
                 },
             ],
         },
@@ -84,7 +84,7 @@ export const getInvoiceFields = (
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Client Name:</span>${orderDetails?.customerInfo?.firstName} ${orderDetails?.customerInfo?.lastName}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "clientName"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "clientName" && (orderDetails?.customerInfo?.firstName || orderDetails?.customerInfo?.lastName)),
                 },
                 {
                     key: "eventType",
@@ -93,7 +93,7 @@ export const getInvoiceFields = (
                     description: "Type of event",
                     icon: <Feather name="camera" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Event Type:</span>${orderDetails?.eventInfo?.eventType}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventType"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventType" && orderDetails?.eventInfo?.eventType),
                 },
                 {
                     key: "eventDate",
@@ -102,7 +102,7 @@ export const getInvoiceFields = (
                     description: "Scheduled date and time of the shoot",
                     icon: <Feather name="calendar" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Event Date & Time:</span>${formatDate(orderDetails?.eventInfo?.eventDate)} : ${orderDetails?.eventInfo?.eventTime}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventDate"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventDate" && orderDetails?.eventInfo?.eventDate),
                 },
                 {
                     key: "eventLocation",
@@ -111,7 +111,7 @@ export const getInvoiceFields = (
                     description: "Venue or location of the event",
                     icon: <Feather name="map" size={wp("5%")} color="#10B981" />,
                     html: `<div class="field"><span>Event Location:</span>${orderDetails?.eventInfo?.eventLocation}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventLocation"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "eventLocation" && orderDetails?.eventInfo?.eventLocation),
                 },
                 {
                     key: "packageName",
@@ -123,7 +123,7 @@ export const getInvoiceFields = (
                         invoiceDetails?.items?.[0]?.itemType === OrderType.PACKAGE
                             ? `<div class="field"><span>Package:</span>${invoiceDetails?.items?.[0]?.itemName}</div>`
                             : "",
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "packageName"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "packageName" && invoiceDetails?.items?.[0]?.itemName),
                 },
                 {
                     key: "pricingTable",
@@ -169,7 +169,7 @@ export const getInvoiceFields = (
                     description: "Payment terms, delivery timeline, rights",
                     icon: <Feather name="file-text" size={wp("5%")} color="#F59E0B" />,
                     html: `<div class="card"><span>Terms & Conditions:</span>${userDetails?.userBusinessInfo?.termsAndConditions || ""}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "terms"),
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "terms" && userDetails?.userBusinessInfo?.termsAndConditions),
                 },
                 {
                     key: "signature",

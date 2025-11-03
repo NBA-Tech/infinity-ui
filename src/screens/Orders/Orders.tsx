@@ -158,9 +158,11 @@ const Orders = () => {
 
     useFocusEffect(
         useCallback(() => {
-            console.log()
             const reset = filters?.page === 1;
             getOrderListData(reset);
+            return()=>{
+                setOrderData([]);
+            }
         }, [filters, refresh])
     );
     
@@ -225,7 +227,7 @@ const Orders = () => {
                     </View>
                 </View>
 
-                {loading && <OrderCardSkeleton count={4} />}
+                {loading && <OrderCardSkeleton count={5} />}
                 {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "orders" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 <FlatList

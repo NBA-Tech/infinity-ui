@@ -107,6 +107,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
     const getCustomerNameList = async (userID: string) => {
         const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
+        console.log(metaData)
         setCustomerList(metaData);
     };
 
@@ -482,6 +483,8 @@ const CreateOrder = ({ navigation, route }: Props) => {
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
+                const userID = getItem("USERID");
+                if(!userID) return
                 try {
                     setloadingProvider(prev => ({ ...prev, intialLoading: true }));
                     setOrderDetails((prev) => {
@@ -491,7 +494,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         }
                     })
 
-                    const userID = await getItem("USERID"); // if async
+                    
                     await loadOfferings(userID, showToast);
                     await getUserDetailsUsingID(userID, showToast);
                     await getCustomerNameList(userID);

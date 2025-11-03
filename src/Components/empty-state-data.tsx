@@ -166,18 +166,16 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: scaleFont("3.5%"),
-    fontFamily: "Poppins-Bold",
+    fontSize: scaleFont(18),
     textAlign: "center",
     marginBottom: 12,
     color: "#7c3aed",
   },
   description: {
-    fontFamily: "Inter-Regular",
     textAlign: "center",
     color: "#6b7280",
     marginBottom: 24,
-    fontSize: scaleFont("2%"),
+    fontSize: scaleFont(14),
     lineHeight: 22,
   },
   buttonsContainer: {
@@ -194,8 +192,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontFamily: "Inter-Medium",
-    fontSize: scaleFont("2%"),
+    fontSize: scaleFont(14),
   },
   buttonSecondary: {
     alignItems: "center",
@@ -208,6 +205,5 @@ const styles = StyleSheet.create({
   buttonSecondaryText: {
     color: "#7c3aed",
     fontWeight: "600",
-    fontFamily: "Inter-Medium",
   },
 });

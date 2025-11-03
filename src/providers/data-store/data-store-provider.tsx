@@ -74,7 +74,7 @@ export const DataStoreProvider: React.FC<ProviderProps> = ({
   const clearPersistedData = async () => {
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const appKeys = keys.filter((k) => k.startsWith(baseKey));
+      const appKeys = keys.filter((k) => k !=="IS_NEW_DEVICE" && k.startsWith(baseKey));
   
       if (appKeys.length > 0) {
         await AsyncStorage.multiRemove(appKeys);

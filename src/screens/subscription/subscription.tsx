@@ -29,6 +29,7 @@ const Subscription = () => {
   const navigation = useNavigation<NavigationProp>();
   const { refetchSubscription } = useSubscription();
   const { userDetails, getUserDetailsUsingID } = useUserStore();
+  const [loading, setLoading] = useState(false);
 
   // ✅ Select plans dynamically
   const freePlan = PLAN_DETAILS.free;
@@ -91,6 +92,7 @@ const Subscription = () => {
         message: "UserId not found, please login again.",
       });
     }
+    setLoading(true);
 
     let payload: SubscriptionModel;
 
@@ -104,6 +106,7 @@ const Subscription = () => {
           message: linkResponse.message,
         });
       }
+      setLoading(false);
 
       // ✅ Go to payment page and pass callback for subscription update
       return navigation.navigate("PaymentGateway", {
@@ -125,6 +128,7 @@ const Subscription = () => {
         isTrialUsed: true,
       };
       await updateSubscriptionDetails(payload);
+      setLoading(false);
     }
   };
 
@@ -199,7 +203,7 @@ const Subscription = () => {
               ))}
             </View>
 
-            <Button size="lg" style={{ backgroundColor: "#fff" }} onPress={() => handleSubscription("paid")}>
+            <Button size="lg" style={{ backgroundColor: "#fff" }} onPress={() => handleSubscription("paid")} isDisabled={loading}>
               <ButtonText style={[globalStyles.buttonText, { color: "#7F00FF" }]}>
                 Purchase
               </ButtonText>

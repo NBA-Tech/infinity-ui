@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { getCountries, getStates, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
+import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
@@ -306,80 +306,85 @@ const CreateCustomer = ({ navigation, route }: Props) => {
     }
 
     const handleSubmit = async () => {
-        const basicValidateValues = validateValues(customerDetails, basicInfoFields)
-        const billingValidateValues = validateValues(customerDetails, billingInfoFields)
-        if (!basicValidateValues?.success || !billingValidateValues?.success) {
-            showToast({
-                type: "warning",
-                title: "Oops!!",
-                message: (basicValidateValues?.message ?? billingValidateValues?.message) ?? "Please fill all the required fields",
-            })
-            return
-        }
-        const userId = getItem("USERID")
-        if (!userId) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: "UserID is not found Please Logout and Login again",
-            })
-        }
-        setloadingProvider({ ...loadingProvider, saveLoading: true });
-        customerDetails.userId = userId;
-        let addNewCustomerResponse: ApiGeneralRespose;
-        if (customerID) {
-            addNewCustomerResponse = await updateCustomerAPI(customerDetails)
-        }
-        else {
-            addNewCustomerResponse = await addNewCustomerAPI(customerDetails)
-
-        }
-        if (!addNewCustomerResponse?.success) {
-            showToast({
-                type: "error",
-                title: "Error",
-                message: addNewCustomerResponse?.message ?? "Something went wrong",
-            })
-        }
-        else {
-            showToast({
-                type: "success",
-                title: "Success",
-                message: addNewCustomerResponse?.message ?? "Successfully created customer",
-            })
-            triggerReloadCustomer()
+        try {
+            const basicValidateValues = validateValues(customerDetails, basicInfoFields)
+            const billingValidateValues = validateValues(customerDetails, billingInfoFields)
+            if (!basicValidateValues?.success || !billingValidateValues?.success) {
+                showToast({
+                    type: "warning",
+                    title: "Oops!!",
+                    message: (basicValidateValues?.message ?? billingValidateValues?.message) ?? "Please fill all the required fields",
+                })
+                return
+            }
+            const userId = getItem("USERID")
+            if (!userId) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: "UserID is not found Please Logout and Login again",
+                })
+            }
+            setloadingProvider({ ...loadingProvider, saveLoading: true });
+            customerDetails.userId = userId;
+            let addNewCustomerResponse: ApiGeneralRespose;
             if (customerID) {
-                updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
-                updateCustomerDetailsInfo(customerDetails)
-                const activityPayload: UserActivity = {
-                    userId: userId,
-                    activityType: ACTIVITY_TYPE.INFO,
-                    activityTitle: "Updated Cutomer",
-                    activityMessage: `Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
-                }
-                createNewActivityAPI(activityPayload)
-
+                addNewCustomerResponse = await updateCustomerAPI(customerDetails)
             }
             else {
-                customerDetails.customerID = addNewCustomerResponse.data
-                addCustomerDetailsInfo(customerDetails)
-                updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
-                createNewActivityAPI(({
-                    userId: userId,
-                    activityType: ACTIVITY_TYPE.SUCCESS,
-                    activityTitle: "Created Cutomer",
-                    activityMessage: `Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
-                }))
+                addNewCustomerResponse = await addNewCustomerAPI(customerDetails)
 
             }
+            if (!addNewCustomerResponse?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: addNewCustomerResponse?.message ?? "Something went wrong",
+                })
+            }
+            else {
+                showToast({
+                    type: "success",
+                    title: "Success",
+                    message: addNewCustomerResponse?.message ?? "Successfully created customer",
+                })
+                triggerReloadCustomer()
+                if (customerID) {
+                    updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+                    updateCustomerDetailsInfo(customerDetails)
+                    const activityPayload: UserActivity = {
+                        userId: userId,
+                        activityType: ACTIVITY_TYPE.INFO,
+                        activityTitle: "Updated Cutomer",
+                        activityMessage: `Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                    }
+                    createNewActivityAPI(activityPayload)
+
+                }
+                else {
+                    customerDetails.customerID = addNewCustomerResponse.data
+                    addCustomerDetailsInfo(customerDetails)
+                    updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
+                    createNewActivityAPI(({
+                        userId: userId,
+                        activityType: ACTIVITY_TYPE.SUCCESS,
+                        activityTitle: "Created Cutomer",
+                        activityMessage: `Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                    }))
+
+                }
+                setloadingProvider({ ...loadingProvider, saveLoading: false });
+                navigation.navigate("Success", { text: addNewCustomerResponse?.message ?? "Customer Created Successfully" })
+                setCustomerDetails({
+                    userId: "",
+                    leadSource: undefined,
+                    customerBasicInfo: {} as CustomerBasicInfo,
+                    customerBillingInfo: {} as CustomerBillingInfo
+                } as CustomerModel)
+            }
+        }
+        finally {
             setloadingProvider({ ...loadingProvider, saveLoading: false });
-            navigation.navigate("Success", { text: addNewCustomerResponse?.message ?? "Customer Created Successfully" })
-            setCustomerDetails({
-                userId: "",
-                leadSource: undefined,
-                customerBasicInfo: {} as CustomerBasicInfo,
-                customerBillingInfo: {} as CustomerBillingInfo
-            } as CustomerModel)
         }
     }
 
