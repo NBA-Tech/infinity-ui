@@ -20,6 +20,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const {userDetails}=useUserStore()
+    console.log(props?.orderDetails,"props order details")
 
     const listItems = useMemo(() => {
         return [
@@ -50,6 +51,10 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                     </View>
                 </View>
                 <CustomFieldsComponent infoFields={props.orderForm} cardStyle={{ padding: hp("2%") }} />
+                <Text style={[globalStyles.normalTextColor,globalStyles.smallText]}>
+                    *Note : Pending order will not be listed here
+
+                </Text>
             </Card>
             {props?.orderForm?.orderId?.value && (
                 <Divider />

@@ -25,7 +25,7 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
-        let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
+                let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
              ...templateValueData?.quotationHtmlInfo || [],
         ];
 

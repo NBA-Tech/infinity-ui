@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackHeader from '@/src/components/back-header';
@@ -76,20 +76,22 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const [loadingProvider, setLoadingProvider] = useState({ intialLoading: false, saveLoading: false });
 
 
-    const actionButtons = [
+    const actionButtons = useMemo(() => [
         {
             id: 1,
             label: 'Edit',
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            isVisible: true,
             onPress: () => navigation.navigate("CreateOrder", { orderId: orderDetails?.orderId })
         },
         {
             id: 2,
             label: 'Cancel',
             icon: <Feather name="x" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            isVisible: ![GlobalStatus.COMPLETED, GlobalStatus.DELIVERED].includes(orderDetails?.status),
             onPress: () => handleStatusChange({ key: GlobalStatus.CANCELLED })
         }
-    ]
+    ], [orderDetails]);
 
     const getCustomerNameList = async () => {
         const customerMetaData = getCustomerMetaInfoList();
@@ -167,36 +169,52 @@ const OrderDetails = ({ route, navigation }: Props) => {
     const renderScene = ({ route }: any) => {
         switch (route.key) {
             case "customer":
-                return <CustomerInfo
-                    key={orderDetails?.orderId}
-                    customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
-                    orderBasicInfo={orderDetails?.orderBasicInfo}
-                    isLoading={loadingProvider.intialLoading} />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                        <CustomerInfo
+                            key={orderDetails?.orderId}
+                            customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
+                            orderBasicInfo={orderDetails?.orderBasicInfo}
+                            isLoading={loadingProvider.intialLoading} />
+                    </ScrollView>
+                )
 
             case "event":
-                return <EventInfoCard
-                    key={orderDetails?.orderId}
-                    eventData={orderDetails?.eventInfo}
-                    serviceLength={orderDetails?.offeringInfo?.services?.length}
-                    isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE}
-                    isLoading={loadingProvider.intialLoading} />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                        <EventInfoCard
+                            key={orderDetails?.orderId}
+                            eventData={orderDetails?.eventInfo}
+                            serviceLength={orderDetails?.offeringInfo?.services?.length}
+                            isPackage={orderDetails?.offeringInfo?.orderType === OrderType.PACKAGE}
+                            isLoading={loadingProvider.intialLoading} />
+                    </ScrollView>
+                )
             case "deliverables":
-                return <OfferingDetails
-                    key={orderDetails?.orderId}
-                    orderStatus={orderDetails?.status}
-                    orderId={orderDetails?.orderId}
-                    offeringData={orderDetails?.offeringInfo}
-                    totalPrice={orderDetails?.totalPrice}
-                    isLoading={loadingProvider.intialLoading}
-                    setOrderDetails={setOrderDetails} />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                        <OfferingDetails
+                            key={orderDetails?.orderId}
+                            orderStatus={orderDetails?.status}
+                            orderId={orderDetails?.orderId}
+                            offeringData={orderDetails?.offeringInfo}
+                            totalPrice={orderDetails?.totalPrice}
+                            isLoading={loadingProvider.intialLoading}
+                            setOrderDetails={setOrderDetails} />
+                    </ScrollView>
+                )
             case "quotation":
-                return <QuotationDetails
-                    key={orderDetails?.orderId}
-                    orderDetails={orderDetails}
-                    createdOn={orderDetails?.createdDate}
-                    packageData={packageData}
-                    serviceData={serviceData}
-                    borderColor={"#3B82F6"} />
+                return (
+                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                        <QuotationDetails
+                            key={orderDetails?.orderId}
+                            orderDetails={orderDetails}
+                            createdOn={orderDetails?.createdDate}
+                            packageData={packageData}
+                            serviceData={serviceData}
+                            borderColor={"#3B82F6"} />
+                    </ScrollView>
+                )
             case "invoice":
                 return (
                     <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
@@ -277,7 +295,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                             </TouchableOpacity>
                             <View className="flex flex-col">
                                 <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Order Details</Text>
-                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor,{width:wp('50%')}]}>
                                     Order #{orderDetails?.orderId}
                                 </Text>
                             </View>
@@ -292,10 +310,12 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     </View>
                     <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('2%') }}>
                         {actionButtons.map((action) => (
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
-                                {action.icon}
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
-                            </Button>
+                            action?.isVisible && (
+                                <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
+                                    {action.icon}
+                                    <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
+                                </Button>
+                            )
                         ))
                         }
                     </View>

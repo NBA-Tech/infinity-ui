@@ -102,40 +102,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         intialLoading: false,
     });
 
-    /** ───────────────────────────────
-     * LOAD INITIAL DATA
-     * ───────────────────────────────*/
-    useEffect(() => {
-        const userId = getItem("USERID");
-        if (!userId) return;
-
-        getUserDetailsUsingID(userId, showToast);
-        loadCustomerMetaInfoList(userId);
-        getOrderMetaData(userId);
-    }, []);
-
-    /** ───────────────────────────────
-     * LOAD INVOICE (EDIT MODE)
-     * ───────────────────────────────*/
-    useEffect(() => {
-        if (invoiceId) getInvoiceDetails(invoiceId);
-    }, [invoiceId]);
-
-    /** ───────────────────────────────
-     * WHEN ORDER CHANGES
-     * ───────────────────────────────*/
-    useEffect(() => {
-        if (!invoiceDetails?.orderId) return;
-        getOrderDetails(invoiceDetails.orderId);
-        getInvoiceDetailsList(invoiceDetails.orderId);
-    }, [invoiceDetails?.orderId]);
-
-
-    useFocusEffect(
-        useCallback(() => {
-            setInvoiceDetails({ ...invoiceDetails, invoiceId: generateRandomStringBasedType(20, "INVOICE") });
-        }, [])
-    );
 
 
     /** ───────────────────────────────
@@ -146,9 +112,9 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             filters: { userId },
             requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle", "status"],
             getAll: true,
-            searchField:"status",
-            searchMode:SEARCH_MODE.EXCLUDE,
-            searchQuery:GlobalStatus.PENDING
+            searchField: "status",
+            searchMode: SEARCH_MODE.EXCLUDE,
+            searchQuery: GlobalStatus.PENDING
 
         };
         const res = await getOrderDataListAPI(filter);
@@ -236,6 +202,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         value: order?.orderId || "N/A",
                     })) || [],
                 value: invoiceDetails?.orderId,
+
                 onChange(value: string, label: string) {
                     patchState("", "orderId", value, true, setInvoiceDetails, setErrors);
                     patchState("", "orderName", label, true, setInvoiceDetails, setErrors);
@@ -277,7 +244,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 onChange(value: string) {
                     const numVal = Number(value);
                     if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay) {
-                        return showToast({
+                        showToast({
                             type: "error",
                             title: "Error",
                             message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails.totalAmountCanPay}`,
@@ -335,6 +302,16 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         const form = currStep === 0 ? quotaionForm : paymentForm;
         const validate = validateValues(invoiceDetails, form);
 
+        if (currStep === 1) {
+            if (invoiceDetails?.amountPaid > (orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0)) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails?.totalAmountCanPay || 0}`,
+                });
+            }
+        }
+
         if (!validate?.success || Object.keys(errors).length > 0)
             return showToast({
                 type: "warning",
@@ -344,6 +321,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
         setCurrStep((prev) => Math.min(prev + 1, 2));
     };
+
 
     const handlePrev = () => setCurrStep((prev) => Math.max(prev - 1, 0));
 
@@ -371,7 +349,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             res = await updateInvoiceAPI(payload);
         }
         else {
-            payload.invoiceDate=new Date()
+            payload.invoiceDate = new Date()
             res = await createInvoiceAPI(payload);
         }
         setLoadingProvider((p) => ({ ...p, saveLoading: false }));
@@ -409,7 +387,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
     const handleShareQuotation = async () => {
         try {
-            const html = buildHtml(invoiceDetails?.invoiceId,  formatDate(new Date()), invoiceFields);
+            const html = buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields);
             const pdf = await generatePDF({
                 html,
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle || "Invoice"}`,
@@ -425,6 +403,42 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             console.error("PDF Share Error:", err);
         }
     };
+
+    /** ───────────────────────────────
+ * LOAD INITIAL DATA
+ * ───────────────────────────────*/
+    useEffect(() => {
+        const userId = getItem("USERID");
+        if (!userId) return;
+
+        getUserDetailsUsingID(userId, showToast);
+        loadCustomerMetaInfoList(userId);
+        getOrderMetaData(userId);
+    }, []);
+
+    /** ───────────────────────────────
+     * LOAD INVOICE (EDIT MODE)
+     * ───────────────────────────────*/
+    useEffect(() => {
+        if (invoiceId) getInvoiceDetails(invoiceId);
+    }, [invoiceId]);
+
+    /** ───────────────────────────────
+     * WHEN ORDER CHANGES
+     * ───────────────────────────────*/
+    useEffect(() => {
+        if (!invoiceDetails?.orderId) return;
+        getOrderDetails(invoiceDetails.orderId);
+        getInvoiceDetailsList(invoiceDetails.orderId);
+    }, [invoiceDetails?.orderId]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            setInvoiceDetails({ ...invoiceDetails, invoiceId: generateRandomStringBasedType(20, "INVOICE") });
+        }, [])
+    );
+
 
     /** ───────────────────────────────
      * RENDER
@@ -541,13 +555,21 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                             </View>
                         </View>
 
+
                         <TemplateBuilderComponent
                             quotationFields={invoiceFields}
-                            handleCheckboxChange={(v, m) =>
+                            handleCheckboxChange={(v, m) => {
+                                console.log(m)
                                 patchState(m.parentKey, m.childKey, v, true, setInvoiceDetails, setErrors)
+                            }
                             }
                             templateValueData={invoiceDetails}
                         />
+                        <View className="p-1">
+                            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
+                                *Note You can't select is the value doesn't exists
+                            </Text>
+                        </View>
                     </Card>
                 )}
             </ScrollView>

@@ -170,30 +170,36 @@ export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLoc
       <div class="container">
         
         <!-- Header Section -->
-        <header class="header">
-         ${
-            quotationFields.headerSection.fields.some((f:any) => f.container === "studio-info" && f.isSelected)
-                ? `<div class="studio-info">
-                    ${quotationFields.headerSection.fields
-                    .filter((f:any) => f.container === "studio-info" && f.isSelected)
-                    .map((f:any) => f.html)
-                    .join("")}
-                </div>`
-                : ''
-            }
-
-            ${
-            quotationFields.headerSection.fields.some((f:any) => f.container === "contact-info" && f.isSelected)
-                ? `<div class="contact-info">
-                    ${quotationFields.headerSection.fields
-                    .filter((f:any) => f.container === "contact-info" && f.isSelected)
-                    .map((f:any) => f.html)
-                    .join("")}
-                </div>`
-                : ''
-            }
-
-        </header>
+        ${
+          quotationFields.headerSection.fields.some(
+            (f:any) => 
+              (f.container === "studio-info" || f.container === "contact-info") && f.isSelected
+          )
+            ? `<header class="header">
+                ${
+                  quotationFields.headerSection.fields.some((f:any) => f.container === "studio-info" && f.isSelected)
+                    ? `<div class="studio-info">
+                        ${quotationFields.headerSection.fields
+                          .filter((f:any) => f.container === "studio-info" && f.isSelected)
+                          .map((f:any) => f.html)
+                          .join("")}
+                      </div>`
+                    : ''
+                }
+                ${
+                  quotationFields.headerSection.fields.some((f:any) => f.container === "contact-info" && f.isSelected)
+                    ? `<div class="contact-info">
+                        ${quotationFields.headerSection.fields
+                          .filter((f:any) => f.container === "contact-info" && f.isSelected)
+                          .map((f:any) => f.html)
+                          .join("")}
+                      </div>`
+                    : ''
+                }
+              </header>`
+            : ''
+        }
+        
 
         <!-- Invoice Metadata -->
         <section class="metadata">
