@@ -28,7 +28,19 @@ const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
         borderRadius: wp('2%'),
-    }
+    },
+    circleContainer: {
+        width: wp("14%"),
+        height: wp("14%"),
+        borderRadius: wp("7%"), // perfect circle
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+        elevation: 5,
+    },
 
 })
 
@@ -173,7 +185,7 @@ const Register = ({ setCurrScreen }: any) => {
             return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
         }
         const hasError = Object.values(errors).some(Boolean);
-        if(userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword){
+        if (userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -215,7 +227,7 @@ const Register = ({ setCurrScreen }: any) => {
         const payload: AuthModel = {
             username: authResults?.user?.displayName ?? "",
             email: authResults?.user?.email ?? "",
-            firebaseIdToken: authResults.token,
+            firebaseIdToken: authResults?.token,
             authType: "GOOGLE",
         };
         handleRegister(payload);
@@ -239,7 +251,7 @@ const Register = ({ setCurrScreen }: any) => {
                             </FormControlLabelText>
                         </FormControlLabel>
 
-                        <Input size="lg">
+                        <Input size="lg" variant='rounded'>
                             <InputSlot>
                                 <Feather name={field.icon} size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
@@ -295,12 +307,12 @@ const Register = ({ setCurrScreen }: any) => {
                 ))}
 
                 {/* buttons */}
-                <View style={{ marginVertical: hp("3%") }}>
+                <View style={{ marginVertical: hp("1%") }}>
                     <Button
                         size="lg"
                         variant="solid"
                         action="primary"
-                        style={globalStyles.purpleBackground}
+                        style={globalStyles.buttonColor}
                         onPress={handleEmailRegister}
                         isDisabled={loadingProvider != null}
                     >
@@ -319,32 +331,33 @@ const Register = ({ setCurrScreen }: any) => {
                         <Text
                             style={[
                                 globalStyles.normalTextColor,
-                                { marginVertical: hp("2%") },
+                                { marginVertical: hp("1%") },
                             ]}
                         >
                             ────── OR ──────
                         </Text>
                     </View>
 
-                    <Button
-                        size="lg"
-                        variant="solid"
-                        action="primary"
-                        style={{ backgroundColor: "#DB4437", borderRadius: wp("2%") }}
-                        onPress={handleGoogleRegister}
-                        isDisabled={loadingProvider != null}
-                    >
-                        {loadingProvider === "google" && (
-                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                        )}
-                        <FontAwesome name="google" size={wp("5%")} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>
-                            {loadingProvider === "google"
-                                ? "Signing Up...."
-                                : "Sign Up with Google"}
-                        </ButtonText>
-                    </Button>
-                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
+                    <View className='flex-row justify-center items-center gap-2'>
+                        <View style={[styles.circleContainer, { backgroundColor: "#fff" }]}>
+                            <TouchableOpacity onPress={handleGoogleRegister} disabled={loadingProvider != null}>
+                                <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Facebook */}
+                        <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                            <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
+                        </View>
+
+                        {/* Instagram */}
+                        <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
+                            <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                        </View>
+
+                    </View>
+
+                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
                         <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('login')}>
                             <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>

@@ -30,8 +30,17 @@ const createGlobalStyle = (isDark = false) =>
     themeTextColor: { color: isDark ? "#fff" : "#000" },
     darkBlueTextColor: { color: isDark ? "#E2E8F0" : "#142850" },
     buttonColor: { backgroundColor: "#2C426A" },
+    lightBlueTextColor:{color: isDark ? "#C7D2FE" : "#182D53"},
+    blueTextColor:{color: isDark ? "#3B82F6" : "#3B82F6"},
 
     // text styles (system fonts only)
+    extraLargeText:{
+      fontSize: scaleFont(40),
+      lineHeight: scaleLineHeight(40),
+      fontWeight: 'bold',
+      flexWrap: "wrap",
+      flexShrink: 1,
+    },
     headingText: {
       fontSize: scaleFont(22),
       lineHeight: scaleLineHeight(22),
@@ -121,9 +130,6 @@ const createGlobalStyle = (isDark = false) =>
     },
     transparentBackground: {
       backgroundColor: isDark ? "#1E1E2A" : "#fff",
-      borderRadius: wp("2%"),
-      borderWidth: wp("0.5%"),
-      borderColor: isDark ? "#374151" : "#d1d5db",
     },
     appBackground: {
       flex: 1,

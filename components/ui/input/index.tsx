@@ -39,14 +39,14 @@ const inputStyle = tva({
   base: 'border flex-row items-center overflow-hidden flex-nowrap flex-shrink-0 content-center rounded-lg px-3',
   variants: {
     isDark: {
-      true: 'bg-[#1f2937] text-white placeholder:text-[#aaa] border-[#374151]',
-      false: 'bg-white text-black placeholder:text-[#595959] border-[#d1d5db]',
-    },
+      true: 'bg-[#0E1628] text-[#F5F7FA] placeholder:text-[#94A3B8] border-[#1E293B] focus:border-[#3B82F6] active:border-[#60A5FA]',
+      false: 'bg-[#F5F7FB] text-[#182D53] placeholder:text-[#6B7280] border-[#CBD5E1] focus:border-[#2563EB] active:border-[#3B82F6]',
+    },    
     size: {
       sm: 'h-[3vh]',
       md: 'h-[4vh]',
-      lg: 'h-[5vh]',
-      xl: 'h-[6vh]',
+      lg: 'h-[6vh]',
+      xl: 'h-[7vh]',
     },
     variant: {
       underlined:
@@ -61,15 +61,15 @@ const inputFieldStyle = tva({
   base: 'flex-1 py-0 px-3 h-full ios:leading-[0px]',
   variants: {
     isDark: {
-      true: 'text-white placeholder:text-[#aaa] bg-[#1f2937]',
-      false: 'text-black placeholder:text-[#808080] bg-white',
-    },
+      true: 'text-[#F5F7FA] placeholder:text-[#94A3B8] bg-[#0E1628]  focus:border-[#3B82F6] active:border-[#60A5FA]',
+      false: 'text-[#182D53] placeholder:text-[#6B7280] bg-[#F5F7FB]  focus:border-[#2563EB] active:border-[#3B82F6]',
+    },    
   },
   parentVariants: {
     variant: {
       underlined: 'web:outline-0 px-0',
       outline: 'web:outline-0',
-      rounded: 'web:outline-0 px-4',
+      rounded: 'web:outline-0 px-4  rounded-full',
     },
     size: {
       '2xs': 'text-2xs',
@@ -91,8 +91,8 @@ const inputSlotStyle = tva({
   base: 'justify-center items-center rounded-lg h-16',
   variants: {
     isDark: {
-      true: 'bg-[#1f2937]',
-      false: 'bg-white',
+      true: 'bg-[#0E1628]',
+      false: 'bg-[#F5F7FB]',
     },
   },
 });

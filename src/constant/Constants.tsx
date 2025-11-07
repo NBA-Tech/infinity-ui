@@ -1,59 +1,9 @@
 export const BUSINESSTYPE = [
-  "Consulting",
-  "Information Technology",
-  "Marketing & Advertising",
-  "Legal Services",
-  "Healthcare Services",
-  "Education & Training",
-  "Travel & Tourism",
-  "Real Estate",
-  "Logistics & Transportation",
+  "Wedding Photography",
+  "Studio",
   "Event Management",
-  "Financial Services",
-  "Human Resources / Staffing",
-  "E-commerce",
-  "Grocery Store",
-  "Clothing & Apparel",
-  "Electronics Store",
-  "Pharmacy / Medical Store",
-  "Furniture & Home Decor",
-  "Jewelry & Accessories",
-  "Sports & Fitness Equipment",
-  "Automobile Manufacturing",
-  "Food & Beverage Processing",
-  "Textiles & Garments",
-  "Electronics & Appliances",
-  "Pharmaceuticals",
-  "Construction Materials",
-  "Chemicals & Plastics",
-  "Machinery & Tools",
-  "Restaurant",
-  "Cafe / Bakery",
-  "Hotel / Resort",
-  "Catering Services",
-  "Food Delivery / Cloud Kitchen",
-  "Bars & Breweries",
-  "Farming",
-  "Dairy & Poultry",
-  "Fisheries",
-  "Agro Products / Seeds",
-  "Agro Equipment Supply",
-  "Media & Entertainment",
-  "Film & Production",
-  "Publishing & Printing",
-  "Graphic Design",
-  "Photography & Videography",
-  "Handicrafts & Artisans",
-  "Charity Organization",
-  "NGO / Social Services",
-  "Religious Organization",
-  "Educational Institution",
-  "Government Contractor",
-  "Freelancer / Independent Professional",
-  "Startup / Small Business",
-  "Import / Export",
-  "Wholesale Trade",
-  "Other"
+  "Corporate Event",
+  "BabyShoot/Newborn"
 ];
 export const WORKSTATUS = ["Pending", "Approved", "Rejected", "Cancelled"];
 
@@ -359,7 +309,7 @@ export const COUNTRY_CURRENCY_SYMBOLS: Record<string, string> = {
 
 
 export const PLAN_DETAILS={
-  free:{
+  FREE:{
     planId:"FREE",
     planTitle:"15 days free trial",
     planName:"Free Plan",
@@ -374,11 +324,11 @@ export const PLAN_DETAILS={
 
   },
   premium:{
-    monthly:{
-      planId:"PREMIUM_MONTHLY",
-      planName:"Premium Plan",
+    PREMIUM_YEARLY:{
+      planId:"PREMIUM_YEARLY",
+      planName:"Annual Price",
       planTitle:"$10/month",
-      planDescription:"30 days premium plan",
+      planDescription:"₹2999/year — Gain full access to premium CRM tools and in-depth business insights.",
       durationInDays:30,
       price:30,
       featureList:[
@@ -389,11 +339,11 @@ export const PLAN_DETAILS={
         "Unlimited team members",
       ]
     },
-    yearly:{
-      planId:"PREMIUM_YEARLY",
-      planName:"Premium Plan",
+    PREMIUM_MONTHLY:{
+      planId:"PREMIUM_MONTHLY",
+      planName:"Monthly Price",
       planTitle:"$100/year",
-      planDescription:"365 days premium plan",
+      planDescription:"₹299/month — Access all CRM features designed for photographers.",
       durationInDays:365,
       price:365,
       featureList:[

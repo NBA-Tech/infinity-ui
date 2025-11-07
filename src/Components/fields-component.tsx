@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         width: "auto",
     },
     dropdown: {
-        height: hp("5%"),
+        height: hp("6%"),
         borderWidth: 1,
         borderRadius: wp("1%"),
         paddingHorizontal: wp("2%"),
@@ -94,11 +94,17 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                 <Dropdown
                     style={[
                         styles.dropdown,
-                        { backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#444" : "#ccc" }
+                        {
+                            backgroundColor: isDark ? "#0E1628" : "#F5F7FB", // matches your theme
+                            borderRadius: 9999, // <-- "rounded-full"
+                            paddingHorizontal: 14,
+                            paddingVertical: 10,
+                            borderColor:isDark?"transparent":"#CBD5E1"
+                        },
                     ]}
                     containerStyle={[
                         styles.dropdownContainer,
-                        { backgroundColor: isDark ? "#1E1E28" : "#fff" }
+                        { backgroundColor: isDark ? "#0E1628" : "#F5F7FB" }
                     ]}
                     data={field.dropDownItems || []}
                     search={field?.isSearchable ?? true}
@@ -125,7 +131,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     valueField="value"
                     placeholder={field?.isLoading ? "Loading..." : field.placeholder}
                     searchPlaceholder="Search..."
-                    onChange={(item) => field.onChange?.(item?.value,item?.label)}
+                    onChange={(item) => field.onChange?.(item?.value, item?.label)}
                     renderItem={(item) => (
                         <Text
                             style={[
@@ -133,7 +139,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                                 {
                                     paddingVertical: hp("0.5%"),
                                     color: isDark ? "#E5E7EB" : "#111827",
-                                    backgroundColor: isDark ? "#1E1E28" : "#fff",
+                                    backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
                                 }
                             ]}
                         >
@@ -176,7 +182,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     ]}
                     disabled={field.isDisabled || field?.isLoading}
                 >
-                    <Feather name="calendar" size={wp("5%")} style={{paddingRight: wp("3%")}} color={"#8B5CF6"} />
+                    <Feather name="calendar" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={"#8B5CF6"} />
                     <Text
                         style={[
                             globalStyles.labelText,
@@ -263,10 +269,10 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     valueStyle={{ fontSize: scaleFont('2%'), color: isDark ? "#fff" : "#000" }}
                     itemLabelStyle={{ color: isDark ? "#fff" : "#000" }}
                     alertRequired={false}
-                    itemLeadingIconContainerStyle={{ backgroundColor: isDark ? "#fff" : "#fff",borderRadius: wp("4%") }}
+                    itemLeadingIconContainerStyle={{ backgroundColor: isDark ? "#fff" : "#fff", borderRadius: wp("4%") }}
                     setSelectedValues={field.onChange}
                 />) : (
-                <Input size="lg" isDisabled={field.isDisabled || field?.isLoading} style={field.extraStyles}>
+                <Input size="lg" variant="rounded" isDisabled={field.isDisabled || field?.isLoading} style={field.extraStyles}>
                     <InputSlot>{field.icon}</InputSlot>
                     <InputField
                         type={field.type}
@@ -275,7 +281,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         keyboardType={field.type === "number" ? "numeric" : "default"}
                         onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
                         onBlur={() => field.onBlur?.(field.parentKey || "", field.key)}
-                
+
                     />
                 </Input>
             )}
@@ -304,6 +310,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
 export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomFieldsProps) => {
     const globalStyles = useContext(StyleContext);
     const fieldsArray = Object.values(infoFields) as FormField[];
+    const { isDark } = useContext(ThemeToggleContext);
 
     // Group fields into rows
     const rows: JSX.Element[] = [];
@@ -331,7 +338,7 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
         }
     }
 
-    return <Card style={[styles.cardContainer, { padding: 0 }, cardStyle]}>{rows}</Card>;
+    return <Card style={[styles.cardContainer, { padding: 0, backgroundColor: isDark ? "#1A2238" : "#EEF3FF" }, cardStyle]}>{rows}</Card>;
 };
 
 // CustomCheckBox Component

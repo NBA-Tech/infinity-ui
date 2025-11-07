@@ -25,8 +25,19 @@ const styles = StyleSheet.create({
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
-        marginVertical: hp("1.5%")
-    }
+    },
+    circleContainer: {
+        width: wp("14%"),
+        height: wp("14%"),
+        borderRadius: wp("7%"), // perfect circle
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+        elevation: 5,
+    },
 })
 
 const Login = ({ setCurrScreen }: any) => {
@@ -138,7 +149,7 @@ const Login = ({ setCurrScreen }: any) => {
                         <FormControlLabel>
                             <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{field?.label}</FormControlLabelText>
                         </FormControlLabel>
-                        <Input size='lg'>
+                        <Input size='lg' variant='rounded'>
                             <InputSlot style={{ paddingLeft: wp('2%') }}>
                                 <Feather name={field?.icon} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
@@ -167,31 +178,39 @@ const Login = ({ setCurrScreen }: any) => {
                 ))}
                 <View style={styles.forgotPasswordContainer}>
                     <TouchableOpacity onPress={() => setCurrScreen("forgot")}>
-                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor,globalStyles.subHeadingText]}>Forgot Password?</Text>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor, globalStyles.subHeadingText]}>Forgot Password?</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={{ marginVertical: hp("3%") }}>
+                <View style={{ marginVertical: hp("1%") }}>
                     <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
                         {loadingProvider == "email" && (
                             <ButtonSpinner color={"#fff"} size={wp("4%")} />
                         )
-
                         }
                         <ButtonText style={globalStyles.buttonText}>Sign In</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center'>
-                        <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>
+                        <Text style={[globalStyles.normalTextColor, { marginVertical: hp("1%") }]}>────── OR ──────</Text>
                     </View>
-                    <Button size="lg" variant="solid" action="primary" style={{ backgroundColor: "#DB4437", borderRadius: wp('2%') }} onPress={handleGoogleLogin} isDisabled={loadingProvider != null}>
-                        {loadingProvider == "google" && (
-                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                        )
+                    <View className='flex-row justify-center items-center gap-2'>
+                        <View style={[styles.circleContainer, { backgroundColor: "#fff" }]}>
+                            <TouchableOpacity onPress={handleGoogleLogin} disabled={loadingProvider != null}>
+                                <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
+                            </TouchableOpacity>
+                        </View>
 
-                        }
-                        <FontAwesome name="google" size={wp('5%')} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>Sign In with Google</ButtonText>
-                    </Button>
-                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("2%") }}>
+                        {/* Facebook */}
+                        <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                            <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
+                        </View>
+
+                        {/* Instagram */}
+                        <View style={[styles.circleContainer,{backgroundColor: "#E4405F",}]}>
+                            <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                        </View>
+
+                    </View>
+                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
                         <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
                         <TouchableOpacity onPress={() => setCurrScreen('register')}>
                             <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>

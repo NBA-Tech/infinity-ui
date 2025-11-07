@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     },
     mainAnimation: {
         width: wp("100%"),
-        height: wp("80%"),
+        height: wp("50%"),
     },
 })
 
@@ -46,21 +46,43 @@ const Authentication = () => {
         return (
             <View style={globalStyles.appBackground}>
                 <View style={styles.body}>
+
                     {/* Header */}
                     <View style={styles.headingContainer}>
-                        <View className='justify-center items-center'>
+                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                            {/* Lottie Animation */}
                             <LottieView
                                 source={require('../../assets/animations/login.json')}
                                 autoPlay
                                 loop
                                 style={styles.mainAnimation}
                             />
+
+                            {/* Title below animation */}
+                            <Text
+                                style={[
+                                    globalStyles.headingText,
+                                    globalStyles.themeTextColor,
+                                    {marginTop: hp('1.5%'),},
+                                ]}
+                            >
+                                Sign {currScreen === 'login' ? 'in' : 'up'} to
+                            </Text>
+
+                            <Text
+                                style={[
+                                    globalStyles.headingText,globalStyles.blueTextColor,
+                                    {
+                                        textAlign: 'center',
+                                    },
+                                ]}
+                            >
+                                INFINITY CRM
+                            </Text>
                         </View>
-
-
                     </View>
 
-                    {/* Login Card - Aligned to bottom */}
+                    {/* Login Card */}
                     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                         {currScreen === 'login' ? (
                             <Login setCurrScreen={setCurrScreen} />
@@ -68,12 +90,11 @@ const Authentication = () => {
                             <Register setCurrScreen={setCurrScreen} />
                         ) : (
                             <ForgotPassword setCurrScreen={setCurrScreen} />
-                        )
-
-                        }
+                        )}
                     </View>
                 </View>
             </View>
+
         )
     }
 

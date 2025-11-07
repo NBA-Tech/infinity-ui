@@ -68,9 +68,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    headingContainer: {
-        marginVertical: hp("0.1%")
-    },
     body: {
         flex: 1,
         justifyContent: "space-between"
@@ -86,7 +83,7 @@ const UserOnBoarding = () => {
     const { getItem } = useDataStore();
     const navigation = useNavigation<NavigationProp>();
     const { login } = useAuth()
-    const { userDetails, getUserDetailsUsingID,resetUserDetails } = useUserStore()
+    const { userDetails, getUserDetailsUsingID, resetUserDetails } = useUserStore()
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [businessDetails, setBusinessDetails] = useState<UserModel>({});
@@ -98,7 +95,7 @@ const UserOnBoarding = () => {
             key: "companyName",
             label: "Company Name",
             placeholder: "Eg : ABC Company",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -113,7 +110,7 @@ const UserOnBoarding = () => {
             key: "businessType",
             label: "Business Type",
             placeholder: "Eg : IT Services",
-            icon: <Feather name="layers" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
+            icon: <Feather name="layers" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -132,7 +129,7 @@ const UserOnBoarding = () => {
             key: "businessPhoneNumber",
             label: "Business Phone Number",
             placeholder: "Eg : 1234567890",
-            icon: <Feather name="phone" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="phone" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             isRequired: true,
@@ -147,7 +144,7 @@ const UserOnBoarding = () => {
             key: "businessEmail",
             label: "Business Email",
             placeholder: "Eg : YJy0g@example.com",
-            icon: <Feather name="mail" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="mail" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-full",
             isRequired: true,
@@ -162,7 +159,7 @@ const UserOnBoarding = () => {
             key: "websiteURL",
             label: "Website",
             placeholder: "Eg : https://abc.com (Optional)",
-            icon: <Feather name="globe" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="globe" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -180,7 +177,7 @@ const UserOnBoarding = () => {
             key: "gstNumber",
             label: "GST Number",
             placeholder: "Eg : 1234567890",
-            icon: <Feather name="file" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="file" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -195,7 +192,7 @@ const UserOnBoarding = () => {
             key: "panNumber",
             label: "PAN Number",
             placeholder: "Eg : 1234567890",
-            icon: <Feather name="file-text" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="file-text" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -210,7 +207,7 @@ const UserOnBoarding = () => {
             key: "country",
             label: "Country",
             placeholder: "Eg : India",
-            icon: <MaterialIcons name="public" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
+            icon: <MaterialIcons name="public" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -229,7 +226,7 @@ const UserOnBoarding = () => {
             key: "state",
             label: "State",
             placeholder: "Eg : Maharashtra",
-            icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -248,7 +245,7 @@ const UserOnBoarding = () => {
             key: "city",
             label: "City",
             placeholder: "Eg : Mumbai",
-            icon: <MaterialIcons name="location-city" size={wp('5%')} color="#8B5CF6" />,
+            icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -263,7 +260,7 @@ const UserOnBoarding = () => {
             key: "address",
             label: "Address",
             placeholder: "Eg : 123 Street, Mumbai",
-            icon: <Feather name="home" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="home" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -278,7 +275,7 @@ const UserOnBoarding = () => {
             key: "zipCode",
             label: "Pincode",
             placeholder: "Eg : 400001",
-            icon: <Feather name="hash" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="hash" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             isRequired: true,
@@ -436,20 +433,6 @@ const UserOnBoarding = () => {
 
     return (
         <View style={[styles.body, globalStyles.appBackground]}>
-            {/* Header */}
-            <View style={styles.headingContainer}>
-                <View className="justify-center items-center">
-                    <Card size='xs' variant='ghost'>
-                        <View className='flex justify-center items-center'>
-                            <Image size='lg' source={Logo} alt="Infinity ColorLab Logo" />
-                        </View>
-                    </Card>
-                    <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>
-                        Create your account !
-                    </Text>
-                </View>
-            </View>
-
             {/* Login Card - Aligned to bottom */}
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <View className="flex-1">
@@ -457,29 +440,31 @@ const UserOnBoarding = () => {
                         <View className="flex flex-row align-middle items-center">
                             {[0, 1].map((step, index) => (
                                 <View className="flex flex-row align-middle items-center" key={index}>
-                                    <GradientCard
-                                        className='rounded-2xl p-4 mb-4'
-                                        style={styles.roundWrapper}
-                                        colors={
-                                            currStep === index
-                                                ? ["#6B46C1", "#9F7AEA", "#D53F8C"] // Purple gradient
-                                                : currStep > index
-                                                    ? ["#48BB78", "#38A169", "#2F855A"] // Green gradient
-                                                    : ["#d1d5db", "#d1d5db", "#d1d5db"] // Normal grey gradient
-                                        }
+                                    <View
+                                        className="rounded-2xl p-4"
+                                        style={[
+                                            styles.roundWrapper,
+                                            {
+                                                backgroundColor:
+                                                    currStep === index
+                                                        ? "#2563EB" // Active step → blue
+                                                        : currStep > index
+                                                            ? "#22C55E" // Completed step → green
+                                                            : "#E5E7EB", // Upcoming step → grey
+                                            },
+                                        ]}
                                     >
                                         <View className="justify-center items-center">
                                             {currStep > index ? (
                                                 <Feather name="check" size={wp("5%")} color="white" />
                                             ) : (
-                                                <Text style={[globalStyles.whiteTextColor, globalStyles.labelText]}>
+                                                <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
                                                     {index + 1}
                                                 </Text>
-                                            )
-
-                                            }
+                                            )}
                                         </View>
-                                    </GradientCard>
+                                    </View>
+
                                     {index != 1 && <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
                             ))}
@@ -487,7 +472,7 @@ const UserOnBoarding = () => {
                         <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginTop: hp("2%") }]}>Step {currStep + 1} {headings[currStep]}</Text>
 
                     </View>
-                    <Card style={[styles.userOnBoardBody, styles.cardContainer]}>
+                    <Card style={[globalStyles.cardShadowEffect,styles.cardContainer]}>
                         <ScrollView
                             contentContainerStyle={styles.scrollableContent}
                             keyboardShouldPersistTaps="handled"
@@ -531,7 +516,7 @@ const UserOnBoarding = () => {
                                 <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                 <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Prev</ButtonText>
                             </Button>
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
+                            <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
                                 {
                                     loading && (
                                         <ButtonSpinner color={"#fff"} size={wp("4%")} />

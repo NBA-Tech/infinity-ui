@@ -7,7 +7,7 @@ import Logo from "../../assets/images/logo.png";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
 import { PricingToggle } from "./PricingToggle";
 import GradientCard from "@/src/utils/gradient-card";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
 import { SubscriptionModel, SubscriptionStatus } from "@/src/types/subscription/subscription-type-";
 import { useToastMessage } from "@/src/components/toast/toast-message";
@@ -20,10 +20,11 @@ import { generateRandomString } from "@/src/utils/utils";
 import { useUserStore } from "@/src/store/user/user-store";
 import { generatePaymentLinkAPI } from "@/src/api/payment/payment-api-service";
 import { PLAN_DETAILS } from "@/src/constant/constants";
+import { SafeAreaView } from "react-native-safe-area-context";
+import LottieView from "lottie-react-native";
+import { Card } from "@/components/ui/card";
 const Subscription = () => {
   const globalStyles = useContext(StyleContext);
-  const { isDark } = useContext(ThemeToggleContext);
-  const [yearly, setYearly] = useState(false);
   const { getItem } = useDataStore();
   const showToast = useToastMessage();
   const navigation = useNavigation<NavigationProp>();
@@ -31,16 +32,13 @@ const Subscription = () => {
   const { userDetails, getUserDetailsUsingID } = useUserStore();
   const [loading, setLoading] = useState(false);
 
-  // ✅ Select plans dynamically
-  const freePlan = PLAN_DETAILS.free;
-  const paidPlan = yearly ? PLAN_DETAILS.premium.yearly : PLAN_DETAILS.premium.monthly;
 
-  const generatePaymentPayload = async (): Promise<PaymentRequestModel> => {
+  const generatePaymentPayload = async (planDetails:any): Promise<PaymentRequestModel> => {
     const payload: PaymentRequestModel = {
       linkId: generateRandomString(20),
-      linkAmount: paidPlan.price,
+      linkAmount: planDetails.price,
       linkCurrency: "INR",
-      linkPurpose: paidPlan.planDescription,
+      linkPurpose: planDetails.planDescription,
       linkExpiryTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
       linkAutoReminders: true,
       linkPartialPayments: false,
@@ -83,7 +81,7 @@ const Subscription = () => {
     });
   };
 
-  const handleSubscription = async (type: "free" | "paid") => {
+  const handleSubscription = async (type: "FREE"|"PREMIUM_MONTHLY"|"PREMIUM_YEARLY") => {
     const userId = getItem("USERID");
     if (!userId) {
       return showToast({
@@ -96,8 +94,8 @@ const Subscription = () => {
 
     let payload: SubscriptionModel;
 
-    if (type === "paid") {
-      const paymentPayload = await generatePaymentPayload();
+    if (type !== "FREE") {
+      const paymentPayload = await generatePaymentPayload(PLAN_DETAILS?.premium[type]);
       const linkResponse = await generatePaymentLinkAPI(paymentPayload);
       if (!linkResponse.success) {
         return showToast({
@@ -115,7 +113,7 @@ const Subscription = () => {
           payload = {
             userId: userId,
             status: SubscriptionStatus.ACTIVE,
-            planDetails: paidPlan,
+            planDetails: PLAN_DETAILS?.premium[type],
           };
           await updateSubscriptionDetails(payload);
         },
@@ -124,7 +122,7 @@ const Subscription = () => {
       payload = {
         userId: userId,
         status: SubscriptionStatus.ACTIVE,
-        planDetails: freePlan,
+        planDetails: PLAN_DETAILS?.FREE,
         isTrialUsed: true,
       };
       await updateSubscriptionDetails(payload);
@@ -134,119 +132,142 @@ const Subscription = () => {
 
   useEffect(() => {
     const userId = getItem("USERID");
-    getUserDetailsUsingID(userId, showToast);
+    // getUserDetailsUsingID(userId, showToast);
   }, []);
 
   return (
-    <ImageBackground source={Background} resizeMode="cover" style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Image source={Logo} style={styles.logo} />
+    <SafeAreaView style={globalStyles.appBackground}>
+      <View style={{ marginVertical: hp('4%'), marginHorizontal: wp('2%') }}>
+        <View className="flex flex-col">
+          <View className="justify-center items-center">
+            <Text
+              style={[
+                globalStyles.extraLargeText,
+                globalStyles.blueTextColor,
+                { textAlign: "center" },
+              ]}
+            >
+              Get Premium
+            </Text>
 
-        <Text style={[globalStyles.whiteTextColor, globalStyles.headingText, styles.heading]}>
-          Upgrade to Premium
-        </Text>
-        <Text
-          style={[
-            globalStyles.whiteTextColor,
-            globalStyles.labelText,
-            styles.subHeading,
-          ]}
-        >
-          Unlock exclusive features and benefits
-        </Text>
+            <Text
+              style={[
+                globalStyles.normalText,
+                globalStyles.greyTextColor,
+                { textAlign: "center", width: "80%" },
+              ]}
+            >
+              Unlock advanced features and insights with our Premium CRM Subscription
+            </Text>
+          </View>
+          <View>
+            <LottieView
+              source={require('../../assets/animations/premium.json')}
+              autoPlay
+              loop
+              style={styles.mainAnimation}
+            />
 
-        <PricingToggle yearly={yearly} onChange={setYearly} />
+          </View>
+          <View style={{ gap: hp('2%') }}>
+            {Object.values(PLAN_DETAILS.premium).map((plan, index) => (
+              <Card style={globalStyles.cardShadowEffect}>
+                <View className="flex flex-row justify-between items-center">
+                  <View className="flex flex-col gap-3 m-3" style={{ width: wp('70%') }}>
+                    <Text style={[globalStyles.headingText, globalStyles.themeTextColor]}>
+                      {plan?.planName}
+                    </Text>
+                    <Text style={[globalStyles.heading3Text, globalStyles.blueTextColor]}>
+                      {plan?.planDescription}
+                    </Text>
+                  </View>
+                  <View>
+                    <Button
+                      size="lg"
+                      variant="solid"
+                      action="primary"
+                      style={globalStyles.buttonColor}
+                      onPress={() => handleSubscription(plan?.planId)}
+                      isDisabled={loading}
+                    >
+                      {loading && (
+                        <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                      )}
+                      <ButtonText style={globalStyles.buttonText}>
+                        Buy
+                      </ButtonText>
+                    </Button>
 
-        <View className="flex flex-row justify-between items-center gap-3">
-          {/* 🆓 Free Plan Card */}
-          <GradientCard colors={["#C77DFF", "#E0AAFF", "#F8F9FF"]} style={styles.planCard}>
-            <View className="w-full items-center mb-6">
-              <Text style={[globalStyles.heading2Text, { color: "#4B0082" }]}>
-                {freePlan.planTitle}
-              </Text>
-              <Text style={[globalStyles.labelText, { color: "#5A189A" }]}>
-                {freePlan.planDescription}
-              </Text>
-            </View>
+                  </View>
 
-            <View style={{ marginVertical: hp("2%") }}>
-              {freePlan.featureList.map((f, i) => (
-                <Text key={i} style={[globalStyles.smallText, { color: "#4B0082" }]}>
-                  ✅ {f}
-                </Text>
-              ))}
-            </View>
+                </View>
 
-            <Button size="lg" style={{ backgroundColor: "#7F00FF" }} onPress={() => handleSubscription("free")}>
-              <ButtonText style={[globalStyles.buttonText, { color: "#fff" }]}>
-                Start Free Trial
+              </Card>
+
+            ))}
+
+          </View>
+          <View style={{ marginVertical: hp('5%') }}>
+            <Button
+              size="lg"
+              variant="solid"
+              action="primary"
+              style={globalStyles.buttonColor}
+              onPress={() => handleSubscription("FREE")}
+            >
+              {loading && (
+                <ButtonSpinner color={"#fff"} size={wp("4%")} />
+              )}
+              <ButtonText style={globalStyles.buttonText}>
+                Start 7 days free trial
               </ButtonText>
             </Button>
-          </GradientCard>
 
-          {/* 💎 Paid Plan Card */}
-          <GradientCard colors={["#7F00FF", "#9D00FF", "#E100FF"]} style={styles.planCard}>
-            <View className="w-full items-center mb-6">
-              <Text style={[globalStyles.heading2Text, globalStyles.whiteTextColor]}>
-                {paidPlan.planTitle}
-              </Text>
-              <Text style={[globalStyles.labelText, globalStyles.whiteTextColor]}>
-                {paidPlan.planDescription}
-              </Text>
-            </View>
+          </View>
 
-            <View style={{ marginVertical: hp("2%") }}>
-              {paidPlan.featureList.map((f, i) => (
-                <Text key={i} style={[globalStyles.smallText, globalStyles.whiteTextColor]}>
-                  ✅ {f}
-                </Text>
-              ))}
-            </View>
-
-            <Button size="lg" style={{ backgroundColor: "#fff" }} onPress={() => handleSubscription("paid")} isDisabled={loading}>
-              <ButtonText style={[globalStyles.buttonText, { color: "#7F00FF" }]}>
-                Purchase
-              </ButtonText>
-            </Button>
-          </GradientCard>
         </View>
+
       </View>
-    </ImageBackground>
+
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          width: "100%",
+          alignItems: "center",
+          paddingHorizontal: 20,
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 12,
+            color: "#6B7280", // neutral grey
+            lineHeight: 18,
+          }}
+        >
+          By signing up, you agree to our{" "}
+          <Text style={{ color: "#2563EB", fontWeight: "600" }}>
+            Terms and Conditions
+          </Text>{" "}
+          and{" "}
+          <Text style={{ color: "#2563EB", fontWeight: "600" }}>
+            Privacy Policy
+          </Text>
+          . Learn how we use your data in our policies.
+        </Text>
+      </View>
+    </SafeAreaView >
+
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: wp("6%"),
+  mainAnimation: {
+    width: wp("100%"),
+    height: wp("60%"),
   },
-  logo: {
-    width: wp("28%"),
-    height: wp("28%"),
-    resizeMode: "contain",
-    marginBottom: hp("2%"),
-  },
-  heading: {
-    marginTop: hp("2%"),
-  },
-  subHeading: {
-    textAlign: "center",
-    marginBottom: hp("3%"),
-    opacity: 0.9,
-  },
-  planCard: {
-    width: wp("45%"),
-    borderRadius: wp("4%"),
-    paddingVertical: hp("2.5%"),
-    paddingHorizontal: wp("4%"),
-    marginTop: hp("4%"),
-    shadowColor: "#E100FF",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
+
 });
 
 export default Subscription;
