@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
     View,
     Text,
@@ -21,6 +21,7 @@ import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@/src/types/common";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
+import { ThemeToggleContext,StyleContext } from "@/src/providers/theme/global-style-provider";
 const { width } = Dimensions.get("window");
 const AnimatedFlatList = Animated.createAnimatedComponent(RNFlatList);
 
@@ -65,6 +66,7 @@ const FeatureSlide = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const navigation = useNavigation<NavigationProp>();
     const { setItem } = useDataStore();
+    const globalStyles=useContext(StyleContext);
 
     // Track scroll with Reanimated
     const scrollHandler = useAnimatedScrollHandler({
@@ -77,28 +79,8 @@ const FeatureSlide = () => {
 
     const renderItem = ({ item, index }: any) => (
         <View style={[styles.slide, { width }]}>
-            <GradientCard style={styles.gradientBackground} className="">
+            <View style={globalStyles.appBackground} className="">
                 <View style={styles.content}>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <LottieView
-                            source={item.topAnimation}
-                            autoPlay
-                            loop
-                            style={styles.topAnimation}
-                        />
-                        <LottieView
-                            source={item.topAnimation}
-                            autoPlay
-                            loop
-                            style={styles.topAnimation}
-                        />
-                        <LottieView
-                            source={item.topAnimation}
-                            autoPlay
-                            loop
-                            style={styles.topAnimation}
-                        />
-                    </View>
 
                     <LottieView
                         source={item.mainAnimation}
@@ -110,7 +92,7 @@ const FeatureSlide = () => {
                     <Text style={styles.title}>{item.title}</Text>
                     <Text style={styles.description}>{item.description}</Text>
                 </View>
-            </GradientCard>
+            </View>
             {currentIndex < slides.length - 1 ? (
                 <View style={[styles.continueButton,{backgroundColor:'transparent'}]}>
                     <Text style={[styles.continueText,{color:'#fff'}]}>
@@ -119,7 +101,7 @@ const FeatureSlide = () => {
                 </View>
             ) : (
                 <TouchableOpacity
-                    style={styles.continueButton}
+                    style={[styles.continueButton,globalStyles.buttonColor]}
                     onPress={async () => {
                         if (currentIndex < slides.length - 1) {
                             flatListRef.current?.scrollToIndex({
@@ -134,7 +116,7 @@ const FeatureSlide = () => {
                     }}
                 >
                     <Text style={styles.continueText}>
-                        {currentIndex < slides.length - 1 ? "Next →" : "Register →"}
+                        Register →
                     </Text>
                 </TouchableOpacity>
             )
@@ -232,7 +214,7 @@ const styles = StyleSheet.create({
     continueText: {
         fontSize: wp("4%"),
         fontWeight: "bold",
-        color: "#6D28D9",
+        color: "#fff",
     },
     pagination: {
         position: "absolute",

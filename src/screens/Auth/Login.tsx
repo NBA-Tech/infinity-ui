@@ -136,7 +136,7 @@ const Login = ({ setCurrScreen }: any) => {
                 {formFields.map((field, index) => (
                     <FormControl key={index} style={{ marginVertical: hp("1%") }}>
                         <FormControlLabel>
-                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.labelText]}>{field?.label}</FormControlLabelText>
+                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{field?.label}</FormControlLabelText>
                         </FormControlLabel>
                         <Input size='lg'>
                             <InputSlot style={{ paddingLeft: wp('2%') }}>
@@ -167,17 +167,17 @@ const Login = ({ setCurrScreen }: any) => {
                 ))}
                 <View style={styles.forgotPasswordContainer}>
                     <TouchableOpacity onPress={() => setCurrScreen("forgot")}>
-                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Forgot Password?</Text>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor,globalStyles.subHeadingText]}>Forgot Password?</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ marginVertical: hp("3%") }}>
-                    <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
                         {loadingProvider == "email" && (
                             <ButtonSpinner color={"#fff"} size={wp("4%")} />
                         )
 
                         }
-                        <ButtonText style={globalStyles.buttonText}>Login</ButtonText>
+                        <ButtonText style={globalStyles.buttonText}>Sign In</ButtonText>
                     </Button>
                     <View className='flex-row justify-center items-center'>
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("2%") }]}>────── OR ──────</Text>

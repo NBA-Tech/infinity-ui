@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
 import Animated, {
   useSharedValue,
@@ -7,107 +7,163 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
-import GradientCard from "@/src/utils/gradient-card"; // <-- your gradient wrapper
 import LottieView from "lottie-react-native";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
-import { NavigationProp } from "@/src/types/common";
+import { GLOBALSTATUS, NavigationProp } from "@/src/types/common";
+import { Card } from "@/components/ui/card";
+import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
+import { Spinner } from '@/components/ui/spinner';
+
 const { width } = Dimensions.get("window");
 
 export default function SplashScreen() {
-  const scale = useSharedValue(0.8);
+  const scale = useSharedValue(0.9);
   const rotate = useSharedValue(0);
-  const { isInitialized,getItem } = useDataStore();
+  const { isInitialized, getItem } = useDataStore();
   const navigation = useNavigation<NavigationProp>();
+  const globalStyles = useContext(StyleContext);
+  const { isDark } = useContext(ThemeToggleContext);
 
-  useEffect(() => {
-    // Pulse + rotate animation
-    scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 800 }),
-        withTiming(0.9, { duration: 800 })
-      ),
-      -1,
-      true
-    );
-    rotate.value = withRepeat(withTiming(360, { duration: 4000 }), -1, false);
-  }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotate.value}deg` },
-    ],
-  }));
+  /** -------------------------------
+   *  NAVIGATION LOGIC
+   *  -------------------------------- */
   useEffect(() => {
     const checkNavigation = async () => {
-      if(!isInitialized) return
+      if (!isInitialized) return;
       const isNewDevice = getItem("IS_NEW_DEVICE");
-      const isAuthenticated = getItem("isAuthenticated");
-      console.log(isAuthenticated,isNewDevice)
-    
+      // const isAuthenticated = getItem("isAuthenticated");
+      const isAuthenticated = false;
+
       if (isAuthenticated) {
-        navigation.replace("AuthStack"); // go to authenticated stack
+        navigation.replace("AuthStack");
       } else if (!isNewDevice) {
-        navigation.replace("UnauthStack", { screen: "FeatureSlide" }); // go to feature slide
+        navigation.replace("UnauthStack", { screen: "FeatureSlide" });
       } else {
-        navigation.replace("UnauthStack", { screen: "Authentication" }); // default auth screen
+        navigation.replace("UnauthStack", { screen: "Authentication" });
       }
     };
 
-    const timer = setTimeout(() => {
-      checkNavigation();
-    }, 3000);
-
+    const timer = setTimeout(checkNavigation, 3000);
     return () => clearTimeout(timer);
-  }, [navigation,isInitialized]);
+  }, [navigation, isInitialized]);
 
+  /** -------------------------------
+   *  RENDER UI
+   *  -------------------------------- */
   return (
-    <GradientCard style={styles.container} className="">
-      {/* Infinity Logo with Animation */}
-      <LottieView
-        source={require("../../assets/animations/infinity.json")}
-        autoPlay
-        loop
-        style={styles.logo}
-      />
+    <View style={[styles.root, globalStyles.appBackground]}>
+      <View style={styles.centerContainer}>
+        {/* Brand Logo */}
+        <Image
+          source={require("../../assets/images/logo.png")}
+          resizeMode="contain"
+          style={{ height: hp("10%"), width: hp("18%") }}
+        />
 
-      {/* App Title */}
-      <Text style={styles.title}>The Infinity</Text>
+        {/* Brand Title */}
+        <Text
+          style={[
+            globalStyles.headingText,
+            {
+              color: isDark ? "#E3ECFF" : "#182D53",
+            },
+          ]}
+        >
+          INFINITY COLORLAB
+        </Text>
 
-      {/* Slogan */}
-      <Text style={styles.slogan}>Beyond Limits, Into Possibilities</Text>
-    </GradientCard>
+        {/* Sub Lottie */}
+        <LottieView
+          source={require("../../assets/animations/studio-photography.json")}
+          autoPlay
+          loop
+          style={styles.lottie}
+        />
+      </View>
+
+      {/* Description Card */}
+      <Card
+        style={[
+          styles.infoCard,
+          {
+            backgroundColor: isDark ? "#1A2238" : "#EEF3FF",
+            shadowColor: isDark ? "#000" : "#182D53",
+          },
+        ]}
+      >
+        <View style={styles.cardContent}>
+          <Text
+            style={[
+              globalStyles.headingText,
+              { color: isDark ? "#E3ECFF" : "#182D53", fontSize: hp("2.6%") },
+            ]}
+          >
+            Welcome to
+          </Text>
+          <Text
+            style={[
+              globalStyles.headingText,
+              { color: isDark ? "#E3ECFF" : "#182D53", fontSize: hp("2.8%"), fontWeight: "700" },
+            ]}
+          >
+            INFINITY CRM
+          </Text>
+
+          <View style={{ marginTop: hp("1.5%"), alignItems: "center" }}>
+            <Text
+              style={[
+                globalStyles.normalText,
+                {
+                  color: isDark ? "#C7D2FE" : "#182D53",
+                  width: wp("75%"),
+                  lineHeight: hp("2.7%"),
+                },
+              ]}
+            >
+              A one-stop solution for photographers to manage leads, create quotations or invoices,
+              and organize client data — all in one powerful app.
+            </Text>
+          </View>
+        </View>
+        <View className="flex flex-row justify-end">
+          <Spinner size="large" color="grey" />;
+        </View>
+      </Card>
+    </View>
   );
 }
 
+/** -------------------------------
+ *  STYLES
+ *  -------------------------------- */
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
+    justifyContent: "space-between",
+  },
+  centerContainer: {
     justifyContent: "center",
     alignItems: "center",
-    width: width,
-    paddingHorizontal: 20,
-    borderRadius: 0,
+    flexGrow: 1,
   },
-  logo: {
+  lottie: {
     width: wp("100%"),
-    height: hp("30%"),
+    height: hp("60%"),
   },
-  title: {
-    marginTop: 30,
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
-    letterSpacing: 2,
-    textAlign: "center",
+  infoCard: {
+    paddingVertical: hp("2.5%"),
+    borderTopLeftRadius: wp("8%"),
+    borderTopRightRadius: wp("8%"),
+    paddingHorizontal: wp("5%"),
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 6,
   },
-  slogan: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#f0f0f0",
-    fontStyle: "italic",
-    textAlign: "center",
+  cardContent: {
+    alignItems: "center",
   },
 });
