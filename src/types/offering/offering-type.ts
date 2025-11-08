@@ -42,8 +42,6 @@ export interface ServiceModel extends OfferingModel {
     description: string;
     price: number;
     serviceCategory:SERVICECATEGORY;
-    icon?: string;
-    tags?: string[];
     serviceType?:SERVICETYPE
 }
 export interface PackageModel extends OfferingModel {
@@ -53,6 +51,4 @@ export interface PackageModel extends OfferingModel {
     calculatedPrice: boolean;
     additionalNotes?: string;
     serviceList: ServiceInfo[];
-    icon?: string;
-    tags?: string[];
 }

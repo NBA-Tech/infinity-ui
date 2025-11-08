@@ -31,11 +31,10 @@ const styles = StyleSheet.create({
     },
     title: {
         flex: 1,
-        marginHorizontal: wp('2%'),
     },
     rightHeader: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-end',
     },
     status: {
         paddingVertical: wp('1%'),
@@ -108,8 +107,6 @@ const ServiceTab = (props: ServiceTabProps) => {
             <Card style={[styles.card, globalStyles.cardShadowEffect]}>
                 {/* Header Row */}
                 <View style={styles.headerRow}>
-                    <MaterialCommunityIcons name={service?.icon || "camera"} size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-
                     <Text style={[globalStyles.heading3Text, styles.title, globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
                         {service?.serviceName}
                     </Text>
@@ -122,7 +119,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                             trigger={({ ...triggerProps }) => {
                                 return (
                                     <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} style={{ marginLeft: wp('2%') }} />
+                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                                     </Button>
                                 )
                             }}
@@ -156,21 +153,12 @@ const ServiceTab = (props: ServiceTabProps) => {
                         {service?.description}
                     </Text>
 
-                    <Text style={[styles.price, globalStyles.subHeadingText]}>
+                    <Text style={[globalStyles.blueTextColor, globalStyles.subHeadingText]}>
                         {userDetails?.currencyIcon} {service?.price}
                     </Text>
                 </View>
 
-                {/* Tags */}
-                {service.tags && service.tags.length > 0 && (
-                    <View style={styles.tagsRow}>
-                        {service?.tags?.map((tag: string, idx: number) => (
-                            <View key={idx} style={styles.tag}>
-                                <Text style={[globalStyles.smallText, globalStyles.whiteTextColor]}>{tag}</Text>
-                            </View>
-                        ))}
-                    </View>
-                )}
+              
             </Card>
         );
     };
@@ -204,7 +192,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                 ))
             ) : (
                 // Render the list of services
-                props.serviceData.map((item, index) => (
+                props?.serviceData && props?.serviceData?.map((item, index) => (
                     <View
                         key={item.id?.toString() || index.toString()}
                         style={{ gap: wp('0.5%'), marginBottom: hp('1%') }}

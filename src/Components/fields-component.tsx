@@ -147,6 +147,14 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         </Text>
                     )}
                     renderLeftIcon={() => field.icon}
+                    renderRightIcon={() => (
+                        field?.rightIcon ? (
+                          <TouchableOpacity onPress={field?.onRightIconPress} activeOpacity={0.7}>
+                            {field.rightIcon}
+                          </TouchableOpacity>
+                        ) : <Feather name="chevron-down" size={20} color={isDark ? "#E5E7EB" : "#111827"} />
+                      )}
+                      
                 />
 
             ) : field.type === "multi-select" ? (
@@ -177,12 +185,12 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#1f2937" : "#fff", borderColor: isDark ? "#3A3B47" : "#ccc" },
+                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#3A3B47" : "#ccc",borderRadius:wp("6%")},
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                     disabled={field.isDisabled || field?.isLoading}
                 >
-                    <Feather name="calendar" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={"#8B5CF6"} />
+                    <Feather name="calendar" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />
                     <Text
                         style={[
                             globalStyles.labelText,
@@ -342,26 +350,45 @@ export const CustomFieldsComponent = ({ infoFields, errors, cardStyle }: CustomF
 };
 
 // CustomCheckBox Component
-export const CustomCheckBox = ({ children, selectedStyle, styles: customStyles, onPress, value, selected }: CustomCheckBoxProps) => {
+export const CustomCheckBox = ({
+    children,
+    selectedStyle,
+    styles: customStyles,
+    onPress,
+    value,
+    selected,
+  }: CustomCheckBoxProps) => {
     const { isDark } = useContext(ThemeToggleContext);
+    const globalStyles=useContext(StyleContext)
+  
     const handleSelect = () => {
-        onPress(value, !selected);
+      onPress(value, !selected);
     };
-
+  
     return (
-        <TouchableOpacity
-            style={[
-                styles.checkContainer,
-                selected && (selectedStyle || {
-                    backgroundColor: isDark ? "#4B5563" : "#FDF2F8", // dark grey for dark mode
-                    borderColor: isDark ? "#8B5CF6" : "#8B5CF6"      // keep accent the same
-                }),
-
-                customStyles,
-            ]}
-            onPress={handleSelect}
-        >
-            <View>{children}</View>
-        </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={[
+          styles.checkContainer,
+          {
+            backgroundColor: isDark ? "#0E1628" : "#F5F7FB", // neutral background
+            borderWidth: 1.5,
+            borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border
+            borderRadius: 10,
+          },
+          selected && (selectedStyle || {
+            backgroundColor: isDark ? "#10274C" : "#D9E8FF", // blue tint for selected
+            borderColor: isDark ? "#6FADFF" : "#1372F0", // brand blue border
+            shadowColor: isDark ? "#1372F0" : "#6FADFF",
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+          }),
+          customStyles,
+        ]}
+        onPress={handleSelect}
+      >
+        <View>{children}</View>
+      </TouchableOpacity>
     );
-};
+  };
+  

@@ -22,7 +22,7 @@ export default function SplashScreen() {
     const checkNavigation = async () => {
       if (!isInitialized) return;
       const isNewDevice = getItem("IS_NEW_DEVICE");
-      const isAuthenticated = false;
+      const isAuthenticated = getItem("isAuthenticated");
       if (isAuthenticated) {
         navigation.replace("AuthStack");
       } else if (!isNewDevice) {

@@ -30,10 +30,10 @@ const Subscription = () => {
   const navigation = useNavigation<NavigationProp>();
   const { refetchSubscription } = useSubscription();
   const { userDetails, getUserDetailsUsingID } = useUserStore();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<String | null>(null);
 
 
-  const generatePaymentPayload = async (planDetails:any): Promise<PaymentRequestModel> => {
+  const generatePaymentPayload = async (planDetails: any): Promise<PaymentRequestModel> => {
     const payload: PaymentRequestModel = {
       linkId: generateRandomString(20),
       linkAmount: planDetails.price,
@@ -57,6 +57,7 @@ const Subscription = () => {
         customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber,
       },
     };
+    console.log(payload)
     return payload;
   };
 
@@ -81,7 +82,7 @@ const Subscription = () => {
     });
   };
 
-  const handleSubscription = async (type: "FREE"|"PREMIUM_MONTHLY"|"PREMIUM_YEARLY") => {
+  const handleSubscription = async (type: "FREE" | "PREMIUM_MONTHLY" | "PREMIUM_YEARLY") => {
     const userId = getItem("USERID");
     if (!userId) {
       return showToast({
@@ -90,43 +91,50 @@ const Subscription = () => {
         message: "UserId not found, please login again.",
       });
     }
-    setLoading(true);
+    setLoading(type);
 
     let payload: SubscriptionModel;
+    try {
 
-    if (type !== "FREE") {
-      const paymentPayload = await generatePaymentPayload(PLAN_DETAILS?.premium[type]);
-      const linkResponse = await generatePaymentLinkAPI(paymentPayload);
-      if (!linkResponse.success) {
-        return showToast({
-          type: "error",
-          title: "Error",
-          message: linkResponse.message,
+
+      if (type !== "FREE") {
+        const paymentPayload = await generatePaymentPayload(PLAN_DETAILS?.premium[type]);
+        const linkResponse = await generatePaymentLinkAPI(paymentPayload);
+        console.log(linkResponse)
+        if (!linkResponse.success) {
+          return showToast({
+            type: "error",
+            title: "Error",
+            message: linkResponse.message,
+          });
+        }
+        setLoading(null);
+
+        // ✅ Go to payment page and pass callback for subscription update
+        return navigation.navigate("PaymentGateway", {
+          paymentData: linkResponse.data,
+          successCallBack: async () => {
+            payload = {
+              userId: userId,
+              status: SubscriptionStatus.ACTIVE,
+              planDetails: PLAN_DETAILS?.premium[type],
+            };
+            await updateSubscriptionDetails(payload);
+          },
         });
+      } else {
+        payload = {
+          userId: userId,
+          status: SubscriptionStatus.ACTIVE,
+          planDetails: PLAN_DETAILS?.FREE,
+          isTrialUsed: true,
+        };
+        await updateSubscriptionDetails(payload);
+        setLoading(null);
       }
-      setLoading(false);
-
-      // ✅ Go to payment page and pass callback for subscription update
-      return navigation.navigate("PaymentGateway", {
-        paymentData: linkResponse.data,
-        successCallBack: async () => {
-          payload = {
-            userId: userId,
-            status: SubscriptionStatus.ACTIVE,
-            planDetails: PLAN_DETAILS?.premium[type],
-          };
-          await updateSubscriptionDetails(payload);
-        },
-      });
-    } else {
-      payload = {
-        userId: userId,
-        status: SubscriptionStatus.ACTIVE,
-        planDetails: PLAN_DETAILS?.FREE,
-        isTrialUsed: true,
-      };
-      await updateSubscriptionDetails(payload);
-      setLoading(false);
+    }
+    finally{
+      setLoading(null);
     }
   };
 
@@ -188,9 +196,9 @@ const Subscription = () => {
                       action="primary"
                       style={globalStyles.buttonColor}
                       onPress={() => handleSubscription(plan?.planId)}
-                      isDisabled={loading}
+                      isDisabled={loading != null}
                     >
-                      {loading && (
+                      {loading == plan?.planId && (
                         <ButtonSpinner color={"#fff"} size={wp("4%")} />
                       )}
                       <ButtonText style={globalStyles.buttonText}>
@@ -214,8 +222,9 @@ const Subscription = () => {
               action="primary"
               style={globalStyles.buttonColor}
               onPress={() => handleSubscription("FREE")}
+              isDisabled={loading != null}
             >
-              {loading && (
+              {loading == "FREE" && (
                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
               )}
               <ButtonText style={globalStyles.buttonText}>

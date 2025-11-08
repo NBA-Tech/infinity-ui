@@ -30,11 +30,13 @@ const createGlobalStyle = (isDark = false) =>
     themeTextColor: { color: isDark ? "#fff" : "#000" },
     darkBlueTextColor: { color: isDark ? "#E2E8F0" : "#142850" },
     buttonColor: { backgroundColor: "#2C426A" },
-    lightBlueTextColor:{color: isDark ? "#C7D2FE" : "#182D53"},
-    blueTextColor:{color: isDark ? "#3B82F6" : "#3B82F6"},
+    lightBlueTextColor: { color: isDark ? "#C7D2FE" : "#182D53" },
+    blueTextColor: { color: isDark ? "#3B82F6" : "#3B82F6" },
+    glassBackgroundColor: { backgroundColor: "#3B82F6" },
+    formBackGroundColor: { backgroundColor: isDark ? "#1A2238" : "#EEF3FF" },
 
     // text styles (system fonts only)
-    extraLargeText:{
+    extraLargeText: {
       fontSize: scaleFont(40),
       lineHeight: scaleLineHeight(40),
       fontWeight: 'bold',
@@ -129,18 +131,21 @@ const createGlobalStyle = (isDark = false) =>
       borderColor: "#8B5CF6",
     },
     transparentBackground: {
-      backgroundColor: isDark ? "#1E1E2A" : "#fff",
+      backgroundColor: isDark 
+        ? "rgba(26,26,46,0.85)"       // Dark mode: slightly stronger opacity
+        : "rgba(200, 210, 225, 0.85)", // Light mode: darker, soft grey
     },
+    
     appBackground: {
       flex: 1,
       backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
     },
-    
+
 
     // effects
     cardShadowEffect: {
       borderRadius: wp('2%'),
-      backgroundColor: isDark ? "#1A2238" : "#EEF3FF",
+      backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
       shadowColor: isDark ? "#000" : "#182D53",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: isDark ? 0.3 : 0.15,

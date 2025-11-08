@@ -24,15 +24,18 @@ const Footer = (props: FooterProps) => {
 
     if (!props?.state || !props?.state.routes) return null;
 
+    const activeIconColorStart = "#6FADFF"; // start of gradient
+    const activeIconColorEnd = "#1372F0";   // end of gradient (underline)
+
     const iconsMapping: any = {
         home: {
             active: (
-                <View className='items-center'>
-                    <Feather name="home" size={hp("3%")} color="#8B5CF6" />
+                <View style={{ alignItems: 'center' }}>
+                    <Feather name="home" size={hp("3%")} color={activeIconColorStart} />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
+                            backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
                             alignSelf: "center",
@@ -46,16 +49,16 @@ const Footer = (props: FooterProps) => {
         },
         customer: {
             active: (
-                <View className='items-center'>
+                <View style={{ alignItems: 'center' }}>
                     <MaterialCommunityIcons
                         name="account-multiple"
                         size={hp("3%")}
-                        color="#8B5CF6"
+                        color={activeIconColorStart}
                     />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
+                            backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
                             alignSelf: "center",
@@ -73,12 +76,12 @@ const Footer = (props: FooterProps) => {
         },
         invoice: {
             active: (
-                <View className='items-center'>
-                    <Ionicons name="receipt" size={hp("3%")} color="#8B5CF6" />
+                <View style={{ alignItems: 'center' }}>
+                    <Ionicons name="receipt" size={hp("3%")} color={activeIconColorStart} />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
+                            backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
                             alignSelf: "center",
@@ -86,22 +89,20 @@ const Footer = (props: FooterProps) => {
                     />
                 </View>
             ),
-            inactive: (
-                <Ionicons name="receipt-outline" size={hp("3.2%")} color="#888" />
-            ),
+            inactive: <Ionicons name="receipt-outline" size={hp("3.2%")} color="#888" />,
         },
         orders: {
             active: (
-                <View className='items-center'>
+                <View style={{ alignItems: 'center' }}>
                     <MaterialCommunityIcons
                         name="clipboard-text"
                         size={hp("3%")}
-                        color="#8B5CF6"
+                        color={activeIconColorStart}
                     />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
-                            backgroundColor: "#8B5CF6",
+                            backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
                             alignSelf: "center",
@@ -119,18 +120,18 @@ const Footer = (props: FooterProps) => {
         },
         services: {
             active: (
-                <View className='items-center'>
+                <View style={{ alignItems: 'center' }}>
                     <MaterialCommunityIcons
-                        name="camera-iris" // updated icon
-                        size={hp("3.5%")} // slightly bigger
-                        color="#8B5CF6" // new active color
+                        name="camera-iris"
+                        size={hp("3.5%")}
+                        color={activeIconColorStart}
                     />
                     <Divider
                         style={{
                             marginTop: hp("0.2%"),
-                            backgroundColor: "#8B5CF6", // match icon color
-                            height: 3, // slightly thicker
-                            width: wp("8%"), // slightly wider
+                            backgroundColor: activeIconColorEnd,
+                            height: 3,
+                            width: wp("8%"),
                             alignSelf: "center",
                         }}
                     />
@@ -138,14 +139,41 @@ const Footer = (props: FooterProps) => {
             ),
             inactive: (
                 <MaterialCommunityIcons
-                    name="camera-outline" // updated inactive icon
+                    name="camera-outline"
                     size={hp("3.5%")}
-                    color="#AAA" // lighter grey
+                    color="#AAA"
                 />
             ),
         },
-
+        quotations: {
+            active: (
+                <View style={{ alignItems: 'center' }}>
+                    <Feather
+                        name="file-text"
+                        size={hp("3%")}
+                        color={activeIconColorStart}
+                    />
+                    <Divider
+                        style={{
+                            marginTop: hp("0.1%"),
+                            backgroundColor: activeIconColorEnd,
+                            height: 2,
+                            width: wp("7%"),
+                            alignSelf: "center",
+                        }}
+                    />
+                </View>
+            ),
+            inactive: (
+                <Feather
+                    name="file-text"
+                    size={hp("3.2%")}
+                    color="#888"
+                />
+            ),
+        },
     };
+
 
 
 

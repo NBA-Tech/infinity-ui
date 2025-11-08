@@ -29,6 +29,7 @@ import {
   BusinessDetails,
   Subscription,
   PaymentGateway,
+  Quotation,
 } from "../screens";
 import { useSubscription } from "../providers/subscription/subscription-context";
 import SubscriptionLockOverlay from "../components/subscription-overlay";
@@ -81,6 +82,14 @@ function InvoiceNavigator() {
   );
 }
 
+function QuotationNavigator(){
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="QuotationList" component={Quotation} />
+    </Stack.Navigator>
+  );
+}
+
 // ===================
 // Tab Navigator
 // ===================
@@ -117,6 +126,16 @@ function TabNavigator() {
           <View style={{ flex: 1 }}>
             <SubscriptionLockOverlay>
               <OrderNavigator />
+            </SubscriptionLockOverlay>
+          </View>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen name="Quotations">
+        {() => (
+          <View style={{ flex: 1 }}>
+            <SubscriptionLockOverlay>
+              <QuotationNavigator />
             </SubscriptionLockOverlay>
           </View>
         )}

@@ -38,14 +38,14 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                             <View className='flex flex-row justify-between items-center'>
                                 <View className='flex flex-row gap-2'>
                                     <Feather name="phone" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber}</Text>
+                                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.mobileNumber}</Text>
                                 </View>
                                 <View className='flex flex-row gap-4'>
-                                    <TouchableOpacity onPress={() => openDaialler(props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber)}>
+                                    <TouchableOpacity onPress={() => openDaialler(props?.customerData?.mobileNumber)}>
                                         <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => {
-                                        openMessageBox(props?.orderBasicInfo?.pointOfContact ?? props?.customerData?.mobileNumber, `Hi ${props?.customerData?.firstName} ${props?.customerData?.lastName} Hope you are doing good.`)
+                                        openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.firstName} ${props?.customerData?.lastName} Hope you are doing good.`)
                                     }}>
                                         <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>

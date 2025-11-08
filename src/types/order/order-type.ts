@@ -47,7 +47,6 @@ export interface OfferingInfo {
 }
 export interface OrderBasicInfo {
   customerID: string;
-  pointOfContact: string;
   specialInstructions: string;
 }
 
@@ -70,7 +69,6 @@ export interface OrderModel {
   updatedDate?: Date;
   status: OrderStatus;
   totalPrice: number;
-  updatedDate?: Date;
   orderBasicInfo: OrderBasicInfo;
   eventInfo: EventInfo;
   offeringInfo: OfferingInfo;

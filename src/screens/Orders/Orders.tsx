@@ -29,7 +29,6 @@ import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
-        borderRadius: wp('2%'),
     },
 });
 
@@ -175,7 +174,75 @@ const Orders = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <Header />
+           <GradientCard
+                colors={isDark
+                    ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue
+                    : ["#1372F0", "#6FADFF"]  // Light mode: vibrant blue → soft sky blue
+                }
+            >
+                <View className="flex flex-col p-4 gap-5">
+                    {/* Header */}
+                    <View className="flex flex-row justify-center items-center mb-2">
+                        <Text
+                            style={[
+                                globalStyles.headingText,
+                                globalStyles.whiteTextColor,
+                                { letterSpacing: 1, textTransform: 'uppercase' },
+                            ]}
+                        >
+                            Orders
+                        </Text>
+                    </View>
+
+                    {/* Stats Row */}
+                    <View className="flex flex-row justify-between items-start">
+                        <View className="flex flex-col gap-2">
+                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                Total Orders
+                            </Text>
+                            <View
+                                className="flex flex-row justify-center items-center rounded-full"
+                                style={{
+                                    backgroundColor: "rgba(255,255,255,0.15)",
+                                    paddingVertical: hp('1%'),
+                                    paddingHorizontal: wp('3%'),
+                                }}
+                            >
+                                <Feather name="users" size={wp('5%')} color="#fff" />
+                                <Text
+                                    style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
+                                    8
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Create Customers */}
+                        <View className="flex flex-col gap-2">
+                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                Create Orders
+                            </Text>
+                            <Button
+                                size="md"
+                                variant="solid"
+                                action="primary"
+                                style={[
+                                    globalStyles.buttonColor,
+                                    {
+                                        backgroundColor: "rgba(255,255,255,0.2)",
+                                        borderColor: "rgba(255,255,255,0.3)",
+                                        borderWidth: 1,
+                                        borderRadius: wp('2%'),
+                                    },
+                                ]}
+                                onPress={() => navigation.navigate('CreateOrder')}
+                            >
+                                <Feather name="plus" size={wp('5%')} color="#fff" />
+                                <ButtonText style={globalStyles.buttonText}>Create</ButtonText>
+                            </Button>
+                        </View>
+                    </View>
+                </View>
+            </GradientCard>
             <FilterComponent
                 filterName='orders'
                 filters={filters}
@@ -195,23 +262,8 @@ const Orders = () => {
             <View>
                 <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
                 <View className={isDark ? "bg-[#1F2028]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
-                    <View className='flex-row justify-between items-center'>
-                        <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Orders</Text>
-                            <GradientCard style={{ width: wp('25%') }}>
-                                <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
-                            </GradientCard>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{orderData?.length} Orders found</Text>
-                        </View>
-                        <View>
-                            <Button size="md" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={() => navigation.navigate("CreateOrder")}>
-                                <Feather name="plus" size={wp('5%')} color="#fff" />
-                                <ButtonText style={globalStyles.buttonText}>Create New</ButtonText>
-                            </Button>
-                        </View>
-                    </View>
                     <View className="flex flex-row items-center gap-3" style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                        <Input size="lg" style={styles.inputContainer}>
+                        <Input size="lg" style={styles.inputContainer} variant='rounded'>
                             <InputSlot>
                                 <Feather name="search" size={wp('5%')} color={isDark ? "#fff" : "#00"} />
                             </InputSlot>
@@ -222,7 +274,7 @@ const Orders = () => {
                             />
                         </Input>
                         <TouchableOpacity onPress={() => setOpenFilter(true)}>
-                            <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#8B5CF6" />
+                            <MaterialCommunityIcons name={isFilterApplied(filters) ? "filter" : "filter-outline"} size={wp('8%')} color="#3B82F6" />
                         </TouchableOpacity>
                     </View>
                 </View>

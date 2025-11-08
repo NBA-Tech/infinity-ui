@@ -624,3 +624,11 @@ export const isValidPAN = (pan: string): boolean => {
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   return panRegex.test(pan.trim().toUpperCase());
 };
+
+export const navigateToSuccess = (navigation:any, originTab: string, originScreen: string,text: string) => {
+  navigation.navigate('Success', {
+    returnTo: { tab: originTab, screen: originScreen },
+    text
+  });
+};
+export const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());

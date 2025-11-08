@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
+import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, navigateToSuccess, patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "CreateCustomer">;
 const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
-    const { customerID } = route.params || {};
+    const { customerID, returnTo = { tab: 'Customer', screen: 'CustomerList' } } = route.params || {};
+
     const { isDark } = useContext(ThemeToggleContext);
     const { triggerReloadCustomer } = useReloadContext()
     const [customerDetails, setCustomerDetails] = useState<CustomerModel>({
@@ -80,7 +81,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "firstName",
             label: "First Name",
             placeholder: "Eg: John",
-            icon: <Feather name="user" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
             isRequired: true,
@@ -96,7 +97,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "lastName",
             label: "Last Name",
             placeholder: "Eg: Doe",
-            icon: <Feather name="camera" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="camera" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
             isRequired: true,
@@ -112,7 +113,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "mobileNumber",
             label: "Mobile Number",
             placeholder: "Eg: 1234567890",
-            icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="phone" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
             isRequired: true,
@@ -128,7 +129,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "email",
             label: "Email",
             placeholder: "Eg: D6f5U@example.com",
-            icon: <Feather name="mail" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="mail" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-1/2",
             isRequired: true,
@@ -144,7 +145,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "gender",
             label: "Gender",
             placeholder: "Eg: Male",
-            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
             isRequired: false,
@@ -163,7 +164,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "leadSource",
             label: "LeadSource",
             placeholder: "Eg: Referral",
-            icon: <Feather name="link" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="link" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
             isRequired: false,
@@ -183,7 +184,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "notes",
             label: "Notes",
             placeholder: "Eg: Special instructions for the customer",
-            icon: <Feather name="file-text" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="file-text" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -203,7 +204,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "home",
             label: "Street/Landmark",
             placeholder: "eg: 123 Main Street",
-            icon: <Feather name="home" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="home" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -220,7 +221,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "city",
             label: "City",
             placeholder: "Eg: New York",
-            icon: <MaterialIcons name="location-city" size={wp('5%')} color="#8B5CF6" />,
+            icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
             isRequired: false,
@@ -236,7 +237,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "country",
             label: "Country",
             placeholder: "Eg: United States",
-            icon: <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
             isRequired: false,
@@ -256,7 +257,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: 'state',
             label: "State",
             placeholder: "Eg: New York",
-            icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
             isRequired: false,
@@ -276,7 +277,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             key: "zipCode",
             label: "Zip Code",
             placeholder: "Eg: 12345",
-            icon: <Feather name="hash" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="hash" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
             isRequired: false,
@@ -374,7 +375,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
                 }
                 setloadingProvider({ ...loadingProvider, saveLoading: false });
-                navigation.navigate("Success", { text: addNewCustomerResponse?.message ?? "Customer Created Successfully" })
+                navigateToSuccess(navigation, returnTo.tab, returnTo.screen, addNewCustomerResponse?.message ?? "Customer Created Successfully")
                 setCustomerDetails({
                     userId: "",
                     leadSource: undefined,
@@ -408,11 +409,11 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                     <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                             <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Create Customer</Text>
-                            <GradientCard style={{ width: wp('25%') }}>
+                            <View style={[{ width: wp('25%') },globalStyles.glassBackgroundColor]}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
-                            </GradientCard>
+                            </View>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
                             {loadingProvider.saveLoading && (
                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )
@@ -424,10 +425,10 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                     </View>
                     <View >
 
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
-                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#EFF6FF' }]}>
+                        <Card style={[{ padding:0}]}>
+                            <View style={[styles.accordionHeader,{ backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
-                                    <Feather name="user" size={wp('5%')} color="#8B5CF6" />
+                                    <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
 
                                 </View>
@@ -437,10 +438,10 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                             </View>
 
                         </Card>
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginTop: hp('2%') }]}>
-                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#EFF6FF' }]}>
+                        <Card style={[{ padding:0,marginTop:hp('4%')}]}>
+                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
-                                    <Feather name="credit-card" size={wp('5%')} color="#8B5CF6" />
+                                    <Feather name="credit-card" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
 
                                 </View>

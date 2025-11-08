@@ -85,7 +85,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const { userDetails, getUserDetailsUsingID } = useUserStore()
     const [orderDetails, setOrderDetails] = useState<OrderModel>({
         userId: getItem("USERID") as string,
-        orderId:generateRandomStringBasedType(20,"ORDER"),
+        orderId: generateRandomStringBasedType(20, "ORDER"),
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
         status: OrderStatus.PENDING,
@@ -122,7 +122,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: "customerID",
             label: "Customer Name",
             placeholder: "Choose Customer",
-            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -130,32 +130,24 @@ const CreateOrder = ({ navigation, route }: Props) => {
             isLoading: loadingProvider?.intialLoading,
             dropDownItems: customerList ?? [],
             value: orderDetails?.orderBasicInfo?.customerID ?? "",
+            rightIcon: <Feather name="plus" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
+            onRightIconPress: () => {
+                navigation.navigate("Customer", {
+                    screen: "CreateCustomer",
+                    params: { returnTo: { tab: 'Orders', screen: 'CreateOrder' } },
+                });
+
+            },
             onChange: (value: string) => {
                 patchState('orderBasicInfo', 'customerID', value, true, setOrderDetails, setErrors);
             }
-        },
-        pointOfContact: {
-            parentKey: "orderBasicInfo",
-            key: "pointOfContact",
-            label: "Point Of Contact",
-            placeholder: "Enter Point Of Contact",
-            icon: <Feather name="phone" size={wp('5%')} color="#8B5CF6" />,
-            type: "number",
-            style: "w-full",
-            isRequired: true,
-            isDisabled: false,
-            isLoading: loadingProvider?.intialLoading,
-            value: orderDetails?.orderBasicInfo?.pointOfContact ?? "",
-            onChange(value: string) {
-                patchState('orderBasicInfo', 'pointOfContact', value, true, setOrderDetails, setErrors)
-            },
         },
         specialInstruction: {
             parentKey: "orderBasicInfo",
             key: "specialInstructions",
             label: "Special Instruction",
             placeholder: "Enter Special Instruction",
-            icon: <Feather name="info" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
@@ -176,7 +168,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: 'eventTitle',
             label: "Event Title",
             placeholder: "Enter Event Title",
-            icon: <Feather name="edit-3" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="edit-3" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
             isRequired: true,
@@ -192,7 +184,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: "eventDate",
             label: "Event Date",
             placeholder: "Enter Event Date",
-            icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "date",
             style: "w-1/2",
             dateType: "date",
@@ -213,7 +205,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: "eventTime",
             label: "Event Time",
             placeholder: "Enter Event Time",
-            icon: <Feather name="clock" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="clock" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "time",
             style: "w-1/2",
             isRequired: true,
@@ -233,7 +225,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: "numberOfHours",
             label: "No. of Hours",
             placeholder: "Enter No. of Hours",
-            icon: <MaterialIcons name="hourglass-empty" size={wp("5%")} color="#8B5CF6" />,
+            icon: <MaterialIcons name="hourglass-empty" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
             isRequired: false,
@@ -249,7 +241,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             key: "eventLocation",
             label: "Event Location",
             placeholder: "Enter Event Location",
-            icon: <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -265,37 +257,37 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const eventTypes = useMemo(() => ({
         wedding: {
             value: "wedding",
-            icon: <Feather name="heart" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="heart" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Wedding",
             selected: orderDetails?.eventInfo?.eventType === "wedding"
         },
         birthday: {
             value: "birthday",
-            icon: <Feather name="gift" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="gift" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Birthday",
             selected: orderDetails?.eventInfo?.eventType === "birthday"
         },
         corporateEvent: {
             value: "corporateEvent",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Corporate Event",
             selected: orderDetails?.eventInfo?.eventType === "corporateEvent"
         },
         portraitSession: {
             value: "portraitSession",
-            icon: <Feather name="camera" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="camera" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Portrait Session",
             selected: orderDetails?.eventInfo?.eventType === "portraitSession"
         },
         babyShoot: {
             value: "babyShoot",
-            icon: <Feather name="smile" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="smile" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Baby Shoot",
             selected: orderDetails?.eventInfo?.eventType === "babyShoot"
         },
         customEvent: {
             value: "customEvent",
-            icon: <Feather name="star" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="star" size={wp("5%")} color={isDark ? "#6FADFF" : "#1372F0"} />,
             label: "Custom Event",
             selected: orderDetails?.eventInfo?.eventType === "customEvent"
         },
@@ -484,7 +476,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         useCallback(() => {
             const fetchData = async () => {
                 const userID = getItem("USERID");
-                if(!userID) return
+                if (!userID) return
                 try {
                     setloadingProvider(prev => ({ ...prev, intialLoading: true }));
                     setOrderDetails((prev) => {
@@ -494,7 +486,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         }
                     })
 
-                    
+
                     await loadOfferings(userID, showToast);
                     await getUserDetailsUsingID(userID, showToast);
                     await getCustomerNameList(userID);
@@ -534,52 +526,53 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 <View className='flex justify-between items-center flex-row'>
                     <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                         <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{orderId ? "Update Order" : "Create Order"}</Text>
-                        <GradientCard style={{ width: wp('25%') }}>
+                        <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
                             <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
-                        </GradientCard>
+                        </View>
                     </View>
                 </View>
 
                 {/* Wrap all main content in a flex container */}
-                <View style={{ flex: 1, marginTop: hp("1%") }}>
+                <View style={{ flex: 1 }}>
                     <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
                         <View className="flex flex-wrap flex-row align-middle items-center">
                             {Array.from({ length: 4 }).map((_, index) => (
-                                <View key={index} className="flex flex-row align-middle items-center">
-                                    <View className="flex flex-row align-middle items-center">
-                                        <GradientCard
-                                            className="rounded-2xl p-4 mb-4"
-                                            style={styles.roundWrapper}
-                                            colors={
-                                                currStep === index
-                                                    ? ["#6B46C1", "#9F7AEA", "#D53F8C"] // Purple gradient
-                                                    : currStep > index
-                                                        ? ["#48BB78", "#38A169", "#2F855A"] // Green gradient
-                                                        : ["#d1d5db", "#d1d5db", "#d1d5db"] // Normal grey gradient
-                                            }
-                                        >
-                                            <View className="justify-center items-center">
-                                                {currStep > index ? (
-                                                    <Feather name="check" size={wp("5%")} color="white" />
-                                                ) : (
-                                                    < Feather name={stepIcon[index]} size={wp("5%")} color="#fff" />
-                                                )}
-                                            </View>
-                                        </GradientCard>
-                                        {index != 3 && (
-                                            <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />
-                                        )}
-
+                                <View className="flex flex-row align-middle items-center" key={index}>
+                                    <View
+                                        className="rounded-2xl p-4"
+                                        style={[
+                                            styles.roundWrapper,
+                                            {
+                                                backgroundColor:
+                                                    currStep === index
+                                                        ? "#2563EB" // Active step → blue
+                                                        : currStep > index
+                                                            ? "#22C55E" // Completed step → green
+                                                            : "#E5E7EB", // Upcoming step → grey
+                                            },
+                                        ]}
+                                    >
+                                        <View className="justify-center items-center">
+                                            {currStep > index ? (
+                                                <Feather name="check" size={wp("5%")} color="white" />
+                                            ) : (
+                                                <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
+                                                    {index + 1}
+                                                </Text>
+                                            )}
+                                        </View>
                                     </View>
+
+                                    {index != 3 && <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
                             ))}
                         </View>
                     </View>
 
                     {currStep == 0 && (
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginBottom:hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
+                            <View className='flex flex-row justify-between items-center' style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                                     <Feather name="user" size={wp("7%")} color="#06B6D4" />
                                     <Text
@@ -597,11 +590,11 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     )}
 
                     {currStep == 1 && (
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginBottom:hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: isDark ? "#701A3D" : "#FDF2F8", padding: hp("2%") }}>
+                            <View style={{ backgroundColor: isDark ? "#0B1A33" : "#D9E8FF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#FDF2F8" : "#8B5CF6"} />
+                                    <Feather name="calendar" size={wp("7%")} color={isDark?"#8B5CF6":"#3B82F6"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -612,7 +605,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                             {/* Body */}
                             <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors} />
-                            <View style={{ marginLeft: wp('3%') }}>
+                            <View style={[{ marginLeft: wp('3%') },globalStyles.formBackGroundColor]}>
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Event Type</Text>
 
@@ -716,7 +709,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             <View style={{ backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
                                     <View className='flex flex-row items-center gap-2'>
-                                        <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                        <Feather name="calendar" size={wp("7%")} color={isDark ? "#fff" : "#000"} />
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
@@ -725,10 +718,10 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                     </View>
                                     <View className='flex flex-row items-center gap-2'>
                                         <TouchableOpacity onPress={() => setIsOpen({ ...isOpen, modal: true })}>
-                                            <Feather name="eye" size={wp("5%")} color="#8B5CF6" />
+                                            <Feather name="eye" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={handleShareQuotation}>
-                                            <Feather name="share-2" size={wp("5%")} color="#8B5CF6" />
+                                            <Feather name="share-2" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -743,7 +736,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             size="lg"
                             variant="solid"
                             action="primary"
-                            style={[globalStyles.purpleBackground]}
+                            style={[globalStyles.buttonColor]}
                             isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                             onPress={() => setCurrStep(currStep - 1)}
                         >
@@ -757,7 +750,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             size="lg"
                             variant="solid"
                             action="primary"
-                            style={globalStyles.purpleBackground}
+                            style={globalStyles.buttonColor}
                             isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                             onPress={currStep == 3 ? handleCreateOrder : handleNext}
                         >

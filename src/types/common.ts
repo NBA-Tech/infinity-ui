@@ -92,15 +92,20 @@ export interface SearchQueryRequest {
 
 }
 
+interface ReturnTo{
+  tab: string,
+  screen: string
+}
+
 export interface RootStackParamList extends ParamListBase {
   OneTimePassword: { authData: AuthModel, otpCode: string };
   useronboarding: undefined;
   OrderDetails: { orderId: string };
   CreateOrder: { orderId: string };
   InvoiceDetails: { invoiceId: string };
-  Success: { text?: string };
+  Success: { text?: string,returnTo?:ReturnTo };
   CreateInvoice: { invoiceId: string };
-  CreateCustomer: { customerID: string };
+  CreateCustomer: { customerID: string,returnTo?:ReturnTo };
   CustomerDetails: { customerID: string };
   PaymentGateway: { paymentData:any,successCallBack?:Function };
 }
@@ -129,6 +134,8 @@ export interface FormField {
   isSearchable?: boolean;
   isLoading?: boolean;
   customComponent?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  onRightIconPress?: () => void;
   renderItems?: () => React.ReactNode; // Optional function to render items
   onChange?: {
     (value: any): void;

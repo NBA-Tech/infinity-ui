@@ -34,7 +34,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             key: "country",
             label: "Country",
             placeholder: "Select Country",
-            icon:  <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon:  <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: false,
@@ -61,7 +61,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             key: "state",
             label: "State",
             placeholder: "Select State",
-            icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: false,
@@ -89,7 +89,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             label: "Date Sort",
             type: "select",
             style: "w-full",
-            icon: <MaterialIcons name="sort" size={wp('5%')} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <MaterialIcons name="sort" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             value: props?.filters?.sortOrder === "DESC" ? "LATEST" : "OLDEST" ?? "",
             dropDownItems: ["LATEST", "OLDEST"].map((dateSort) => ({
                 label: dateSort,
@@ -106,27 +106,6 @@ const FilterComponent = (props: FilterComponentProps) => {
                 }))
             }
         },
-        leadSource: {
-            parentKey: "leadSource",
-            key: "leadSource",
-            label: "Lead Source",
-            type: "chips",
-            style: "w-full",
-            value: props?.filters?.searchQuery ?? [],
-            dropDownItems: Object.keys(LEADSOURCE).map((leadSource) => ({
-                label: LEADSOURCE[leadSource],
-                value: leadSource
-            })),
-            onChange: (value: string) => {
-                props?.setRefresh(true)
-                props?.setFilters(prev => ({
-                    ...prev,
-                    page: 1,
-                    searchField: "leadSource",
-                    searchQuery: value
-                }))
-            }
-        }
     }), [props?.filters, props?.extraValue]);
 
     const orderFormFields: FormFields = useMemo(() => ({
@@ -306,7 +285,7 @@ const FilterComponent = (props: FilterComponentProps) => {
             onBackdropPress={() => props?.setOpenFilter(false)}
             onBackButtonPress={() => props?.setOpenFilter(false)}
         >
-            <View className='flex flex-col' style={{ backgroundColor: isDark ? '#272932' : '#fff', padding: wp('5%'), borderRadius: wp('3%') }}>
+            <View className='flex flex-col rounded-xl' style={{ backgroundColor:globalStyles.formBackGroundColor.backgroundColor, padding: wp('5%') }}>
                 <View style={{ padding: wp('2%') }}>
                     <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>{filterComponents[props?.filterName].label}</Text>
                     <Divider />
@@ -318,7 +297,7 @@ const FilterComponent = (props: FilterComponentProps) => {
                         <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={() => props?.setOpenFilter(false)}>
                             <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Cancel</ButtonText>
                         </Button>
-                        <Button size="lg" variant="solid" action="primary" style={globalStyles.purpleBackground} onPress={() => {
+                        <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={() => {
                             props?.setOpenFilter(false)
                             props?.setFilters(prev => ({ page: 1,pageSize: 10 }))
                         }
