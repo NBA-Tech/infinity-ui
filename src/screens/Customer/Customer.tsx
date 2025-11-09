@@ -22,7 +22,7 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatDate, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
+import { formatDate, isFilterApplied, openDaialler, openEmailClient, openMessageBox, openWhatsApp } from '@/src/utils/utils';
 import { deleteCustomerAPI, getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -33,6 +33,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import debounce from "lodash.debounce";
 import { useUserStore } from '@/src/store/user/user-store';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -270,7 +271,7 @@ const Customer = () => {
         setFilters(prev => ({
             ...prev,
             searchQuery: value,
-            searchField: ["customerBasicInfo.firstName", "customerBasicInfo.lastName"],
+            searchField: ["customerBasicInfo.name"],
             page: 1,
         }));
     };
@@ -294,12 +295,12 @@ const Customer = () => {
                         <View style={styles.leftSection}>
                             <Avatar size={'md'} style={{ backgroundColor: '#2C426A', transform: [{ scale: 1.2 }] }}>
                                 <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                                    {item?.customerBasicInfo?.firstName}
+                                    {item?.customerBasicInfo?.name}
                                 </AvatarFallbackText>
                             </Avatar>
 
                             <View style={styles.details}>
-                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { width: wp('60%') }]} numberOfLines={1}>{item?.customerBasicInfo?.firstName} {item?.customerBasicInfo?.lastName}</Text>
+                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { width: wp('60%') }]} numberOfLines={1}>{item?.customerBasicInfo?.name}</Text>
 
                                 <View style={styles.detailRow}>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
@@ -352,12 +353,16 @@ const Customer = () => {
 
                     </View>
                     <View style={styles.createdOn}>
-                        <TouchableOpacity onPress={() => { openEmailClient(item?.customerBasicInfo?.email) }}>
-                            <Feather name="mail" size={wp('5%')} color={isDark ? "#F87171" : "#EF4444"} />
-                        </TouchableOpacity>
-
                         <TouchableOpacity onPress={() => { openDaialler(item?.customerBasicInfo?.mobileNumber) }}>
                             <Feather name="phone" size={wp('5%')} color={isDark ? "#A3BFFA" : "#1372F0"} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => { openWhatsApp(item?.customerBasicInfo?.mobileNumber,"Hi hope you are doing good,") }}>
+                            <FontAwesome name="whatsapp" size={wp('5%')} color={isDark ? "#25D366" : "#22C55E"} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => { openEmailClient(item?.customerBasicInfo?.email) }}>
+                            <Feather name="mail" size={wp('5%')} color={isDark ? "#F87171" : "#EF4444"} />
                         </TouchableOpacity>
 
                     </View>
@@ -378,7 +383,7 @@ const Customer = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2">
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
                         <Text
                             style={[
                                 globalStyles.headingText,

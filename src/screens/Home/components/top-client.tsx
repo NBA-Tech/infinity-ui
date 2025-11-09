@@ -74,11 +74,11 @@ const TopClient = (props: TopClientProps) => {
                     }}
                 >
                     <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                        {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
+                        {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.name}
                     </AvatarFallbackText>
                 </Avatar>
                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
-                    {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.firstName}
+                    {props?.customerMetaInfo?.find((customer) => customer.customerID === item?.customerID)?.name}
                 </Text>
             </View>
             <View className='flex flex-row justify-between items-center mt-2'>

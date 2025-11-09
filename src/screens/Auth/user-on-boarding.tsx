@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         width: wp("13%"),
     },
     divider: {
-        width: wp("15%"),
+        width: wp("10%"),
         height: hp("0.5%"),
         marginHorizontal: wp("2%"),
     },

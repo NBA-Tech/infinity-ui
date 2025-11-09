@@ -1,11 +1,7 @@
 // src/models/CustomerModel.ts
 
 
-export enum GENDER {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  OTHER = "OTHER",
-}
+
 
 export enum LEADSOURCE {
   REFERRAL = "REFERRAL",
@@ -16,12 +12,10 @@ export enum LEADSOURCE {
 }
 
 export interface CustomerBasicInfo {
-  firstName: string;
-  lastName: string;
+  name: string;
   mobileNumber: string;
   email: string;
   notes?: string;
-  gender?: GENDER;
 }
 
 export interface CustomerBillingInfo {

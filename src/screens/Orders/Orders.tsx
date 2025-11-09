@@ -58,6 +58,7 @@ const Orders = () => {
     const [currID, setCurrID] = useState<string>("");
     const [refresh, setRefresh] = useState<boolean>(false);
     const [openFilter, setOpenFilter] = useState(false);
+    const [intialLoading, setIntialLoading] = useState(true);
     const [customerListFilter, setCustomerListFilter] = useState<string[]>();
     const [eventTypeFilter, setEventTypeFilter] = useState<string[]>();
     const [totalCount, setTotalCount] = useState(0);
@@ -159,10 +160,15 @@ const Orders = () => {
 
     useFocusEffect(
         useCallback(() => {
-            const reset = filters?.page === 1;
+            let reset = filters?.page === 1;
+            if(!intialLoading){
+                reset=intialLoading
+            }
             getOrderListData(reset);
+            setIntialLoading(true)
             return()=>{
                 setOrderData([]);
+                setIntialLoading(false)
             }
         }, [filters, refresh])
     );
@@ -184,7 +190,7 @@ const Orders = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2">
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
                         <Text
                             style={[
                                 globalStyles.headingText,
@@ -255,7 +261,7 @@ const Orders = () => {
                 extraValue={{
                     customerList: customerMetaInfoList
                         ?.map(c => ({
-                            label: `${c.firstName} ${c.lastName}`,
+                            label: `${c.name}`,
                             value: c.customerID
                         })),
                     eventTypeList: eventTypeFilter?.map(e => ({ label: e, value: e }))
@@ -263,7 +269,7 @@ const Orders = () => {
             />
             <View>
                 <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-                <View className={isDark ? "bg-[#1F2028]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
+                <View  style={{ marginVertical: hp('1%') }}>
                     <View className="flex flex-row items-center gap-3" style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                         <Input size="lg" style={styles.inputContainer} variant='rounded'>
                             <InputSlot>

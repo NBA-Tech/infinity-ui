@@ -24,6 +24,7 @@ import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
@@ -235,8 +236,8 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     return (
-        <View>
-            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect]}>
+        <SafeAreaView >
+            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect,{ flex: 1 }]}>
                 {formFields.map((field, index) => (
                     <FormControl
                         key={index}
@@ -366,7 +367,7 @@ const Register = ({ setCurrScreen }: any) => {
                     </View>
                 </View>
             </Card>
-        </View>
+        </SafeAreaView>
     );
 };
 

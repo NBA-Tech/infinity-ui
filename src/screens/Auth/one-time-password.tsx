@@ -1,86 +1,81 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import { WaveHandIcon } from '@/src/assets/Icons/SvgIcons';
-import Background from '../../assets/images/Background.png';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthResponse } from '@/src/types/auth/auth-type';
 import { registerUser } from '@/src/api/auth/auth-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 
 const styles = StyleSheet.create({
-  otpBodyContainer: {
+  container: {
     flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp('7%'),
   },
   cardContainer: {
-    padding: hp('2%'),
+    padding: hp('2.5%'),
     width: wp('85%'),
-  },
-  body: {
-    flex: 1,
-    marginVertical: hp('15%'),
   },
   heading: {
     flexDirection: 'row',
-    marginVertical: hp('2%'),
-    gap: wp('2%'),
     alignItems: 'center',
+    marginBottom: hp('2%'),
+    gap: wp('2%'),
   },
   subHeading: {
-    marginBottom: hp('2%'),
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
+    marginBottom: hp('3%'),
   },
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginVertical: hp('2%'),
   },
   otpBox: {
     width: wp('18%'),
-    height: hp('8%'),
-    borderRadius: wp('3%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: wp('1%'),
+    height: hp('7%'),
+    borderRadius: wp('2%'),
+    textAlign: 'center',
+    fontSize: wp('6%'),
+    fontWeight: '600',
   },
 });
 
 const OneTimePassword = ({ navigation, route }: { navigation: any; route: any }) => {
   const { authData, otpCode } = route?.params || {};
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(60);
-  const [otp, setOtp] = useState('');
-  const numInputs = 4;
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const { isDark } = useContext(ThemeToggleContext);
   const globalStyle = useContext(StyleContext);
   const showToast = useToastMessage();
   const { setItem } = useDataStore();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const handleChange = (text: string, index: number) => {
+    const value = text.replace(/[^0-9]/g, '');
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
 
-    return () => clearInterval(interval);
-  }, []);
+    if (value && index < otp.length - 1) setActiveIndex(index + 1);
+  };
+
+  const handleKeyPress = (key: string, index: number) => {
+    if (key === 'Backspace' && otp[index] === '' && index > 0) {
+      setActiveIndex(index - 1);
+    }
+  };
 
   const handleSubmit = async () => {
-    if (otp.length < numInputs) {
+    const enteredOtp = otp.join('');
+    if (enteredOtp.length < otp.length) {
       return showToast({ type: 'error', title: 'Error', message: 'Please enter all digits' });
     }
-    if (otpCode !== otp) {
+    if (otpCode !== enteredOtp) {
       return showToast({ type: 'error', title: 'Error', message: 'Invalid OTP' });
     }
 
@@ -89,82 +84,78 @@ const OneTimePassword = ({ navigation, route }: { navigation: any; route: any })
     if (!register?.success) {
       setLoading(false);
       return showToast({ type: 'error', title: 'Error', message: register?.message ?? 'Something went wrong' });
-    } else {
-      setLoading(false);
-      showToast({ type: 'success', title: 'Success', message: register?.message ?? 'Successfully registered' });
-      await setItem('USERID', register?.userId);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'UserOnBoarding' }],
-      });
     }
+
+    await setItem('USERID', register?.userId);
+    showToast({ type: 'success', title: 'Success', message: register?.message ?? 'Successfully registered' });
+    setLoading(false);
+    navigation.reset({ index: 0, routes: [{ name: 'UserOnBoarding' }] });
   };
 
   return (
-    <ImageBackground source={Background} resizeMode="cover" style={{ flex: 1 }}>
-      <View style={styles.body}>
-        <View style={styles.otpBodyContainer}>
-          <Card size="md" variant="filled" style={[globalStyle.cardShadowEffect]}>
-            <View style={styles.cardContainer}>
-              <View style={styles.heading}>
-                <WaveHandIcon />
-                <Text style={[globalStyle.themeTextColor, globalStyle.heading3Text]}>
-                  OTP Verification
-                </Text>
-              </View>
+    <View style={[styles.container, globalStyle.appBackground]}>
+      <Card size="md" variant="filled" style={globalStyle.cardShadowEffect}>
+        <View style={styles.cardContainer}>
+          {/* Header */}
+          <View style={styles.heading}>
+            <WaveHandIcon />
+            <Text style={[globalStyle.heading2Text, globalStyle.themeTextColor]}>
+              OTP Verification
+            </Text>
+          </View>
 
-              <View style={styles.subHeading}>
-                <Text style={[globalStyle.labelText, globalStyle.themeTextColor]}>
-                  For verification, please enter the OTP sent to your email. If you haven’t received the code yet, please check your spam folder.
-                </Text>
-              </View>
+          <View style={styles.subHeading}>
+            <Text style={[globalStyle.labelText, globalStyle.greyTextColor]}>
+              Enter the 4-digit OTP sent to your registered email.
+            </Text>
+          </View>
 
-              {/* Hidden Input */}
+          {/* OTP Boxes */}
+          <View style={styles.otpContainer}>
+            {otp.map((value, i) => (
               <TextInput
-                style={{ opacity: 0, position: 'absolute' }}
+                key={i}
+                value={value}
+                onChangeText={(text) => handleChange(text, i)}
+                onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, i)}
                 keyboardType="number-pad"
-                maxLength={numInputs}
-                value={otp}
-                onChangeText={(text) => {
-                  setOtp(text.replace(/[^0-9]/g, '')); // only digits
-                }}
-                autoFocus
+                maxLength={1}
+                autoFocus={activeIndex === i} // ✅ focus handled by state
+                style={[
+                  styles.otpBox,
+                  {
+                    backgroundColor: isDark ? '#1A2238' : '#F5F7FB',
+                    color: isDark ? '#E2E8F0' : '#1E3A8A',
+                    borderWidth: 2,
+                    borderColor: value
+                      ? '#3B82F6'
+                      : isDark
+                      ? '#2E3A57'
+                      : '#E5E7EB',
+                  },
+                ]}
+                selectionColor="#3B82F6"
+                placeholder="-"
+                placeholderTextColor={isDark ? '#475569' : '#9CA3AF'}
               />
+            ))}
+          </View>
 
-              {/* Display Boxes */}
-              <TouchableOpacity
-                style={styles.otpContainer}
-                activeOpacity={1}
-                onPress={() => {
-                  // focus hidden input when user taps the boxes
-                }}>
-                {Array.from({ length: numInputs }).map((_, i) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.otpBox,
-                      { borderWidth: otp.length === i ? 2 : 1, borderColor: otp.length === i ? '#6839eb' : '#ccc' },
-                    ]}>
-                    <Text style={[globalStyle.normalBoldText,globalStyle.whiteTextColor]}>{otp[i] || ''}</Text>
-                  </View>
-                ))}
-              </TouchableOpacity>
-
-              <Button
-                size="lg"
-                variant="solid"
-                action="primary"
-                style={[globalStyle.purpleBackground, { marginVertical: hp('3%') }]}
-                onPress={handleSubmit}
-                isDisabled={loading}>
-                {loading && <ButtonSpinner color={'#fff'} size={wp('4%')} />}
-                <ButtonText style={globalStyle.buttonText}>Verify OTP</ButtonText>
-              </Button>
-            </View>
-          </Card>
+          {/* Verify Button */}
+          <Button
+            size="lg"
+            variant="solid"
+            action="primary"
+            style={[globalStyle.buttonColor, { marginTop: hp('4%') }]}
+            onPress={handleSubmit}
+            isDisabled={loading}
+          >
+            {loading && <ButtonSpinner color="#fff" size={wp('4%')} />}
+            <ButtonText style={globalStyle.buttonText}>Verify OTP</ButtonText>
+          </Button>
         </View>
-      </View>
-    </ImageBackground>
+      </Card>
+    </View>
   );
 };
 

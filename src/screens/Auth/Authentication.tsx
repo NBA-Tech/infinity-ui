@@ -1,110 +1,145 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '@/components/ui/card';
-import GradientCard from '@/src/utils/gradient-card';
-import { Image } from '@/components/ui/image';
-import Logo from '../../assets/images/logo.png'
-import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import LottieView from 'lottie-react-native';
+import { StyleContext } from '@/src/providers/theme/global-style-provider';
+import { configureGoogleSignin } from '@/src/services/auth/auth-service';
+
+// Auth screens
 import Login from './login';
 import Register from './register';
-import OneTimePassword from './one-time-password';
-import Background from '../../assets/images/Background.png'
-import { Divider } from '@/components/ui/divider';
-import { configureGoogleSignin } from '@/src/services/auth/auth-service';
 import ForgotPassword from './forgot-password';
-import LottieView from 'lottie-react-native';
+
 const styles = StyleSheet.create({
-    headingContainer: {
-        marginVertical: hp("0.1%")
-    },
-    body: {
-        flex: 1,
-        justifyContent: "space-between"
-    },
-    mainAnimation: {
-        width: wp("100%"),
-        height: wp("50%"),
-    },
-})
-
-
+  container: {
+    flex: 1,
+  },
+  body: {
+    flex: 1,
+  },
+  animationContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: hp('2%'),
+  },
+  mainAnimation: {
+    width: wp('100%'),
+    height: wp('50%'),
+  },
+  headingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: hp('1%'),
+    marginBottom: hp('2%'),
+  },
+  titleText: {
+    textAlign: 'center',
+    marginTop: hp('0.5%'),
+  },
+  appName: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginTop: hp('1.5%'), // smaller spacing
+    marginBottom: 0, // ✅ no bottom gap
+  },
+});
 
 const Authentication = () => {
-    const globalStyles = useContext(StyleContext);
-    const [currScreen, setCurrScreen] = useState('login');
+  const globalStyles = useContext(StyleContext);
+  const [currScreen, setCurrScreen] = useState<'login' | 'register' | 'forgot'>('login');
 
-    useEffect(() => {
-        configureGoogleSignin();
-        return () => {
-        };
-    }, []);
+  useEffect(() => {
+    configureGoogleSignin();
+  }, []);
 
+  const renderAuthContent = () => (
+    <View style={styles.body}>
+      {/* Animation + Header */}
+      <View style={styles.animationContainer}>
+        <LottieView
+          source={require('../../assets/animations/login.json')}
+          autoPlay
+          loop
+          style={styles.mainAnimation}
+        />
 
-    const UserAuth = () => {
-        return (
-            <View style={globalStyles.appBackground}>
-                <View style={styles.body}>
+        <View style={styles.headingContainer}>
+          <Text
+            style={[
+              globalStyles.headingText,
+              globalStyles.themeTextColor,
+              styles.titleText,
+            ]}
+          >
+            {currScreen === 'login'
+              ? 'Sign in to'
+              : currScreen === 'register'
+              ? 'Sign up to'
+              : 'Reset your password for'}
+          </Text>
 
-                    {/* Header */}
-                    <View style={styles.headingContainer}>
-                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                            {/* Lottie Animation */}
-                            <LottieView
-                                source={require('../../assets/animations/login.json')}
-                                autoPlay
-                                loop
-                                style={styles.mainAnimation}
-                            />
+          <Text
+            style={[
+              globalStyles.headingText,
+              globalStyles.blueTextColor,
+              styles.appName,
+            ]}
+          >
+            INFINITY CRM
+          </Text>
+        </View>
+      </View>
 
-                            {/* Title below animation */}
-                            <Text
-                                style={[
-                                    globalStyles.headingText,
-                                    globalStyles.themeTextColor,
-                                    {marginTop: hp('1.5%'),},
-                                ]}
-                            >
-                                Sign {currScreen === 'login' ? 'in' : 'up'} to
-                            </Text>
+      {/* Auth Card (Login/Register/Forgot) */}
+      <View style={styles.formContainer}>
+        {currScreen === 'login' ? (
+          <Login setCurrScreen={setCurrScreen} />
+        ) : currScreen === 'register' ? (
+          <Register setCurrScreen={setCurrScreen} />
+        ) : (
+          <ForgotPassword setCurrScreen={setCurrScreen} />
+        )}
+      </View>
+    </View>
+  );
 
-                            <Text
-                                style={[
-                                    globalStyles.headingText,globalStyles.blueTextColor,
-                                    {
-                                        textAlign: 'center',
-                                    },
-                                ]}
-                            >
-                                INFINITY CRM
-                            </Text>
-                        </View>
-                    </View>
-
-                    {/* Login Card */}
-                    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                        {currScreen === 'login' ? (
-                            <Login setCurrScreen={setCurrScreen} />
-                        ) : currScreen === 'register' ? (
-                            <Register setCurrScreen={setCurrScreen} />
-                        ) : (
-                            <ForgotPassword setCurrScreen={setCurrScreen} />
-                        )}
-                    </View>
-                </View>
-            </View>
-
-        )
-    }
-
-    return (
-        <SafeAreaView style={[globalStyles.appBackground]}>
-            <UserAuth />
-
-
-        </SafeAreaView>
-    );
+  return (
+    <SafeAreaView
+      style={[
+        globalStyles.appBackground,
+        styles.container,
+        { paddingBottom: 0 }, // ✅ remove SafeAreaView padding bottom
+      ]}
+    >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: 0, // ✅ removes any ScrollView bottom padding
+          }}
+        >
+          {renderAuthContent()}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 };
 
 export default Authentication;

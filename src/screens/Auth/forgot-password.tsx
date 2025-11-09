@@ -5,7 +5,7 @@ import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-s
 import { FormFields } from '@/src/types/common';
 import { patchState } from '@/src/utils/utils';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { Text, View, StyleSheet, TextInput } from 'react-native'
+import { Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
@@ -80,7 +80,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             key: "email",
             label: "Email",
             placeholder: "Eg :YJy0g@example.com",
-            icon: <Feather name="mail" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="mail" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -92,13 +92,13 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
         }
     }), [forgotPasswordDetails, isVerified])
 
-    const forgotPasswordResetFields:FormFields = useMemo(() => ({
+    const forgotPasswordResetFields: FormFields = useMemo(() => ({
         password: {
             parentKey: "password",
             key: "password",
             label: "Password",
             placeholder: "Password",
-            icon: <Feather name="lock" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="lock" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "password",
             style: "w-full",
             isRequired: true,
@@ -113,7 +113,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             key: "confirmPassword",
             label: "Confirm Password",
             placeholder: "Confirm Password",
-            icon: <Feather name="lock" size={wp('5%')} color="#8B5CF6" />,
+            icon: <Feather name="lock" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "password",
             style: "w-full",
             isRequired: true,
@@ -123,7 +123,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
                 patchState("", "confirmPassword", value, true, setForgotPasswordDetails, setErrors);
             }
         }
-    }),[forgotPasswordDetails])
+    }), [forgotPasswordDetails])
 
     const handleChange = (text: string, index: number) => {
         if (/^\d$/.test(text)) {
@@ -143,7 +143,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
     };
 
     const handleResetPassword = async () => {
-        if(forgotPasswordDetails?.password!==forgotPasswordDetails?.confirmPassword){
+        if (forgotPasswordDetails?.password !== forgotPasswordDetails?.confirmPassword) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -151,14 +151,14 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             })
         }
         setLoading(true);
-        const payload:AuthModel={
-            email:forgotPasswordDetails?.email,
-            password:forgotPasswordDetails?.password,
-            authType:'EMAIL_PASSWORD'
+        const payload: AuthModel = {
+            email: forgotPasswordDetails?.email,
+            password: forgotPasswordDetails?.password,
+            authType: 'EMAIL_PASSWORD'
         }
-        const resetPassword=await resetPasswordAPI(payload);
+        const resetPassword = await resetPasswordAPI(payload);
         setLoading(false);
-        if(!resetPassword?.success){
+        if (!resetPassword?.success) {
             return showToast({
                 type: "error",
                 title: "Error",
@@ -173,8 +173,8 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
         setCurrScreen("login");
     }
 
-    const verifyOtp=()=>{
-        if(otp.join("")===apiOtp){
+    const verifyOtp = () => {
+        if (otp.join("") === apiOtp) {
             setIsVerified(true);
             setIsOpen(false);
         }
@@ -190,8 +190,8 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             })
         }
         setLoading(true);
-        const isEmailExists=await checkEmailExistsAPI(forgotPasswordDetails?.email);
-        if(!isEmailExists?.success){
+        const isEmailExists = await checkEmailExistsAPI(forgotPasswordDetails?.email);
+        if (!isEmailExists?.success) {
             setLoading(false);
             return showToast({
                 type: "error",
@@ -268,7 +268,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
                         size="lg"
                         variant="solid"
                         action="primary"
-                        style={globalStyles.purpleBackground}
+                        style={globalStyles.buttonColor}
                         onPress={isVerified ? handleResetPassword : handleForgotPasswordPopUp}
                         isDisabled={loading}
                     >
@@ -281,7 +281,15 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
                             Reset Password
                         </ButtonText>
                     </Button>
+                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
+                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Remember your password? </Text>
+                        <TouchableOpacity onPress={() => setCurrScreen('login')}>
+                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
+                        </TouchableOpacity>
+
+                    </View>
                 </View>
+
             </Card>
         </View>
     )

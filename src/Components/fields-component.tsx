@@ -52,17 +52,16 @@ const styles = StyleSheet.create({
         marginVertical: hp("1%"),
     },
     checkContainer: {
+        alignItems: "center",
+        justifyContent: "center",
         padding: hp("1%"),
         borderRadius: wp("2%"),
         borderColor: "#d1d5db",
         borderWidth: wp("0.4%"),
-        minHeight: hp("6%"),
         paddingHorizontal: wp("2%"),
-        width: "auto",
     },
     dropdown: {
         height: hp("6%"),
-        borderWidth: 1,
         borderRadius: wp("1%"),
         paddingHorizontal: wp("2%"),
     },
@@ -99,7 +98,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                             borderRadius: 9999, // <-- "rounded-full"
                             paddingHorizontal: 14,
                             paddingVertical: 10,
-                            borderColor:isDark?"transparent":"#CBD5E1"
+                            borderColor: isDark ? "transparent" : "#CBD5E1"
                         },
                     ]}
                     containerStyle={[
@@ -149,12 +148,12 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     renderLeftIcon={() => field.icon}
                     renderRightIcon={() => (
                         field?.rightIcon ? (
-                          <TouchableOpacity onPress={field?.onRightIconPress} activeOpacity={0.7}>
-                            {field.rightIcon}
-                          </TouchableOpacity>
+                            <TouchableOpacity onPress={field?.onRightIconPress} activeOpacity={0.7}>
+                                {field.rightIcon}
+                            </TouchableOpacity>
                         ) : <Feather name="chevron-down" size={20} color={isDark ? "#E5E7EB" : "#111827"} />
-                      )}
-                      
+                    )}
+
                 />
 
             ) : field.type === "multi-select" ? (
@@ -185,7 +184,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#3A3B47" : "#ccc",borderRadius:wp("6%")},
+                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#3A3B47" : "#ccc", borderRadius: wp("6%") },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                     disabled={field.isDisabled || field?.isLoading}
@@ -195,7 +194,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         style={[
                             globalStyles.labelText,
                             { color: isDark ? "#fff" : "#000" },
-                            !field.value && { color: "grey" },
+                            !field.value && { color: isDark ? "#94A3B8" : "#6B7280" },
                         ]}
                     >
                         {field.value
@@ -357,38 +356,37 @@ export const CustomCheckBox = ({
     onPress,
     value,
     selected,
-  }: CustomCheckBoxProps) => {
+}: CustomCheckBoxProps) => {
     const { isDark } = useContext(ThemeToggleContext);
-    const globalStyles=useContext(StyleContext)
-  
+    const globalStyles = useContext(StyleContext)
+
     const handleSelect = () => {
-      onPress(value, !selected);
+        onPress(value, !selected);
     };
-  
+
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={[
-          styles.checkContainer,
-          {
-            backgroundColor: isDark ? "#0E1628" : "#F5F7FB", // neutral background
-            borderWidth: 1.5,
-            borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border
-            borderRadius: 10,
-          },
-          selected && (selectedStyle || {
-            backgroundColor: isDark ? "#10274C" : "#D9E8FF", // blue tint for selected
-            borderColor: isDark ? "#6FADFF" : "#1372F0", // brand blue border
-            shadowColor: isDark ? "#1372F0" : "#6FADFF",
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-          }),
-          customStyles,
-        ]}
-        onPress={handleSelect}
-      >
-        <View>{children}</View>
-      </TouchableOpacity>
+        <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+                styles.checkContainer,
+                {
+                    backgroundColor: isDark ? "#0E1628" : "#F5F7FB", // neutral background
+                    borderWidth: 1.5,
+                    borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border
+                    borderRadius: 10,
+                },
+                selected && (selectedStyle || {
+                    backgroundColor: isDark ? "#10274C" : "#D9E8FF", // blue tint for selected
+                    borderColor: isDark ? "#6FADFF" : "#1372F0", // brand blue border
+                    shadowColor: isDark ? "#1372F0" : "#6FADFF",
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                }),
+                customStyles,
+            ]}
+            onPress={handleSelect}
+        >
+            <View>{children}</View>
+        </TouchableOpacity>
     );
-  };
-  
+};

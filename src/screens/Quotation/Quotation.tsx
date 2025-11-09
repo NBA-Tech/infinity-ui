@@ -1,17 +1,26 @@
 import { Button, ButtonText } from '@/components/ui/button';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import GradientCard from '@/src/utils/gradient-card';
-import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
-import { NavigationProp } from '@/src/types/common';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/card';
 import { scaleFont } from '@/src/styles/global';
+import { useCustomerStore } from '@/src/store/customer/customer-store';
+import { useDataStore } from '@/src/providers/data-store/data-store-provider';
+import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import Skeleton from '@/components/ui/skeleton';
+import { formatDate, openDaialler } from '@/src/utils/utils';
+import { useUserStore } from '@/src/store/user/user-store';
+import { EmptyState } from '@/src/components/empty-state-data';
 
 
 const styles = StyleSheet.create({
@@ -19,17 +28,38 @@ const styles = StyleSheet.create({
         width: wp('85%'),
     }
 })
+
+const QuoteCardSkeleton = ({ count }: { count: number }) => (
+    <View className='flex flex-col justify-between'>
+        {[...Array(count)].map((_, index) => (
+            <View key={index}>
+                <Skeleton style={{ width: wp('95%'), height: hp('15%'), marginHorizontal: wp('2%') }} />
+            </View>
+        ))}
+    </View>
+);
+
 const Quotation = () => {
     const globalStyles = useContext(StyleContext)
     const { isDark } = useContext(ThemeToggleContext)
     const navigation = useNavigation<NavigationProp>();
+    const { customerMetaInfoList, loadCustomerMetaInfoList } = useCustomerStore();
+    const [loading, setLoading] = useState(false);
+    const { getItem } = useDataStore()
+    const [filters, setFilters] = useState<SearchQueryRequest>({ page: 1, pageSize: 10 });
+    const { userDetails } = useUserStore()
+    const showToast = useToastMessage()
+    const [hasMore, setHasMore] = useState(true);
+    const [quoteData, setQuoteData] = useState([])
+    const [intialLoading, setIntialLoading] = useState(false);
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     const actionButtons = [
         {
             key: 'edit',
             label: 'Edit',
             icon: <Feather name="edit-2" size={wp('4%')} color="#fff" />,
-            onPress: () => console.log('Edit Pressed'),
+            onPress: (orderId:string) => navigation.navigate("Orders",{screen:"CreateOrder",params:{orderId:orderId}}),
         },
         {
             key: 'makeOrder',
@@ -41,92 +71,174 @@ const Quotation = () => {
             key: 'call',
             label: 'Call',
             icon: <Feather name="phone" size={wp('4%')} color="#fff" />,
-            onPress: () => console.log('Call Pressed'),
+            onPress: (mobileNumber:string) => openDaialler(mobileNumber),
         },
         {
-            key: 'share',
-            label: 'Share',
-            icon: <Feather name="share-2" size={wp('4%')} color="#fff" />,
-            onPress: () => console.log('Share Pressed'),
+            key: 'delete',
+            label: 'Delete',
+            icon: <Feather name="trash" size={wp('4%')} color="#fff" />,
+            onPress: (orderId:string) => handleDeleteOrder(orderId),
         },
     ];
 
-    const QuoteCardComponent = () => (
-        <Card style={globalStyles.cardShadowEffect}>
-            {/* Title */}
-            <View className='flex flex-row justify-center items-center' style={{ marginBottom: hp('1.5%') }}>
-                <Text style={[globalStyles.heading2Text,globalStyles.themeTextColor, { fontSize: scaleFont(18) }]}>Ajay's Shoot</Text>
-            </View>
+    const handleDeleteOrder = (orderId: string) => {
+        console.log(orderId);
+    }
 
-            {/* Client & Quote Info + Accept/Reject */}
-            <View className='flex flex-row justify-between items-center' style={{ marginBottom: hp('1%') }}>
-                <View>
-                    <Text style={[globalStyles.normalText,globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Client Name: Ajay</Text>
-                    <Text style={[globalStyles.normalText,globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Quote No: 12</Text>
+    const getQuoteListData = async (reset: boolean = false) => {
+        setLoading(true);
+        const currFilters: SearchQueryRequest = {
+            requiredFields: [
+                "orderId",
+                "status",
+                "createdDate",
+                "totalPrice",
+                "orderBasicInfo.customerID",
+                "eventInfo",
+                "offeringInfo"
+            ],
+            ...filters,
+            filters: {
+                ...(filters?.filters || {}),
+                userId: getItem("USERID"),
+                approvalStatus: ApprovalStatus.PENDING
+            },
+        };
+
+        try {
+            const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
+            console.log(orderDataResponse, customerMetaInfoList)
+            if (!orderDataResponse?.success) {
+                showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
+                setLoading(false);
+                return;
+            }
+
+            setQuoteData(prev =>
+                reset ? orderDataResponse?.data ?? [] : [...prev, ...(orderDataResponse?.data ?? [])]
+            );
+
+            setHasMore(
+                (orderDataResponse?.data?.length ?? 0) > 0 &&
+                (((filters?.page ?? 1) * (filters?.pageSize ?? 10)) < (orderDataResponse?.total ?? 0))
+            );
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            let reset = filters?.page === 1;
+            if (!intialLoading) {
+                reset = intialLoading
+            }
+            getQuoteListData(reset);
+            setIntialLoading(true)
+            return () => {
+                setQuoteData([]);
+                setIntialLoading(false)
+            }
+        }, [filters, refresh])
+    );
+
+
+    useEffect(() => {
+        const userId = getItem("USERID");
+        loadCustomerMetaInfoList(userId, {}, {}, showToast);
+        // loadOrdersMetaData(userId);
+    }, []);
+
+    const QuoteCardComponent = ({ item }: { item: OrderModel }) => {
+        const customerData = customerMetaInfoList.find(x => x?.customerID === item?.orderBasicInfo?.customerID)
+        console.log(customerData,item)
+        return (
+            <Card style={globalStyles.cardShadowEffect}>
+                {/* Title */}
+                <View className='flex flex-row justify-center items-center' style={{ marginBottom: hp('1.5%') }}>
+                    <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor, { fontSize: scaleFont(18) }]}>{customerData?.name}'s {item?.eventInfo?.eventTitle}</Text>
                 </View>
 
-                <View className='flex flex-row items-center gap-2'>
-                    {/* Accept Button */}
-                    <Button
-                        size="sm"
-                        variant="solid"
-                        action="primary"
-                        style={{ backgroundColor: "#22C55E", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                    >
-                        <Feather name="check" size={wp('4%')} color="#fff" />
-                        <ButtonText style={[globalStyles.whiteTextColor,{ fontSize: scaleFont(12)}]}>Accept</ButtonText>
-                    </Button>
+                {/* Client & Quote Info + Accept/Reject */}
+                <View className='flex flex-row justify-between items-center' style={{ marginBottom: hp('1%') }}>
+                    <View>
+                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Client Name: {customerData?.name}</Text>
+                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Created On: {formatDate(item?.createdDate)}</Text>
+                    </View>
 
-                    {/* Reject Button */}
-                    <Button
-                        size="sm"
-                        variant="solid"
-                        action="primary"
-                        style={{ backgroundColor: "#EF4444", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                    >
-                        <Feather name="x" size={wp('4%')} color="#fff" />
-                        <ButtonText style={[globalStyles.whiteTextColor,{ fontSize: scaleFont(12) }]}>Reject</ButtonText>
-                    </Button>
+                    <View className='flex flex-row items-center gap-2'>
+                        {/* Accept Button */}
+                        <Button
+                            size="sm"
+                            variant="solid"
+                            action="primary"
+                            style={{ backgroundColor: "#22C55E", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
+                        >
+                            <Feather name="check" size={wp('4%')} color="#fff" />
+                            <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12) }]}>Accept</ButtonText>
+                        </Button>
+
+                        {/* Reject Button */}
+                        <Button
+                            size="sm"
+                            variant="solid"
+                            action="primary"
+                            style={{ backgroundColor: "#EF4444", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
+                        >
+                            <Feather name="x" size={wp('4%')} color="#fff" />
+                            <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12) }]}>Reject</ButtonText>
+                        </Button>
+                    </View>
                 </View>
-            </View>
 
-            {/* Event Details Card */}
-            <Card style={[globalStyles.cardShadowEffect, { padding: hp('1.5%'), borderRadius: 10, marginBottom: hp('1.5%') }]}>
-                <View>
-                    <View className='flex flex-row justify-between items-center' style={{ marginBottom: hp('0.8%') }}>
-                        <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Event Date</Text>
-                        <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>12/12/2000</Text>
+                {/* Event Details Card */}
+                <Card style={[globalStyles.cardShadowEffect, { padding: hp('1.5%'), borderRadius: 10, marginBottom: hp('1.5%') }]}>
+                    <View>
+                        <View className='flex flex-row justify-between items-center' style={{ marginBottom: hp('0.8%') }}>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Event Date</Text>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>{formatDate(item?.eventInfo?.eventDate)}</Text>
+                        </View>
+                        <View className='flex flex-row justify-between items-center'>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Amount</Text>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>{userDetails?.currencyIcon} {item?.totalPrice}</Text>
+                        </View>
                     </View>
-                    <View className='flex flex-row justify-between items-center'>
-                        <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Amount</Text>
-                        <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>$2000</Text>
-                    </View>
+                </Card>
+
+                {/* Action Buttons */}
+                <View className="flex flex-row justify-between items-center gap-1" style={{ marginTop: hp('1%') }}>
+                    {actionButtons.map((btn) => (
+                        <Button
+                            key={btn.key}
+                            size="sm"
+                            variant="solid"
+                            action="primary"
+                            style={{
+                                backgroundColor: globalStyles.buttonColor.backgroundColor,
+                            }}
+                            onPress={() => {
+                                if (btn?.key === "edit" || btn?.key === "delete") {
+                                  btn.onPress(item?.orderId);
+                                } else if (btn?.key === "call") {
+                                  btn.onPress(customerData?.mobileNumber);
+                                } else {
+                                  btn.onPress();
+                                }
+                              }}
+                        >
+                            {btn.icon}
+                            <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12), marginLeft: wp('1%') }]}>
+                                {btn.label}
+                            </ButtonText>
+                        </Button>
+                    ))}
                 </View>
             </Card>
+        )
 
-            {/* Action Buttons */}
-            <View className="flex flex-row justify-between items-center gap-1" style={{ marginTop: hp('1%') }}>
-                {actionButtons.map((btn) => (
-                    <Button
-                        key={btn.key}
-                        size="sm"
-                        variant="solid"
-                        action="primary"
-                        style={{
-                            backgroundColor: globalStyles.buttonColor.backgroundColor,
-                        }}
-                        onPress={btn.onPress}
-                    >
-                        {btn.icon}
-                        <ButtonText style={[globalStyles.whiteTextColor,{ fontSize: scaleFont(12), marginLeft: wp('1%') }]}>
-                            {btn.label}
-                        </ButtonText>
-                    </Button>
-                ))}
-            </View>
-        </Card>
-
-    )
+    }
     return (
         <SafeAreaView style={globalStyles.appBackground}>
             <GradientCard
@@ -225,8 +337,29 @@ const Quotation = () => {
 
 
                 </View>
+                {loading && <QuoteCardSkeleton count={5} />}
+                {!loading && quoteData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "orders" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
+                
                 <View style={{ marginVertical: hp('2%') }}>
-                    <QuoteCardComponent />
+                    <FlatList
+                        data={quoteData ?? []}
+                        style={{ height: hp("65%") }}
+                        keyExtractor={(_, index) => index.toString()}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingVertical: hp("1%") }}
+                        renderItem={({ item }) => (
+                            <QuoteCardComponent item={item} />
+                        )}
+                        onEndReached={() => {
+                            if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
+                        }}
+                        onEndReachedThreshold={0.7}
+                        ListFooterComponent={(hasMore && loading) ? <QuoteCardSkeleton count={1} /> : null}
+                        refreshing={loading}
+                        onRefresh={() => {
+                            setFilters(prev => ({ ...prev, page: 1 }));
+                        }}
+                    />
                 </View>
             </View>
 

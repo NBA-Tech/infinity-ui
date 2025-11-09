@@ -282,6 +282,18 @@ export function openDaialler(phoneNumber: string) {
   Linking.openURL(phoneUrl);
 }
 
+export function openWhatsApp(phoneNumber: string, message?: string) {
+  // Encode the message (in case it has spaces or special characters)
+  const encodedMessage = message ? encodeURIComponent(message) : "";
+  const smsUrl = encodedMessage
+    ? `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`
+    : `https://api.whatsapp.com/send?phone=${phoneNumber}`;
+
+  Linking.openURL(smsUrl).catch((err) =>
+    console.error("Failed to open WhatsApp:", err)
+  );
+}
+
 export function openMessageBox(phoneNumber: string, message?: string) {
   // Encode the message (in case it has spaces or special characters)
   const encodedMessage = message ? encodeURIComponent(message) : "";

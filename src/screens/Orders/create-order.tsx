@@ -51,10 +51,10 @@ const styles = StyleSheet.create({
     },
     roundWrapper: {
         borderRadius: wp("50%"),
-        width: wp("13%"),
+        width: wp("10%"),
     },
     divider: {
-        width: wp("10%"),
+        width: wp("5%"),
         height: hp("0.5%"),
     },
     bottomCard: {
@@ -538,7 +538,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             {Array.from({ length: 4 }).map((_, index) => (
                                 <View className="flex flex-row align-middle items-center" key={index}>
                                     <View
-                                        className="rounded-2xl p-4"
+                                        className="rounded-2xl p-2"
                                         style={[
                                             styles.roundWrapper,
                                             {
@@ -577,7 +577,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
-                                        Customer Informations
+                                        Customer Information
                                     </Text>
                                 </View>
                             </View>
@@ -606,7 +606,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors} />
                             <View style={[{ marginLeft: wp('3%') }, globalStyles.formBackGroundColor]}>
 
-                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Event Type</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText,{marginBottom:hp('1%')}]}>Event Type</Text>
 
                                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%') }}>
                                     {Object.values(eventTypes).map((eventType, index) => (

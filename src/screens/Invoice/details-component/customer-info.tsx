@@ -43,7 +43,7 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                     <TouchableOpacity onPress={() => openDaialler(props?.customerData?.mobileNumber)}>
                                         <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.firstName ?? ""} ${props?.customerData?.lastName ?? ""} Hope you are doing good.`)}>
+                                    <TouchableOpacity onPress={() => openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.name ?? ""} Hope you are doing good.`)}>
                                         <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>
                                 </View>

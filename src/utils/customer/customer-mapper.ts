@@ -4,11 +4,9 @@ import { CustomerModel, CustomerMetaModel } from "@/src/types/customer/customer-
 export const toCustomerMetaModel = (customer: CustomerModel): CustomerMetaModel => ({
   customerID: customer.customerID ?? "",
   userId: customer.userId ?? "",
-  firstName: customer.customerBasicInfo?.firstName ?? "",
-  lastName: customer.customerBasicInfo?.lastName ?? "",
+  name: customer.customerBasicInfo?.name ?? "",
   mobileNumber: customer.customerBasicInfo?.mobileNumber ?? "",
   email: customer.customerBasicInfo?.email ?? "",
-  gender: customer.customerBasicInfo?.gender,
   createdDate: customer.createdDate
 });
 

@@ -21,7 +21,7 @@ import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, navigateTo
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
-import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, GENDER, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
+import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, FormFields, RootStackParamList } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -76,10 +76,10 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
 
     const basicInfoFields: FormFields = useMemo(() => ({
-        firstName: {
+        name: {
             parentKey: "customerBasicInfo",
-            key: "firstName",
-            label: "First Name",
+            key: "name",
+            label: "Full Name",
             placeholder: "Eg: John",
             icon: <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
@@ -87,25 +87,9 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             isRequired: true,
             isDisabled: false,
             isLoading: loadingProvider.intialLoading,
-            value: customerDetails?.customerBasicInfo?.firstName ?? "",
+            value: customerDetails?.customerBasicInfo?.name ?? "",
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'firstName', value, true, setCustomerDetails, setErrors)
-            }
-        },
-        lastName: {
-            parentKey: "customerBasicInfo",
-            key: "lastName",
-            label: "Last Name",
-            placeholder: "Eg: Doe",
-            icon: <Feather name="camera" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
-            type: "text",
-            style: "w-1/2",
-            isRequired: true,
-            isDisabled: false,
-            isLoading: loadingProvider.intialLoading,
-            value: customerDetails?.customerBasicInfo?.lastName ?? "",
-            onChange: (value: string) => {
-                patchState('customerBasicInfo', 'lastName', value, true, setCustomerDetails, setErrors)
+                patchState('customerBasicInfo', 'name', value, true, setCustomerDetails, setErrors)
             }
         },
         mobileNumber: {
@@ -140,29 +124,9 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                 patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
             }
         },
-        gender: {
-            parentKey: "customerBasicInfo",
-            key: "gender",
-            label: "Gender",
-            placeholder: "Eg: Male",
-            icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
-            type: "select",
-            style: "w-1/2",
-            isRequired: false,
-            isDisabled: false,
-            isLoading: loadingProvider.intialLoading,
-            dropDownItems: Object.values(GENDER).map((gender) => ({
-                label: gender,
-                value: gender as GENDER,
-            })),
-            value: customerDetails?.customerBasicInfo?.gender,
-            onChange: (value: GENDER) => {
-                patchState('customerBasicInfo', 'gender', value, false, setCustomerDetails, setErrors)
-            }
-        },
         leadSource: {
             key: "leadSource",
-            label: "LeadSource",
+            label: "Lead Source",
             placeholder: "Eg: Referral",
             icon: <Feather name="link" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",

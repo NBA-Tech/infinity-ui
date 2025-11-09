@@ -25,7 +25,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
     const listItems = useMemo(() => {
         return [
             { label: 'Event Title', value: props?.orderDetails?.eventInfo?.eventTitle || "N/A" },
-            { label: 'Customer Name', value: props?.orderDetails?.customerInfo ? `${props?.orderDetails?.customerInfo?.firstName} ${props?.orderDetails?.customerInfo?.lastName}` : "N/A" },
+            { label: 'Customer Name', value: props?.orderDetails?.customerInfo ? `${props?.orderDetails?.customerInfo?.name} ` : "N/A" },
             { label: 'Event Created Date', value: formatDate(props?.orderDetails?.eventInfo?.eventDate) || "N/A" },
             { label: 'Event Status', value: props?.orderDetails?.status || "N/A" },
             { label: 'Quotation Amount', value: `${userDetails?.currencyIcon} ${props?.orderDetails?.totalPrice}` || "N/A" },

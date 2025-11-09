@@ -319,7 +319,7 @@ const InvoiceList = () => {
                         customerList: customerMetaInfoList?.filter(
                             c => customerListFilter?.some((f) => f === c.customerID)
                         )?.map((c) => ({
-                            label: `${c.firstName} ${c.lastName}`,
+                            label: `${c.name}`,
                             value: c.customerID
                         })),
                         orderList: orderTypeFilter && Object?.keys(orderTypeFilter)?.map((key) => ({

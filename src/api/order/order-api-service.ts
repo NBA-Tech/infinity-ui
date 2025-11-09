@@ -1,6 +1,6 @@
 import { API_BASE_URI } from "@/src/config/app-config"
 import { ApiGeneralRespose, SearchQueryRequest } from "@/src/types/common"
-import { OrderModel, OrderStatus, OrderType } from "@/src/types/order/order-type"
+import { ApprovalStatus, OrderModel, OrderStatus, OrderType } from "@/src/types/order/order-type"
 import { fetchWithTimeout } from "@/src/utils/utils"
 
 export const saveNewOrderAPI=async(payload:OrderModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
@@ -101,4 +101,16 @@ export const updateOrderStatusAPI=async(orderId:string,orderStatus:OrderStatus,h
         },
     })
     return updateOrderStatusResponse
+}
+
+export const updateApprovalStatusAPI=async(orderID:string,status:ApprovalStatus,headers?:Record<string,string>):Promise<ApiGeneralRespose>=>{
+    const updateApprovalStatusResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/order/update_approval_status?orderId=${orderID}&status=${status}`,
+        options: {
+            method: 'PATCH',
+            headers
+        },
+    })
+    return updateApprovalStatusResponse
+    
 }

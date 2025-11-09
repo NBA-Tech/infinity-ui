@@ -88,17 +88,19 @@ const Login = ({ setCurrScreen }: any) => {
                 message: loginResponse?.message ?? "Successfully logged in"
             })
         }
-        setLoadingProvider(null);
         const isOnBoarded = loginResponse?.userInfo?.onboarded;
         await setItem("USERID", loginResponse?.userInfo?.userId);
         await setItem("CREATEDAT", new Date().toISOString());
         if (isOnBoarded) {
             //navigate to home
             await login()
+            setLoadingProvider(null);
+
             navigation.navigate("AuthStack", { screen: "MainTabs" });
 
         }
         else {
+            setLoadingProvider(null);
             navigation.dispatch(
                 CommonActions.reset({
                     index: 0,
@@ -205,7 +207,7 @@ const Login = ({ setCurrScreen }: any) => {
                         </View>
 
                         {/* Instagram */}
-                        <View style={[styles.circleContainer,{backgroundColor: "#E4405F",}]}>
+                        <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
                             <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
                         </View>
 

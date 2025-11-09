@@ -7,8 +7,8 @@ import { heightPercentageToDP as hp,widthPercentageToDP as wp } from "react-nati
 const styles = StyleSheet.create({
   flatCard: {
     overflow: "hidden",
-    borderBottomLeftRadius:wp('3%'),
-    borderBottomRightRadius:wp('3%')
+    borderBottomLeftRadius:wp('6%'),
+    borderBottomRightRadius:wp('6.5%')
   },
 });
 

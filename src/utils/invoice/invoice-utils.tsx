@@ -83,8 +83,8 @@ export const getInvoiceFields = (
                     container: "card",
                     description: "Full name of the client",
                     icon: <Feather name="user-check" size={wp("5%")} color="#10B981" />,
-                    html: `<div class="field"><span>Client Name:</span>${orderDetails?.customerInfo?.firstName} ${orderDetails?.customerInfo?.lastName}</div>`,
-                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "clientName" && (orderDetails?.customerInfo?.firstName || orderDetails?.customerInfo?.lastName)),
+                    html: `<div class="field"><span>Client Name:</span>${orderDetails?.customerInfo?.name} ${orderDetails?.customerInfo?.name}</div>`,
+                    isSelected: invoiceDetails?.quotationHtmlInfo?.some((s) => s?.key === "clientName" && (orderDetails?.customerInfo?.name)),
                 },
                 {
                     key: "eventType",

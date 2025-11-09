@@ -329,10 +329,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         setLoadingProvider((p) => ({ ...p, saveLoading: true }));
 
         const billingInfo: BillingInfo = {
-            name:
-                orderDetails?.customerInfo?.firstName +
-                " " +
-                orderDetails?.customerInfo?.lastName,
+            name:orderDetails?.customerInfo?.name,
             email: orderDetails?.customerInfo?.email,
             mobileNumber: orderDetails?.customerInfo?.mobileNumber,
         };

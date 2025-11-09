@@ -12,12 +12,10 @@ export interface BasicInfoFields {
     onChange?: (value: string) => void
 }
 export interface BasicInfo {
-    firstName: BasicInfoFields;
-    lastName: BasicInfoFields;
+    name: BasicInfoFields;
     mobileNumber: BasicInfoFields;
     email: BasicInfoFields;
     notes: BasicInfoFields;
-    gender: BasicInfoFields;
     leadSource: BasicInfoFields;
 
 }

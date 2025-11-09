@@ -77,7 +77,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
 
         if (customerMetaData?.length > 0) {
             return customerMetaData.map((customer) => ({
-                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+                label: `${customer.name ?? ""}`.trim(),
                 value: customer.customerID ?? "",
             }));
         }
@@ -86,8 +86,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             filters: { userId:userID },
             getAll: true,
             requiredFields: [
-                "customerBasicInfo.firstName",
-                "customerBasicInfo.lastName",
+                "customerBasicInfo.name",
                 "customerID",
                 "createdDate",
                 "customerBasicInfo.mobileNumber",
@@ -113,7 +112,7 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             set({ customerMetaInfoList: metaList });
 
             return metaList.map((customer) => ({
-                label: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
+                label: `${customer.name ?? ""}`.trim(),
                 value: customer.customerID ?? "",
             }));
         } catch (err) {

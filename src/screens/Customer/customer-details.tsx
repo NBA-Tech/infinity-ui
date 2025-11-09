@@ -80,8 +80,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
             case "orders":
                 return <ProjectInfo key={route.key} orderDetails={orderDetails} customerMetaData={
                     {
-                        firstName: customerDetails?.customerBasicInfo?.firstName,
-                        lastName: customerDetails?.customerBasicInfo?.lastName
+                        name: customerDetails?.customerBasicInfo?.name,
                     }
                 } isLoading={loading} />;
             case "invoices":
@@ -202,12 +201,12 @@ export default function CustomerDetails({ navigation, route }: Props) {
                         }}
                     >
                         <AvatarFallbackText style={globalStyles.whiteTextColor}>
-                            {customerDetails?.customerBasicInfo?.firstName + " " + customerDetails?.customerBasicInfo?.lastName}
+                            {customerDetails?.customerBasicInfo?.name}
                         </AvatarFallbackText>
                     </Avatar>
 
                     <View className="flex flex-col justify-center">
-                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerDetails?.customerBasicInfo?.firstName + " " + customerDetails?.customerBasicInfo?.lastName}</Text>
+                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerDetails?.customerBasicInfo?.name}</Text>
                         <Text
                             style={[
                                 globalStyles.smallText,

@@ -36,6 +36,7 @@ const ServiceComponent = ({
   handleCheckboxChange,
   handleTotalPriceCharges,
 }: ServiceComponentProps) => {
+  console.log(offeringInfo)
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
@@ -102,30 +103,37 @@ const ServiceComponent = ({
     <CustomCheckBox
       key={index}
       selectedStyle={{
-        backgroundColor: isDark ? '#18233B' : '#EEF3FF',
-        borderColor: '#3B82F6',
+        backgroundColor: isDark ? '#131A2A' : '#F5F7FB',
+        borderColor: selected ? '#3B82F6' : isDark ? '#2E3A57' : '#E5E7EB',
+        borderWidth: selected ? 1.5 : 1,
       }}
       selected={selected}
       onPress={() => handleChange(!selected)}
-      styles={{ margin: 0, marginVertical: hp('2%') }}
+      styles={{
+        marginVertical: hp('1.5%'),
+        borderRadius: wp('3%'),
+        paddingVertical: hp('1.5%'),
+        paddingHorizontal: wp('3%'),
+      }}
     >
-      <View className="flex-row items-center justify-between">
-        {/* Left side: Icon + details */}
-        <View className="flex-row items-center flex-1 gap-3">
+      <View className="flex flex-row justify-between items-center">
+        {/* LEFT SIDE - Icon + Details */}
+        <View>
+          {/* Icon Section */}
           <GradientCard
             colors={
               selected
                 ? isDark
-                  ? ['#1A2238', '#2C426A']
-                  : ['#2C426A', '#3B82F6']
+                  ? ['#1E293B', '#3B82F6']
+                  : ['#3B82F6', '#60A5FA']
                 : isDark
-                ? ['#0E1628', '#1A2238', '#2E3A57']
-                : ['#F5F7FB', '#E2E8F0', '#CBD5E1']
+                  ? ['#0E1628', '#1A2238', '#2E3A57']
+                  : ['#F9FAFB', '#E5E7EB', '#D1D5DB']
             }
             style={{
-              padding: wp('2%'),
-              minWidth: wp('10%'),
-              minHeight: wp('10%'),
+              padding: wp('2.5%'),
+              width: wp('11%'),
+              height: wp('11%'),
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: wp('2%'),
@@ -138,12 +146,13 @@ const ServiceComponent = ({
             />
           </GradientCard>
 
-          <View className="flex-1 flex-col">
+          {/* Text Section */}
+          <View className="flex-1">
             <Text
               style={[globalStyles.heading3Text, globalStyles.themeTextColor]}
               numberOfLines={1}
             >
-              {eventType?.serviceName} ({toTitleCase(eventType?.type)})
+              {eventType?.serviceName}
             </Text>
             <Text
               style={[globalStyles.labelText, globalStyles.greyTextColor]}
@@ -153,70 +162,86 @@ const ServiceComponent = ({
             </Text>
 
             <View className="flex-row items-center gap-3 mt-1">
-              <View className="flex flex-row gap-1">
-                <Feather name="clock" size={wp('3%')} color={isDark ? '#E2E8F0' : '#475569'} />
+              <View className="flex flex-row gap-1 items-center">
+                <Feather
+                  name="clock"
+                  size={wp('3%')}
+                  color={isDark ? '#E2E8F0' : '#475569'}
+                />
                 <Text style={[globalStyles.smallText, globalStyles.greyTextColor]}>
                   {eventType?.serviceCategory}
                 </Text>
               </View>
-              <View>
-                <Text
-                  style={[
-                    globalStyles.smallText,
-                    selected ? globalStyles.blueTextColor : globalStyles.themeTextColor,
-                  ]}
-                >
-                  ₹{eventType?.price}
-                </Text>
-              </View>
+              <Text
+                style={[
+                  globalStyles.smallText,
+                  selected ? globalStyles.blueTextColor : globalStyles.themeTextColor,
+                  { fontWeight: '600' },
+                ]}
+              >
+                ₹{eventType?.price}
+              </Text>
             </View>
           </View>
         </View>
 
-        {/* Right side: Quantity controls */}
-        <View className="flex flex-col items-end gap-2">
-          <View className="flex-row items-center gap-2">
-            {/* Decrement */}
-            <TouchableOpacity
-              onPress={decrement}
-              style={{
-                backgroundColor: isDark ? '#2C426A' : '#3B82F6',
-                padding: wp('2%'),
-                borderRadius: wp('1%'),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Feather name="minus" size={wp('4%')} color="#fff" />
-            </TouchableOpacity>
+        {/* RIGHT SIDE - Quantity Controls */}
+        <View className="flex-row items-center gap-2 ml-3">
+          {/* Decrement Button */}
+          <TouchableOpacity
+            onPress={decrement}
+            style={{
+              backgroundColor: isDark ? '#2C426A' : '#3B82F6',
+              width: wp('8%'),
+              height: wp('8%'),
+              borderRadius: wp('2%'),
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Feather name="minus" size={wp('4%')} color="#fff" />
+          </TouchableOpacity>
 
-            {/* Quantity */}
-            <TextInput
-              style={[globalStyles.greyInputBox, styles.otp]}
-              keyboardType="number-pad"
-              value={String(quantity)}
-              onChangeText={(val) => {
-                setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1));
-              }}
-            />
+          {/* Quantity Input */}
+          <TextInput
+            style={{
+              width: wp('10%'),
+              height: hp('4.5%'),
+              textAlign: 'center',
+              color: isDark ? '#E2E8F0' : '#1E3A8A',
+              backgroundColor: isDark ? '#1E293B' : '#F5F7FB',
+              borderWidth: 1,
+              borderColor: selected ? '#3B82F6' : '#E5E7EB',
+              borderRadius: wp('1.5%'),
+              fontSize: wp('4%'),
+              fontWeight: '600',
+            }}
+            keyboardType="number-pad"
+            value={String(quantity)}
+            onChangeText={(val) =>
+              setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1))
+            }
+          />
 
-            {/* Increment */}
-            <TouchableOpacity
-              onPress={increment}
-              style={{
-                backgroundColor: isDark ? '#2C426A' : '#3B82F6',
-                padding: wp('2%'),
-                borderRadius: wp('1%'),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Feather name="plus" size={wp('4%')} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          {/* Increment Button */}
+          <TouchableOpacity
+            onPress={increment}
+            style={{
+              backgroundColor: isDark ? '#2C426A' : '#3B82F6',
+              width: wp('8%'),
+              height: wp('8%'),
+              borderRadius: wp('2%'),
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Feather name="plus" size={wp('4%')} color="#fff" />
+          </TouchableOpacity>
         </View>
       </View>
     </CustomCheckBox>
+
+
   );
 };
 

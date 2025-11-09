@@ -105,7 +105,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         const payload: SearchQueryRequest = {
             filters: { userId },
             getAll: true,
-            requiredFields: ["customerBasicInfo.firstName", "customerBasicInfo.lastName", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
+            requiredFields: ["customerBasicInfo.name", "_id", "customerBasicInfo.mobileNumber", "customerBasicInfo.email"],
         };
 
         const customerListResponse: CustomerApiResponse = await getCustomerListBasedOnFilters(payload);

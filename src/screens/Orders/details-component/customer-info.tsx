@@ -33,7 +33,7 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                     ) : (
                         <View className='flex flex-col' style={{ gap: hp('2%') }}>
                             <View>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.customerData?.firstName} {props?.customerData?.lastName}</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.customerData?.name} </Text>
                             </View>
                             <View className='flex flex-row justify-between items-center'>
                                 <View className='flex flex-row gap-2'>
@@ -45,7 +45,7 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                         <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => {
-                                        openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.firstName} ${props?.customerData?.lastName} Hope you are doing good.`)
+                                        openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.name} Hope you are doing good.`)
                                     }}>
                                         <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
                                     </TouchableOpacity>

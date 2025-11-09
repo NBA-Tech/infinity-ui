@@ -88,7 +88,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                         <View className="flex-row items-center gap-2 mt-1">
                                             <Feather name="user" size={wp("5%")} color="#10B981" />
                                             <Text style={[globalStyles.normalTextColor, globalStyles.labelText]} numberOfLines={2}>
-                                                {props?.customerDetails?.customerBasicInfo?.firstName} {props?.customerDetails?.customerBasicInfo?.lastName}
+                                                {props?.customerDetails?.customerBasicInfo?.name}
                                             </Text>
                                         </View>
                                     </View>

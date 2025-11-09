@@ -56,7 +56,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
             <View>
                 <View>
                     <View className='flex flex-1 flex-row justify-between items-center'>
-                        <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText, { width: wp('55%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.customerMetaData?.firstName}'s {orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
+                        <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText, { width: wp('55%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.customerMetaData?.name}'s {orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
                         <View
                             style={[
                                 styles.statusContainer,
@@ -107,7 +107,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                             </View>
                             <View className='flex flex-col items-center'>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Customer Name</Text>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderCardProps?.customerMetaData?.firstName} {orderCardProps?.customerMetaData?.lastName}</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderCardProps?.customerMetaData?.name}</Text>
 
                             </View>
 
