@@ -353,25 +353,25 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                 if (customerID) {
                     updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
                     updateCustomerDetailsInfo(customerDetails)
-                    const activityPayload: UserActivity = {
-                        userId: userId,
-                        activityType: ACTIVITY_TYPE.INFO,
-                        activityTitle: "Updated Cutomer",
-                        activityMessage: `Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
-                    }
-                    createNewActivityAPI(activityPayload)
+                    // const activityPayload: UserActivity = {
+                    //     userId: userId,
+                    //     activityType: ACTIVITY_TYPE.INFO,
+                    //     activityTitle: "Updated Cutomer",
+                    //     activityMessage: `Updated Details for Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                    // }
+                    // createNewActivityAPI(activityPayload)
 
                 }
                 else {
                     customerDetails.customerID = addNewCustomerResponse.data
                     addCustomerDetailsInfo(customerDetails)
                     updateCustomerMetaInfoList(toCustomerMetaModelList([customerDetails]))
-                    createNewActivityAPI(({
-                        userId: userId,
-                        activityType: ACTIVITY_TYPE.SUCCESS,
-                        activityTitle: "Created Cutomer",
-                        activityMessage: `Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
-                    }))
+                    // createNewActivityAPI(({
+                    //     userId: userId,
+                    //     activityType: ACTIVITY_TYPE.SUCCESS,
+                    //     activityTitle: "Created Cutomer",
+                    //     activityMessage: `Created New Customer ${customerDetails.customerBasicInfo?.firstName} ${customerDetails.customerBasicInfo?.lastName}`,
+                    // }))
 
                 }
                 setloadingProvider({ ...loadingProvider, saveLoading: false });

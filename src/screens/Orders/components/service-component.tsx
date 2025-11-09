@@ -6,25 +6,19 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
-import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
-import { ServiceInfo } from '@/src/types/order/order-type';
+import { OfferingInfo, OrderType, ServiceInfo } from '@/src/types/order/order-type';
+import { toTitleCase } from '@/src/utils/utils';
+
 type ServiceComponentProps = {
   eventType: any;
   index: number;
   selectedElement: any;
   offeringInfo: OfferingInfo;
   handleCheckboxChange: (value: any, stateKeyMap: Record<string, string>) => void;
-  handleTotalPriceCharges: (offerInfo: OfferingInfo) => void
+  handleTotalPriceCharges: (offerInfo: OfferingInfo) => void;
 };
 
 const styles = StyleSheet.create({
-  actionButton: {
-    backgroundColor: '#8B5CF6',
-    padding: wp('2%'),
-    borderRadius: wp('1%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   otp: {
     width: wp('10%'),
     height: hp('4.4%'),
@@ -40,10 +34,11 @@ const ServiceComponent = ({
   selectedElement,
   offeringInfo,
   handleCheckboxChange,
-  handleTotalPriceCharges
+  handleTotalPriceCharges,
 }: ServiceComponentProps) => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
+
   const [quantity, setQuantity] = useState<number>(1);
   const [selected, setSelected] = useState<boolean>(selectedElement?.id === eventType?.id);
 
@@ -56,8 +51,17 @@ const ServiceComponent = ({
     if (checked) {
       // add/replace service
       updatedServices = [
-        ...(offeringInfo?.orderType!=OrderType.PACKAGE && offeringInfo.services || []).filter((s) => s.id !== eventType.id),
-        { id: eventType.id, name: eventType.serviceName, value: qty, price: eventType.price, isCompleted: false, serviceType: eventType?.serviceType },
+        ...(offeringInfo?.orderType != OrderType.PACKAGE && offeringInfo.services || []).filter(
+          (s) => s.id !== eventType.id
+        ),
+        {
+          id: eventType.id,
+          name: eventType.serviceName,
+          value: qty,
+          price: eventType.price,
+          isCompleted: false,
+          serviceType: eventType?.type,
+        },
       ];
     } else {
       // remove service
@@ -83,27 +87,24 @@ const ServiceComponent = ({
   };
 
   useEffect(() => {
-    setQuantity(selectedElement?.value || 1)
-  }, [])
+    setQuantity(selectedElement?.value || 1);
+  }, []);
 
-  // If quantity changes while selected, update service value
   useEffect(() => {
-    if (selected) {
-      updateOfferingInfo(true, quantity);
-    }
+    if (selected) updateOfferingInfo(true, quantity);
   }, [quantity]);
 
-  // Sync prop isSelected -> local state
   useEffect(() => {
     setSelected(selectedElement?.id === eventType?.id);
   }, [selectedElement]);
 
-
-
   return (
     <CustomCheckBox
       key={index}
-      selectedStyle={{ backgroundColor: isDark ? '#064E3B' : '#ECFDF5', borderColor: '#06B6D4' }}
+      selectedStyle={{
+        backgroundColor: isDark ? '#18233B' : '#EEF3FF',
+        borderColor: '#3B82F6',
+      }}
       selected={selected}
       onPress={() => handleChange(!selected)}
       styles={{ margin: 0, marginVertical: hp('2%') }}
@@ -112,7 +113,15 @@ const ServiceComponent = ({
         {/* Left side: Icon + details */}
         <View className="flex-row items-center flex-1 gap-3">
           <GradientCard
-            colors={['#F9FAFB', '#D1D5DB', '#9CA3AF']}
+            colors={
+              selected
+                ? isDark
+                  ? ['#1A2238', '#2C426A']
+                  : ['#2C426A', '#3B82F6']
+                : isDark
+                ? ['#0E1628', '#1A2238', '#2E3A57']
+                : ['#F5F7FB', '#E2E8F0', '#CBD5E1']
+            }
             style={{
               padding: wp('2%'),
               minWidth: wp('10%'),
@@ -125,32 +134,38 @@ const ServiceComponent = ({
             <MaterialCommunityIcons
               name={eventType?.icon ?? 'format-text'}
               size={wp('5%')}
-              color="white"
+              color={selected ? '#FFFFFF' : isDark ? '#E2E8F0' : '#182D53'}
             />
           </GradientCard>
 
           <View className="flex-1 flex-col">
             <Text
-              style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
+              style={[globalStyles.heading3Text, globalStyles.themeTextColor]}
               numberOfLines={1}
             >
-              {eventType?.serviceName} ({eventType?.serviceType?.toLowerCase()})
+              {eventType?.serviceName} ({toTitleCase(eventType?.type)})
             </Text>
             <Text
-              style={[globalStyles.normalTextColor, globalStyles.labelText]}
+              style={[globalStyles.labelText, globalStyles.greyTextColor]}
               numberOfLines={1}
             >
               {eventType?.description}
             </Text>
+
             <View className="flex-row items-center gap-3 mt-1">
               <View className="flex flex-row gap-1">
-                <Feather name="clock" size={wp('3%')} color={isDark ? '#fff' : '#000'} />
-                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                <Feather name="clock" size={wp('3%')} color={isDark ? '#E2E8F0' : '#475569'} />
+                <Text style={[globalStyles.smallText, globalStyles.greyTextColor]}>
                   {eventType?.serviceCategory}
                 </Text>
               </View>
               <View>
-                <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                <Text
+                  style={[
+                    globalStyles.smallText,
+                    selected ? globalStyles.blueTextColor : globalStyles.themeTextColor,
+                  ]}
+                >
                   ₹{eventType?.price}
                 </Text>
               </View>
@@ -162,7 +177,16 @@ const ServiceComponent = ({
         <View className="flex flex-col items-end gap-2">
           <View className="flex-row items-center gap-2">
             {/* Decrement */}
-            <TouchableOpacity onPress={decrement} style={styles.actionButton}>
+            <TouchableOpacity
+              onPress={decrement}
+              style={{
+                backgroundColor: isDark ? '#2C426A' : '#3B82F6',
+                padding: wp('2%'),
+                borderRadius: wp('1%'),
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <Feather name="minus" size={wp('4%')} color="#fff" />
             </TouchableOpacity>
 
@@ -172,13 +196,21 @@ const ServiceComponent = ({
               keyboardType="number-pad"
               value={String(quantity)}
               onChangeText={(val) => {
-                setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1))
-              }
-              }
+                setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1));
+              }}
             />
 
             {/* Increment */}
-            <TouchableOpacity onPress={increment} style={styles.actionButton}>
+            <TouchableOpacity
+              onPress={increment}
+              style={{
+                backgroundColor: isDark ? '#2C426A' : '#3B82F6',
+                padding: wp('2%'),
+                borderRadius: wp('1%'),
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <Feather name="plus" size={wp('4%')} color="#fff" />
             </TouchableOpacity>
           </View>

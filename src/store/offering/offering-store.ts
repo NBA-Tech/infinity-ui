@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ServiceModel, PackageModel } from "@/src/types/offering/offering-type";
+import { ServiceModel, PackageModel, SERVICETYPE, OfferingModel } from "@/src/types/offering/offering-type";
 import { getOfferingListAPI } from "@/src/api/offering/offering-service";
 
 export interface OfferingStore {
@@ -48,10 +48,9 @@ export const useOfferingStore = create<OfferingStore>((set, get) => ({
           return;
         }
 
-        const { services, packages } = offeringData.data ?? {};
         set({
-          serviceData: services ?? [],
-          packageData: packages ?? [],
+          serviceData: offeringData?.data?.filter((s:OfferingModel) => s.type != SERVICETYPE.PACKAGE) ?? [],
+          packageData: offeringData?.data?.filter((s:OfferingModel) => s.type == SERVICETYPE.PACKAGE) ?? [],
         });
       } catch (err: any) {
         showToast?.({ type: "error", title: "Error", message: err?.message ?? "Something went wrong" });

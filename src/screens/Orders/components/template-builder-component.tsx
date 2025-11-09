@@ -1,7 +1,7 @@
 import { Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import React, { useContext } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { StyleContext,ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CheckBox from '@react-native-community/checkbox';
@@ -25,8 +25,8 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
 
 
     const handleOnChange = (value: boolean, field: any, sectionKey: string) => {
-                let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
-             ...templateValueData?.quotationHtmlInfo || [],
+        let updatedQuotationHtmlInfo: QuotaionHtmlInfo[] = [
+            ...templateValueData?.quotationHtmlInfo || [],
         ];
 
         if (value) {
@@ -63,7 +63,7 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
                                         <View className="flex flex-row items-center justify-between">
                                             {item?.icon}
                                             <Text
-                                                style={[globalStyles.heading3Text,globalStyles.themeTextColor, { marginLeft: wp('2%') }]}
+                                                style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}
                                             >
                                                 {item?.label}
                                             </Text>
@@ -88,11 +88,20 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
                                         <View className="flex flex-row items-center gap-3">
                                             {field?.icon}
                                             <View className="flex flex-col ml-2">
-                                                <Text style={[globalStyles.heading3Text,globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]}>{field?.heading}</Text>
-                                                <Text style={[globalStyles.labelText,globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
+                                                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]}>{field?.heading}</Text>
+                                                <Text style={[globalStyles.labelText, globalStyles.themeTextColor, { width: wp('70%'), flexWrap: 'wrap' }]} >{field?.description}</Text>
                                             </View>
                                         </View>
-                                            <CheckBox value={field?.isSelected} onValueChange={(value) => handleOnChange(value, field, sectionKey)} />
+                                        <CheckBox
+                                            tintColors={{
+                                                true: '#3B82F6', // ✅ brand blue
+                                                false: isDark ? '#64748B' : '#9CA3AF',
+                                            }}
+                                            value={field?.isSelected}
+                                            onValueChange={(value) =>
+                                                handleOnChange(value, field, sectionKey)
+                                            }
+                                        />
                                     </View>
                                     <Divider />
                                 </View>

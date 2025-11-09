@@ -120,7 +120,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         const res = await getOrderDataListAPI(filter);
         if (res.success) {
             console.log(res?.data)
-            const filteredData = res.data.filter((item: any) => (item.status != OrderStatus.CANCELLED || item?.status != OrderStatus.PENDING))
+            const filteredData = res.data.filter((item: any) => (item.status != OrderStatus.CANCELLED))
             setOrderInfo(filteredData || [])
         }
 
@@ -356,22 +356,22 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
         if (res?.success) {
             triggerReloadInvoices();
-            if (payload?.invoiceId) {
-                createNewActivityAPI({
-                    userId: getItem("USERID"),
-                    activityType: ACTIVITY_TYPE.INFO,
-                    activityTitle: "Invoice Updated",
-                    activityMessage: "Invoice Updated for Event: " + orderDetails?.eventInfo?.eventTitle
-                })
-            }
-            else {
-                createNewActivityAPI({
-                    userId: getItem("USERID"),
-                    activityType: ACTIVITY_TYPE.SUCCESS,
-                    activityTitle: "Invoice Created",
-                    activityMessage: "Invoice Created for Event: " + orderDetails?.eventInfo?.eventTitle
-                })
-            }
+            // if (payload?.invoiceId) {
+            //     createNewActivityAPI({
+            //         userId: getItem("USERID"),
+            //         activityType: ACTIVITY_TYPE.INFO,
+            //         activityTitle: "Invoice Updated",
+            //         activityMessage: "Invoice Updated for Event: " + orderDetails?.eventInfo?.eventTitle
+            //     })
+            // }
+            // else {
+            //     createNewActivityAPI({
+            //         userId: getItem("USERID"),
+            //         activityType: ACTIVITY_TYPE.SUCCESS,
+            //         activityTitle: "Invoice Created",
+            //         activityMessage: "Invoice Created for Event: " + orderDetails?.eventInfo?.eventTitle
+            //     })
+            // }
 
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {

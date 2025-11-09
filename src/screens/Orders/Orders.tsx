@@ -12,7 +12,7 @@ import { Input, InputField, InputSlot } from '@/components/ui/input';
 import { Fab } from '@/components/ui/fab';
 import OrderCard from './components/order-card';
 import { ApiGeneralRespose, NavigationProp, SearchQueryRequest } from '@/src/types/common';
-import { OrderModel } from '@/src/types/order/order-type';
+import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { deleteOrderAPI, getOrderDataListAPI, getOrderMetaDataAPI } from '@/src/api/order/order-api-service';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -78,8 +78,10 @@ const Orders = () => {
             filters: {
                 ...(filters?.filters || {}),
                 userId: getItem("USERID"),
+                approvalStatus:ApprovalStatus.APPROVED
             },
         };
+        console.log(currFilters)
 
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);

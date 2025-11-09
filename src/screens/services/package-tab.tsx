@@ -149,91 +149,220 @@ const PackageTab = (props: PackageProps) => {
 
 
     const PackageCard = ({ pkg }: { pkg: PackageModel }) => {
+        const randomColor =
+            COLORCODES[Math.floor(Math.random() * COLORCODES.length)];
+
         return (
             <Card
+                className="p-4 mb-3 rounded-2xl"
                 style={[
-                    styles.card,
                     globalStyles.cardShadowEffect,
-                    {
-                        borderLeftWidth: 4,
-                        borderLeftColor: COLORCODES[Math.floor(Math.random() * COLORCODES.length)],
-                    },
                 ]}
             >
-                <View style={styles.headerRow}>
-                    <Text style={[globalStyles.heading3Text, styles.title, globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
-                        {pkg.packageName}
-                    </Text>
-                    <View style={styles.rightHeader}>
-                        <Menu
-                            placement="bottom"
-                            offset={5}
-                            style={globalStyles.appBackground}
-                            trigger={({ ...triggerProps }) => {
-                                return (
-                                    <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} style={{ marginLeft: wp('2%') }} />
-                                    </Button>
-                                )
-                            }}
+                {/* Header */}
+                <View className="flex-row justify-between items-start mb-3">
+                    <View className="flex-1 pr-3">
+                        <Text
+                            style={[
+                                globalStyles.heading3Text,
+                                globalStyles.themeTextColor,
+                                { fontWeight: "600" },
+                            ]}
+                            numberOfLines={1}
                         >
-                            <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => props.handleEdit(pkg?.id || "")}>
-                                <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
-                            </MenuItem>
-                            <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => {
-                                setCurrId(pkg.id);
-                                setOpenDelete(true);
-                            }}>
-                                <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
-                            </MenuItem>
-                        </Menu>
-                    </View>
-                </View>
-
-                <View style={{ flexDirection: 'row', marginTop: wp('2%') }}>
-                    {pkg.icon && (
-                        <View style={styles.imageWrapper}>
-                            <MaterialCommunityIcons name={pkg.icon} size={wp('8%')} color="#000" />
-                        </View>
-                    )}
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.description} numberOfLines={2}>
+                            {pkg.packageName}
+                        </Text>
+                        <Text
+                            style={[
+                                globalStyles.smallText,
+                                { color: isDark ? "#9CA3AF" : "#6B7280" },
+                            ]}
+                            numberOfLines={2}
+                        >
                             {pkg.description}
                         </Text>
-                        <Text style={styles.price}>{!pkg?.calculatedPrice ? `${userDetails?.currencyIcon} ${pkg?.price}` : 'AUTO PRICING'}</Text>
+                    </View>
 
-                        <View style={styles.tagsRow}>
-                            {pkg.tags && pkg?.tags.map((tag) => (
-                                <View key={tag} style={styles.tag}>
-                                    <Text style={[globalStyles.smallText, globalStyles.purpleTextColor]}>{tag}</Text>
+                    {/* Menu */}
+                    <Menu
+                        placement="bottom"
+                        offset={5}
+                        style={globalStyles.appBackground}
+                        trigger={({ ...triggerProps }) => (
+                            <Button
+                                {...triggerProps}
+                                variant="ghost"
+                                className="bg-transparent"
+                            >
+                                <Feather
+                                    name="more-vertical"
+                                    size={wp("5%")}
+                                    color={isDark ? "#E5E7EB" : "#1E293B"}
+                                />
+                            </Button>
+                        )}
+                    >
+                        <MenuItem
+                            textValue="Edit"
+                            className="flex-row items-center gap-2"
+                            onPress={() => props.handleEdit(pkg?.id || "")}
+                        >
+                            <Feather name="edit-2" size={wp("5%")} color="#3B82F6" />
+                            <MenuItemLabel
+                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
+                            >
+                                Edit
+                            </MenuItemLabel>
+                        </MenuItem>
+                        <MenuItem
+                            textValue="Delete"
+                            className="flex-row items-center gap-2"
+                            onPress={() => {
+                                setCurrId(pkg.id);
+                                setOpenDelete(true);
+                            }}
+                        >
+                            <Feather name="trash-2" size={wp("5%")} color="#EF4444" />
+                            <MenuItemLabel
+                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
+                            >
+                                Delete
+                            </MenuItemLabel>
+                        </MenuItem>
+                    </Menu>
+                </View>
+
+                {/* Divider */}
+                <View
+                    style={{
+                        height: 1,
+                        backgroundColor: isDark ? "#1F2937" : "#E5E7EB",
+                        marginVertical: wp("1.5%"),
+                    }}
+                />
+
+                {/* Body Content */}
+                <View className="mt-1">
+                    {/* Tags */}
+                    {pkg.tags && pkg.tags.length > 0 && (
+                        <View className="flex-row flex-wrap mb-2">
+                            {pkg.tags.map((tag) => (
+                                <View
+                                    key={tag}
+                                    className="px-2 py-1 mr-2 mb-2 rounded-full"
+                                    style={{
+                                        backgroundColor: isDark
+                                            ? "rgba(59,130,246,0.15)"
+                                            : "rgba(59,130,246,0.1)",
+                                    }}
+                                >
+                                    <Text
+                                        style={[
+                                            globalStyles.smallText,
+                                            { color: isDark ? "#93C5FD" : "#1E3A8A" },
+                                        ]}
+                                    >
+                                        {tag}
+                                    </Text>
                                 </View>
                             ))}
                         </View>
+                    )}
 
-                        <View style={{ marginTop: wp('2%') }}>
-                            {pkg?.serviceList?.map((serviceItem) => (
+                    {/* Services List */}
+                    {pkg.serviceList && pkg.serviceList.length > 0 && (
+                        <View className="mt-2">
+                            {pkg.serviceList.slice(0, 5).map((serviceItem) => (
                                 <View
                                     key={serviceItem.id}
-                                    style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: wp('1%') }}
+                                    className="flex-row justify-between mb-1"
                                 >
-                                    <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>{serviceItem.name}</Text>
-                                    <Text style={[globalStyles.smallText, { color: '#6B7280' }]}>x{serviceItem.value}</Text>
+                                    <Text
+                                        style={[
+                                            globalStyles.smallText,
+                                            { color: isDark ? "#9CA3AF" : "#374151" },
+                                        ]}
+                                    >
+                                        {serviceItem.name}
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            globalStyles.smallText,
+                                            { color: isDark ? "#9CA3AF" : "#6B7280" },
+                                        ]}
+                                    >
+                                        x{serviceItem.value}
+                                    </Text>
                                 </View>
                             ))}
+
                             {pkg.serviceList.length > 5 && (
-                                <Text style={[globalStyles.smallText, { color: '#9CA3AF' }]}>+{pkg.serviceList.length - 5} more services</Text>
+                                <Text
+                                    style={[
+                                        globalStyles.smallText,
+                                        { color: isDark ? "#9CA3AF" : "#6B7280", marginTop: 2 },
+                                    ]}
+                                >
+                                    +{pkg.serviceList.length - 5} more services
+                                </Text>
                             )}
                         </View>
+                    )}
+                </View>
+
+                {/* Footer */}
+                <View
+                    className="flex-row justify-between items-center mt-4 pt-3"
+                    style={{
+                        borderTopWidth: 1,
+                        borderTopColor: isDark ? "#1E293B" : "#E5E7EB",
+                    }}
+                >
+                    <View className="flex-row items-center">
+                        {pkg.icon && (
+                            <View
+                                className="p-2 rounded-full mr-2"
+                                style={{
+                                    backgroundColor: randomColor + "20",
+                                }}
+                            >
+                                <MaterialCommunityIcons
+                                    name={pkg.icon}
+                                    size={wp("6%")}
+                                    color={randomColor}
+                                />
+                            </View>
+                        )}
+                        <Text
+                            style={[
+                                globalStyles.smallText,
+                                { color: isDark ? "#9CA3AF" : "#6B7280" },
+                            ]}
+                        >
+                            {pkg.serviceList?.length || 0} services
+                        </Text>
+                    </View>
+
+                    <View className="flex-row items-center">
+                        <Text
+                            style={[
+                                globalStyles.heading3Text,
+                                globalStyles.greenTextColor
+                            ]}
+                        >
+                            {pkg?.calculatedPrice
+                                ? "AUTO PRICING"
+                                : `${userDetails?.currencyIcon} ${pkg?.price}`}
+                        </Text>
                     </View>
                 </View>
             </Card>
         );
     };
+
     return (
         <ScrollView
-            style={{ margin: wp('2%'),height:hp('48%') }}
+            style={{ margin: wp('2%'), height: hp('48%') }}
             contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
             showsVerticalScrollIndicator={false}
         >

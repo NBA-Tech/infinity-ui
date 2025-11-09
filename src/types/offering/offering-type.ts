@@ -5,13 +5,9 @@ export enum STATUS{
     INACTIVE="INACTIVE"
 }
 
-export enum OFFERINGTYPE {
-    SERVICE = "SERVICE",
-    PACKAGE = "PACKAGE"
-}
-
 export enum SERVICETYPE{
     SERVICE = "SERVICE",
+    PACKAGE = "PACKAGE",
     DELIVERABLE = "DELIVERABLE"
 }
 
@@ -28,21 +24,19 @@ export interface ServiceInfo{
     name:string;
     value:number;
     price?:number;
-    serviceType?:SERVICETYPE
 }
 export interface OfferingModel {
     id?: string;
-    customerID: string;
+    userId: string;
     createdDate?: Date;
     updatedDate?: Date;
-    type: OFFERINGTYPE;
+    type: SERVICETYPE;
 }
 export interface ServiceModel extends OfferingModel {
     serviceName: string;
     description: string;
     price: number;
     serviceCategory:SERVICECATEGORY;
-    serviceType?:SERVICETYPE
 }
 export interface PackageModel extends OfferingModel {
     packageName: string;

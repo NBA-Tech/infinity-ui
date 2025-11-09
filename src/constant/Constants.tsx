@@ -8,7 +8,6 @@ export const BUSINESSTYPE = [
 export const WORKSTATUS = ["Pending", "Approved", "Rejected", "Cancelled"];
 
 export const ORDERSTATUS = [
-  "PENDING",
   "IN_PROGRESS",
   "COMPLETED",
   "CANCELLED",

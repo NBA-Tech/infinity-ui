@@ -34,6 +34,7 @@ const createGlobalStyle = (isDark = false) =>
     blueTextColor: { color: isDark ? "#3B82F6" : "#3B82F6" },
     glassBackgroundColor: { backgroundColor: "#3B82F6" },
     formBackGroundColor: { backgroundColor: isDark ? "#1A2238" : "#EEF3FF" },
+    greenTextColor: { color: isDark ? "#22C55E" : "#16A34A" },
 
     // text styles (system fonts only)
     extraLargeText: {

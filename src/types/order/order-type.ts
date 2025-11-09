@@ -5,11 +5,16 @@ import { SERVICETYPE } from "../offering/offering-type";
 
 
 export enum OrderStatus {
-  PENDING = 'PENDING',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
   DELIVERED = 'DELIVERED'
+}
+
+export enum ApprovalStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED'
 }
 
 export enum OrderType {

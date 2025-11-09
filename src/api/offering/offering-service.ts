@@ -20,7 +20,7 @@ export const addNewServiceAPI=async(payload:ServiceModel | PackageModel,headers?
 
 export const getOfferingListAPI=async(userId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
     const getOfferingList=await fetchWithTimeout({
-        url:`${API_BASE_URI}/offerings/get_all_offerings?customerID=${userId}`,
+        url:`${API_BASE_URI}/offerings/get_all_offerings?userId=${userId}`,
         options: {
             method: 'GET',
             headers

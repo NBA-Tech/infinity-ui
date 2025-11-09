@@ -8,6 +8,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Feather from "react-native-vector-icons/Feather";
 import { OfferingInfo, OrderType } from "@/src/types/order/order-type";
 import { ServiceInfo } from "@/src/types/order/order-type";
+import { useUserStore } from "@/src/store/user/user-store";
 const styles = StyleSheet.create({
     packageContainer: {
         borderRadius: wp("2%"),
@@ -31,6 +32,7 @@ type PackageComponentProps = {
 export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculatePrice, handleCheckboxChange, handleTotalPriceCharges }: PackageComponentProps) => {
     const globalStyles = useContext(StyleContext);
     const [selected, setSelected] = useState(isSelected);
+    const { userDetails } = useUserStore()
     const price = pkg?.calculatedPrice ? handleCalculatePrice(pkg?.serviceList) : pkg?.price
 
     const handlePress = () => {
@@ -58,13 +60,13 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
             style={{
                 ...styles.packageContainer,
                 borderWidth: selected ? 2 : 1,
-                borderColor: selected ? "#8B5CF6" : "#E5E7EB",
+                borderColor: selected ? "#3B82F6" : "#2E3A57"
             }}
         >
             <View className="flex flex-col items-center justify-start">
                 {/* Icon */}
                 <GradientCard
-                    colors={selected ? ["#7C3AED", "#A78BFA"] : ["#9CA3AF", "#9CA3AF"]}
+                    colors={selected ? ["#2C426A", "#3B82F6"] : ["#CBD5E1", "#94A3B8"]}
                     style={{
                         padding: wp("2%"),
                         minWidth: wp("12%"),
@@ -104,7 +106,7 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
                         { color: "green", marginBottom: 8 },
                     ]}
                 >
-                    Rs. {price}
+                    {userDetails?.currencyIcon} {price}
                 </Text>
 
                 {/* Service List */}
@@ -120,7 +122,7 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
                                     <Feather
                                         name="check-circle"
                                         size={wp("3%")}
-                                        color={selected ? "#8B5CF6" : "#06B6D4"}
+                                        color={selected ? "#3B82F6" : "#2E3A57"}
                                     />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.smallText]}

@@ -128,7 +128,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
                 style={[
                   styles.dropdown,
                   {
-                    backgroundColor: isDark ? "#131A2A" : "#fff",
+                    backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
                     borderColor: isDark ? "#2E3A57" : "#D1D5DB",
                   },
                 ]}
@@ -143,6 +143,10 @@ const CustomServiceAddComponent: React.FC<Props> = ({
                   globalStyles.labelText,
                   { color: isDark ? "#A1A1AA" : "#808080" },
                 ]}
+                itemContainerStyle={{
+                  backgroundColor: isDark ? "#0E1628" : "#FFFFFF", // 👈 dropdown list bg
+                  borderColor: isDark ? "#2E3A57" : "#D1D5DB",
+                }}
                 inputSearchStyle={[
                   globalStyles.labelText,
                   { color: isDark ? "#F9FAFB" : "#111827" },
@@ -161,12 +165,27 @@ const CustomServiceAddComponent: React.FC<Props> = ({
                 valueField="value"
                 placeholder="Select Service"
                 onChange={(item) => handleUpdateRow(index, "id", item.value)}
+                renderItem={(item) => (
+                  <Text
+                      style={[
+                          globalStyles.labelText,
+                          {
+                              paddingVertical: hp("0.5%"),
+                              paddingHorizontal: wp("2%"),
+                              color: isDark ? "#E5E7EB" : "#111827",
+                              backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
+                          }
+                      ]}
+                  >
+                      {item.label}
+                  </Text>
+              )}
               />
             </View>
 
             {/* Quantity input */}
-            <View style={{ width: wp("22%"), marginHorizontal: wp("2%") }}>
-              <Input size="lg">
+            <View style={{ width: wp("15%"), marginHorizontal: wp("2%") }}>
+              <Input size="lg" variant="rounded">
                 <InputField
                   type="number"
                   value={String(row.value ?? "")}

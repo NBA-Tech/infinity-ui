@@ -14,18 +14,18 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { OFFERINGTYPE, PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, STATUS } from '@/src/types/offering/offering-type';
+import { PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, STATUS } from '@/src/types/offering/offering-type';
 import { clearState, generateRandomString, patchState, toTitleCase, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { addNewServiceAPI, getOfferingListAPI, updateOfferingServiceAPI } from '@/src/api/offering/offering-service';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useOfferingStore } from '@/src/store/offering/offering-store';
-import { Dropdown } from 'react-native-element-dropdown';
 import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import Header from '@/src/components/header';
+import YoutubePlayer from "react-native-youtube-iframe";
+
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -77,7 +77,6 @@ const services = () => {
     const { isDark } = useContext(ThemeToggleContext);
     const { serviceData, packageData, loadOfferings, addService, updateService, addPackage, updatePackage } = useOfferingStore();
     const [filteredOfferingList, setFilteredOfferingList] = useState<ServiceModel[] | PackageModel[]>();
-    const [searchText, setSearchText] = useState('');
     const [activeTab, setActiveTab] = useState<"PACKAGE" | SERVICETYPE>(SERVICETYPE.SERVICE);
     const [isOpen, setIsOpen] = useState(false);
     const { getItem } = useDataStore();
@@ -85,24 +84,12 @@ const services = () => {
     const showToast = useToastMessage();
     const [loadingProvider, setloadingProvider] = useState<"PACKAGE" | SERVICETYPE | null>(null)
     const [servieDetails, setServiceDetails] = useState<ServiceModel>({
-        customerID: getItem("USERID") as string,
+        userId: getItem("USERID") as string,
         status: STATUS.ACTIVE,
-        serviceCategory: null,
-        type: OFFERINGTYPE.SERVICE,
-        serviceName: "",
-        description: "",
-        price: 0,
     })
     const [packageDetails, setPackageDetails] = useState<PackageModel>({
-        customerID: getItem("USERID") as string,
+        userId: getItem("USERID") as string,
         status: STATUS.ACTIVE,
-        type: OFFERINGTYPE.PACKAGE,
-        packageName: "",
-        description: "",
-        calculatedPrice: false,
-        price: 0,
-        additionalNotes: "",
-        serviceList: [],
     })
 
     const statInfo = [
@@ -126,22 +113,6 @@ const services = () => {
         }
     ]
 
-
-    const resetActiveDetails = () => {
-        if (activeTab === "offering") {
-            clearState<ServiceModel>(servieDetails, setServiceDetails, {
-                status: STATUS.ACTIVE,
-                type: OFFERINGTYPE.SERVICE,
-                customerID: getItem("USERID") as string, // preserve userID if needed
-            });
-        } else {
-            clearState<PackageModel>(packageDetails, setPackageDetails, {
-                status: STATUS.ACTIVE,
-                type: OFFERINGTYPE.PACKAGE,
-                customerID: getItem("USERID") as string,
-            });
-        }
-    };
 
     const handleEdit = (id: string) => {
         if (id == "") return;
@@ -200,7 +171,7 @@ const services = () => {
                                 <InputField
                                     type="text"
                                     placeholder="Enter Price"
-                                    value={String(packageDetails.price)}
+                                    value={String(packageDetails.price || 0)}
                                     keyboardType="numeric"
                                     onChangeText={(value) => {
                                         // Remove non-numeric characters except '.'
@@ -290,7 +261,7 @@ const services = () => {
     const serviceInfoFields: FormFields = {
         serviceName: {
             key: "serviceName",
-            label: "Offering Name",
+            label: "Name",
             placeholder: "Eg: Photoshoot",
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
@@ -319,7 +290,7 @@ const services = () => {
         },
         serviceCategory: {
             key: "serviceCategory",
-            label: "Offering Category",
+            label: "Category",
             placeholder: "Eg: Wedding",
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
@@ -350,16 +321,15 @@ const services = () => {
     };
 
     const handleSaveService = async () => {
-        console.log("fuck")
-        let currDetails = activeTab !== SERVICETYPE.SERVICE ? packageDetails : servieDetails
-        const currFields = activeTab !== SERVICETYPE.SERVICE ? packageInfoFields : serviceInfoFields
+        let currDetails = activeTab == SERVICETYPE.PACKAGE ? packageDetails : servieDetails
+        const currFields = activeTab == SERVICETYPE.PACKAGE ? packageInfoFields : serviceInfoFields
         const isUpdate = Boolean(currDetails.id)
         let serviceResponse: ApiGeneralRespose;
         let updateServiceResponse: ApiGeneralRespose;
-        if (activeTab !== "PACKAGE" && currDetails) {
-            currDetails = { ...currDetails, serviceType: activeTab };
-        }
-        console.log(currDetails);
+
+        currDetails = { ...currDetails, type: activeTab };
+
+        console.log(currDetails, activeTab);
 
         const validateInput = validateValues(currDetails, currFields)
         if (!validateInput.success) {
@@ -370,7 +340,7 @@ const services = () => {
             })
         }
 
-        if (currDetails?.customerID == "" || currDetails?.customerID == null) {
+        if (currDetails?.userId == "" || currDetails?.userId == null) {
             showToast({
                 type: "error",
                 title: "Error",
@@ -379,49 +349,53 @@ const services = () => {
             return
         }
         setloadingProvider(activeTab)
-        if (isUpdate) {
-            serviceResponse = await updateOfferingServiceAPI(activeTab !== "PACKAGE" ? servieDetails : packageDetails)
-        }
-        else {
-            serviceResponse = await addNewServiceAPI(activeTab !== "PACKAGE" ? servieDetails : packageDetails)
-        }
-        setIsOpen(false)
 
-        if (!serviceResponse?.success) {
-            showToast({
-                type: "error",
-                title: "Error",
-                message: serviceResponse?.message ?? "Something went wrong",
-            })
-        }
-        else {
-            showToast({
-                type: "success",
-                title: "Success",
-                message: serviceResponse?.message ?? "Successfully created service",
-            })
+        try {
+
             if (isUpdate) {
-                activeTab !== "PACKAGE" ? updateService(currDetails) : updatePackage(currDetails)
+                serviceResponse = await updateOfferingServiceAPI(currDetails)
             }
             else {
-                currDetails.id = serviceResponse?.data
-                activeTab !== "PACKAGE" ? addService(currDetails) : addPackage(currDetails)
+                serviceResponse = await addNewServiceAPI(currDetails)
             }
-            resetActiveDetails()
-        }
-        setloadingProvider(null)
-    }
+            console.log(serviceResponse)
+            setIsOpen(false)
 
-    const handleSearch = (text: string) => {
-        setSearchText(text);
-        let filteredData = []
-        if (activeTab == "PACKAGE") {
-            filteredData = serviceData?.filter((item) => item?.serviceName.toLowerCase().includes(text.toLowerCase()));
+            if (!serviceResponse?.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: serviceResponse?.message ?? "Something went wrong",
+                })
+            }
+            else {
+                showToast({
+                    type: "success",
+                    title: "Success",
+                    message: serviceResponse?.message ?? "Successfully created service",
+                })
+                if (isUpdate) {
+                    activeTab !== "PACKAGE" ? updateService(currDetails) : updatePackage(currDetails)
+                }
+                else {
+                    currDetails.id = serviceResponse?.data
+                    activeTab !== "PACKAGE" ? addService(currDetails) : addPackage(currDetails)
+                }
+
+            }
+
         }
-        else {
-            filteredData = packageData?.filter((item) => item?.packageName.toLowerCase().includes(text.toLowerCase()));
+        finally {
+            setPackageDetails({
+                userId: getItem("USERID") as string,
+                status: STATUS.ACTIVE,
+            } as PackageModel)
+            setServiceDetails({
+                userId: getItem("USERID") as string,
+                status: STATUS.ACTIVE,
+            } as ServiceModel)
+            setloadingProvider(null)
         }
-        setFilteredOfferingList(filteredData);
     }
 
     useEffect(() => {
@@ -441,88 +415,46 @@ const services = () => {
     }, []);
 
 
-
     return (
         <SafeAreaView style={globalStyles.appBackground} >
-            <GradientCard
-                colors={isDark
-                    ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue
-                    : ["#1372F0", "#6FADFF"]  // Light mode: vibrant blue → soft sky blue
-                }
-            >
-                <View className="flex flex-col p-4 gap-5">
-                    {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2">
-                        <Text
-                            style={[
-                                globalStyles.headingText,
-                                globalStyles.whiteTextColor,
-                                { letterSpacing: 1, textTransform: 'uppercase' },
-                            ]}
-                        >
-                            Service Info
-                        </Text>
-                    </View>
-
-                    {/* Stats Row */}
-                    <View className="flex flex-row justify-between items-start">
-                        {/* Total Customers */}
-                        {statInfo.map((item, index) => (
-                            <View className="flex flex-col gap-2">
-                                <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                    {item.title}
-                                </Text>
-                                <View
-                                    className="flex flex-row justify-center items-center rounded-full"
-                                    style={{
-                                        backgroundColor: "rgba(255,255,255,0.15)",
-                                        paddingVertical: hp('1%'),
-                                        paddingHorizontal: wp('3%'),
-                                    }}
-                                >
-                                    <Feather name="users" size={wp('5%')} color="#fff" />
-                                    <Text
-                                        style={[globalStyles.headingText, globalStyles.whiteTextColor, { marginLeft: wp('2%') }]}>
-                                        {item.count ?? 0}
-                                    </Text>
-                                </View>
-                            </View>
-                        ))
-
-                        }
-
-
-
-                    </View>
-                </View>
-            </GradientCard>
+            <BackHeader screenName='Offerings' />
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => setIsOpen(false)}
                 onBackButtonPress={() => setIsOpen(false)}
+                style={{ margin: 0, justifyContent: "flex-end" }} // bottom sheet style
             >
-                <View className={"rounded-t-2xl p-4"} style={[{ borderRadius: wp('3%') }, globalStyles.formBackGroundColor]}>
-                    {/* Header */}
-                    <View className="flex flex-col items-start mb-4">
-                        <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText]}>
-                            {toTitleCase(activeTab)}
-                        </Text>
-                        <Text style={[globalStyles.themeTextColor, globalStyles.normalText]}>
-                            {`Create ${toTitleCase(activeTab)} Details`}
-                        </Text>
-                    </View>
+                <View
+                    className="rounded-t-2xl p-4"
+                    style={[{ borderRadius: wp('3%'), maxHeight: hp('85%') }, globalStyles.formBackGroundColor]}
+                >
+                    {/* ✅ Scrollable Area */}
+                    <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ paddingBottom: hp('3%') }}
+                    >
+                        {/* Header */}
+                        <View className="flex flex-col items-start mb-4">
+                            <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText]}>
+                                {toTitleCase(activeTab)}
+                            </Text>
+                            <Text style={[globalStyles.themeTextColor, globalStyles.normalText]}>
+                                {`Create ${toTitleCase(activeTab)} Details`}
+                            </Text>
+                        </View>
 
+                        {/* Form Fields */}
+                        <View style={{ marginVertical: hp("1%") }}>
+                            <CustomFieldsComponent
+                                infoFields={activeTab !== "PACKAGE" ? serviceInfoFields : packageInfoFields}
+                                errors={errors}
+                                cardStyle={{ padding: wp('2%') }}
+                            />
+                        </View>
+                    </ScrollView>
 
-                    <View style={{ marginVertical: hp("1%") }}>
-                        <CustomFieldsComponent
-                            infoFields={activeTab !== "PACKAGE" ? serviceInfoFields : packageInfoFields}
-                            errors={errors}
-                            cardStyle={{ padding: wp('2%') }}
-                        />
-                    </View>
-
-                    {/* Footer */}
-                    <View className="flex flex-row justify-end items-center mt-4">
+                    {/* Footer Buttons (outside scroll) */}
+                    <View className="flex flex-row justify-end items-center mt-2 pt-2 border-t border-gray-500/20">
                         <Button
                             size="lg"
                             variant="solid"
@@ -551,75 +483,106 @@ const services = () => {
                         </Button>
                     </View>
                 </View>
-
             </Modal>
-            <View>
-                <View className={isDark ? "bg-[#000]" : "bg-[#fff]"} style={{ marginVertical: hp('1%') }}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: hp("5%") }}
+            >
 
-                    <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                        {statInfo.map((item, index) => (
-                            <TouchableOpacity style={[styles.tabContainer, activeTab === item?.id && { borderBottomColor: globalStyles.glassBackgroundColor.backgroundColor }]} onPress={item?.onPress}>
-                                <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>{item?.title}</Text>
-                            </TouchableOpacity>
-                        ))
-                        }
-                    </View>
-                </View>
-                <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
-                    <View>
-                        <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
-                            {toTitleCase(activeTab)}
-                            (
-                            {activeTab === "offering"
-                                ? serviceData.length
-                                : packageData.length
-                            }
-                            )
+                <View className="mt-4 rounded-2xl p-4" style={globalStyles.cardShadowEffect}>
+                    <View className="flex flex-col items-start mb-3">
+                        <Text style={[globalStyles.heading3Text, globalStyles.darkBlueTextColor]}>
+                            Watch This Video
                         </Text>
-
-                    </View>
-                    <View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={() => {
-                            resetActiveDetails()
-                            setIsOpen(true)
-                        }}>
-                            <Feather name="plus" size={wp('5%')} color="#fff" />
-                            <ButtonText style={[globalStyles.buttonText, { color: '#fff' }]}>Add {toTitleCase(activeTab)}</ButtonText>
-                        </Button>
+                        <Text style={[globalStyles.normalText, globalStyles.greyTextColor]}>
+                            To better understand our service packages, please watch the short video below.
+                        </Text>
                     </View>
 
+                    {/* YouTube Player */}
+                    <View className="rounded-xl overflow-hidden mt-2">
+                        <YoutubePlayer
+                            height={220}
+                            play={false}
+                            videoId="LXb3EKWsInQ" // 👈 replace with your actual video ID
+                        />
+                    </View>
                 </View>
+
                 <View>
-                    {/* Loading Skeleton */}
-                    {loadingProvider != null && <OfferingCardSkeleton />}
+                    <View style={[{ marginVertical: hp('1%') }, globalStyles.cardShadowEffect]}>
 
-                    {/* offering Tab */}
-                    {!loadingProvider && activeTab == SERVICETYPE.SERVICE && (
-                        serviceData?.length === 0 ? (
-                            <EmptyState variant='services' onAction={() => setIsOpen(true)} />
-                        ) : (
-                            <ServiceTab
-                                serviceData={searchText !== '' ? filteredOfferingList : serviceData}
-                                handleEdit={handleEdit}
-                                isLoading={loadingProvider !== null}
-                            />
-                        )
-                    )}
+                        <View className='flex flex-row justify-between items-center' style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
+                            {statInfo.map((item, index) => (
+                                <TouchableOpacity style={[styles.tabContainer, activeTab === item?.id && { borderBottomColor: globalStyles.glassBackgroundColor.backgroundColor }]} onPress={item?.onPress}>
+                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>{item?.title}</Text>
+                                </TouchableOpacity>
+                            ))
+                            }
+                        </View>
+                    </View>
+                    <View className='flex flex-row justify-between items-center' style={{ margin: hp('2%') }}>
+                        <View>
+                            <Text style={[globalStyles.sideHeading, globalStyles.themeTextColor]}>
+                                {toTitleCase(activeTab)}
+                            </Text>
 
-                    {/* Packages Tab */}
-                    {/* {!loadingProvider && activeTab === 'packages' && (
-                        packageData?.length === 0 ? (
-                            <EmptyState variant='packages' onAction={() => setIsOpen(true)} />
-                        ) : (
-                            <PackageTab
-                                packageData={searchText !== '' ? filteredOfferingList : packageData}
-                                handleEdit={handleEdit}
-                                isLoading={loadingProvider !== null}
-                            />
-                        )
-                    )} */}
+                        </View>
+                        <View>
+                            <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={() => {
+                                setIsOpen(true)
+                            }}>
+                                <Feather name="plus" size={wp('5%')} color="#fff" />
+                                <ButtonText style={[globalStyles.buttonText, { color: '#fff' }]}>Add {toTitleCase(activeTab)}</ButtonText>
+                            </Button>
+                        </View>
+
+                    </View>
+                    <Divider />
+                    <View>
+                        {/* Loading Skeleton */}
+                        {loadingProvider != null && <OfferingCardSkeleton />}
+
+                        {/* offering Tab */}
+                        {!loadingProvider && activeTab == SERVICETYPE.SERVICE && (
+                            serviceData?.filter((item) => item?.type === SERVICETYPE.SERVICE)?.length === 0 ? (
+                                <EmptyState variant='services' onAction={() => setIsOpen(true)} />
+                            ) : (
+                                <ServiceTab
+                                    serviceData={serviceData?.filter((item) => item?.type === SERVICETYPE.SERVICE)}
+                                    handleEdit={handleEdit}
+                                    isLoading={loadingProvider !== null}
+                                />
+                            )
+                        )}
+
+                        {!loadingProvider && activeTab == SERVICETYPE.DELIVERABLE && (
+                            serviceData?.filter((item) => item?.type === SERVICETYPE.DELIVERABLE)?.length === 0 ? (
+                                <EmptyState variant='services' onAction={() => setIsOpen(true)} />
+                            ) : (
+                                <ServiceTab
+                                    serviceData={serviceData?.filter((item) => item?.type === SERVICETYPE.DELIVERABLE)}
+                                    handleEdit={handleEdit}
+                                    isLoading={loadingProvider !== null}
+                                />
+                            )
+                        )}
+
+                        {/* Packages Tab */}
+                        {!loadingProvider && activeTab == SERVICETYPE.PACKAGE && (
+                            packageData?.length === 0 ? (
+                                <EmptyState variant='packages' onAction={() => setIsOpen(true)} />
+                            ) : (
+                                <PackageTab
+                                    packageData={packageData}
+                                    handleEdit={handleEdit}
+                                    isLoading={loadingProvider !== null}
+                                />
+                            )
+                        )}
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
 
         </SafeAreaView >
     );

@@ -104,68 +104,91 @@ const ServiceTab = (props: ServiceTabProps) => {
 
     const ServiceCard = ({ service }: { service: ServiceModel }) => {
         return (
-            <Card style={[styles.card, globalStyles.cardShadowEffect]}>
+            <Card style={[globalStyles.cardShadowEffect]}>
                 {/* Header Row */}
-                <View style={styles.headerRow}>
-                    <Text style={[globalStyles.heading3Text, styles.title, globalStyles.themeTextColor, { width: wp('70%') }]} numberOfLines={1}>
+                <View className="flex-row justify-between items-center mb-2">
+                    <Text
+                        style={[globalStyles.headingText, globalStyles.themeTextColor]}
+                        className="flex-1 text-ellipsis overflow-hidden pr-2"
+                        numberOfLines={1}
+                    >
                         {service?.serviceName}
                     </Text>
 
-                    <View style={styles.rightHeader}>
-                        <Menu
-                            placement="bottom"
-                            offset={5}
-                            style={globalStyles.appBackground}
-                            trigger={({ ...triggerProps }) => {
-                                return (
-                                    <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>
-                                        <Feather name="more-vertical" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                                    </Button>
-                                )
-                            }}
+                    {/* Action Menu */}
+                    <Menu
+                        placement="bottom"
+                        offset={5}
+                        style={globalStyles.appBackground}
+                        trigger={({ ...triggerProps }) => (
+                            <Button {...triggerProps} variant="ghost" className="bg-transparent">
+                                <Feather
+                                    name="more-vertical"
+                                    size={wp('5%')}
+                                    color={isDark ? '#fff' : '#000'}
+                                />
+                            </Button>
+                        )}
+                    >
+                        <MenuItem
+                            key="Edit"
+                            textValue="Edit"
+                            className="flex-row items-center gap-2"
+                            onPress={() => props.handleEdit(service?.id || "")}
                         >
-                            <MenuItem key="Community" textValue="Edit" className='gap-2' onPress={() => props.handleEdit(service?.id || "")}>
-                                <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]} >Edit</MenuItemLabel>
-                            </MenuItem>
-                            <MenuItem key="Plugins" textValue="Delete" className='gap-2' onPress={() => {
+                            <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
+                            <MenuItemLabel
+                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
+                            >
+                                Edit
+                            </MenuItemLabel>
+                        </MenuItem>
+
+                        <MenuItem
+                            key="Delete"
+                            textValue="Delete"
+                            className="flex-row items-center gap-2"
+                            onPress={() => {
                                 setCurrId(service.id);
                                 setOpenDelete(true);
-                            }}>
-                                <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                                <MenuItemLabel style={[globalStyles.labelText, globalStyles.themeTextColor]}>Delete</MenuItemLabel>
-                            </MenuItem>
-                        </Menu>
-                    </View>
+                            }}
+                        >
+                            <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
+                            <MenuItemLabel
+                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
+                            >
+                                Delete
+                            </MenuItemLabel>
+                        </MenuItem>
+                    </Menu>
                 </View>
 
-                {/* Description and Price */}
-                <View style={styles.descRow}>
+                {/* Description & Price Row */}
+                <View className="flex-row justify-between items-start">
                     <Text
-                        style={[
-                            globalStyles.normalTextColor,
-                            globalStyles.smallText,
-                            { width: wp('70%') } // set your fixed width here
-                        ]}
-                        numberOfLines={2} // limit lines to 2
-                        ellipsizeMode="tail" // shows "..." at the end if text overflows
+                        style={[globalStyles.normalTextColor, globalStyles.smallText]}
+                        className="w-[70%] leading-snug"
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
                     >
                         {service?.description}
                     </Text>
 
-                    <Text style={[globalStyles.blueTextColor, globalStyles.subHeadingText]}>
+                    <Text
+                        style={[globalStyles.greenTextColor, globalStyles.headingText]}
+                        className="text-right"
+                    >
                         {userDetails?.currencyIcon} {service?.price}
                     </Text>
                 </View>
-
-              
             </Card>
+
         );
     };
 
     return (
         <ScrollView
-            style={{ margin: wp('2%'),height:hp('48%') }}
+            style={{ margin: wp('2%'), height: hp('48%') }}
             contentContainerStyle={{ paddingBottom: hp('5%') }}
             showsVerticalScrollIndicator={false}
         >

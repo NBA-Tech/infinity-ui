@@ -20,10 +20,10 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { toCustomerMetaModelList } from '@/src/utils/customer/customer-mapper';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { escapeHtmlForJson, formatDate, generateRandomString, generateRandomStringBasedType, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
-import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType, StatusHistory } from '@/src/types/order/order-type';
+import { EventInfo, OfferingInfo, OrderBasicInfo, OrderModel, OrderStatus, OrderType } from '@/src/types/order/order-type';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
-import { OfferingModel, OFFERINGTYPE, PackageModel, ServiceInfo, ServiceModel } from '@/src/types/offering/offering-type';
+import { OfferingModel, PackageModel, ServiceInfo, ServiceModel } from '@/src/types/offering/offering-type';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { PackageComponent } from './components/package-component';
 import ServiceComponent from './components/service-component';
@@ -88,7 +88,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
         orderId: generateRandomStringBasedType(20, "ORDER"),
         orderBasicInfo: {} as OrderBasicInfo,
         eventInfo: {} as EventInfo,
-        status: OrderStatus.PENDING,
         totalPrice: 0,
         offeringInfo: {} as OfferingInfo,
         quotationHtmlInfo: []
@@ -424,22 +423,22 @@ const CreateOrder = ({ navigation, route }: Props) => {
             });
         }
         triggerReloadOrders();
-        if (orderId) {
-            createNewActivityAPI({
-                userId: orderDetails?.userId,
-                activityType: ACTIVITY_TYPE.INFO,
-                activityTitle: "Order Updated",
-                activityMessage: "Order updated successfully for " + orderDetails?.eventInfo?.eventTitle
-            })
-        }
-        else {
-            createNewActivityAPI({
-                userId: orderDetails?.userId,
-                activityType: ACTIVITY_TYPE.SUCCESS,
-                activityTitle: "Order Created",
-                activityMessage: "Order created successfully for " + orderDetails?.eventInfo?.eventTitle
-            })
-        }
+        // if (orderId) {
+        //     createNewActivityAPI({
+        //         userId: orderDetails?.userId,
+        //         activityType: ACTIVITY_TYPE.INFO,
+        //         activityTitle: "Order Updated",
+        //         activityMessage: "Order updated successfully for " + orderDetails?.eventInfo?.eventTitle
+        //     })
+        // }
+        // else {
+        //     createNewActivityAPI({
+        //         userId: orderDetails?.userId,
+        //         activityType: ACTIVITY_TYPE.SUCCESS,
+        //         activityTitle: "Order Created",
+        //         activityMessage: "Order created successfully for " + orderDetails?.eventInfo?.eventTitle
+        //     })
+        // }
         showToast({
             type: "success",
             title: "Success",
@@ -570,7 +569,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     </View>
 
                     {currStep == 0 && (
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginBottom:hp('2%') }]}>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginBottom: hp('2%') }]}>
                             {/* Header */}
                             <View className='flex flex-row justify-between items-center' style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -590,11 +589,11 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     )}
 
                     {currStep == 1 && (
-                        <Card style={[globalStyles.cardShadowEffect, { padding: 0,marginBottom:hp('2%') }]}>
+                        <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginBottom: hp('2%') }]}>
                             {/* Header */}
                             <View style={{ backgroundColor: isDark ? "#0B1A33" : "#D9E8FF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color={isDark?"#8B5CF6":"#3B82F6"} />
+                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#8B5CF6" : "#3B82F6"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -605,7 +604,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                             {/* Body */}
                             <CustomFieldsComponent infoFields={eventInfo} cardStyle={{ padding: wp("2%") }} errors={errors} />
-                            <View style={[{ marginLeft: wp('3%') },globalStyles.formBackGroundColor]}>
+                            <View style={[{ marginLeft: wp('3%') }, globalStyles.formBackGroundColor]}>
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Event Type</Text>
 
@@ -706,26 +705,42 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     {currStep == 3 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8", padding: hp("2%") }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
-                                    <View className='flex flex-row items-center gap-2'>
-                                        <Feather name="calendar" size={wp("7%")} color={isDark ? "#fff" : "#000"} />
-                                        <Text
-                                            style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
-                                        >
+                            <View
+                                style={{
+                                    backgroundColor: isDark ? "#1A2238" : "#EEF3FF", 
+                                    padding: hp("2%"),
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: isDark ? "#2E3A57" : "#E5E7EB", // subtle separation line
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    {/* Left Section */}
+                                    <View className="flex flex-row items-center gap-2">
+                                        <Feather name="calendar" size={wp("7%")} color={isDark ? "#E2E8F0" : "#182D53"} />
+                                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
                                             Template Builder
                                         </Text>
                                     </View>
-                                    <View className='flex flex-row items-center gap-2'>
+
+                                    {/* Right Section */}
+                                    <View className="flex flex-row items-center gap-3">
                                         <TouchableOpacity onPress={() => setIsOpen({ ...isOpen, modal: true })}>
-                                            <Feather name="eye" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
+                                            <Feather name="eye" size={wp("5%")} color={isDark ? "#C7D2FE" : "#3B82F6"} />
                                         </TouchableOpacity>
+
                                         <TouchableOpacity onPress={handleShareQuotation}>
-                                            <Feather name="share-2" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
+                                            <Feather name="share-2" size={wp("5%")} color={isDark ? "#C7D2FE" : "#3B82F6"} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
                             </View>
+
                             <TemplateBuilderComponent quotationFields={quotationFields} handleCheckboxChange={handleCheckboxChange} templateValueData={orderDetails} />
                         </Card>
                     )
