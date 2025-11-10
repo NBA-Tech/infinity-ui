@@ -22,8 +22,8 @@ const EventInfoCard = (props: EventInfoProps) => {
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
-                    <View className='flex flex-row justify-start items-star gap-2'>
-                        <Feather name="calendar" size={wp('7%')} color={'#8B5CF6'} />
+                    <View className='flex flex-row justify-start items-center gap-2'>
+                        <Feather name="calendar" size={wp('7%')} color={'#3B82F6'} />
                         <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Event Information</Text>
                     </View>
                     {props?.isLoading ? (
@@ -50,7 +50,7 @@ const EventInfoCard = (props: EventInfoProps) => {
                                 <Feather name="map-pin" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{props?.eventData?.eventLocation}</Text>
                                 <TouchableOpacity onPress={()=>openAddressInMap(props?.eventData?.eventLocation)}>
-                                <Feather name="external-link" size={wp('5%')} color={'#8B5CF6'} />
+                                <Feather name="external-link" size={wp('5%')} color={'#3B82F6'} />
                                 </TouchableOpacity>
                             </View>
                             <Divider />

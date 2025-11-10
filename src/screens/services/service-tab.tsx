@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
-import { ServiceModel, STATUS } from '@/src/types/offering/offering-type';
+import { ServiceModel, SERVICETYPE, STATUS } from '@/src/types/offering/offering-type';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, MenuItem, MenuItemLabel } from '@/components/ui/menu';
 import Modal from 'react-native-modal';
@@ -16,6 +16,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import Skeleton from '@/components/ui/skeleton';
 import { useUserStore } from '@/src/store/user/user-store';
+import { Divider } from '@/components/ui/divider';
 const styles = StyleSheet.create({
     card: {
         padding: wp('4%'),
@@ -104,87 +105,90 @@ const ServiceTab = (props: ServiceTabProps) => {
 
     const ServiceCard = ({ service }: { service: ServiceModel }) => {
         return (
-            <Card style={[globalStyles.cardShadowEffect]}>
+            <Card
+                className="p-4 mb-3 rounded-2xl"
+                style={[
+                    globalStyles.cardShadowEffect,
+                    {
+                        borderLeftWidth: 4,
+                        borderLeftColor: service?.type === SERVICETYPE.SERVICE
+                            ? globalStyles.blueTextColor.color
+                            : globalStyles.greenTextColor.color,
+                    },
+                ]}
+            >
                 {/* Header Row */}
                 <View className="flex-row justify-between items-center mb-2">
                     <Text
-                        style={[globalStyles.headingText, globalStyles.themeTextColor]}
+                        style={[globalStyles.heading3Text, globalStyles.themeTextColor]}
                         className="flex-1 text-ellipsis overflow-hidden pr-2"
                         numberOfLines={1}
                     >
                         {service?.serviceName}
                     </Text>
-
-                    {/* Action Menu */}
-                    <Menu
-                        placement="bottom"
-                        offset={5}
-                        style={globalStyles.appBackground}
-                        trigger={({ ...triggerProps }) => (
-                            <Button {...triggerProps} variant="ghost" className="bg-transparent">
-                                <Feather
-                                    name="more-vertical"
-                                    size={wp('5%')}
-                                    color={isDark ? '#fff' : '#000'}
-                                />
-                            </Button>
-                        )}
-                    >
-                        <MenuItem
-                            key="Edit"
-                            textValue="Edit"
-                            className="flex-row items-center gap-2"
-                            onPress={() => props.handleEdit(service?.id || "")}
-                        >
-                            <Feather name="edit-2" size={wp('5%')} color="#3B82F6" />
-                            <MenuItemLabel
-                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
-                            >
-                                Edit
-                            </MenuItemLabel>
-                        </MenuItem>
-
-                        <MenuItem
-                            key="Delete"
-                            textValue="Delete"
-                            className="flex-row items-center gap-2"
-                            onPress={() => {
-                                setCurrId(service.id);
-                                setOpenDelete(true);
-                            }}
-                        >
-                            <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
-                            <MenuItemLabel
-                                style={[globalStyles.labelText, globalStyles.themeTextColor]}
-                            >
-                                Delete
-                            </MenuItemLabel>
-                        </MenuItem>
-                    </Menu>
                 </View>
 
-                {/* Description & Price Row */}
-                <View className="flex-row justify-between items-start">
+                {/* Description & Price */}
+                <View className="flex-row justify-between items-start mt-1 mb-3">
                     <Text
-                        style={[globalStyles.normalTextColor, globalStyles.smallText]}
+                        style={[globalStyles.greyTextColor, globalStyles.smallText]}
                         className="w-[70%] leading-snug"
                         numberOfLines={2}
                         ellipsizeMode="tail"
                     >
-                        {service?.description}
+                        {service?.type === SERVICETYPE.SERVICE
+                            ? `Session Type: ${service?.sessionType || "-"}`
+                            : `Quantity: ${service?.quantity || "-"}`}
                     </Text>
 
                     <Text
-                        style={[globalStyles.greenTextColor, globalStyles.headingText]}
+                        style={[globalStyles.greenTextColor, globalStyles.heading3Text]}
                         className="text-right"
                     >
-                        {userDetails?.currencyIcon} {service?.price}
+                        {userDetails?.currencyIcon} {service?.price ?? 0}
                     </Text>
                 </View>
-            </Card>
 
+                {/* Divider Line */}
+               <Divider style={{marginVertical:wp('2%'),backgroundColor:isDark?'#3F3F46':'#E5E7EB'}}/>
+
+                {/* Footer Actions */}
+                <View className="flex flex-row justify-end items-center gap-4">
+                    <TouchableOpacity
+                        className="flex flex-row items-center gap-1"
+                        onPress={() => props.handleEdit(service?.id || "")}
+                    >
+                        <Feather
+                            name="edit-2"
+                            size={wp("5%")}
+                            color={globalStyles.blueTextColor.color}
+                        />
+                        <Text
+                            style={[globalStyles.themeTextColor, globalStyles.labelText]}
+                        >
+                            Edit
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        className="flex flex-row items-center gap-1"
+                        onPress={() => {
+                            setCurrId(service.id);
+                            setOpenDelete(true);
+                        }}
+                    >
+                        <Feather name="trash-2" size={wp("5%")} color="#EF4444" />
+                        <Text
+                            style={[globalStyles.themeTextColor, globalStyles.labelText]}
+                        >
+                            Delete
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </Card>
         );
     };
+
 
     return (
         <ScrollView

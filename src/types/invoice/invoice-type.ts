@@ -28,7 +28,6 @@ export interface Invoice {
   customerId: string;        // Link to Customer
   userId: string;            // Link to User
   invoiceDate: Date;
-  paymentType: string;
   dueDate: Date;
   billingInfo: BillingInfo;
   totalAmount: number;

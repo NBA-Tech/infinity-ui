@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -7,20 +7,6 @@ import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { StyleContext, ThemeToggleContext } from "../providers/theme/global-style-provider";
 import { ServiceModel } from "../types/offering/offering-type";
-
-const styles = StyleSheet.create({
-  dropdown: {
-    height: hp("5.5%"),
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: wp("3%"),
-  },
-  dropdownContainer: {
-    borderRadius: 10,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});
 
 interface Props {
   serviceList?: ServiceModel[];
@@ -37,50 +23,29 @@ const CustomServiceAddComponent: React.FC<Props> = ({
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
-  // sync external value (prefill)
   useEffect(() => {
     if (Array.isArray(value)) {
       setRows(value);
     }
   }, [value]);
 
-  // filter remaining services
-  const availableServices = useMemo(() => {
-    const selectedIds = new Set(rows.map((r) => r.id));
-    return serviceList.filter((s) => !selectedIds.has(s.id));
-  }, [serviceList, rows]);
-
-  // ✅ Add ALL available services, but not beyond total
+  // ✅ Add one new empty row
   const handleAddRow = () => {
-    if (!availableServices.length) return;
-
-    const newEntries = availableServices.map((s) => ({
-      id: s.id,
-      name: s.serviceName,
-      value: 1,
-      price: s.price,
-      serviceType: s.serviceType,
-    }));
-
-    const combined = [...rows, ...newEntries];
-    setRows(combined);
-    onChange?.(combined);
+    if (rows.length >= serviceList.length) return; // don't exceed total services
+    setRows([...rows, { id: "", name: "", value: 0 } as ServiceModel]);
   };
 
   const handleUpdateRow = (index: number, field: "id" | "value", newValue: any) => {
     const updated = [...rows];
     if (field === "id") {
-      const service = serviceList.find((s) => s.id === newValue);
-      if (service) {
-        updated[index] = {
-          ...updated[index],
-          id: service.id,
-          name: service.serviceName,
-          price: service.price,
-          serviceType: service.serviceType,
-        };
-      }
-    } else if (field === "value") {
+      const selectedService = serviceList.find((s) => s.id === newValue);
+      updated[index] = {
+        ...updated[index],
+        id: selectedService?.id || "",
+        name: selectedService?.serviceName || "",
+        price: selectedService?.price || 0,
+      };
+    } else {
       updated[index] = { ...updated[index], value: Number(newValue) || 0 };
     }
     setRows(updated);
@@ -96,117 +61,119 @@ const CustomServiceAddComponent: React.FC<Props> = ({
   if (!serviceList.length) {
     return (
       <View style={{ padding: hp("1.5%") }}>
-        <Text style={{ color: isDark ? "#9CA3AF" : "#6B7280" }}>No services available</Text>
+        <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+          No services available
+        </Text>
       </View>
     );
   }
 
   return (
     <View>
-      {rows.map((row, index) => {
-        const options =
-          serviceList
-            ?.filter((s) => s.id === row.id || !rows.find((r) => r.id === s.id))
-            .map((s) => ({ label: s.serviceName, value: s.id })) || [];
+      {rows.map((row, index) => (
+        <View
+          key={`row-${index}`}
+          className="flex flex-row justify-between items-center"
+          style={{
+            marginVertical: hp("1%"),
+            backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
+            borderRadius: 12,
+            padding: wp("2%"),
+            borderWidth: 1,
+            borderColor: isDark ? "#2E3A57" : "#D1D5DB",
+          }}
+        >
+          {/* Dropdown */}
+          <View style={{ flex: 1 }}>
+            <Dropdown
+              style={[
+                {
+                  height: hp("5.5%"),
+                  borderWidth: 1,
+                  borderRadius: wp("2%"),
+                  paddingHorizontal: wp("3%"),
+                  borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border tone
+                  backgroundColor: isDark
+                    ? globalStyles.formBackGroundColor.backgroundColor // dark: #1A2238
+                    : "#FFFFFF", // light: clean white
+                },
+              ]}
+              containerStyle={[
+                {
+                  borderRadius: wp("2%"),
+                  backgroundColor: isDark
+                    ? globalStyles.formBackGroundColor.backgroundColor // dark dropdown list bg
+                    : "#FFFFFF",
+                  borderColor: isDark ? "#2E3A57" : "#E5E7EB",
+                  borderWidth: 1,
+                  shadowColor: isDark ? "#000" : "#182D53",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                },
+              ]}
+              placeholderStyle={[
+                globalStyles.labelText,
+                { color: isDark ? "#9CA3AF" : "#6B7280" },
+              ]}
+              selectedTextStyle={[
+                globalStyles.labelText,
+                {
+                  color: isDark ? "#E2E8F0" : "#182D53",
+                  fontWeight: "500",
+                },
+              ]}
+              itemContainerStyle={{
+                backgroundColor: isDark ? "#1A2238" : "#FFFFFF",
+                borderBottomColor: isDark ? "#2E3A57" : "#E5E7EB",
+                borderBottomWidth: 1,
+              }}
+              itemTextStyle={[
+                globalStyles.labelText,
+                { color: isDark ? "#E5E7EB" : "#111827" },
+              ]}
+              activeColor={isDark ? "#2C426A" : "#EEF3FF"} // ✅ highlight color when selecting
+              data={serviceList.map((s) => ({
+                label: s.serviceName,
+                value: s.id,
+              }))}
+              value={row.id || null}
+              labelField="label"
+              valueField="value"
+              placeholder="Select Service"
+              onChange={(item) => handleUpdateRow(index, "id", item.value)}
+            />
 
-        return (
-          <View
-            key={`${index}-${row.id}`}
-            className="flex flex-row justify-between items-center"
-            style={{
-              marginVertical: hp("1%"),
-              backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
-              borderRadius: 12,
-              padding: wp("2%"),
-              borderWidth: 1,
-              borderColor: isDark ? "#2E3A57" : "#D1D5DB",
-            }}
-          >
-            {/* Dropdown */}
-            <View style={{ flex: 1 }}>
-              <Dropdown
-                style={[
-                  styles.dropdown,
-                  {
-                    backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
-                    borderColor: isDark ? "#2E3A57" : "#D1D5DB",
-                  },
-                ]}
-                containerStyle={[
-                  styles.dropdownContainer,
-                  {
-                    backgroundColor: isDark ? "#0E1628" : "#fff",
-                    borderColor: isDark ? "#2E3A57" : "#D1D5DB",
-                  },
-                ]}
-                placeholderStyle={[
-                  globalStyles.labelText,
-                  { color: isDark ? "#A1A1AA" : "#808080" },
-                ]}
-                itemContainerStyle={{
-                  backgroundColor: isDark ? "#0E1628" : "#FFFFFF", // 👈 dropdown list bg
-                  borderColor: isDark ? "#2E3A57" : "#D1D5DB",
-                }}
-                inputSearchStyle={[
-                  globalStyles.labelText,
-                  { color: isDark ? "#F9FAFB" : "#111827" },
-                ]}
-                itemTextStyle={[
-                  globalStyles.labelText,
-                  { color: isDark ? "#E5E7EB" : "#111827" },
-                ]}
-                selectedTextStyle={[
-                  globalStyles.labelText,
-                  { color: isDark ? "#E0E7FF" : "#1E3A8A", fontWeight: "500" },
-                ]}
-                data={options}
-                value={row.id || null}
-                labelField="label"
-                valueField="value"
-                placeholder="Select Service"
-                onChange={(item) => handleUpdateRow(index, "id", item.value)}
-                renderItem={(item) => (
-                  <Text
-                      style={[
-                          globalStyles.labelText,
-                          {
-                              paddingVertical: hp("0.5%"),
-                              paddingHorizontal: wp("2%"),
-                              color: isDark ? "#E5E7EB" : "#111827",
-                              backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
-                          }
-                      ]}
-                  >
-                      {item.label}
-                  </Text>
-              )}
-              />
-            </View>
-
-            {/* Quantity input */}
-            <View style={{ width: wp("15%"), marginHorizontal: wp("2%") }}>
-              <Input size="lg" variant="rounded">
-                <InputField
-                  type="number"
-                  value={String(row.value ?? "")}
-                  placeholder="Qty"
-                  keyboardType="numeric"
-                  onChangeText={(val) =>
-                    handleUpdateRow(index, "value", parseInt(val))
-                  }
-                />
-              </Input>
-            </View>
-
-            {/* Delete */}
-            <TouchableOpacity onPress={() => handleDeleteRow(index)}>
-              <Feather name="trash" size={hp("2.5%")} color={isDark ? "#F87171" : "#EF4444"} />
-            </TouchableOpacity>
           </View>
-        );
-      })}
 
-      {/* Add Button */}
+          {/* Quantity Input */}
+          <View style={{ width: wp("18%"), marginHorizontal: wp("2%") }}>
+            <Input size="lg" variant="rounded">
+              <InputField
+                type="number"
+                value={String(row.value ?? "")}
+                placeholder="Qty"
+                keyboardType="numeric"
+                onChangeText={(val) =>
+                  handleUpdateRow(index, "value", parseInt(val))
+                }
+              />
+            </Input>
+          </View>
+
+          {/* Delete Button */}
+          <TouchableOpacity onPress={() => handleDeleteRow(index)}>
+            <Feather
+              name="trash"
+              size={hp("2.5%")}
+              color={isDark ? "#F87171" : "#EF4444"}
+            />
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      {/* Add Service Button */}
       <Button
         size="md"
         variant="solid"
@@ -214,22 +181,19 @@ const CustomServiceAddComponent: React.FC<Props> = ({
         style={[
           globalStyles.buttonColor,
           {
-            backgroundColor: "#1372F0",
             borderRadius: 12,
             marginTop: hp("1.5%"),
-            opacity: availableServices.length ? 1 : 0.6,
+            opacity: rows.length < serviceList.length ? 1 : 0.6,
           },
         ]}
         onPress={handleAddRow}
-        isDisabled={!availableServices.length} // ✅ Prevent overflow
+        isDisabled={rows.length >= serviceList.length}
       >
         <Feather name="plus" size={wp("5%")} color="#fff" />
         <ButtonText
           style={[globalStyles.buttonText, { color: "#fff", fontWeight: "600" }]}
         >
-          {availableServices.length
-            ? "Add Services"
-            : "All Services Added"}
+          Add Service
         </ButtonText>
       </Button>
     </View>

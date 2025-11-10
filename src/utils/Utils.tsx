@@ -37,6 +37,10 @@ export const checkValidEmail = (email: string) => {
   return !emailRegex.test(email);
 }
 
+export const checkValidNumber = (number: string) => {
+  const numberRegex = /^[0-9]+$/;
+  return !numberRegex.test(number);
+}
 export const checkPasswordStrength = (password: string) => {
   const issues = [];
 
@@ -644,3 +648,14 @@ export const navigateToSuccess = (navigation:any, originTab: string, originScree
   });
 };
 export const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
+export const resetFiltersWithDefaultValue = (
+  setFilters: (filters: any) => void,
+  defaultValue?: any
+) => {
+  const filtersToApply = defaultValue && Object.keys(defaultValue).length > 0
+    ? defaultValue
+    : { page: 1, pageSize: 10 };
+
+  setFilters(filtersToApply);
+};

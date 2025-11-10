@@ -23,8 +23,8 @@ const CustomerInfo = (props: CustomerInfoProps) => {
         <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
-                    <View className='flex flex-row justify-start items-star gap-2'>
-                        <Feather name="user" size={wp('7%')} color={'#8B5CF6'} />
+                    <View className='flex flex-row justify-start items-center gap-2'>
+                        <Feather name="user" size={wp('7%')} color={'#3B82F6'} />
                         <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Customer Information</Text>
 
                     </View>
@@ -42,12 +42,12 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                 </View>
                                 <View className='flex flex-row gap-4'>
                                     <TouchableOpacity onPress={() => openDaialler(props?.customerData?.mobileNumber)}>
-                                        <Feather name="phone" size={wp('5%')} color={'#8B5CF6'} />
+                                        <Feather name="phone" size={wp('5%')} color={'#3B82F6'} />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => {
                                         openMessageBox(props?.customerData?.mobileNumber, `Hi ${props?.customerData?.name} Hope you are doing good.`)
                                     }}>
-                                        <Feather name="message-square" size={wp('5%')} color={'#8B5CF6'} />
+                                        <Feather name="message-square" size={wp('5%')} color={'#3B82F6'} />
                                     </TouchableOpacity>
                                 </View>
 
@@ -59,7 +59,7 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                 </View>
                                 <View className='flex flex-row gap-4'>
                                     <TouchableOpacity onPress={()=>openEmailClient(props?.customerData?.email)}>
-                                        <Feather name="mail" size={wp('5%')} color={'#8B5CF6'} />
+                                        <Feather name="mail" size={wp('5%')} color={'#3B82F6'} />
                                     </TouchableOpacity>
                                 </View>
 

@@ -21,7 +21,6 @@ export const scaleLineHeight = (size: number) => {
 const createGlobalStyle = (isDark = false) =>
   StyleSheet.create({
     // color styles
-    purpleTextColor: { color: "#8B5CF6" },
     normalTextColor: { color: isDark ? "#fff" : "#000" },
     whiteTextColor: { color: "#fff" },
     greyTextColor: { color: isDark ? "#9CA3AF" : "#6B7280" },
@@ -124,13 +123,6 @@ const createGlobalStyle = (isDark = false) =>
       flexShrink: 1,
     },
 
-    // background styles
-    purpleBackground: {
-      backgroundColor: "#8B5CF6",
-      borderRadius: wp("2%"),
-      borderWidth: wp("0.5%"),
-      borderColor: "#8B5CF6",
-    },
     transparentBackground: {
       backgroundColor: isDark 
         ? "rgba(26,26,46,0.85)"       // Dark mode: slightly stronger opacity

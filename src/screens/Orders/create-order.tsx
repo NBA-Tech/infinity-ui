@@ -4,7 +4,6 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
 import Feather from 'react-native-vector-icons/Feather';
 import { Card } from '@/components/ui/card';
@@ -50,8 +49,11 @@ const styles = StyleSheet.create({
         margin: hp("2%"),
     },
     roundWrapper: {
-        borderRadius: wp("50%"),
-        width: wp("10%"),
+        width: wp("12%"),
+        height: wp("12%"), // ✅ Add height equal to width for perfect circle
+        borderRadius: wp("6%"), // ✅ Half of width for circle
+        justifyContent: "center",
+        alignItems: "center",
     },
     divider: {
         width: wp("5%"),
@@ -75,7 +77,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { orderId } = route.params ?? {}
-    const stepIcon = ["user", "calendar", "clock", "dollar-sign"]
+    const stepIcon = ["user", "calendar", "dollar-sign", "file"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
     const showToast = useToastMessage();
@@ -538,7 +540,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             {Array.from({ length: 4 }).map((_, index) => (
                                 <View className="flex flex-row align-middle items-center" key={index}>
                                     <View
-                                        className="rounded-2xl p-2"
                                         style={[
                                             styles.roundWrapper,
                                             {
@@ -555,9 +556,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                             {currStep > index ? (
                                                 <Feather name="check" size={wp("5%")} color="white" />
                                             ) : (
-                                                <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                                    {index + 1}
-                                                </Text>
+                                                <Feather name={stepIcon[index]} size={wp("5%")} color="#fff" />
                                             )}
                                         </View>
                                     </View>
@@ -591,9 +590,9 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     {currStep == 1 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View style={{ backgroundColor: isDark ? "#0B1A33" : "#D9E8FF", padding: hp("2%") }}>
+                            <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                    <Feather name="calendar" size={wp("7%")} color={isDark ? "#8B5CF6" : "#3B82F6"} />
+                                    <Feather name="calendar" size={wp("7%")} color={"#06B6D4"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -629,9 +628,9 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     {currStep == 2 && (
                         <View>
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
-                                <View style={{ backgroundColor: isDark ? "#064E3B" : "#ECFDF5", padding: hp("2%") }}>
+                                <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                        <Feather name="calendar" size={wp("7%")} color="#0F766E" />
+                                        <Feather name="calendar" size={wp("7%")} color="#06B6D4" />
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
@@ -671,9 +670,9 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                             <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                                 {/* Header */}
-                                <View style={{ backgroundColor: isDark ? "#064E3B" : "#ECFDF5", padding: hp("2%") }}>
+                                <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                        <Feather name="calendar" size={wp("7%")} color="#0F766E" />
+                                        <Feather name="calendar" size={wp("7%")} color="#06B6D4" />
                                         <Text
                                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                         >
@@ -706,12 +705,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, paddingBottom: hp('2%') }]}>
                             {/* Header */}
                             <View
-                                style={{
-                                    backgroundColor: isDark ? "#1A2238" : "#EEF3FF", 
-                                    padding: hp("2%"),
-                                    borderBottomWidth: 1,
-                                    borderBottomColor: isDark ? "#2E3A57" : "#E5E7EB", // subtle separation line
-                                }}
+                                style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}
                             >
                                 <View
                                     style={{
@@ -722,7 +716,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                 >
                                     {/* Left Section */}
                                     <View className="flex flex-row items-center gap-2">
-                                        <Feather name="calendar" size={wp("7%")} color={isDark ? "#E2E8F0" : "#182D53"} />
+                                        <Feather name="calendar" size={wp("7%")} color={"#06B6D4"} />
                                         <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
                                             Template Builder
                                         </Text>

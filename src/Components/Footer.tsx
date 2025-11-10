@@ -182,9 +182,9 @@ const Footer = (props: FooterProps) => {
             style={[
                 styles.footerContainer,
                 {
-                    backgroundColor: isDark ? '#121212' : '#ffffff',
-                    borderTopColor: isDark ? '#333' : '#ccc',
-                    shadowColor: isDark ? '#000' : '#000',
+                    backgroundColor: isDark ? '#1A2238' : '#F5F7FB',
+                    borderTopColor: isDark ? '#2E3A57' : '#E5E7EB',
+                    shadowColor: isDark ? '#000' : '#182D53',
                     paddingBottom: insets.bottom,
                 },
             ]}

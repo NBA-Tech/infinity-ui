@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     checkContainer: {
         alignItems: "center",
         justifyContent: "center",
-        padding: hp("1%"),
+        padding: hp("1.5%"),
         borderRadius: wp("2%"),
         borderColor: "#d1d5db",
         borderWidth: wp("0.4%"),
@@ -94,36 +94,56 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     style={[
                         styles.dropdown,
                         {
-                            backgroundColor: isDark ? "#0E1628" : "#F5F7FB", // matches your theme
-                            borderRadius: 9999, // <-- "rounded-full"
-                            paddingHorizontal: 14,
-                            paddingVertical: 10,
-                            borderColor: isDark ? "transparent" : "#CBD5E1"
+                            height: hp("5.5%"),
+                            borderWidth: 1,
+                            borderRadius:9999,
+                            paddingHorizontal: wp("3%"),
+                            borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border tone
+                            backgroundColor: isDark
+                                ? globalStyles.formBackGroundColor.backgroundColor // dark: #1A2238
+                                : "#FFFFFF", // light: clean white
                         },
                     ]}
                     containerStyle={[
-                        styles.dropdownContainer,
-                        { backgroundColor: isDark ? "#0E1628" : "#F5F7FB" }
+                        {
+                            borderRadius: wp("2%"),
+                            backgroundColor: isDark
+                                ? globalStyles.formBackGroundColor.backgroundColor // dark dropdown list bg
+                                : "#FFFFFF",
+                            borderColor: isDark ? "#2E3A57" : "#E5E7EB",
+                            borderWidth: 1,
+                            shadowColor: isDark ? "#000" : "#182D53",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: isDark ? 0.3 : 0.1,
+                            shadowRadius: 4,
+                            elevation: 3,
+                        },
                     ]}
-                    data={field.dropDownItems || []}
-                    search={field?.isSearchable ?? true}
-                    value={field?.isLoading ? undefined : field.value}
                     placeholderStyle={[
                         globalStyles.labelText,
-                        { color: isDark ? "#9CA3AF" : "#808080" } // muted grey
-                    ]}
-                    inputSearchStyle={[
-                        globalStyles.labelText,
-                        { color: isDark ? "#E5E7EB" : "#111827" } // text color
-                    ]}
-                    itemTextStyle={[
-                        globalStyles.labelText,
-                        { color: isDark ? "#E5E7EB" : "#111827" } // dropdown items
+                        { color: isDark ? "#9CA3AF" : "#6B7280" },
                     ]}
                     selectedTextStyle={[
                         globalStyles.labelText,
-                        { color: isDark ? "#F9FAFB" : "#111827", fontWeight: "500" } // selected item
+                        {
+                            color: isDark ? "#E2E8F0" : "#182D53",
+                            fontWeight: "500",
+                        },
                     ]}
+                    itemContainerStyle={{
+                        backgroundColor: isDark ? "#1A2238" : "#FFFFFF",
+                        borderBottomColor: isDark ? "#2E3A57" : "#E5E7EB",
+                        borderBottomWidth: 1,
+                    }}
+                    itemTextStyle={[
+                        globalStyles.normalText,
+                        { color: isDark ? "#E5E7EB" : "#111827" },
+                    ]}
+                    activeColor={isDark ? "#2C426A" : "#EEF3FF"} // ✅ highlight color when selecting
+                    data={field.dropDownItems || []}
+                    search={field?.isSearchable ?? true}
+                    value={field?.isLoading ? undefined : field.value}
+
                     disable={field.isDisabled || field?.isLoading}
                     maxHeight={300}
                     labelField="label"
@@ -131,20 +151,6 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     placeholder={field?.isLoading ? "Loading..." : field.placeholder}
                     searchPlaceholder="Search..."
                     onChange={(item) => field.onChange?.(item?.value, item?.label)}
-                    renderItem={(item) => (
-                        <Text
-                            style={[
-                                globalStyles.labelText,
-                                {
-                                    paddingVertical: hp("0.5%"),
-                                    color: isDark ? "#E5E7EB" : "#111827",
-                                    backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
-                                }
-                            ]}
-                        >
-                            {item.label}
-                        </Text>
-                    )}
                     renderLeftIcon={() => field.icon}
                     renderRightIcon={() => (
                         field?.rightIcon ? (

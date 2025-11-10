@@ -21,9 +21,8 @@ import { EmptyState } from "@/src/components/empty-state-data";
 
 const styles = StyleSheet.create({
     modalContainer: {
-        padding: wp('3%'),
-        borderRadius: wp('3%'),
-        backgroundColor: '#1E1E2A'
+        padding: wp('2%'),
+        borderRadius: wp('4%'),
     },
     card: {
         marginVertical: wp('2%'),
@@ -60,7 +59,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investmentName",
             label: "Invest Name",
             placeholder: "Eg: Salary",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -75,7 +74,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investedAmount",
             label: "Invested Amount",
             placeholder: "Eg: 1000",
-            icon: <Feather name="dollar-sign" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="dollar-sign" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             isRequired: true,
@@ -90,7 +89,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investmentDate",
             label: "Investment Date",
             placeholder: "Eg: 01/01/2023",
-            icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "date",
             style: "w-full",
             isRequired: true,
@@ -107,7 +106,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investmentDescription",
             label: "Investment Description",
             placeholder: "Eg: This is for salary",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -122,7 +121,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investmentType",
             label: "Investment Type",
             placeholder: "Eg: EQUIPMENT",
-            icon: <Feather name="briefcase" size={wp("5%")} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -302,7 +301,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
     }
 
     return (
-        <Card style={[globalStyles.cardShadowEffect, { flex: 1 }]}>
+        <Card style={[globalStyles.cardShadowEffect,globalStyles.appBackground]}>
             {deleteOpen && <DeleteConfirmation openDelete={deleteOpen} setOpenDelete={setDeleteOpen} loading={loading} handleDelete={deleteInvestment} />}
             <Modal
                 isVisible={open}
@@ -310,14 +309,14 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 onBackButtonPress={() => setOpen(false)}
 
             >
-                <View style={styles.modalContainer}>
+                <View style={[styles.modalContainer,{backgroundColor: isDark ? "#1A2238" : "#F5F7FB",}]}>
                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Investments</Text>
                     <CustomFieldsComponent infoFields={investmentFormFields} cardStyle={{ padding: hp("2%") }} />
                     <Button
                         size="sm"
                         variant="solid"
                         action="primary"
-                        style={[globalStyles.purpleBackground, { marginVertical: hp('2%') }]}
+                        style={[globalStyles.buttonColor, { marginVertical: hp('2%') }]}
                         onPress={handleCreateOrUpdateInvestment}
                         isDisabled={loading}
                     >
@@ -334,8 +333,8 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row justify-start items-star gap-2'>
-                            <Feather name="list" size={wp('7%')} color={'#8B5CF6'} />
+                        <View className='flex flex-row justify-start items-center gap-2'>
+                            <Feather name="list" size={wp('7%')} color={'#3B82F6'} />
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Investments</Text>
                         </View>
                         <View>
@@ -343,7 +342,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                                 size="sm"
                                 variant="solid"
                                 action="primary"
-                                style={globalStyles.purpleBackground}
+                                style={globalStyles.buttonColor}
                                 onPress={() =>  {verifyAndOpenAddModal()} }
                             >
                                 <Feather name="plus" size={wp('5%')} color={'#fff'} />

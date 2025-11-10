@@ -14,8 +14,8 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, STATUS } from '@/src/types/offering/offering-type';
-import { clearState, generateRandomString, patchState, toTitleCase, validateValues } from '@/src/utils/utils';
+import { PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, SESSIONTYPE, STATUS } from '@/src/types/offering/offering-type';
+import { checkValidNumber, clearState, generateRandomString, patchState, toTitleCase, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { addNewServiceAPI, getOfferingListAPI, updateOfferingServiceAPI } from '@/src/api/offering/offering-service';
@@ -288,11 +288,27 @@ const services = () => {
                 patchState("", 'description', value, true, setServiceDetails, setErrors)
             }
         },
+        sessionType:{
+            key: "sessionType",
+            label: "Session Type",
+            placeholder: "Eg: One Time",
+            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
+            type: "select",
+            style: "w-full",
+            isRequired: false,
+            isVisible:activeTab==SERVICETYPE.SERVICE,
+            isDisabled: false,
+            value: servieDetails.sessionType,
+            dropDownItems: Object.values(SESSIONTYPE).map((item) => { return { label: item, value: item } }),
+            onChange(value: string) {
+                patchState("", 'sessionType', value, true, setServiceDetails, setErrors)
+            }
+        },
         serviceCategory: {
             key: "serviceCategory",
             label: "Category",
             placeholder: "Eg: Wedding",
-            icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
+            icon: <Feather name="tag" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
@@ -301,6 +317,21 @@ const services = () => {
             dropDownItems: Object.values(SERVICECATEGORY).map((item) => { return { label: item, value: item } }),
             onChange(value: string) {
                 patchState("", 'serviceCategory', value, true, setServiceDetails, setErrors)
+            }
+        },
+        quantity:{
+            key: "quantity",
+            label: "Quantity",
+            placeholder: "Eg: 20",
+            icon: <Feather name="tag" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
+            type: "number",
+            style: "w-full",
+            isVisible:activeTab==SERVICETYPE.DELIVERABLE,
+            isRequired: false,
+            isDisabled: false,
+            value: servieDetails.quantity,
+            onChange(value: string) {
+                patchState("", 'quantity', value, true, setServiceDetails, setErrors)
             }
         },
         price: {

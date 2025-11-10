@@ -71,8 +71,14 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
     userOnBoardBody: { margin: hp("2%") },
-    roundWrapper: { borderRadius: wp("50%"), width: wp("13%") },
-    divider: { width: wp("10%"), height: hp("0.5%") },
+    roundWrapper: {
+        width: wp("12%"),
+        height: wp("12%"), // ✅ Add height equal to width for perfect circle
+        borderRadius: wp("6%"), // ✅ Half of width for circle
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    divider: { width: wp("6%"), height: hp("0.5%") },
 });
 
 type Props = NativeStackScreenProps<RootStackParamList, "CreateInvoice">;
@@ -190,7 +196,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         name="camera"
                         size={wp("5%")}
                         style={{ paddingRight: wp("3%") }}
-                        color="#8B5CF6"
+                        color={isDark ? "#fff" : "#000"}
                     />
                 ),
                 type: "select",
@@ -222,8 +228,8 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     <Feather
                         name="camera"
                         size={wp("5%")}
-                        style={{ paddingRight: wp("3%") }}
-                        color="#8B5CF6"
+                        style={{ paddingRight: wp("1%") }}
+                        color={isDark ? "#fff" : "#000"}
                     />
                 ),
                 type: "text",
@@ -237,7 +243,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "amountPaid",
                 label: "Amount Paid",
                 placeholder: "Eg: ₹100",
-                icon: <Feather name="dollar-sign" size={wp("5%")} color="#8B5CF6" />,
+                icon: <Feather name="dollar-sign" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "number",
                 isRequired: true,
                 value: invoiceDetails?.amountPaid,
@@ -259,7 +265,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "invoiceDate",
                 label: "Invoice Date",
                 placeholder: "Eg: 12/02/2003",
-                icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
+                icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "date",
                 maxDate: new Date(),
                 value: invoiceDetails?.invoiceDate
@@ -269,21 +275,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 setIsOpen: (val: boolean) => setIsOpen({ ...isOpen, invoiceDate: val }),
                 onChange(value: string) {
                     patchState("", "invoiceDate", value, true, setInvoiceDetails, setErrors);
-                },
-            },
-            paymentType: {
-                key: "paymentType",
-                label: "Payment Type",
-                placeholder: "Select Type",
-                icon: <Feather name="credit-card" size={wp("5%")} style={{ paddingRight: wp("3%") }} color="#8B5CF6" />,
-                type: "select",
-                dropDownItems: [
-                    { label: "Cash", value: "cash" },
-                    { label: "Bank", value: "bank" },
-                ],
-                value: invoiceDetails?.paymentType,
-                onChange(value: string) {
-                    patchState("", "paymentType", value, true, setInvoiceDetails, setErrors);
                 },
             },
         }),
@@ -329,7 +320,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         setLoadingProvider((p) => ({ ...p, saveLoading: true }));
 
         const billingInfo: BillingInfo = {
-            name:orderDetails?.customerInfo?.name,
+            name: orderDetails?.customerInfo?.name,
             email: orderDetails?.customerInfo?.email,
             mobileNumber: orderDetails?.customerInfo?.mobileNumber,
         };
@@ -462,9 +453,9 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>
                             Create Invoice
                         </Text>
-                        <GradientCard style={{ width: wp("25%") }}>
+                        <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
                             <Divider style={{ height: hp("0.5%") }} />
-                        </GradientCard>
+                        </View>
                     </View>
                 </View>
 
@@ -473,16 +464,18 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     <View className="flex flex-row justify-center items-center">
                         {Array.from({ length: 3 }).map((_, index) => (
                             <View key={index} className="flex flex-row items-center">
-                                <GradientCard
-                                    className="rounded-2xl p-4 mb-4"
-                                    style={styles.roundWrapper}
-                                    colors={
-                                        currStep === index
-                                            ? ["#6B46C1", "#9F7AEA", "#D53F8C"]
-                                            : currStep > index
-                                                ? ["#48BB78", "#38A169", "#2F855A"]
-                                                : ["#d1d5db", "#d1d5db", "#d1d5db"]
-                                    }
+                                <View
+                                    style={[
+                                        styles.roundWrapper,
+                                        {
+                                            backgroundColor:
+                                                currStep === index
+                                                    ? "#2563EB" // Active step → blue
+                                                    : currStep > index
+                                                        ? "#22C55E" // Completed step → green
+                                                        : "#E5E7EB", // Upcoming step → grey
+                                        },
+                                    ]}
                                 >
                                     <View className="justify-center items-center">
                                         {currStep > index ? (
@@ -491,7 +484,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                                             <Feather name={stepIcon[index]} size={wp("5%")} color="#fff" />
                                         )}
                                     </View>
-                                </GradientCard>
+                                </View>
                                 {index !== 2 && (
                                     <Divider
                                         style={[
@@ -520,7 +513,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
                         <View
                             style={{
-                                backgroundColor: isDark ? "#3B0A2A" : "#FDF2F8",
+                                backgroundColor: isDark ? "#164E63" : "#ECFEFF",
                                 padding: hp("2%"),
                             }}
                         >
@@ -532,7 +525,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                                 }}
                             >
                                 <View className="flex flex-row items-center gap-2">
-                                    <Feather name="calendar" size={wp("7%")} color="#8B5CF6" />
+                                    <Feather name="calendar" size={wp("7%")} color={"#06B6D4"} />
                                     <Text
                                         style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                                     >
@@ -543,10 +536,10 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                                     <TouchableOpacity
                                         onPress={() => setIsOpen({ ...isOpen, modal: true })}
                                     >
-                                        <Feather name="eye" size={wp("5%")} color="#8B5CF6" />
+                                        <Feather name="eye" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={handleShareQuotation}>
-                                        <Feather name="share-2" size={wp("5%")} color="#8B5CF6" />
+                                        <Feather name="share-2" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -580,9 +573,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     right: 0,
                     paddingVertical: hp("2%"),
                     paddingHorizontal: wp("4%"),
-                    backgroundColor: isDark ? "#1F2028" : "#fff",
-                    borderTopWidth: 1,
-                    borderTopColor: isDark ? "#333" : "#E5E7EB",
+                    backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
                 }}
                 className="flex flex-row gap-2 justify-between items-center"
             >
@@ -591,7 +582,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         size="lg"
                         variant="solid"
                         action="primary"
-                        style={[globalStyles.purpleBackground, { flex: 1, marginRight: wp("2%") }]}
+                        style={[globalStyles.buttonColor, { flex: 1, marginRight: wp("2%") }]}
                         onPress={handlePrev}
                     >
                         <Feather name="arrow-left" size={wp("5%")} color="#fff" />
@@ -603,7 +594,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     size="lg"
                     variant="solid"
                     action="primary"
-                    style={[globalStyles.purpleBackground, { flex: 1, marginLeft: wp("2%") }]}
+                    style={[globalStyles.buttonColor, { flex: 1, marginLeft: wp("2%") }]}
                     isDisabled={!isAllLoadingFalse(loadingProvider)}
                     onPress={currStep === 2 ? handleCreateInvoice : handleNext}
                 >

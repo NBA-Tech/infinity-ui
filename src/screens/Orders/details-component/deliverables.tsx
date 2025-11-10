@@ -18,9 +18,8 @@ import { EmptyState } from '@/src/components/empty-state-data';
 
 const styles = StyleSheet.create({
     modalContainer: {
-        padding: wp('3%'),
-        borderRadius: wp('3%'),
-        backgroundColor: '#1E1E2A'
+        padding: wp('2%'),
+        borderRadius: wp('4%'),
     },
     card: {
         marginVertical: wp('2%'),
@@ -42,7 +41,7 @@ const Deliverables = (props: DeliverablesProps) => {
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const [deleteId, setDeleteId] = useState<string>();
     const showToast = useToastMessage();
-
+    const { isDark } = useContext(ThemeToggleContext)
 
 
     const modifyDeliverable = async (action: "add" | "update" | "delete") => {
@@ -138,7 +137,7 @@ const Deliverables = (props: DeliverablesProps) => {
             key: "name",
             label: "Deliverable",
             placeholder: "Eg : ABC Company",
-            icon: <Feather name="briefcase" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -154,7 +153,7 @@ const Deliverables = (props: DeliverablesProps) => {
             key: "fileUrl",
             label: "Link",
             placeholder: "Eg : https://abc.com",
-            icon: <Feather name="link" size={wp("5%")} color="#8B5CF6" />,
+            icon: <Feather name="link" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -182,7 +181,7 @@ const Deliverables = (props: DeliverablesProps) => {
     }
 
     const verifyAndOpenAddModal = () => {
-        if(props?.orderDetails?.status==GlobalStatus.PENDING){
+        if (props?.orderDetails?.status == GlobalStatus.PENDING) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
@@ -211,10 +210,10 @@ const Deliverables = (props: DeliverablesProps) => {
                     </View>
                     <View className='flex flex-row gap-2'>
                         <TouchableOpacity onPress={() => handleEdit(deliverable?.id)}>
-                            <Feather name="edit" size={wp('5%')} color="#8B5CF6" />
+                            <Feather name="edit" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => handleDelete(deliverable?.id)}>
-                            <Feather name="trash-2" size={wp('5%')} color="#8B5CF6" />
+                            <Feather name="trash-2" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -237,14 +236,14 @@ const Deliverables = (props: DeliverablesProps) => {
                 onBackdropPress={resetDeliverable}
                 onBackButtonPress={resetDeliverable}
             >
-                <View style={styles.modalContainer}>
+                <View style={[styles.modalContainer,{backgroundColor: isDark ? "#1A2238" : "#F5F7FB",}]}>
                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Links</Text>
                     <CustomFieldsComponent infoFields={deliverableForm} cardStyle={{ padding: hp("2%") }} />
                     <Button
                         size="sm"
                         variant="solid"
                         action="primary"
-                        style={[globalStyles.purpleBackground, { marginVertical: hp('2%') }]}
+                        style={[globalStyles.buttonColor, { marginVertical: hp('2%') }]}
                         onPress={currDeliverable?.id ? () => modifyDeliverable("update") : () => modifyDeliverable("add")}
                         isDisabled={loading}
                     >
@@ -262,8 +261,8 @@ const Deliverables = (props: DeliverablesProps) => {
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row justify-start items-star gap-2'>
-                            <Feather name="list" size={wp('7%')} color={'#8B5CF6'} />
+                        <View className='flex flex-row justify-start items-center gap-2'>
+                            <Feather name="list" size={wp('7%')} color={'#3B82F6'} />
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Links</Text>
                         </View>
                         <View>
@@ -271,7 +270,7 @@ const Deliverables = (props: DeliverablesProps) => {
                                 size="sm"
                                 variant="solid"
                                 action="primary"
-                                style={globalStyles.purpleBackground}
+                                style={globalStyles.buttonColor}
                                 onPress={() => verifyAndOpenAddModal()}
                             >
                                 <Feather name="plus" size={wp('5%')} color={'#fff'} />
@@ -283,7 +282,7 @@ const Deliverables = (props: DeliverablesProps) => {
                         </View>
                     </View>
                     {!props?.orderDetails?.deliverables || props?.orderDetails?.deliverables?.length <= 0 ? (
-                        <EmptyState onAction={() => verifyAndOpenAddModal()}/>
+                        <EmptyState onAction={() => verifyAndOpenAddModal()} />
                     ) : (
                         <FlatList
                             scrollEnabled={false}

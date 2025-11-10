@@ -163,8 +163,8 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row justify-start items-star gap-2'>
-                            <Feather name="file" size={wp('7%')} color={'#8B5CF6'} />
+                        <View className='flex flex-row justify-start items-center gap-2'>
+                            <Feather name="file" size={wp('7%')} color={'#3B82F6'} />
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Quotation</Text>
                         </View>
                     </View>

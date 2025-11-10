@@ -157,6 +157,10 @@ const PackageTab = (props: PackageProps) => {
                 className="p-4 mb-3 rounded-2xl"
                 style={[
                     globalStyles.cardShadowEffect,
+                     {
+                        borderLeftWidth: 4,
+                        borderLeftColor: globalStyles.greenTextColor.color,
+                    },
                 ]}
             >
                 {/* Header */}

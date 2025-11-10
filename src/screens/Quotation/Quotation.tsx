@@ -16,9 +16,9 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
+import { getOrderDataListAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
-import { formatDate, openDaialler } from '@/src/utils/utils';
+import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 
@@ -53,6 +53,7 @@ const Quotation = () => {
     const [quoteData, setQuoteData] = useState([])
     const [intialLoading, setIntialLoading] = useState(false);
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [saveLoading, setSaveLoading] = useState<boolean>(false);
 
     const actionButtons = [
         {
@@ -83,6 +84,23 @@ const Quotation = () => {
 
     const handleDeleteOrder = (orderId: string) => {
         console.log(orderId);
+    }
+
+    const updateApprovalStatus=async(orderId:string,status:ApprovalStatus)=>{
+        try{
+            setSaveLoading(true)
+            const response=await updateApprovalStatusAPI(orderId,status)
+            if(!response?.success){
+                showToast({ type: "error", title: "Error", message: response?.message });
+            }
+            else{
+                showToast({ type: "success", title: "Success", message: response?.message });
+                resetFiltersWithDefaultValue(setFilters)
+            }
+        }
+        finally{
+            setSaveLoading(false)
+        }
     }
 
     const getQuoteListData = async (reset: boolean = false) => {
@@ -175,6 +193,8 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#22C55E", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
+                            onPress={() => updateApprovalStatus(item?.orderId,ApprovalStatus.ACCEPTED)}
+                            isDisabled={saveLoading}
                         >
                             <Feather name="check" size={wp('4%')} color="#fff" />
                             <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12) }]}>Accept</ButtonText>
@@ -186,6 +206,8 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#EF4444", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
+                            onPress={() => updateApprovalStatus(item?.orderId,ApprovalStatus.REJECTED)}
+                            isDisabled={saveLoading}
                         >
                             <Feather name="x" size={wp('4%')} color="#fff" />
                             <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12) }]}>Reject</ButtonText>

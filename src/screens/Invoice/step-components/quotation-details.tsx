@@ -42,11 +42,11 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                 {/* Header */}
                 <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <Feather name="user" size={wp("7%")} color="#06B6D4" />
+                        <Feather name="package" size={wp("7%")} color="#06B6D4" />
                         <Text
                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                         >
-                            Quotation Information
+                            Order Information
                         </Text>
                     </View>
                 </View>
@@ -64,7 +64,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
             {props?.orderForm?.orderId?.value && (
                 <Card style={globalStyles.cardShadowEffect}>
                     <ScrollView
-                        contentContainerStyle={{ padding: hp("2%"), marginBottom: hp("10%") }}
+                        contentContainerStyle={{ marginBottom: hp("10%") }}
                         showsVerticalScrollIndicator={false}>
                         <View>
                             <View className='flex flex-row justify-start items-center gap-2'>

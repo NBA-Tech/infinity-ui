@@ -20,7 +20,7 @@ const PaymentComponent = (props: PaymentComponentProps) => {
                 {/* Header */}
                 <View style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <Feather name="user" size={wp("7%")} color="#06B6D4" />
+                        <Feather name="file" size={wp("7%")} color="#06B6D4" />
                         <Text
                             style={[globalStyles.normalTextColor, globalStyles.heading3Text]}
                         >

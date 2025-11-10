@@ -308,7 +308,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                             </View>
                         </View>
                     </View>
-                    <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('2%') }}>
+                    <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('1%') }}>
                         {actionButtons.map((action) => (
                             action?.isVisible && (
                                 <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
@@ -322,7 +322,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 </View>
             </BackHeader>
             <View>
-                <View className='flex flex-row justify-between items-center'>
+                <View className='flex flex-row justify-between items-center' style={{marginVertical:hp('2%')}}>
                     <Card
                         style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
@@ -362,7 +362,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         <Feather
                             name={route.icon}
                             size={wp("5%")}
-                            color={focused ? "#8B5CF6" : "#6B7280"}
+                            color={focused ? "#3B82F6" : "#6B7280"}
                         />
                     ),
                 }}

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         padding: wp('2%'),
         borderRadius: wp('10%'),
         alignItems: 'center',
-        backgroundColor: '#8B5CF6'
+        backgroundColor: '#3B82F6'
     },
     container: {
         borderWidth: 1,
@@ -233,8 +233,8 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
             <View>
                 <View className='flex flex-col' style={{ gap: hp('2%') }}>
                     <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-row flex-wrap justify-start items-star gap-2'>
-                            <Feather name="camera" size={wp('7%')} color={'#8B5CF6'} />
+                        <View className='flex flex-row flex-wrap justify-start items-center gap-2'>
+                            <Feather name="camera" size={wp('7%')} color={'#3B82F6'} />
                             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { width: wp('50%') }]}>Deliverables & Service Information</Text>
                         </View>
                         <View style={[styles.statusContainer, { borderColor: isDark ? '#fff' : '#000' }]}>
