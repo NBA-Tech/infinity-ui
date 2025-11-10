@@ -118,12 +118,12 @@ const Footer = (props: FooterProps) => {
                 />
             ),
         },
-        services: {
+        profile: {
             active: (
                 <View style={{ alignItems: 'center' }}>
-                    <MaterialCommunityIcons
-                        name="camera-iris"
-                        size={hp("3.5%")}
+                    <Feather
+                        name="user"
+                        size={hp("3%")}
                         color={activeIconColorStart}
                     />
                     <Divider
@@ -138,9 +138,9 @@ const Footer = (props: FooterProps) => {
                 </View>
             ),
             inactive: (
-                <MaterialCommunityIcons
-                    name="camera-outline"
-                    size={hp("3.5%")}
+                <Feather
+                    name="user"
+                    size={hp("3%")}
                     color="#AAA"
                 />
             ),

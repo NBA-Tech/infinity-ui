@@ -642,7 +642,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
-                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Services')} />
+                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
                                         )
                                         }
                                         <FlatList
@@ -685,7 +685,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {isAllLoadingFalse(loadingProvider) && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={() => navigation.navigate('Services')} />
+                                            <EmptyState variant='services' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
                                         )
 
                                         }

@@ -22,6 +22,8 @@ import ReloadProvider from './src/providers/reload/reload-context';
 import NotificationProvider from './src/providers/notification/notification-provider';
 import { SubscriptionProvider } from './src/providers/subscription/subscription-context';
 import SubscriptionLockOverlay from './src/components/subscription-overlay';
+import { ConnectivityProvider } from './src/providers/internet-connection/connectivity-provider';
+import NoInternetPopup from './src/components/nointernet-popup';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,23 +31,26 @@ function App() {
   return (
     <GluestackUIProvider mode="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <DataStoreProvider>
-            <ReloadProvider>
-              <AuthProvider>
-                <GlobalStyleProvider>
-                  <ConfettiProvider>
-                    <NotificationProvider>
-                      <SubscriptionProvider>
-                        <Navigation />
-                      </SubscriptionProvider>
-                    </NotificationProvider>
-                  </ConfettiProvider>
-                </GlobalStyleProvider>
-              </AuthProvider>
-            </ReloadProvider>
-          </DataStoreProvider>
-        </SafeAreaProvider>
+        <ConnectivityProvider>
+          <SafeAreaProvider>
+            <DataStoreProvider>
+              <ReloadProvider>
+                <AuthProvider>
+                  <GlobalStyleProvider>
+                    <ConfettiProvider>
+                      <NotificationProvider>
+                        <SubscriptionProvider>
+                          <Navigation />
+                          <NoInternetPopup/>
+                        </SubscriptionProvider>
+                      </NotificationProvider>
+                    </ConfettiProvider>
+                  </GlobalStyleProvider>
+                </AuthProvider>
+              </ReloadProvider>
+            </DataStoreProvider>
+          </SafeAreaProvider>
+        </ConnectivityProvider>
       </GestureHandlerRootView>
     </GluestackUIProvider>
   );

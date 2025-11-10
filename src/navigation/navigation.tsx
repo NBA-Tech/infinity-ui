@@ -68,6 +68,7 @@ function ProfileNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileView" component={Profile} />
       <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
+      <Stack.Screen name="Services" component={Services} />
     </Stack.Navigator>
   );
 }
@@ -151,11 +152,11 @@ function TabNavigator() {
         )}
       </Tab.Screen>
 
-      <Tab.Screen name="Services">
+      <Tab.Screen name="Profile">
         {() => (
           <View style={{ flex: 1 }}>
             <SubscriptionLockOverlay>
-              <Services />
+              <ProfileNavigator />
             </SubscriptionLockOverlay>
           </View>
         )}
