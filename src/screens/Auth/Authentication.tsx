@@ -66,7 +66,7 @@ const Authentication = () => {
 
   const renderAuthContent = () => (
     <View style={styles.body}>
-      {/* Animation + Header */}
+      {/* Animation Section */}
       <View style={styles.animationContainer}>
         <LottieView
           source={require('../../assets/animations/login.json')}
@@ -74,7 +74,11 @@ const Authentication = () => {
           loop
           style={styles.mainAnimation}
         />
-
+      </View>
+  
+      {/* Header + Auth Form */}
+      <View style={styles.formContainer}>
+        {/* Title Section (Moved here) */}
         <View style={styles.headingContainer}>
           <Text
             style={[
@@ -89,7 +93,7 @@ const Authentication = () => {
               ? 'Sign up to'
               : 'Reset your password for'}
           </Text>
-
+  
           <Text
             style={[
               globalStyles.headingText,
@@ -100,10 +104,8 @@ const Authentication = () => {
             INFINITY CRM
           </Text>
         </View>
-      </View>
-
-      {/* Auth Card (Login/Register/Forgot) */}
-      <View style={styles.formContainer}>
+  
+        {/* Auth Card */}
         {currScreen === 'login' ? (
           <Login setCurrScreen={setCurrScreen} />
         ) : currScreen === 'register' ? (
@@ -114,6 +116,7 @@ const Authentication = () => {
       </View>
     </View>
   );
+  
 
   return (
     <SafeAreaView

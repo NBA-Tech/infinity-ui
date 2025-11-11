@@ -14,7 +14,7 @@ import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import Modal from "react-native-modal";
 import { ApiGeneralRespose, FormFields } from '@/src/types/common';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { PackageModel, SERVICECATEGORY, ServiceModel, SERVICETYPE, SESSIONTYPE, STATUS } from '@/src/types/offering/offering-type';
+import { PackageModel, ServiceModel, SERVICETYPE, SESSIONTYPE } from '@/src/types/offering/offering-type';
 import { checkValidNumber, clearState, generateRandomString, patchState, toTitleCase, validateValues } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -25,7 +25,7 @@ import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
 import YoutubePlayer from "react-native-youtube-iframe";
-
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -85,11 +85,9 @@ const services = () => {
     const [loadingProvider, setloadingProvider] = useState<"PACKAGE" | SERVICETYPE | null>(null)
     const [servieDetails, setServiceDetails] = useState<ServiceModel>({
         userId: getItem("USERID") as string,
-        status: STATUS.ACTIVE,
     })
     const [packageDetails, setPackageDetails] = useState<PackageModel>({
         userId: getItem("USERID") as string,
-        status: STATUS.ACTIVE,
     })
 
     const statInfo = [
@@ -304,21 +302,6 @@ const services = () => {
                 patchState("", 'sessionType', value, true, setServiceDetails, setErrors)
             }
         },
-        serviceCategory: {
-            key: "serviceCategory",
-            label: "Category",
-            placeholder: "Eg: Wedding",
-            icon: <Feather name="tag" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
-            type: "select",
-            style: "w-full",
-            isRequired: true,
-            isDisabled: false,
-            value: servieDetails.serviceCategory,
-            dropDownItems: Object.values(SERVICECATEGORY).map((item) => { return { label: item, value: item } }),
-            onChange(value: string) {
-                patchState("", 'serviceCategory', value, true, setServiceDetails, setErrors)
-            }
-        },
         quantity:{
             key: "quantity",
             label: "Quantity",
@@ -338,7 +321,7 @@ const services = () => {
             key: "price",
             label: "Price",
             placeholder: "Eg: 1000",
-            icon: <Feather name="dollar-sign" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
+            icon: <FontAwesome name="money" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             value: servieDetails.price,
@@ -419,11 +402,9 @@ const services = () => {
         finally {
             setPackageDetails({
                 userId: getItem("USERID") as string,
-                status: STATUS.ACTIVE,
             } as PackageModel)
             setServiceDetails({
                 userId: getItem("USERID") as string,
-                status: STATUS.ACTIVE,
             } as ServiceModel)
             setloadingProvider(null)
         }
@@ -448,7 +429,7 @@ const services = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
-            <BackHeader screenName='Offerings' />
+            <BackHeader screenName='Services' />
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => setIsOpen(false)}

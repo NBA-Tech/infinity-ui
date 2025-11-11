@@ -106,6 +106,7 @@ const ServiceComponent = ({
         backgroundColor: isDark ? '#131A2A' : '#F5F7FB',
         borderColor: selected ? '#3B82F6' : isDark ? '#2E3A57' : '#E5E7EB',
         borderWidth: selected ? 1.5 : 1,
+        borderRadius: wp('3%'),
       }}
       selected={selected}
       onPress={() => handleChange(!selected)}
@@ -116,10 +117,11 @@ const ServiceComponent = ({
         paddingHorizontal: wp('3%'),
       }}
     >
-      <View className="flex flex-row justify-between items-center">
+      {/* Outer Row: Left (Details) + Right (Qty Controls) */}
+      <View className="flex-row justify-between items-center" style={{ width: '100%' }}>
         {/* LEFT SIDE - Icon + Details */}
-        <View>
-          {/* Icon Section */}
+        <View className="flex-row flex-1 items-center gap-3">
+          {/* Gradient Icon */}
           <GradientCard
             colors={
               selected
@@ -145,37 +147,55 @@ const ServiceComponent = ({
               color={selected ? '#FFFFFF' : isDark ? '#E2E8F0' : '#182D53'}
             />
           </GradientCard>
-
+  
           {/* Text Section */}
           <View className="flex-1">
             <Text
-              style={[globalStyles.heading3Text, globalStyles.themeTextColor]}
+              style={[
+                globalStyles.heading3Text,
+                globalStyles.themeTextColor,
+                { flexShrink: 1 },
+              ]}
               numberOfLines={1}
             >
               {eventType?.serviceName}
             </Text>
+  
             <Text
-              style={[globalStyles.labelText, globalStyles.greyTextColor]}
+              style={[
+                globalStyles.labelText,
+                globalStyles.greyTextColor,
+                { flexShrink: 1 },
+              ]}
               numberOfLines={1}
             >
               {eventType?.description}
             </Text>
-
-            <View className="flex-row items-center gap-3 mt-1">
-              <View className="flex flex-row gap-1 items-center">
+  
+            <View className="flex-row items-center gap-3 mt-1 flex-wrap">
+              <View className="flex-row gap-1 items-center">
                 <Feather
                   name="clock"
                   size={wp('3%')}
                   color={isDark ? '#E2E8F0' : '#475569'}
                 />
-                <Text style={[globalStyles.smallText, globalStyles.greyTextColor]}>
+                <Text
+                  style={[
+                    globalStyles.smallText,
+                    globalStyles.greyTextColor,
+                    { flexShrink: 1 },
+                  ]}
+                >
                   {eventType?.serviceCategory}
                 </Text>
               </View>
+  
               <Text
                 style={[
                   globalStyles.smallText,
-                  selected ? globalStyles.blueTextColor : globalStyles.themeTextColor,
+                  selected
+                    ? globalStyles.blueTextColor
+                    : globalStyles.themeTextColor,
                   { fontWeight: '600' },
                 ]}
               >
@@ -184,12 +204,13 @@ const ServiceComponent = ({
             </View>
           </View>
         </View>
-
+  
         {/* RIGHT SIDE - Quantity Controls */}
         <View className="flex-row items-center gap-2 ml-3">
-          {/* Decrement Button */}
+          {/* Decrement */}
           <TouchableOpacity
             onPress={decrement}
+            activeOpacity={0.8}
             style={{
               backgroundColor: isDark ? '#2C426A' : '#3B82F6',
               width: wp('8%'),
@@ -201,19 +222,19 @@ const ServiceComponent = ({
           >
             <Feather name="minus" size={wp('4%')} color="#fff" />
           </TouchableOpacity>
-
+  
           {/* Quantity Input */}
           <TextInput
             style={{
               width: wp('10%'),
-              height: hp('4.5%'),
+              height: hp('5%'),
               textAlign: 'center',
               color: isDark ? '#E2E8F0' : '#1E3A8A',
               backgroundColor: isDark ? '#1E293B' : '#F5F7FB',
               borderWidth: 1,
               borderColor: selected ? '#3B82F6' : '#E5E7EB',
               borderRadius: wp('1.5%'),
-              fontSize: wp('4%'),
+              fontSize: wp('3%'),
               fontWeight: '600',
             }}
             keyboardType="number-pad"
@@ -222,10 +243,11 @@ const ServiceComponent = ({
               setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1))
             }
           />
-
-          {/* Increment Button */}
+  
+          {/* Increment */}
           <TouchableOpacity
             onPress={increment}
+            activeOpacity={0.8}
             style={{
               backgroundColor: isDark ? '#2C426A' : '#3B82F6',
               width: wp('8%'),
@@ -240,9 +262,8 @@ const ServiceComponent = ({
         </View>
       </View>
     </CustomCheckBox>
-
-
   );
+  
 };
 
 export default ServiceComponent;

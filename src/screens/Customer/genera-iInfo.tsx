@@ -139,91 +139,85 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                             </View>
                         </View>
 
-                        <View className="flex-row justify-between gap-4" style={styles.detailsContainer}>
-                            <View className="flex-1 flex-row justify-between gap-3">
-                                {/* Total Quoted */}
-                                <Card style={{ backgroundColor: "#ECFDF5" /* emerald-50 */ }}>
-                                    <View className="items-center justify-center">
-                                        <Text
-                                            style={[
-                                                globalStyles.normalTextColor,
-                                                globalStyles.normalBoldText,
-                                                { color: "#059669" }, // emerald-600
-                                            ]}
-                                        >
-                                            Quoted
-                                        </Text>
-                                        <View className="flex-row items-center gap-2 mt-1">
+                        <View
+                            className="flex-row flex-wrap justify-between gap-4"
+                            style={styles.detailsContainer}
+                        >
+                            {/* Each card will auto-wrap if not enough space */}
+                            {[
+                                {
+                                    title: "Quoted",
+                                    value: props?.isLoading
+                                        ? "Loading..."
+                                        : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalAmount || 0}`,
+                                    bg: "#ECFDF5", // emerald-50
+                                    color: "#059669", // emerald-600
+                                },
+                                {
+                                    title: "Received",
+                                    value: props?.isLoading
+                                        ? "Loading..."
+                                        : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalPaid || 0}`,
+                                    bg: "#EEF2FF", // indigo-50
+                                    color: "#4F46E5", // indigo-600
+                                },
+                                {
+                                    title: "Balance",
+                                    value: `₹${Math.max(
+                                        (props?.paymentDetails?.totalAmount || 0) -
+                                        (props?.paymentDetails?.totalPaid || 0),
+                                        0
+                                    )}`,
+                                    bg: "#FFFBEB", // amber-50
+                                    color: "#D97706", // amber-600
+                                },
+                            ].map((item, index) => (
+                                <View
+                                    key={index}
+                                    className="flex-1 min-w-[30%]"
+                                    style={{
+                                        flexBasis: '30%',
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    <Card
+                                        style={{
+                                            backgroundColor: item.bg,
+                                            flex: 1,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            paddingVertical: 12,
+                                            paddingHorizontal: 8,
+                                        }}
+                                    >
+                                        <View className="items-center justify-center">
                                             <Text
                                                 style={[
                                                     globalStyles.normalTextColor,
-                                                    globalStyles.labelText,
-                                                    { color: "#059669" },
+                                                    globalStyles.normalBoldText,
+                                                    { color: item.color },
                                                 ]}
                                             >
-                                                {props?.isLoading ? "Loading..." : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalAmount || 0}`}
+                                                {item.title}
                                             </Text>
-                                        </View>
-                                    </View>
-                                </Card>
 
-                                {/* Total Received */}
-                                <Card style={{ backgroundColor: "#EEF2FF" /* indigo-50 */ }}>
-                                    <View className="items-center justify-center">
-                                        <Text
-                                            style={[
-                                                globalStyles.normalTextColor,
-                                                globalStyles.normalBoldText,
-                                                { color: "#4F46E5" }, // indigo-600
-                                            ]}
-                                        >
-                                            Received
-                                        </Text>
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Text
-                                                style={[
-                                                    globalStyles.normalTextColor,
-                                                    globalStyles.labelText,
-                                                    { color: "#4F46E5" },
-                                                ]}
-                                            >
-                                                {props?.isLoading ? "Loading..." : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalPaid || 0}`}
-                                            </Text>
+                                            <View className="flex-row items-center gap-2 mt-1 flex-wrap justify-center">
+                                                <Text
+                                                    style={[
+                                                        globalStyles.normalTextColor,
+                                                        globalStyles.labelText,
+                                                        { color: item.color },
+                                                    ]}
+                                                >
+                                                    {item.value}
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
-                                </Card>
-
-                                {/* Balance */}
-                                <Card style={{ backgroundColor: "#FFFBEB" /* amber-50 */ }}>
-                                    <View className="items-center justify-center">
-                                        <Text
-                                            style={[
-                                                globalStyles.normalTextColor,
-                                                globalStyles.normalBoldText,
-                                                { color: "#D97706" }, // amber-600
-                                            ]}
-                                        >
-                                            Balance
-                                        </Text>
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Text
-                                                style={[
-                                                    globalStyles.normalTextColor,
-                                                    globalStyles.labelText,
-                                                    { color: "#D97706" },
-                                                ]}
-                                            >
-                                                ₹{Math.max(
-                                                    (props?.paymentDetails?.totalAmount || 0) - (props?.paymentDetails?.totalPaid || 0),
-                                                    0
-                                                )}
-
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </Card>
-                            </View>
+                                    </Card>
+                                </View>
+                            ))}
                         </View>
+
 
                     </Card>
 

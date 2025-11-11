@@ -94,23 +94,23 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     style={[
                         styles.dropdown,
                         {
-                            height: hp("5.5%"),
+                            height: hp("6%"),
                             borderWidth: 1,
                             borderRadius:9999,
                             paddingHorizontal: wp("3%"),
-                            borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border tone
+                            borderColor: isDark ? "#1E293B" : "#D1D5DB", // subtle border tone
                             backgroundColor: isDark
-                                ? globalStyles.formBackGroundColor.backgroundColor // dark: #1A2238
-                                : "#FFFFFF", // light: clean white
+                                ? "#0E1628" // dark: #1A2238
+                                : "#F5F7FB", // light: clean white
                         },
                     ]}
                     containerStyle={[
                         {
                             borderRadius: wp("2%"),
                             backgroundColor: isDark
-                                ? globalStyles.formBackGroundColor.backgroundColor // dark dropdown list bg
-                                : "#FFFFFF",
-                            borderColor: isDark ? "#2E3A57" : "#E5E7EB",
+                                ? "#0E1628" // dark dropdown list bg
+                                : "#F5F7FB",
+                            borderColor: isDark ? "#1E293B" : "#E5E7EB",
                             borderWidth: 1,
                             shadowColor: isDark ? "#000" : "#182D53",
                             shadowOffset: { width: 0, height: 2 },
@@ -130,6 +130,10 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                             fontWeight: "500",
                         },
                     ]}
+                    inputSearchStyle={{
+                        borderRadius:9999,
+                        color: isDark ? "#E2E8F0" : "#182D53",
+                    }}
                     itemContainerStyle={{
                         backgroundColor: isDark ? "#1A2238" : "#FFFFFF",
                         borderBottomColor: isDark ? "#2E3A57" : "#E5E7EB",

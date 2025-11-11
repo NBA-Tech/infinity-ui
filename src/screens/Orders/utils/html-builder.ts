@@ -1,5 +1,5 @@
-export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString(),quotationFields: any) => {
-        return `
+export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString(), quotationFields: any) => {
+  return `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -95,14 +95,45 @@ export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLoc
           overflow: hidden;
           background-color: #ffffff;
         }
+        
+        /* Each row (including header and items) */
         .pricing-row {
           display: flex;
+          flex-wrap: wrap;                /* ✅ Allows wrapping on smaller screens */
           justify-content: space-between;
-          padding: 2% 3%;
+          align-items: center;
+          padding: 12px 20px;
           border-bottom: 1px solid #e5e7eb;
           font-size: 16px;
           font-family: 'Inter-Regular';
+          box-sizing: border-box;
         }
+        
+        /* Column styles */
+        .pricing-row .col {
+          flex: 1 1 25%;                  /* ✅ Each column gets equal width */
+          min-width: 120px;               /* ✅ Prevents text overflow */
+          text-align: center;
+          word-wrap: break-word;
+          box-sizing: border-box;
+        }
+        
+        /* Header row bold style */
+        .pricing-row.header-row {
+          background-color: #eef2ff;
+          font-weight: 600;
+          font-family: 'Poppins-Bold';
+          color: #1f2937;
+        }
+        
+        /* Adjust spacing for small screens */
+        @media (max-width: 600px) {
+          .pricing-row .col {
+            flex: 1 1 45%;                /* ✅ Two columns per row on small screens */
+            text-align: left;
+          }
+        }
+        
         .desc {
           font-size: 16px;
           font-family: 'Inter-Regular';
@@ -170,35 +201,32 @@ export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLoc
       <div class="container">
         
         <!-- Header Section -->
-        ${
-          quotationFields.headerSection.fields.some(
-            (f:any) => 
-              (f.container === "studio-info" || f.container === "contact-info") && f.isSelected
-          )
-            ? `<header class="header">
-                ${
-                  quotationFields.headerSection.fields.some((f:any) => f.container === "studio-info" && f.isSelected)
-                    ? `<div class="studio-info">
+        ${quotationFields.headerSection.fields.some(
+    (f: any) =>
+      (f.container === "studio-info" || f.container === "contact-info") && f.isSelected
+  )
+      ? `<header class="header">
+                ${quotationFields.headerSection.fields.some((f: any) => f.container === "studio-info" && f.isSelected)
+        ? `<div class="studio-info">
                         ${quotationFields.headerSection.fields
-                          .filter((f:any) => f.container === "studio-info" && f.isSelected)
-                          .map((f:any) => f.html)
-                          .join("")}
+          .filter((f: any) => f.container === "studio-info" && f.isSelected)
+          .map((f: any) => f.html)
+          .join("")}
                       </div>`
-                    : ''
-                }
-                ${
-                  quotationFields.headerSection.fields.some((f:any) => f.container === "contact-info" && f.isSelected)
-                    ? `<div class="contact-info">
+        : ''
+      }
+                ${quotationFields.headerSection.fields.some((f: any) => f.container === "contact-info" && f.isSelected)
+        ? `<div class="contact-info">
                         ${quotationFields.headerSection.fields
-                          .filter((f:any) => f.container === "contact-info" && f.isSelected)
-                          .map((f:any) => f.html)
-                          .join("")}
+          .filter((f: any) => f.container === "contact-info" && f.isSelected)
+          .map((f: any) => f.html)
+          .join("")}
                       </div>`
-                    : ''
-                }
+        : ''
+      }
               </header>`
-            : ''
-        }
+      : ''
+    }
         
 
         <!-- Invoice Metadata -->
@@ -208,32 +236,32 @@ export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLoc
         </section>
 
         <!-- Body Section -->
-            ${quotationFields.bodySection.fields.some((f:any) => f.isSelected)
-                        ? `<section class="section">
+            ${quotationFields.bodySection.fields.some((f: any) => f.isSelected)
+      ? `<section class="section">
                 ${quotationFields.bodySection.fields
-                            .filter((f:any) => f.isSelected)
-                            .map((f:any) => f.html)
-                            .join("")}
+        .filter((f: any) => f.isSelected)
+        .map((f: any) => f.html)
+        .join("")}
             </section>`
-                        : ''
-            }
+      : ''
+    }
 
 
 
         <!-- Footer Section -->
-       ${quotationFields.footerSection.fields.some((f:any) => f.isSelected)
-                ? `<footer class="footer">
+       ${quotationFields.footerSection.fields.some((f: any) => f.isSelected)
+      ? `<footer class="footer">
                 ${quotationFields.footerSection.fields
-                    .filter((f:any) => f.isSelected)
-                    .map((f:any) => f.html)
-                    .join("")}
+        .filter((f: any) => f.isSelected)
+        .map((f: any) => f.html)
+        .join("")}
             </footer>`
-                : ''
-            }
+      : ''
+    }
 
 
       </div>
     </body>
   </html>
   `;
-    };
+};

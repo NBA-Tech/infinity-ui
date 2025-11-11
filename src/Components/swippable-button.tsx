@@ -1,155 +1,108 @@
-import LottieView from "lottie-react-native";
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    useAnimatedGestureHandler,
-    withSpring,
-    runOnJS,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-const SWIPE_WIDTH = wp("90%");
-const SWIPE_HEIGHT = hp("7%");
-const KNOB_SIZE = SWIPE_HEIGHT - 8;
+const BUTTON_WIDTH = wp("90%");
+const BUTTON_HEIGHT = hp("7%");
 
-type SwipeButtonProps = {
-    onConfirm: () => void;
-    text?: string;
-    isDisabled?: boolean;
-    isReset?: boolean;
+type ClickButtonProps = {
+  onConfirm: () => void;
+  text?: string;
+  isDisabled?: boolean;
 };
 
-const SwipeButton: React.FC<SwipeButtonProps> = ({
-    onConfirm,
-    text = "Swipe to Confirm",
-    isDisabled = false,
-    isReset = false,
+const ClickButton: React.FC<ClickButtonProps> = ({
+  onConfirm,
+  text = "Tap to Confirm",
+  isDisabled = false,
 }) => {
-    const translateX = useSharedValue(0);
+  const scale = useSharedValue(1);
 
-    // Reset knob if parent sets isReset = true
-    useEffect(() => {
-        if (isReset) {
-            translateX.value = withSpring(0);
-        }
-    }, [isReset]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
-    const gestureHandler = useAnimatedGestureHandler({
-        onStart: (_, ctx: any) => {
-            if (isDisabled) return;
-            ctx.startX = translateX.value;
-        },
-        onActive: (event, ctx: any) => {
-            if (isDisabled) return;
-            translateX.value = Math.min(
-                Math.max(ctx.startX + event.translationX, 0),
-                SWIPE_WIDTH - KNOB_SIZE - 8
-            );
-        },
-        onEnd: () => {
-            if (isDisabled) {
-                translateX.value = withSpring(0);
-                return;
-            }
+  const handlePressIn = () => {
+    if (!isDisabled) scale.value = withSpring(0.95);
+  };
 
-            if (translateX.value > SWIPE_WIDTH * 0.6) {
-                translateX.value = withSpring(SWIPE_WIDTH - KNOB_SIZE - 8, {}, () => {
-                    runOnJS(onConfirm)();
-                });
-            } else {
-                translateX.value = withSpring(0);
-            }
-        },
+  const handlePressOut = () => {
+    if (!isDisabled) scale.value = withSpring(1);
+  };
+
+  const handlePress = () => {
+    if (isDisabled) return;
+    scale.value = withTiming(0.9, { duration: 100 }, () => {
+      scale.value = withSpring(1);
     });
+    onConfirm();
+  };
 
-    const knobStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: translateX.value }],
-        opacity: isDisabled ? 0.5 : 1,
-    }));
+  return (
+    <View style={styles.container}>
+      <Animated.View style={[styles.animatedContainer, animatedStyle]}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={handlePress}
+          disabled={isDisabled}
+          style={[
+            styles.button,
+            {
+              backgroundColor: isDisabled ? "#E5E7EB" : "#22C55E",
+              borderColor: isDisabled ? "#D1D5DB" : "#15803D",
+            },
+          ]}
+        >
 
-    const draggedStyle = useAnimatedStyle(() => ({
-        width: translateX.value + KNOB_SIZE / 2 + 4,
-    }));
-
-    return (
-        <View style={styles.container}>
-            <View
-                style={[
-                    styles.swipeContainer,
-                    { backgroundColor: isDisabled ? "#E5E7EB" : "#fff" },
-                ]}
-            >
-                {/* Dragged portion */}
-                <Animated.View
-                    style={[
-                        styles.dragged,
-                        draggedStyle,
-                        { backgroundColor: isDisabled ? "#9CA3AF" : "#22C55E" },
-                    ]}
-                />
-
-                {/* Center text */}
-                <Text
-                    style={[
-                        styles.label,
-                        { color: isDisabled ? "#9CA3AF" : "#6B7280" },
-                    ]}
-                >
-                    {text}
-                </Text>
-
-                {/* Knob */}
-                <PanGestureHandler onGestureEvent={gestureHandler} enabled={!isDisabled}>
-                    <Animated.View style={[styles.knob, knobStyle]}>
-                        <LottieView
-                            source={require("../assets/animations/swipe_right.json")}
-                            autoPlay
-                            loop
-                            style={{ width: wp("15%"), height: hp("7%") }}
-                        />
-                    </Animated.View>
-                </PanGestureHandler>
-            </View>
-        </View>
-    );
+          {/* Button Label */}
+          <Text
+            style={[
+              styles.label,
+              { color: isDisabled ? "#9CA3AF" : "#FFFFFF" },
+            ]}
+          >
+            {text}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: "center",
-        marginVertical: hp("2%"),
-    },
-    swipeContainer: {
-        width: SWIPE_WIDTH,
-        height: SWIPE_HEIGHT,
-        borderRadius: SWIPE_HEIGHT / 2,
-        justifyContent: "center",
-        overflow: "hidden",
-    },
-    dragged: {
-        position: "absolute",
-        left: 0,
-        height: SWIPE_HEIGHT,
-        borderRadius: SWIPE_HEIGHT / 2,
-    },
-    label: {
-        alignSelf: "center",
-        fontSize: wp("4%"),
-        fontWeight: "600",
-    },
-    knob: {
-        position: "absolute",
-        left: 4,
-        width: KNOB_SIZE,
-        height: KNOB_SIZE,
-        borderRadius: KNOB_SIZE / 2,
-        backgroundColor: "#8B5CF6",
-        justifyContent: "center",
-        alignItems: "center",
-    },
+  container: {
+    alignItems: "center",
+    marginVertical: hp("2%"),
+  },
+  animatedContainer: {
+    borderRadius: BUTTON_HEIGHT / 2,
+    overflow: "hidden",
+  },
+  button: {
+    width: BUTTON_WIDTH,
+    height: BUTTON_HEIGHT,
+    borderRadius: BUTTON_HEIGHT / 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.2,
+  },
+  iconContainer: {
+    position: "absolute",
+    left: wp("6%"),
+  },
+  label: {
+    fontSize: wp("4%"),
+    fontWeight: "600",
+  },
 });
 
-export default SwipeButton;
+export default ClickButton;

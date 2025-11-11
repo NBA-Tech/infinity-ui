@@ -16,7 +16,7 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { getOrderDataListAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
+import { deleteOrderAPI, getOrderDataListAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
 import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
@@ -60,7 +60,7 @@ const Quotation = () => {
             key: 'edit',
             label: 'Edit',
             icon: <Feather name="edit-2" size={wp('4%')} color="#fff" />,
-            onPress: (orderId:string) => navigation.navigate("Orders",{screen:"CreateOrder",params:{orderId:orderId}}),
+            onPress: (orderId: string) => navigation.navigate("Quotations", { screen: "CreateQuotation", params: { orderId: orderId } }),
         },
         {
             key: 'makeOrder',
@@ -72,33 +72,38 @@ const Quotation = () => {
             key: 'call',
             label: 'Call',
             icon: <Feather name="phone" size={wp('4%')} color="#fff" />,
-            onPress: (mobileNumber:string) => openDaialler(mobileNumber),
+            onPress: (mobileNumber: string) => openDaialler(mobileNumber),
         },
         {
             key: 'delete',
             label: 'Delete',
             icon: <Feather name="trash" size={wp('4%')} color="#fff" />,
-            onPress: (orderId:string) => handleDeleteOrder(orderId),
+            onPress: (orderId: string) => updateApprovalStatus(orderId,ApprovalStatus.REJECTED),
         },
     ];
 
-    const handleDeleteOrder = (orderId: string) => {
-        console.log(orderId);
-    }
 
-    const updateApprovalStatus=async(orderId:string,status:ApprovalStatus)=>{
-        try{
+    const updateApprovalStatus = async (orderId: string, status: ApprovalStatus) => {
+        try {
             setSaveLoading(true)
-            const response=await updateApprovalStatusAPI(orderId,status)
-            if(!response?.success){
+            let response;
+
+            if (status == ApprovalStatus.REJECTED) {
+                response = await deleteOrderAPI(orderId)
+            }
+            else {
+                response = await updateApprovalStatusAPI(orderId, status)
+
+            }
+            if (!response?.success) {
                 showToast({ type: "error", title: "Error", message: response?.message });
             }
-            else{
+            else {
                 showToast({ type: "success", title: "Success", message: response?.message });
                 resetFiltersWithDefaultValue(setFilters)
             }
         }
-        finally{
+        finally {
             setSaveLoading(false)
         }
     }
@@ -171,7 +176,6 @@ const Quotation = () => {
 
     const QuoteCardComponent = ({ item }: { item: OrderModel }) => {
         const customerData = customerMetaInfoList.find(x => x?.customerID === item?.orderBasicInfo?.customerID)
-        console.log(customerData,item)
         return (
             <Card style={globalStyles.cardShadowEffect}>
                 {/* Title */}
@@ -193,7 +197,7 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#22C55E", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                            onPress={() => updateApprovalStatus(item?.orderId,ApprovalStatus.ACCEPTED)}
+                            onPress={() => updateApprovalStatus(item?.orderId, ApprovalStatus.ACCEPTED)}
                             isDisabled={saveLoading}
                         >
                             <Feather name="check" size={wp('4%')} color="#fff" />
@@ -206,7 +210,7 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#EF4444", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                            onPress={() => updateApprovalStatus(item?.orderId,ApprovalStatus.REJECTED)}
+                            onPress={() => updateApprovalStatus(item?.orderId, ApprovalStatus.REJECTED)}
                             isDisabled={saveLoading}
                         >
                             <Feather name="x" size={wp('4%')} color="#fff" />
@@ -242,13 +246,13 @@ const Quotation = () => {
                             }}
                             onPress={() => {
                                 if (btn?.key === "edit" || btn?.key === "delete") {
-                                  btn.onPress(item?.orderId);
+                                    btn.onPress(item?.orderId);
                                 } else if (btn?.key === "call") {
-                                  btn.onPress(customerData?.mobileNumber);
+                                    btn.onPress(customerData?.mobileNumber);
                                 } else {
-                                  btn.onPress();
+                                    btn.onPress();
                                 }
-                              }}
+                            }}
                         >
                             {btn.icon}
                             <ButtonText style={[globalStyles.whiteTextColor, { fontSize: scaleFont(12), marginLeft: wp('1%') }]}>
@@ -271,7 +275,7 @@ const Quotation = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2">
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
                         <Text
                             style={[
                                 globalStyles.headingText,
@@ -298,7 +302,7 @@ const Quotation = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="file" size={wp('5%')} color="#fff" />
+                                <Feather name="file" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
                                     2
@@ -323,7 +327,7 @@ const Quotation = () => {
                                         borderWidth: 1,
                                     },
                                 ]}
-                                onPress={() => navigation.navigate('CreateCustomer')}
+                                onPress={() => navigation.navigate("Quotations", { screen: "CreateQuotation" })}
                             >
                                 <Feather name="plus" size={wp('5%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create</ButtonText>
@@ -352,23 +356,21 @@ const Quotation = () => {
                             />
 
                         </Input>
-                        <TouchableOpacity>
-                            <MaterialCommunityIcons name="filter-outline" size={wp('8%')} color="#3B82F6" />
-                        </TouchableOpacity>
+                        
                     </View>
 
 
                 </View>
                 {loading && <QuoteCardSkeleton count={5} />}
-                {!loading && quoteData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "orders" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
-                
+                {!loading && quoteData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "quotations" : "search"} onAction={() => navigation.navigate("Quotations", { screen: "CreateQuotation" })} />}
+
                 <View style={{ marginVertical: hp('2%') }}>
                     <FlatList
                         data={quoteData ?? []}
                         style={{ height: hp("65%") }}
                         keyExtractor={(_, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingVertical: hp("1%") }}
+                        contentContainerStyle={{ paddingVertical: hp("1%"), gap: hp('2%') }}
                         renderItem={({ item }) => (
                             <QuoteCardComponent item={item} />
                         )}

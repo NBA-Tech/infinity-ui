@@ -30,10 +30,12 @@ import {
   Subscription,
   PaymentGateway,
   Quotation,
+  CreateQuotaion,
 } from "../screens";
 import { useSubscription } from "../providers/subscription/subscription-context";
 import SubscriptionLockOverlay from "../components/subscription-overlay";
 import { View } from "react-native";
+import Tutorial from "../screens/profile/tutorial";
 
 const RootStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
@@ -69,6 +71,7 @@ function ProfileNavigator() {
       <Stack.Screen name="ProfileView" component={Profile} />
       <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
       <Stack.Screen name="Services" component={Services} />
+      <Stack.Screen name="Tutorial" component={Tutorial} />
     </Stack.Navigator>
   );
 }
@@ -87,6 +90,7 @@ function QuotationNavigator(){
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="QuotationList" component={Quotation} />
+      <Stack.Screen name="CreateQuotation" component={CreateQuotaion} />
     </Stack.Navigator>
   );
 }

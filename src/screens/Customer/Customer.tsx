@@ -410,7 +410,7 @@ const Customer = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="users" size={wp('5%')} color="#fff" />
+                                <Feather name="users" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
                                     {customerData?.length}
@@ -426,7 +426,6 @@ const Customer = () => {
                             <Button
                                 size="md"
                                 variant="solid"
-                                action="primary"
                                 style={[
                                     globalStyles.buttonColor,
                                     {

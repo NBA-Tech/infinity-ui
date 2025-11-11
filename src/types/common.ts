@@ -92,7 +92,7 @@ export interface SearchQueryRequest {
 
 }
 
-interface ReturnTo{
+interface ReturnTo {
   tab: string,
   screen: string
 }
@@ -101,13 +101,14 @@ export interface RootStackParamList extends ParamListBase {
   OneTimePassword: { authData: AuthModel, otpCode: string };
   useronboarding: undefined;
   OrderDetails: { orderId: string };
-  CreateOrder: { orderId: string };
+  CreateOrder: { orderId: string, returnTo?: ReturnTo };
   InvoiceDetails: { invoiceId: string };
-  Success: { text?: string,returnTo?:ReturnTo };
-  CreateInvoice: { invoiceId: string };
-  CreateCustomer: { customerID: string,returnTo?:ReturnTo };
+  Success: { text?: string, returnTo?: ReturnTo };
+  CreateInvoice: { invoiceId: string, returnTo?: ReturnTo };
+  CreateCustomer: { customerID: string, returnTo?: ReturnTo };
   CustomerDetails: { customerID: string };
-  PaymentGateway: { paymentData:any,successCallBack?:Function };
+  PaymentGateway: { paymentData: any, successCallBack?: Function };
+  CreateQuotaion: { orderId: string, returnTo?: ReturnTo };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

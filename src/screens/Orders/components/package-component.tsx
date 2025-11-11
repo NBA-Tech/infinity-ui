@@ -103,7 +103,7 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
                     style={[
                         globalStyles.normalTextColor,
                         globalStyles.subHeadingText,
-                        { color: "green", marginBottom: 8 },
+                        { color: isSelected ? "#3B82F6" : "#fff", marginBottom: 8 },
                     ]}
                 >
                     {userDetails?.currencyIcon} {price}

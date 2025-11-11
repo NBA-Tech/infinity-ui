@@ -181,6 +181,10 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     const handleEmailRegister = async () => {
+        if(!userRegisterRefs.current.username){
+            setLoadingProvider(null);
+            return showToast({ type: "error", title: "Error", message: "Please enter username" });
+        }
         if (!userRegisterRefs.current.email || !userRegisterRefs.current.password || !userRegisterRefs.current.username) {
             setLoadingProvider(null);
             return showToast({ type: "error", title: "Error", message: "Please enter email and password" });
@@ -315,7 +319,7 @@ const Register = ({ setCurrScreen }: any) => {
                         action="primary"
                         style={globalStyles.buttonColor}
                         onPress={handleEmailRegister}
-                        isDisabled={loadingProvider != null}
+                        isDisabled={(loadingProvider != null) || Object.values(errors).some(Boolean)}
                     >
                         {loadingProvider === "email" && (
                             <ButtonSpinner color={"#fff"} size={wp("4%")} />

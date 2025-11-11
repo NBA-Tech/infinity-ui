@@ -79,7 +79,7 @@ const Orders = () => {
             filters: {
                 ...(filters?.filters || {}),
                 userId: getItem("USERID"),
-                approvalStatus:ApprovalStatus.APPROVED
+                approvalStatus:ApprovalStatus.ACCEPTED
             },
         };
         console.log(currFilters)
@@ -216,7 +216,7 @@ const Orders = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="users" size={wp('5%')} color="#fff" />
+                                <Feather name="users" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
                                     8

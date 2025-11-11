@@ -362,7 +362,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <BackHeader screenName="Create Customer" />
+            <BackHeader screenName={customerID ? "Update Customer" : "Create Customer"} />
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom
@@ -372,7 +372,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                 <View>
                     <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>Create Customer</Text>
+                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
                             <View style={[{ width: wp('25%') },globalStyles.glassBackgroundColor]}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </View>

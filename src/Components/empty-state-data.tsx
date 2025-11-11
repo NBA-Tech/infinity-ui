@@ -89,7 +89,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       defaultTitle: "No quotes in progress",
       defaultDescription: "Create professional quotes for potential clients. Include session details, pricing, and terms to win more photography projects.",
       defaultActionLabel: "Create Quote",
-      secondaryActionLabel: "Use Template",
     },
     invoices: {
       icon: <Feather name="credit-card" size={80} color="#142850" />,

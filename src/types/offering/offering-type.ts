@@ -1,9 +1,5 @@
 import { ApiGeneralRespose } from "../common";
 
-export enum STATUS {
-    ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE"
-}
 
 export enum SERVICETYPE {
     SERVICE = "SERVICE",
@@ -11,14 +7,6 @@ export enum SERVICETYPE {
     DELIVERABLE = "DELIVERABLE"
 }
 
-export enum SERVICECATEGORY {
-    PORTRAIT = "PORTRAIT",
-    EVENT = "EVENT",
-    COMMERCIAL = "COMMERCIAL",
-    NATURE = "NATURE",
-    SPECIALIZED = "SPECIALIZED",
-    OTHER = "OTHER"
-}
 export enum SESSIONTYPE {
     SINGLE_SESSION = "SINGLE_SESSION",
     DOUBLE_SESSION = "DOUBLE_SESSION"
@@ -40,7 +28,6 @@ export interface ServiceModel extends OfferingModel {
     serviceName: string;
     description: string;
     price: number;
-    serviceCategory: SERVICECATEGORY;
     sessionType?: SESSIONTYPE;
     quantity?: string;
 }

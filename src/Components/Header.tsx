@@ -121,7 +121,7 @@ const Header = () => {
 
     return (
         <View>
-            <View style={[styles.headerContainer, { backgroundColor: isDark ? "#12121A" : "#fff" }]}>
+            <View style={[styles.headerContainer, {  backgroundColor: isDark ? '#1A2238' : '#F5F7FB', }]}>
                 <View style={styles.headerBody}>
                     <View >
                         <View style={styles.appLogoContainer}>

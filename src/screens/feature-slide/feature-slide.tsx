@@ -89,13 +89,13 @@ const FeatureSlide = () => {
                         style={styles.mainAnimation}
                     />
 
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.description}>{item.description}</Text>
+                    <Text style={[styles.title,globalStyles.themeTextColor]}>{item.title}</Text>
+                    <Text style={[styles.description,globalStyles.greyTextColor]}>{item.description}</Text>
                 </View>
             </View>
             {currentIndex < slides.length - 1 ? (
                 <View style={[styles.continueButton,{backgroundColor:'transparent'}]}>
-                    <Text style={[styles.continueText,{color:'#fff'}]}>
+                    <Text style={[styles.continueText,globalStyles.blueTextColor]}>
                         {"Swipe Right ->"}
                     </Text>
                 </View>
@@ -115,7 +115,7 @@ const FeatureSlide = () => {
                         }
                     }}
                 >
-                    <Text style={styles.continueText}>
+                    <Text style={[styles.continueText,globalStyles.whiteTextColor]}>
                         Register →
                     </Text>
                 </TouchableOpacity>
@@ -191,13 +191,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: wp("7%"),
         fontWeight: "bold",
-        color: "#fff",
         textAlign: "center",
         marginBottom: hp("1%"),
     },
     description: {
         fontSize: wp("4%"),
-        color: "#f0f0f0",
         textAlign: "center",
         lineHeight: hp("3%"),
         marginHorizontal: wp("6%"),
@@ -206,7 +204,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: hp("5%"),
         right: wp("6%"),
-        backgroundColor: "#fff",
         paddingVertical: hp("1.5%"),
         paddingHorizontal: wp("5%"),
         borderRadius: wp("5%"),
@@ -214,7 +211,6 @@ const styles = StyleSheet.create({
     continueText: {
         fontSize: wp("4%"),
         fontWeight: "bold",
-        color: "#fff",
     },
     pagination: {
         position: "absolute",

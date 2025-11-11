@@ -37,6 +37,7 @@ import { useUserStore } from '@/src/store/user/user-store';
 import InvestmentInfo from './details-component/investment-info';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
 import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
+import ClickButton from '@/src/components/swippable-button';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('3%'),
@@ -369,8 +370,8 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
             />
             {(orderDetails?.status != GlobalStatus.DELIVERED && orderDetails?.status != GlobalStatus.CANCELLED) && !loadingProvider.intialLoading && (
-                <SwipeButton
-                    text={`Swipe to make order as ${getNextStatus(orderDetails?.status as GlobalStatus)?.label}`}
+                <ClickButton
+                    text={`Click to make order as ${getNextStatus(orderDetails?.status as GlobalStatus)?.label}`}
                     isDisabled={loadingProvider.saveLoading}
                     isReset={!loadingProvider.saveLoading}
                     onConfirm={() => handleStatusChange(getNextStatus(orderDetails?.status as GlobalStatus))} />

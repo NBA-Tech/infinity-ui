@@ -31,7 +31,7 @@ const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) 
 
   return (
     <SafeAreaView>
-      <Card style={[globalStyles.cardShadowEffect, { marginBottom: hp('1%'), backgroundColor: isDark ? '#121212' : '#ffffff' }]}>
+      <Card style={[globalStyles.cardShadowEffect, { marginBottom: hp('1%'),  backgroundColor: isDark ? '#1A2238' : '#F5F7FB', }]}>
         <View className="flex flex-row justify-start items-center gap-3" style={style}>
           {children ? (
             // Custom mode → render whatever children you pass

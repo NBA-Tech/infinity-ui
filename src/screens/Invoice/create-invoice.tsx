@@ -52,7 +52,7 @@ import {
     SearchQueryRequest,
 } from "@/src/types/common";
 import { BillingInfo, Invoice } from "@/src/types/invoice/invoice-type";
-import { OrderModel, OrderStatus } from "@/src/types/order/order-type";
+import { ApprovalStatus, OrderModel, OrderStatus } from "@/src/types/order/order-type";
 
 import {
     formatDate,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "CreateInvoice">;
 
 const CreateInvoice = ({ navigation, route }: Props) => {
-    const { invoiceId } = route.params || {};
+    const { invoiceId,returnTo={"tab": "Invoice", "screen": "InvoiceList"} } = route.params || {};
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
@@ -115,7 +115,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * ───────────────────────────────*/
     const getOrderMetaData = async (userId: string) => {
         const filter: SearchQueryRequest = {
-            filters: { userId },
+            filters: { userId,approvalStatus:ApprovalStatus.ACCEPTED },
             requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle", "status"],
             getAll: true,
             searchField: "status",
@@ -364,6 +364,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {
                 text: res.message ?? "Invoice created successfully",
+                returnTo:returnTo
             });
             setCurrStep(0);
             setInvoiceDetails({ userId: getItem("USERID") });
@@ -557,7 +558,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         />
                         <View className="p-1">
                             <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
-                                *Note You can't select is the value doesn't exists
+                                *Note You can't select if the value doesn't exists
                             </Text>
                         </View>
                     </Card>

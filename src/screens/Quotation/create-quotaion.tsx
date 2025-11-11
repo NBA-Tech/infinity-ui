@@ -24,16 +24,16 @@ import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { getOfferingListAPI } from '@/src/api/offering/offering-service';
 import { OfferingModel, PackageModel, ServiceInfo, ServiceModel } from '@/src/types/offering/offering-type';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PackageComponent } from './components/package-component';
-import ServiceComponent from './components/service-component';
-import TemplateBuilderComponent from './components/template-builder-component';
-import TemplatePreview from './components/template-preview';
+import { PackageComponent } from '../orders/components/package-component';
+import ServiceComponent from '../orders/components/service-component';
+import TemplatePreview from '../orders/components/template-preview';
+import TemplateBuilderComponent from '../orders/components/template-builder-component';
 import Modal from "react-native-modal";
 import { useUserStore } from '@/src/store/user/user-store';
 import { getUserDetailsApi } from '@/src/services/user/user-service';
 import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
-import { buildHtml } from './utils/html-builder';
+import { buildHtml } from '../orders/utils/html-builder';
 import { getOrderDetailsAPI, saveNewOrderAPI, updateOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { EmptyState } from '@/src/components/empty-state-data';
 import { useNavigation } from '@react-navigation/native';
@@ -71,12 +71,12 @@ interface CustomerOption {
     value: string;
 }
 
-type Props = NativeStackScreenProps<RootStackParamList, "CreateOrder">;
+type Props = NativeStackScreenProps<RootStackParamList, "CreateQuotaion">;
 
-const CreateOrder = ({ navigation, route }: Props) => {
+const CreateQuotaion = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
-    const { orderId, returnTo = { tab: "Orders", screen: "OrderList" } } = route.params ?? {};
+    const { orderId, returnTo = { tab: "Quotations", screen: "QuotationList" } } = route.params ?? {};
     const stepIcon = ["user", "calendar", "dollar-sign", "file"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
@@ -135,7 +135,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             onRightIconPress: () => {
                 navigation.navigate("Customer", {
                     screen: "CreateCustomer",
-                    params: { returnTo: { tab: 'Orders', screen: 'CreateOrder' } },
+                    params: { returnTo: { tab: 'Orders', screen: 'CreateQuotaion' } },
                 });
 
             },
@@ -394,7 +394,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         }
     };
 
-    const handleCreateOrder = async () => {
+    const handleCreateQuotaion = async () => {
 
         if (!orderDetails?.userId) {
             return showToast({
@@ -410,7 +410,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         let saveNewOrder;
         const orderPayload: OrderModel = {
             ...orderDetails,
-            approvalStatus: screenType == "QUOTATION" ? ApprovalStatus.PENDING : ApprovalStatus.ACCEPTED
+            approvalStatus: ApprovalStatus.PENDING
         }
         if (orderId) {
             saveNewOrder = await updateOrderDetailsAPI(orderPayload);
@@ -453,7 +453,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         setOrderDetails({
             userId: orderDetails?.userId,
         });
-        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully" });
+        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully" ,returnTo:returnTo});
         setTimeout(() => {
             setCurrStep(0);
         }, 2000);
@@ -517,7 +517,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
-            <BackHeader screenName={orderId ? `Update Order` : `Create Order`} />
+            <BackHeader screenName={orderId ? `Update Quotation` : `Create Quotation`} />
             <Modal
                 isVisible={isOpen?.modal}
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
@@ -529,7 +529,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View className='flex justify-between items-center flex-row'>
                     <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{orderId ? `Update Order` : `Create Order`}</Text>
+                        <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{orderId ? `Update Quotation` : `Create Quotation`}</Text>
                         <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
                             <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                         </View>
@@ -769,14 +769,14 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             action="primary"
                             style={globalStyles.buttonColor}
                             isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
-                            onPress={currStep == 3 ? handleCreateOrder : handleNext}
+                            onPress={currStep == 3 ? handleCreateQuotaion : handleNext}
                         >
                             {loadingProvider.saveLoading && (
                                 <ButtonSpinner size={wp("4%")} color="#fff" />
                             )
                             }
                             <ButtonText style={globalStyles.buttonText}>
-                                {!isAllLoadingFalse(loadingProvider) ? (orderId ? 'Updating...' : 'Creating...') : currStep == 3 ? (orderId ? 'Update Order' : 'Create Order') : 'Next'}
+                                {!isAllLoadingFalse(loadingProvider) ? (orderId ? 'Updating...' : 'Creating...') : currStep == 3 ? (orderId ? 'Update Quotation' : 'Create Quotation') : 'Next'}
                             </ButtonText>
                             {currStep != 3 && isAllLoadingFalse(loadingProvider) &&
                                 <Feather name="arrow-right" size={wp("5%")} color="#fff" />
@@ -803,4 +803,4 @@ const CreateOrder = ({ navigation, route }: Props) => {
     );
 };
 
-export default CreateOrder;
+export default CreateQuotaion;

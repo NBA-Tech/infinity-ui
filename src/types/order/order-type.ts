@@ -80,5 +80,6 @@ export interface OrderModel {
   quotationHtmlInfo?: QuotaionHtmlInfo[]
   deliverables?:Deliverable[]
   totalAmountCanPay:number
+  approvalStatus?:ApprovalStatus
 
 }

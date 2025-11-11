@@ -120,6 +120,11 @@ const Profile = () => {
         onPress: () => navigation.navigate("Services"),
       },
       {
+        label:"Tutorial",
+        icon: <Feather name="video" size={wp("6%")} color="#3B82F6" />,
+        onPress: () => navigation.navigate("Tutorial"),
+      },
+      {
         label: "Notifications",
         icon: <Feather name="bell" size={wp("6%")} color={isDark ? "#fff" : "#000"} />,
         rightElement: (
