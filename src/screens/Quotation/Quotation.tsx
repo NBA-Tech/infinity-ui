@@ -21,6 +21,7 @@ import Skeleton from '@/components/ui/skeleton';
 import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
+import DeleteConfirmation from '@/src/components/delete-confirmation';
 
 
 const styles = StyleSheet.create({
@@ -54,6 +55,10 @@ const Quotation = () => {
     const [intialLoading, setIntialLoading] = useState(false);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [saveLoading, setSaveLoading] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
+    const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+    const [currId, setCurrId] = useState<string>('');
+
 
     const actionButtons = [
         {
@@ -74,13 +79,31 @@ const Quotation = () => {
             icon: <Feather name="phone" size={wp('4%')} color="#fff" />,
             onPress: (mobileNumber: string) => openDaialler(mobileNumber),
         },
-        {
-            key: 'delete',
-            label: 'Delete',
-            icon: <Feather name="trash" size={wp('4%')} color="#fff" />,
-            onPress: (orderId: string) => updateApprovalStatus(orderId,ApprovalStatus.REJECTED),
-        },
     ];
+
+    const handleDeletePopUp = (orderId: string) => {
+        setCurrId(orderId);
+        setOpenDelete(true);
+    }
+
+    const handleDelete=async ()=>{
+        try{
+            setDeleteLoading(true)
+            const deleteOrderApiResponse=await deleteOrderAPI(currId)
+            if(!deleteOrderApiResponse.success){
+                showToast({ type: "error", title: "Error", message: deleteOrderApiResponse.message });
+            }
+            else{
+                showToast({ type: "success", title: "Success", message: "Rejected Successfully" });
+                resetFiltersWithDefaultValue(setFilters,{ page: 1, pageSize: 10 })
+                setCurrId('')
+                setOpenDelete(false)
+            }
+        }
+        finally{
+            setDeleteLoading(false)
+        }
+    }
 
 
     const updateApprovalStatus = async (orderId: string, status: ApprovalStatus) => {
@@ -210,7 +233,7 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#EF4444", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                            onPress={() => updateApprovalStatus(item?.orderId, ApprovalStatus.REJECTED)}
+                            onPress={() => handleDeletePopUp(item?.orderId)}
                             isDisabled={saveLoading}
                         >
                             <Feather name="x" size={wp('4%')} color="#fff" />
@@ -267,6 +290,7 @@ const Quotation = () => {
     }
     return (
         <SafeAreaView style={globalStyles.appBackground}>
+            <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
             <GradientCard
                 colors={isDark
                     ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue

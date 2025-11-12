@@ -34,6 +34,7 @@ const createGlobalStyle = (isDark = false) =>
     glassBackgroundColor: { backgroundColor: "#3B82F6" },
     formBackGroundColor: { backgroundColor: isDark ? "#1A2238" : "#EEF3FF" },
     greenTextColor: { color: isDark ? "#22C55E" : "#16A34A" },
+    mutedTextColor: { color: "#9CA3AF" },
 
     // text styles (system fonts only)
     extraLargeText: {
@@ -124,11 +125,11 @@ const createGlobalStyle = (isDark = false) =>
     },
 
     transparentBackground: {
-      backgroundColor: isDark 
+      backgroundColor: isDark
         ? "rgba(26,26,46,0.85)"       // Dark mode: slightly stronger opacity
         : "rgba(200, 210, 225, 0.85)", // Light mode: darker, soft grey
     },
-    
+
     appBackground: {
       flex: 1,
       backgroundColor: isDark ? "#0E1628" : "#F5F7FB",
@@ -146,6 +147,11 @@ const createGlobalStyle = (isDark = false) =>
       elevation: isDark ? 8 : 6,
       borderWidth: 1,
       borderColor: isDark ? '#1E1E28' : '#E5E7EB',
+    },
+
+    borderCard:{
+      borderColor: isDark ? '#2D3748' : '#CCCCCC',
+      borderWidth: 1,
     },
 
     greyInputBox: {

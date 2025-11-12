@@ -242,11 +242,11 @@ const InvoiceList = () => {
                     <View className="flex flex-row justify-between gap-3">
                         <View>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('20%') }]}>#{item?.invoiceId}</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('30%') }]} numberOfLines={1}>#{item?.invoiceId}</Text>
                         </View>
                         <View>
-                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Quotation ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('20%') }]}>#{item?.orderId}</Text>
+                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Order ID</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('30%') }]} numberOfLines={1}>#{item?.orderId}</Text>
                         </View>
                     </View>
 
@@ -310,7 +310,7 @@ const InvoiceList = () => {
                                 { letterSpacing: 1, textTransform: 'uppercase' },
                             ]}
                         >
-                            Orders
+                            INVOICES
                         </Text>
                     </View>
 
@@ -318,7 +318,7 @@ const InvoiceList = () => {
                     <View className="flex flex-row justify-between items-start">
                         <View className="flex flex-col gap-2">
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Total Orders
+                                Total Invoices
                             </Text>
                             <View
                                 className="flex flex-row justify-center items-center rounded-full"
@@ -328,7 +328,7 @@ const InvoiceList = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="users" size={wp('5%')} color="#fff" />
+                                <Feather name="credit-card" size={wp('5%')} color="#fff" style={{marginRight: wp('2%')}} />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
                                     8

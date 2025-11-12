@@ -235,7 +235,7 @@ const Register = ({ setCurrScreen }: any) => {
             firebaseIdToken: authResults?.token,
             authType: "GOOGLE",
         };
-        handleRegister(payload);
+        await handleRegister(payload);
         setLoadingProvider(null);
     };
 
@@ -344,11 +344,9 @@ const Register = ({ setCurrScreen }: any) => {
                     </View>
 
                     <View className='flex-row justify-center items-center gap-2'>
-                        <View style={[styles.circleContainer, { backgroundColor: "#fff" }]}>
-                            <TouchableOpacity onPress={handleGoogleRegister} disabled={loadingProvider != null}>
+                        <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleRegister} disabled={loadingProvider != null}>
                                 <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
-                            </TouchableOpacity>
-                        </View>
+                        </TouchableOpacity>
 
                         {/* Facebook */}
                         <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>

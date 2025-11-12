@@ -195,11 +195,9 @@ const Login = ({ setCurrScreen }: any) => {
                         <Text style={[globalStyles.normalTextColor, { marginVertical: hp("1%") }]}>────── OR ──────</Text>
                     </View>
                     <View className='flex-row justify-center items-center gap-2'>
-                        <View style={[styles.circleContainer, { backgroundColor: "#fff" }]}>
-                            <TouchableOpacity onPress={handleGoogleLogin} disabled={loadingProvider != null}>
+                        <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleLogin} disabled={loadingProvider != null}>
                                 <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
-                            </TouchableOpacity>
-                        </View>
+                        </TouchableOpacity>
 
                         {/* Facebook */}
                         <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>

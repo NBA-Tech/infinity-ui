@@ -395,6 +395,8 @@ const CreateOrder = ({ navigation, route }: Props) => {
     };
 
     const handleCreateOrder = async () => {
+        try{
+
 
         if (!orderDetails?.userId) {
             return showToast({
@@ -410,7 +412,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         let saveNewOrder;
         const orderPayload: OrderModel = {
             ...orderDetails,
-            approvalStatus: screenType == "QUOTATION" ? ApprovalStatus.PENDING : ApprovalStatus.ACCEPTED
+            approvalStatus: ApprovalStatus.ACCEPTED
         }
         if (orderId) {
             saveNewOrder = await updateOrderDetailsAPI(orderPayload);
@@ -453,10 +455,14 @@ const CreateOrder = ({ navigation, route }: Props) => {
         setOrderDetails({
             userId: orderDetails?.userId,
         });
-        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully" });
+        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully",returnTo:returnTo });
         setTimeout(() => {
             setCurrStep(0);
         }, 2000);
+    }
+    finally{
+        setloadingProvider({ ...loadingProvider, saveLoading: false });
+    }
     };
 
 

@@ -52,7 +52,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                 </View>
                 <CustomFieldsComponent infoFields={props.orderForm} cardStyle={{ padding: hp("2%") }} />
                 <Text style={[globalStyles.normalTextColor,globalStyles.smallText]}>
-                    *Note : Pending order will not be listed here
+                    *Note : Quotations will not be listed here
 
                 </Text>
             </Card>

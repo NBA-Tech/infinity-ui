@@ -9,6 +9,7 @@ import Modal from 'react-native-modal';
 
 
 type DeleteConfirmationProps={
+    text?:string
     openDelete: boolean;
     loading: boolean;
     setOpenDelete: React.Dispatch<React.SetStateAction<boolean>>
@@ -29,7 +30,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                             <Feather name="alert-triangle" size={wp('10%')} color="red" />
                         </View>
                         <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Are you sure you want to delete?</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.text ?? "Are you sure you want to delete?"}</Text>
                         </View>
                         <View className="flex flex-row justify-end items-center" style={{marginVertical:hp('2%')}}>
                             <Button
@@ -55,8 +56,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                                 {props?.loading && (
                                     <ButtonSpinner color={"#fff"} size={wp("4%")} />
                                 )}
-                                <Feather name="trash" size={wp("5%")} color="#fff" />
-                                <ButtonText style={globalStyles.buttonText}>Delete</ButtonText>
+                                <ButtonText style={globalStyles.buttonText}>Confirm</ButtonText>
                             </Button>
                         </View>
                     </View>

@@ -216,7 +216,7 @@ const Orders = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="users" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
+                                <Feather name="package" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
                                     8

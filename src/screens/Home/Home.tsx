@@ -31,6 +31,7 @@ import { useUserStore } from '@/src/store/user/user-store';
 import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
 import { NotificationContext } from '@/src/providers/notification/notification-provider';
+import HomeHeader from './components/home-header';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -134,7 +135,7 @@ const Home = () => {
                 tooltip: "Gets the total number of invoices in this month",
             },
         };
-    }, [customerMetaInfoList, orderStatus, orderDetails,invoiceDetails]);
+    }, [customerMetaInfoList, orderStatus, orderDetails, invoiceDetails]);
 
     const getOrderDetails = async (userId: string) => {
         const payload: SearchQueryRequest = {
@@ -301,15 +302,15 @@ const Home = () => {
         loadInvestmentsData()
     }, [reloadInvestments])
 
-    useEffect(()=>{
+    useEffect(() => {
         setReqPermission(true)
-    },[])
+    }, [])
 
 
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <Header />
+            <HomeHeader />
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View style={{ margin: hp('1%') }}>
                     <View>
@@ -323,6 +324,7 @@ const Home = () => {
                                 keyExtractor={(item, index) => index.toString()}
                                 onEndReachedThreshold={0.7}
                             />
+
 
                         </View>
                         <View>
