@@ -339,7 +339,7 @@ const InvoiceList = () => {
                         {/* Create Customers */}
                         <View className="flex flex-col gap-2">
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Create Orders
+                                Create Invoice
                             </Text>
                             <Button
                                 size="md"
@@ -354,7 +354,7 @@ const InvoiceList = () => {
                                         borderRadius: wp('2%'),
                                     },
                                 ]}
-                                onPress={() => navigation.navigate('CreateOrder')}
+                                onPress={() => navigation.navigate('CreateInvoice')}
                             >
                                 <Feather name="plus" size={wp('5%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create</ButtonText>

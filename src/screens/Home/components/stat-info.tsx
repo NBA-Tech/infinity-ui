@@ -1,127 +1,123 @@
-import React, { useContext, useState } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import Feather from "react-native-vector-icons/Feather";
-import GradientCard from "@/src/utils/gradient-card";
+import React, { useContext } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Card } from "@/components/ui/card";
-import { GeneralCardModel } from "../types/home-type";
-import { StyleContext } from "@/src/providers/theme/global-style-provider";
-import Tooltip, { Placement } from "react-native-tooltip-2";
-import Skeleton from "@/components/ui/skeleton";
+import { StyleContext, ThemeToggleContext } from "@/src/providers/theme/global-style-provider";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 
-export const StatInfo = ({
-  item,
-  isLoading,
-  index,
-}: {
-  item: GeneralCardModel;
-  isLoading: boolean;
-  index: number;
-}) => {
+export const DashboardStats = () => {
   const globalStyles = useContext(StyleContext);
-  const [toolTipVisible, setToolTipVisible] = useState(false);
+  const { isDark } = useContext(ThemeToggleContext);
 
-  if (isLoading) {
-    return <Skeleton height={hp("18%")} width={wp("45%")} />;
-  }
-
-  const isNegative =
-    item?.percentageOfChange &&
-    (item?.percentageOfChange.includes("-") || item?.percentageOfChange.includes("↓"));
+  // Dynamic colors
+  const leftCardBg = isDark ? "#1E293B" : "#EAF3FF";
+  const rightBoxBg = isDark ? "rgba(239, 68, 68, 0.15)" : "#FBEAEA"; // soft red
+  const rightBoxHeading = isDark ? "#F9FAFB" : "#111827";
+  const rightBoxSub = isDark ? "#CBD5E1" : "#6B7280";
 
   return (
-    <Card
-      style={[
-        {
-          width: wp("96%"),
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: wp("96%"),
+        alignSelf: "center",
+        marginTop: hp("2%"),
+        marginBottom: hp("2%"),
+      }}
+    >
+      {/* LEFT BIG CARD */}
+      <Card
+        style={{
+          width: wp("58%"),
           paddingVertical: hp("2%"),
           paddingHorizontal: wp("4%"),
-          borderRadius: wp('5%'),
-          backgroundColor:globalStyles.cardShadowEffect.backgroundColor
-        },
-        globalStyles.borderCard,
-      ]}
-    >
-      {/* Header Row - Icon + Tooltip */}
-      <View className="flex flex-row justify-between items-start">
-        {/* Icon */}
-        <View
-          style={{
-            width: wp("10%"),
-            height: wp("10%"),
-            borderRadius: wp("2%"),
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#000",
-          }}
-        >
-          {item.icon}
-        </View>
-
-        {/* Tooltip */}
-        {item.tooltip && (
-          <Tooltip
-            isVisible={toolTipVisible}
-            content={<Text style={globalStyles.normalText}>{item.tooltip}</Text>}
-            placement={Placement.BOTTOM}
-            onClose={() => setToolTipVisible(false)}
-          >
-            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-              <Feather name="info" size={wp("5%")} color="#9CA3AF" />
-            </TouchableOpacity>
-          </Tooltip>
-        )}
-      </View>
-
-      {/* Title */}
-      <Text
-        style={[
-          globalStyles.subHeadingText,
-          globalStyles.darkBlueTextColor,
-          { marginTop: hp("1%"), textTransform: "uppercase", fontWeight: "600" },
-        ]}
+          borderRadius: wp("5%"),
+          backgroundColor: leftCardBg,
+        }}
       >
-        {item.label}
-      </Text>
-
-      {/* Amount Row */}
-      <View className="flex flex-row justify-between items-center mt-1">
+        {/* Receivables */}
+        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+          Total Receivables
+        </Text>
         <Text
           style={[
-            globalStyles.themeTextColor,
-            { fontSize: wp("7%"), fontWeight: "700" },
+            globalStyles.heading2Text,
+            globalStyles.darkBlueTextColor,
+            { marginTop: hp("0.5%") },
           ]}
         >
-          {item.count}
+          ₹30,000.00
         </Text>
 
-        {/* Trend Badge */}
-        {item?.isTrending && (
-          <View
-            className={`flex flex-row items-center px-2 py-1 rounded-lg ${
-              isNegative ? "bg-red-50" : "bg-green-50"
-            }`}
+        <View style={{ height: hp("2%") }} />
+
+        {/* Payables */}
+        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+          Total Payables
+        </Text>
+        <Text
+          style={[
+            globalStyles.heading2Text,
+            globalStyles.darkBlueTextColor,
+            { marginTop: hp("0.5%") },
+          ]}
+        >
+          ₹0.00
+        </Text>
+      </Card>
+
+      {/* RIGHT SIDE BOXES */}
+      <View style={{ width: wp("36%"), justifyContent: "space-between" }}>
+        {/* Overdue Invoices */}
+        <TouchableOpacity>
+          <Card
+            style={{
+              paddingVertical: hp("2%"),
+              paddingHorizontal: wp("4%"),
+              borderRadius: wp("5%"),
+              backgroundColor: rightBoxBg,
+            }}
           >
-            <Feather
-              name={isNegative ? "arrow-down-right" : "arrow-up-right"}
-              size={wp("3.8%")}
-              color={isNegative ? "#EF4444" : "#22C55E"}
-            />
             <Text
               style={[
-                globalStyles.smallText,
-                {
-                  color: isNegative ? "#EF4444" : "#16A34A",
-                  fontWeight: "600",
-                  marginLeft: 4,
-                },
+                globalStyles.heading2Text,
+                { color: rightBoxHeading, marginBottom: hp("0.5%") },
               ]}
             >
-              {item.percentageOfChange}
+              1
             </Text>
-          </View>
-        )}
+            <Text style={[globalStyles.smallText, { color: rightBoxSub }]}>
+              Overdue Invoices
+            </Text>
+          </Card>
+        </TouchableOpacity>
+
+        {/* Overdue Bills */}
+        <TouchableOpacity style={{ marginTop: hp("2%") }}>
+          <Card
+            style={{
+              paddingVertical: hp("2%"),
+              paddingHorizontal: wp("4%"),
+              borderRadius: wp("5%"),
+              backgroundColor: rightBoxBg,
+            }}
+          >
+            <Text
+              style={[
+                globalStyles.heading2Text,
+                { color: rightBoxHeading, marginBottom: hp("0.5%") },
+              ]}
+            >
+              0
+            </Text>
+            <Text style={[globalStyles.smallText, { color: rightBoxSub }]}>
+              Overdue Bills
+            </Text>
+          </Card>
+        </TouchableOpacity>
       </View>
-    </Card>
+    </View>
   );
 };
+
+export default DashboardStats;

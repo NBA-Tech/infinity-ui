@@ -43,6 +43,8 @@ import { createNewActivityAPI } from '@/src/services/activity/user-activity-serv
 import { ACTIVITY_TYPE } from '@/src/types/activity/user-activity-type';
 import { createNewNotificationAPI } from '@/src/services/activity/notification-service';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { EventModel } from '@/src/types/event/event-type';
+import { createNewEventAPI } from '@/src/api/event/event-api-service';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -395,75 +397,88 @@ const CreateOrder = ({ navigation, route }: Props) => {
     };
 
     const handleCreateOrder = async () => {
-        try{
+        try {
+            if (!orderDetails?.userId) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: "UserID is not found. Please Logout and Login again",
+                });
+            }
+
+            setloadingProvider({ ...loadingProvider, saveLoading: true });
+
+            const orderPayload: OrderModel = {
+                ...orderDetails,
+                approvalStatus: ApprovalStatus.ACCEPTED,
+            };
+
+            const eventPayload: EventModel = {
+                eventTitle: orderDetails?.eventInfo?.eventTitle,
+                eventDate: orderDetails?.eventInfo?.eventDate,
+                eventDateString: new Date(orderDetails?.eventInfo?.eventDate)
+                    .toISOString()
+                    .split("T")[0],
+                eventDescription: `Order ${orderDetails?.eventInfo?.eventTitle} added to event timeline.`,
+                eventPriority: "HIGH",
+                userId: orderDetails?.userId
+            };
 
 
-        if (!orderDetails?.userId) {
-            return showToast({
+            const [saveNewOrder, createEventResponse] = await Promise.all([
+                orderId
+                    ? updateOrderDetailsAPI(orderPayload)
+                    : saveNewOrderAPI(orderPayload),
+                createNewEventAPI(eventPayload),
+            ]);
+
+            if (!saveNewOrder?.success) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: saveNewOrder?.message ?? "Order save failed",
+                });
+            }
+
+            if (!createEventResponse?.success) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: createEventResponse?.message ?? "Event creation failed",
+                });
+            }
+
+            triggerReloadOrders();
+
+            showToast({
+                type: "success",
+                title: "Success",
+                message: saveNewOrder?.message ?? "Order created successfully",
+            });
+
+            setOrderDetails({
+                userId: orderDetails?.userId,
+            });
+
+            navigation.navigate("Success", {
+                text: saveNewOrder?.message ?? "Order created successfully",
+                returnTo: returnTo,
+            });
+
+            setTimeout(() => setCurrStep(0), 2000);
+
+        } catch (err) {
+            console.log("ERROR:", err);
+            showToast({
                 type: "error",
                 title: "Error",
-                message: "UserID is not found. Please Logout and Login again",
+                message: "Something went wrong",
             });
+        } finally {
+            setloadingProvider({ ...loadingProvider, saveLoading: false });
         }
-
-        setOrderDetails(orderDetails); // update state for UI if needed
-        setloadingProvider({ ...loadingProvider, saveLoading: true });
-
-        let saveNewOrder;
-        const orderPayload: OrderModel = {
-            ...orderDetails,
-            approvalStatus: ApprovalStatus.ACCEPTED
-        }
-        if (orderId) {
-            saveNewOrder = await updateOrderDetailsAPI(orderPayload);
-        } else {
-            saveNewOrder = await saveNewOrderAPI(orderPayload);
-        }
-
-        setloadingProvider({ ...loadingProvider, saveLoading: false });
-
-        if (!saveNewOrder?.success) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: saveNewOrder?.message ?? "Something went wrong",
-            });
-        }
-        triggerReloadOrders();
-        // if (orderId) {
-        //     createNewActivityAPI({
-        //         userId: orderDetails?.userId,
-        //         activityType: ACTIVITY_TYPE.INFO,
-        //         activityTitle: "Order Updated",
-        //         activityMessage: "Order updated successfully for " + orderDetails?.eventInfo?.eventTitle
-        //     })
-        // }
-        // else {
-        //     createNewActivityAPI({
-        //         userId: orderDetails?.userId,
-        //         activityType: ACTIVITY_TYPE.SUCCESS,
-        //         activityTitle: "Order Created",
-        //         activityMessage: "Order created successfully for " + orderDetails?.eventInfo?.eventTitle
-        //     })
-        // }
-        showToast({
-            type: "success",
-            title: "Success",
-            message: saveNewOrder?.message ?? "Order created successfully",
-        });
-
-        setOrderDetails({
-            userId: orderDetails?.userId,
-        });
-        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully",returnTo:returnTo });
-        setTimeout(() => {
-            setCurrStep(0);
-        }, 2000);
-    }
-    finally{
-        setloadingProvider({ ...loadingProvider, saveLoading: false });
-    }
     };
+
 
 
     const getOrderDetails = async (orderId: string) => {

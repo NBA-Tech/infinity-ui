@@ -47,43 +47,50 @@ const EventDateKeeper = () => {
 
   const calendarStyleTheme = useMemo(
     () => ({
-      // === Base ===
-      backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
-      calendarBackground: isDark ? "#1F2028" : "#FFFFFF",
+      // === Base Background ===
+      backgroundColor: isDark ? "#0E1628" : "#FFFFFF",
+      calendarBackground: isDark ? "#0E1628" : "#FFFFFF",
 
-      // === Header ===
-      textSectionTitleColor: isDark ? "#9CA3AF" : "#374151",
-      monthTextColor: isDark ? "#F5F5F5" : "#111827",
-      arrowColor: isDark ? "#A78BFA" : "#6D28D9",
-      indicatorColor: isDark ? "#A78BFA" : "#6D28D9",
+      // === Header (Month / Arrows) ===
+      textSectionTitleColor: isDark ? "#9CA3AF" : "#6B7280",     // Mon, Tue…
+      monthTextColor: isDark ? "#FFFFFF" : "#182D53",            // JAN 2025
+      arrowColor: isDark ? "#3B82F6" : "#2563EB",
+      indicatorColor: isDark ? "#3B82F6" : "#2563EB",
 
-      // === Days ===
-      dayTextColor: isDark ? "#E5E7EB" : "#111827",
-      textDisabledColor: isDark ? "#4B5563" : "#9CA3AF",
-      todayTextColor: isDark ? "#A78BFA" : "#7C3AED",
+      // === Normal Days ===
+      dayTextColor: isDark ? "#E5E7EB" : "#111827",              // normal dates
+      textDisabledColor: isDark ? "#4B5563" : "#9CA3AF",         // grayed out dates
+      todayTextColor: isDark ? "#3B82F6" : "#2563EB",            // today's date
 
       // === Selected Day ===
-      selectedDayBackgroundColor: isDark ? "#8B5CF6" : "#7C3AED",
+      selectedDayBackgroundColor: isDark ? "#3B82F6" : "#2563EB",
       selectedDayTextColor: "#FFFFFF",
 
-      // === Dots / Events ===
-      dotColor: isDark ? "#C084FC" : "#7C3AED",
+      // === Dots / Markers ===
+      dotColor: isDark ? "#3B82F6" : "#2563EB",
       selectedDotColor: "#FFFFFF",
 
       // === Fonts ===
       textDayFontWeight: "500",
-      textMonthFontWeight: "bold",
+      textMonthFontWeight: "700",
       textDayHeaderFontWeight: "600",
 
-      // === Force text coloring ===
-      textDayStyle: { color: isDark ? "#E5E7EB" : "#111827" },
+      // === Manual Styles Override ===
+      textDayStyle: {
+        color: isDark ? "#E5E7EB" : "#111827",
+        fontWeight: "500",
+      },
 
-      // === Internal stylesheet overrides (supported form) ===
       'stylesheet.calendar.header': {
         week: {
-          marginTop: 5,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+          marginTop: 6,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        },
+        monthText: {
+          fontSize: 18,
+          fontWeight: "700",
+          color: isDark ? "#FFFFFF" : "#182D53",
         },
       },
     }),
@@ -99,7 +106,7 @@ const EventDateKeeper = () => {
       label: "Event Title",
       placeholder: "Eg : Birthday Party",
       type: "text",
-      icon: <Feather name="calendar" size={wp("5%")} color="#8B5CF6" />,
+      icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -115,7 +122,7 @@ const EventDateKeeper = () => {
       label: "Event Description",
       placeholder: "Eg : Birthday Party",
       type: "text",
-      icon: <Feather name="clipboard" size={wp("5%")} color="#8B5CF6" />,
+      icon: <Feather name="clipboard" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -131,7 +138,7 @@ const EventDateKeeper = () => {
       label: "Event Priority",
       placeholder: "Eg : Birthday Party",
       type: "select",
-      icon: <Feather name="flag" size={wp("5%")} style={{ paddingRight: wp('3%') }} color="#8B5CF6" />,
+      icon: <Feather name="flag" size={wp("5%")} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
       style: "w-full",
       isRequired: true,
       isDisabled: false,
@@ -148,33 +155,101 @@ const EventDateKeeper = () => {
     setOpen(true);
   }
   // Appointment Card Component
-  const AppointmentCard = ({ item }: { item: EventModel }) => (
-    <TouchableOpacity onPress={() => editOrDeleteEvent(item)}>
-      <View
-        className="mx-4 rounded-2xl shadow-md bg-[#f5f5f5] p-4"
-        style={[globalStyles.cardShadowEffect, { marginVertical: hp('0.5%'), marginHorizontal: wp('2%'), backgroundColor: isDark ? "#1F2028" : "#f5f5f5" }]}
-      >
-        {/* Row: Name + Status */}
-        <View className="flex flex-row justify-between items-center">
-          {/* Left: Calendar + Name */}
-          <View className="flex flex-row items-center gap-3">
-            <Feather name="calendar" size={wp('6%')} color={"#8B5CF6"} />
-            <Text style={[globalStyles.heading3Text, , globalStyles.themeTextColor]}>{item.eventTitle}</Text>
+  const AppointmentCard = ({ item }: { item: EventModel }) => {
+    return (
+      <TouchableOpacity onPress={() => editOrDeleteEvent(item)}>
+        <View
+          style={[
+            globalStyles.cardShadowEffect,
+            {
+              marginVertical: hp("1%"),
+              paddingVertical: hp("2%"),
+              paddingHorizontal: wp("4%"),
+              borderRadius: wp("4%"),
+              backgroundColor: isDark ? "#1A2238" : "#FFFFFF",
+            },
+          ]}
+        >
+          {/* Top Row → Icon + Title + Priority Dot */}
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+
+            {/* Left side */}
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  backgroundColor: isDark ? "#3B82F6" : "#2563EB",
+                  padding: wp("2%"),
+                  borderRadius: wp("2%"),
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Feather name="calendar" size={wp("6%")} color="#FFF" />
+              </View>
+
+              <Text
+                style={[
+                  globalStyles.heading3Text,
+                  globalStyles.themeTextColor,
+                  { marginLeft: wp("3%"),width:wp('20%') }
+                ]}
+                numberOfLines={1}
+              >
+                {item.eventTitle}
+              </Text>
+            </View>
+
+            {/* Status Dot */}
+            <View
+              style={{
+                width: wp("3%"),
+                height: wp("3%"),
+                borderRadius: wp("3%"),
+                backgroundColor: PRIORITY_STYLES[item.eventPriority]?.text?.color,
+              }}
+            />
           </View>
 
-          {/* Right: Status */}
-          <View style={[styles.dot, { backgroundColor: PRIORITY_STYLES[item.eventPriority]?.text?.color }]}>
+          {/* Date & Time Row */}
+          <View
+            style={{
+              marginTop: hp("1.5%"),
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              gap: wp("4%"),
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Feather name="clock" size={wp("4.5%")} color={isDark ? "#9CA3AF" : "#6B7280"} />
+              <Text
+                style={[
+                  globalStyles.smallText,
+                  globalStyles.themeTextColor,
+                  { marginLeft: wp("1.5%") }
+                ]}
+              >
+                {item.eventPriority}
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Feather name="calendar" size={wp("4.5%")} color={isDark ? "#9CA3AF" : "#6B7280"} />
+              <Text
+                style={[
+                  globalStyles.smallText,
+                  globalStyles.themeTextColor,
+                  { marginLeft: wp("1.5%") }
+                ]}
+              >
+                {item.eventDateString}
+              </Text>
+            </View>
           </View>
         </View>
-
-        {/* Row: Date & Time */}
-        <View className="mt-3 flex flex-row items-center space-x-4">
-          <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>📅 {item.eventDateString}</Text>
-          <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>⏰ {item.eventPriority}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const resetEvent = () => {
     setOpen(false);
@@ -315,7 +390,7 @@ const EventDateKeeper = () => {
         onBackdropPress={resetEvent}
         onBackButtonPress={resetEvent}
       >
-        <View style={[styles.modalContainer,globalStyles.transparentBackground]}>
+        <View style={[styles.modalContainer, globalStyles.formBackGroundColor]}>
           <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Deliverable</Text>
           <CustomFieldsComponent infoFields={eventFields} cardStyle={{ padding: hp("2%") }} />
           <View className='flex flex-row justify-end items-center'>
@@ -381,12 +456,12 @@ const EventDateKeeper = () => {
       </View>
 
       {/* Calendar */}
-      <View style={[styles.container, { backgroundColor: isDark ? "#1F2028" : "#fff" }]}>
+      <View style={[styles.container, { backgroundColor: isDark ? "#0E1628" : "#fff" }]}>
         <Calendar
           key={isDark ? 'dark' : 'light'}
           onDayPress={onDayPress}
           style={{
-            backgroundColor: isDark ? "#1F2028" : "#FFFFFF",
+            backgroundColor: isDark ? "#0E1628" : "#FFFFFF",
             borderRadius: 10,
           }}
           markedDates={eventMarkedDate}
@@ -408,7 +483,7 @@ const EventDateKeeper = () => {
         keyExtractor={(item) => item.eventId}
         renderItem={({ item }) => <AppointmentCard item={item} />}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: hp('2%') }}
+        contentContainerStyle={{ paddingBottom: hp('2%'),gap: wp('2%') }}
         style={{
           maxHeight: hp('30%'), // control visible list height
           marginVertical: hp('2%'),

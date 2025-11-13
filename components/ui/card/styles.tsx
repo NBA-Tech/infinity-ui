@@ -14,12 +14,12 @@ export const createCardStyle = (isDark: boolean) =>
         lg: 'p-6 rounded-xl',
       },
       variant: {
-        elevated: isDark ? 'bg-[#272932]' : 'bg-[#fff]',   // soft dark gray
+        elevated: isDark ? 'bg-[#1A2238]' : 'bg-[#fff]',   // soft dark gray
         outline: isDark
           ? 'border border-[#3A3B47] bg-transparent'         // subtle dark border
           : 'border border-[#e0e0e0]',
         ghost: 'rounded-none',
-        filled: isDark ? 'bg-[#1F2028]' : 'bg-[#f5f5f5]',   // slightly lighter dark for filled
+        filled: isDark ? 'bg-[#1A2238]' : 'bg-[#fff]',   // slightly lighter dark for filled
       },
     },
   });

@@ -64,7 +64,7 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
   // Function to calculate violet shade based on value
   const getColor = (val: number) => {
     const opacity = Math.min(1, val / Math.max(...values, 1)); // scale relative to max value
-    return `rgba(138, 43, 226, ${0.3 + opacity * 0.7})`; // violet with brightness variation
+    return `rgba(59, 130, 246, ${0.3 + opacity * 0.7})`; // violet with brightness variation
   };
 
   return (

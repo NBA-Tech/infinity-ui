@@ -351,7 +351,7 @@ const Quotation = () => {
                                         borderWidth: 1,
                                     },
                                 ]}
-                                onPress={() => navigation.navigate("Quotations", { screen: "CreateQuotation" })}
+                                onPress={() => navigation.navigate("CreateQuotation")}
                             >
                                 <Feather name="plus" size={wp('5%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create</ButtonText>

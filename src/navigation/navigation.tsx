@@ -1,9 +1,12 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View } from "react-native";
+
 import { useAuth } from "../context/auth-context/auth-context";
-import Footer from "../components/footer";
 
 // Screens
 import {
@@ -13,7 +16,6 @@ import {
   OneTimePassword,
   UserOnBoarding,
   Services,
-  TemplateEditor,
   Success,
   Home,
   Customer,
@@ -32,35 +34,50 @@ import {
   Quotation,
   CreateQuotaion,
 } from "../screens";
-import { useSubscription } from "../providers/subscription/subscription-context";
+
+import Footer from "../components/footer";
 import SubscriptionLockOverlay from "../components/subscription-overlay";
-import { View } from "react-native";
 import Tutorial from "../screens/profile/tutorial";
 
 const RootStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
-// ===================
-// Nested Stack Navigators
-// ===================
-function OrderNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="OrdersList" component={Orders} />
-      <Stack.Screen name="CreateOrder" component={CreateOrder} />
-      <Stack.Screen name="OrderDetails" component={OrderDetails} />
-    </Stack.Navigator>
-  );
-}
+/* ---------------------------------
+   NESTED STACK NAVIGATORS (NO CREATE SCREENS)
+---------------------------------- */
 
 function CustomerNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="CustomerList" component={Customer} />
-      <Stack.Screen name="CreateCustomer" component={CreateCustomer} />
       <Stack.Screen name="CustomerDetails" component={CustomerDetails} />
+    </Stack.Navigator>
+  );
+}
+
+function OrderNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="OrdersList" component={Orders} />
+      <Stack.Screen name="OrderDetails" component={OrderDetails} />
+    </Stack.Navigator>
+  );
+}
+
+function InvoiceNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="InvoiceList" component={InvoiceList} />
+      <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
+    </Stack.Navigator>
+  );
+}
+
+function QuotationNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="QuotationList" component={Quotation} />
     </Stack.Navigator>
   );
 }
@@ -70,121 +87,108 @@ function ProfileNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileView" component={Profile} />
       <Stack.Screen name="BusinessDetails" component={BusinessDetails} />
-      <Stack.Screen name="Services" component={Services} />
       <Stack.Screen name="Tutorial" component={Tutorial} />
     </Stack.Navigator>
   );
 }
 
-function InvoiceNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="InvoiceList" component={InvoiceList} />
-      <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
-      <Stack.Screen name="InvoiceDetails" component={InvoiceDetails} />
-    </Stack.Navigator>
-  );
-}
+/* ---------------------------------
+   WRAPPERS WITH SUBSCRIPTION OVERLAY
+---------------------------------- */
 
-function QuotationNavigator(){
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="QuotationList" component={Quotation} />
-      <Stack.Screen name="CreateQuotation" component={CreateQuotaion} />
-    </Stack.Navigator>
-  );
-}
+const HomeWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <Home />
+    </SubscriptionLockOverlay>
+  </View>
+);
 
-// ===================
-// Tab Navigator
-// ===================
+const CustomerNavigatorWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <CustomerNavigator />
+    </SubscriptionLockOverlay>
+  </View>
+);
+
+const OrdersNavigatorWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <OrderNavigator />
+    </SubscriptionLockOverlay>
+  </View>
+);
+
+const InvoiceNavigatorWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <InvoiceNavigator />
+    </SubscriptionLockOverlay>
+  </View>
+);
+
+const QuotationNavigatorWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <QuotationNavigator />
+    </SubscriptionLockOverlay>
+  </View>
+);
+
+const ProfileNavigatorWrapper = () => (
+  <View style={{ flex: 1 }}>
+    <SubscriptionLockOverlay>
+      <ProfileNavigator />
+    </SubscriptionLockOverlay>
+  </View>
+);
+
+/* ---------------------------------
+   MAIN TAB NAVIGATION (CLEAN)
+---------------------------------- */
+
 function TabNavigator() {
-  const { isSubscribed } = useSubscription();
-
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <Footer {...props} />}
     >
-      <Tab.Screen name="Home">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <Home />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
-
-      <Tab.Screen name="Customer">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <CustomerNavigator />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
-
-      <Tab.Screen name="Orders">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <OrderNavigator />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
-
-      <Tab.Screen name="Quotations">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <QuotationNavigator />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
-
-      <Tab.Screen name="Invoice">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <InvoiceNavigator />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
-
-      <Tab.Screen name="Profile">
-        {() => (
-          <View style={{ flex: 1 }}>
-            <SubscriptionLockOverlay>
-              <ProfileNavigator />
-            </SubscriptionLockOverlay>
-          </View>
-        )}
-      </Tab.Screen>
+      <Tab.Screen name="Home" component={HomeWrapper} />
+      <Tab.Screen name="Customer" component={CustomerNavigatorWrapper} />
+      <Tab.Screen name="Orders" component={OrdersNavigatorWrapper} />
+      <Tab.Screen name="Quotations" component={QuotationNavigatorWrapper} />
+      <Tab.Screen name="Invoice" component={InvoiceNavigatorWrapper} />
+      <Tab.Screen name="Profile" component={ProfileNavigatorWrapper} />
     </Tab.Navigator>
   );
 }
 
-// ===================
-// Authenticated Stack
-// ===================
+/* ---------------------------------
+   AUTH STACK (GLOBAL CREATE SCREENS)
+---------------------------------- */
+
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Main tab UI */}
       <Stack.Screen name="MainTabs" component={TabNavigator} />
-      <Tab.Screen name="Profile" component={ProfileNavigator} />
+
+      {/* GLOBAL CREATE / EDIT SCREENS */}
+      <Stack.Screen name="CreateCustomer" component={CreateCustomer} />
+      <Stack.Screen name="CreateOrder" component={CreateOrder} />
+      <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
+      <Stack.Screen name="CreateQuotation" component={CreateQuotaion} />
+      <Stack.Screen name="Services" component={Services} />
       <Stack.Screen name="Success" component={Success} />
     </Stack.Navigator>
   );
 }
 
-// ===================
-// Unauthenticated Stack
-// ===================
+/* ---------------------------------
+   UNAUTH STACK
+---------------------------------- */
+
 function UnauthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -196,14 +200,14 @@ function UnauthStack() {
   );
 }
 
-// ===================
-// Root Navigator (Splash + Auth / Unauth)
-// ===================
+/* ---------------------------------
+   ROOT NAVIGATION
+---------------------------------- */
+
 export default function Navigation() {
   const { isAuthenticated } = useAuth();
 
-
-  if (isAuthenticated === null) return null; // loading state
+  if (isAuthenticated === null) return null;
 
   return (
     <NavigationContainer>

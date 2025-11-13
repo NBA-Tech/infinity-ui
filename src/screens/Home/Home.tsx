@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
 import GradientCard from '@/src/utils/gradient-card';
 import { GeneralCardModel, GeneralStatInfoModel } from './types/home-type';
-import { StatInfo } from './components/stat-info';
+import DashboardStats from './components/stat-info';
 import EventDateKeeper from './components/event-date-keeper';
 import Activity from './components/activity';
 import Popularity from './components/popularity';
@@ -25,13 +25,15 @@ import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-s
 import { OrderModel, OrderStatus } from '@/src/types/order/order-type';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import RevenueTrendChart from './components/home-line-chart';
+import RevenueTrendChart from './components/home-bar-chart';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { useUserStore } from '@/src/store/user/user-store';
 import { getInvestmentDetailsBasedOnFiltersAPI } from '@/src/api/investment/investment-api-service';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
 import { NotificationContext } from '@/src/providers/notification/notification-provider';
 import HomeHeader from './components/home-header';
+import RevenueTrendLineChart from './components/home-trend-line-chart';
+import QuickActions from './components/quick-actions';
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -312,41 +314,37 @@ const Home = () => {
         <SafeAreaView style={globalStyles.appBackground}>
             <HomeHeader />
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-                <View style={{ margin: hp('1%') }}>
+                <View>
                     <View>
+                        <Card style={{ padding: 0, margin: 0 }}>
+
+                            <DashboardStats isLoading={loadingProvider.allLoading} />
+
+
+                        </Card>
                         <View>
-                            <FlatList
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.scrollContainer}
-                                data={Object.values(generalStatData)}
-                                renderItem={({ item, index }) => <StatInfo item={item} index={index} isLoading={loadingProvider.allLoading} />}
-                                keyExtractor={(item, index) => index.toString()}
-                                onEndReachedThreshold={0.7}
-                            />
-
-
+                            <RevenueTrendLineChart />
                         </View>
                         <View>
                             <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} isLoading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
+                        </View>
+                        <View style={{marginBottom:hp('2%')}}>
+                            <Card style={{ padding: 0, margin: 0 }}>
+                                <QuickActions/>
+                            </Card>
+
                         </View>
                         <View>
                             <EventDateKeeper />
                         </View>
 
-                        <View>
-                            <Popularity orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
-                        </View>
+
                         <View>
                             <DeadLines orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
 
                         </View>
-                        <View>
-                            <TopClient orderDetails={orderDetails} customerMetaInfo={customerMetaInfoList} isLoading={loadingProvider.customerLoading || loadingProvider.orderLoading} />
-                        </View>
-                        <View>
-                            <Activity />
-                        </View>
+
+
                         <View>
                             <HeatmapYear orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
                         </View>
