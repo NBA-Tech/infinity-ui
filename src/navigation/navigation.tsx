@@ -33,6 +33,7 @@ import {
   PaymentGateway,
   Quotation,
   CreateQuotaion,
+  TransactionHistory,
 } from "../screens";
 
 import Footer from "../components/footer";
@@ -212,6 +213,7 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="TransactionHistory" component={TransactionHistory} />
         <RootStack.Screen name="Splash" component={SplashScreen} />
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="UnauthStack" component={UnauthStack} />

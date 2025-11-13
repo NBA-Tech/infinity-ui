@@ -659,3 +659,5 @@ export const resetFiltersWithDefaultValue = (
 
   setFilters(filtersToApply);
 };
+
+export const priceFloatFormat = (value: number) => value.toFixed(2);

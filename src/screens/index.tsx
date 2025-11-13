@@ -22,4 +22,5 @@ export { default as BusinessDetails } from './profile/business-details';
 export { default as Subscription } from './subscription/subscription';
 export { default as PaymentGateway } from './subscription/payment-gateway';
 export { default as CreateQuotaion } from './quotation/create-quotaion';
-import { default as Tutorial } from './profile/tutorial';
+export { default as Tutorial } from './profile/tutorial';
+export { default as TransactionHistory } from './transaction/transaction-history';

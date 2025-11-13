@@ -328,8 +328,8 @@ export const PLAN_DETAILS={
       planName:"Annual Price",
       planTitle:"$10/month",
       planDescription:"₹2999/year — Gain full access to premium CRM tools and in-depth business insights.",
-      durationInDays:30,
-      price:30,
+      durationInDays:365,
+      price:365,
       featureList:[
         "Full feature access",
         "Unlimited users",
@@ -343,8 +343,8 @@ export const PLAN_DETAILS={
       planName:"Monthly Price",
       planTitle:"$100/year",
       planDescription:"₹299/month — Access all CRM features designed for photographers.",
-      durationInDays:365,
-      price:365,
+      durationInDays:30,
+      price:30,
       featureList:[
         "Full feature access",
         "Unlimited users",

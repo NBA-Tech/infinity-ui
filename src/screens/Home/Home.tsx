@@ -145,7 +145,7 @@ const Home = () => {
                 userId: userId
             },
             getAll: true,
-            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID"]
+            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID","approvalStatus","totalPrice"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
         if (!orderMetaDataResponse.success) {
@@ -172,8 +172,8 @@ const Home = () => {
 
     const getInvoiceDetails = async (userId: string) => {
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      // Jan 1, 00:00:00
-        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   // Dec 31, 23:59:59
+        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   
         const payload: SearchQueryRequest = {
             filters: {
                 userId: userId
@@ -312,18 +312,15 @@ const Home = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <HomeHeader />
+            <HomeHeader invoiceDetails={invoiceDetails} loading={loadingProvider.invoiceLoading}/>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View>
                     <View>
                         <Card style={{ padding: 0, margin: 0 }}>
-
-                            <DashboardStats isLoading={loadingProvider.allLoading} />
-
-
+                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails} />
                         </Card>
                         <View>
-                            <RevenueTrendLineChart />
+                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails}/>
                         </View>
                         <View>
                             <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} isLoading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />

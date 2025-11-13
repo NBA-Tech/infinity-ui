@@ -91,6 +91,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         userId: getItem("USERID") as string,
         orderId: generateRandomStringBasedType(20, "ORDER"),
         orderBasicInfo: {} as OrderBasicInfo,
+        status: OrderStatus.IN_PROGRESS,
         eventInfo: {} as EventInfo,
         totalPrice: 0,
         offeringInfo: {} as OfferingInfo,

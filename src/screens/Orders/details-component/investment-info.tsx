@@ -309,7 +309,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 onBackButtonPress={() => setOpen(false)}
 
             >
-                <View style={[styles.modalContainer,{backgroundColor: isDark ? "#1A2238" : "#F5F7FB",}]}>
+                <View style={[styles.modalContainer,globalStyles.formBackGroundColor]}>
                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Investments</Text>
                     <CustomFieldsComponent infoFields={investmentFormFields} cardStyle={{ padding: hp("2%") }} />
                     <Button

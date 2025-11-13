@@ -140,6 +140,11 @@ const Profile = () => {
         ),
       },
       {
+        label:"Subscription",
+        icon: <Feather name="credit-card" size={wp("6%")} color="#3B82F6" />,
+        onPress: () => navigation.navigate("Subscription"),
+      },
+      {
         label: "Theme",
         icon: <Feather name="moon" size={wp("6%")} color={isDark ? "#fff" : "#000"} />,
         rightElement: (

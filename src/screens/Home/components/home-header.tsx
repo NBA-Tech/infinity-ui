@@ -1,20 +1,75 @@
 import GradientCard from '@/src/utils/gradient-card';
 import { View, Text } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import { useUserStore } from '@/src/store/user/user-store';
 import { scaleFont } from '@/src/styles/global';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { Invoice } from '@/src/types/invoice/invoice-type';
+import { priceFloatFormat } from '@/src/utils/utils';
 
-const HomeHeader = () => {
+interface HomeHeaderProps {
+    invoiceDetails: Invoice[]
+    loading: boolean
+}
+
+const HomeHeader = (props: HomeHeaderProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { userDetails } = useUserStore();
+    const [trend, setTrend] = useState(0);
+    const [balance, setBalance] = useState(0);
 
     const gradientColors = isDark
         ? ["#0A2E6F", "#0D4DA8", "#1372F0"] // smoother dark gradient
         : ["#0F6BE7", "#3E8BFF", "#7BB7FF"]; // softer bright gradient
+
+
+
+    const calculateMonthTrend = (invoiceDetails: Invoice[] = []): number => {
+        if (!invoiceDetails.length) return 0;
+
+        // Group amounts by month
+        const monthlyTotals: Record<string, number> = {};
+
+        invoiceDetails.forEach((inv) => {
+            const date = new Date(inv.invoiceDate);
+            const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
+            monthlyTotals[key] = (monthlyTotals[key] || 0) + (inv.amountPaid || 0);
+        });
+        console.log(monthlyTotals)
+
+        // Convert grouped data to sorted array
+        const months = Object.keys(monthlyTotals).sort();
+
+        if (months.length < 2) return 0; // Not enough data
+
+        const lastMonth = months[months.length - 1];
+        const previousMonth = months[months.length - 2];
+
+        const lastValue = monthlyTotals[lastMonth];
+        const prevValue = monthlyTotals[previousMonth];
+
+        if (prevValue === 0) return 100; // Avoid divide-by-zero case
+
+        // % Change Formula
+        const trend = ((lastValue - prevValue) / prevValue) * 100;
+
+        return Number(trend.toFixed(2));
+    };
+
+
+    useEffect(() => {
+        setBalance(
+            props?.invoiceDetails?.reduce((acc, curr) => {
+                return acc + curr.amountPaid
+            }, 0)
+        )
+        const trend = calculateMonthTrend(props?.invoiceDetails)
+        console.log(trend)
+    }, [props?.invoiceDetails])
 
 
     return (
@@ -52,11 +107,17 @@ const HomeHeader = () => {
                             style={[
                                 globalStyles.headingText,
                                 globalStyles.whiteTextColor,
-                                { fontSize: scaleFont(34), fontWeight: "800" },
                             ]}
                         >
-                            $ {userDetails?.userAuthInfo?.totalBalance || "0.00"}
+                            {props?.loading ? (
+                                "Loading..."
+                            ) : (
+                                <>
+                                    {userDetails?.currencyIcon} {priceFloatFormat(balance) || "0.00"}
+                                </>
+                            )}
                         </Text>
+
                     </View>
 
                     {/* Right — Trend Icon with stats */}
@@ -75,7 +136,7 @@ const HomeHeader = () => {
                                     borderRadius: wp("2%"),
                                 }}
                             >
-                                <Feather name="trending-up" size={wp("6%")} color="#FFFFFF" />
+                                <Feather name={trend >= 0 ? "trending-up" : "trending-down"} size={wp("6%")} color="#FFFFFF" />
                             </View>
 
                             <Text
@@ -84,7 +145,11 @@ const HomeHeader = () => {
                                     { color: "#FFFFFF", fontWeight: "600", fontSize: scaleFont(13) },
                                 ]}
                             >
-                                +5.00%
+                                {props?.loading ? (
+                                    "Loading..."
+                                ) : (
+                                    trend > 0 ? `+${trend}%` : trend < 0 ? `-${trend}%` : "0%"
+                                )}
                             </Text>
                         </View>
 

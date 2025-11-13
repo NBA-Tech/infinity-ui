@@ -100,7 +100,6 @@ const Subscription = () => {
       if (type !== "FREE") {
         const paymentPayload = await generatePaymentPayload(PLAN_DETAILS?.premium[type]);
         const linkResponse = await generatePaymentLinkAPI(paymentPayload);
-        console.log(linkResponse)
         if (!linkResponse.success) {
           return showToast({
             type: "error",
@@ -181,7 +180,7 @@ const Subscription = () => {
             {Object.values(PLAN_DETAILS.premium).map((plan, index) => (
               <Card style={globalStyles.cardShadowEffect}>
                 <View className="flex flex-row justify-between items-center">
-                  <View className="flex flex-col gap-3 m-3" style={{ width: wp('70%') }}>
+                  <View className="flex flex-col gap-3 m-3" style={{ width: wp('60%') }}>
                     <Text style={[globalStyles.headingText, globalStyles.themeTextColor]}>
                       {plan?.planName}
                     </Text>
@@ -255,7 +254,7 @@ const Subscription = () => {
             lineHeight: 18,
           }}
         >
-          By signing up, you agree to our{" "}
+          By purchasing, you agree to our{" "}
           <Text style={{ color: "#2563EB", fontWeight: "600" }}>
             Terms and Conditions
           </Text>{" "}
