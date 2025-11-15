@@ -22,6 +22,7 @@ import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/ut
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 
 
 const styles = StyleSheet.create({
@@ -52,55 +53,55 @@ const Quotation = () => {
     const showToast = useToastMessage()
     const [hasMore, setHasMore] = useState(true);
     const [quoteData, setQuoteData] = useState([])
-    const [intialLoading, setIntialLoading] = useState(false);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [saveLoading, setSaveLoading] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<boolean>(false);
     const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
     const [currId, setCurrId] = useState<string>('');
-
+    const [totalCount, setTotalCount] = useState(0);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const { triggerReloadOrders } = useReloadContext()
 
     const actionButtons = [
         {
             key: 'edit',
             label: 'Edit',
+            color: '#3B82F6', // Blue
             icon: <Feather name="edit-2" size={wp('4%')} color="#fff" />,
-            onPress: (orderId: string) => navigation.navigate("Quotations", { screen: "CreateQuotation", params: { orderId: orderId } }),
-        },
-        {
-            key: 'makeOrder',
-            label: 'Make Order',
-            icon: <Feather name="shopping-cart" size={wp('4%')} color="#fff" />,
-            onPress: () => console.log('Make Order Pressed'),
+            onPress: (orderId: string) =>
+                navigation.navigate("CreateQuotation", { orderId })
+
         },
         {
             key: 'call',
             label: 'Call',
+            color: '#F97316', // Orange
             icon: <Feather name="phone" size={wp('4%')} color="#fff" />,
             onPress: (mobileNumber: string) => openDaialler(mobileNumber),
         },
     ];
+
 
     const handleDeletePopUp = (orderId: string) => {
         setCurrId(orderId);
         setOpenDelete(true);
     }
 
-    const handleDelete=async ()=>{
-        try{
+    const handleDelete = async () => {
+        try {
             setDeleteLoading(true)
-            const deleteOrderApiResponse=await deleteOrderAPI(currId)
-            if(!deleteOrderApiResponse.success){
+            const deleteOrderApiResponse = await deleteOrderAPI(currId)
+            if (!deleteOrderApiResponse.success) {
                 showToast({ type: "error", title: "Error", message: deleteOrderApiResponse.message });
             }
-            else{
+            else {
                 showToast({ type: "success", title: "Success", message: "Rejected Successfully" });
-                resetFiltersWithDefaultValue(setFilters,{ page: 1, pageSize: 10 })
+                resetFiltersWithDefaultValue(setFilters, { page: 1, pageSize: 10 })
                 setCurrId('')
                 setOpenDelete(false)
             }
         }
-        finally{
+        finally {
             setDeleteLoading(false)
         }
     }
@@ -118,6 +119,7 @@ const Quotation = () => {
                 response = await updateApprovalStatusAPI(orderId, status)
 
             }
+            triggerReloadOrders()
             if (!response?.success) {
                 showToast({ type: "error", title: "Error", message: response?.message });
             }
@@ -132,7 +134,7 @@ const Quotation = () => {
     }
 
     const getQuoteListData = async (reset: boolean = false) => {
-        setLoading(true);
+        reset ? setLoading(true) : setLoadingMore(true);
         const currFilters: SearchQueryRequest = {
             requiredFields: [
                 "orderId",
@@ -153,16 +155,29 @@ const Quotation = () => {
 
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
-            console.log(orderDataResponse, customerMetaInfoList)
             if (!orderDataResponse?.success) {
                 showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
-                setLoading(false);
+                reset ? setLoading(false) : setLoadingMore(false);
                 return;
             }
+            setTotalCount(orderDataResponse?.total ?? 0);
 
-            setQuoteData(prev =>
-                reset ? orderDataResponse?.data ?? [] : [...prev, ...(orderDataResponse?.data ?? [])]
-            );
+            setQuoteData((prev: OrderModel[]) => {
+                const newItems = orderDataResponse?.data ?? [];
+
+                if (reset) return newItems;
+
+                const existingIds = new Set(prev.map(item => item.orderId));
+
+                // Only add items whose id is NOT already present
+                const filteredNewItems = newItems.filter(
+                    item => !existingIds.has(item.orderId)
+                );
+
+                // Return combined list
+                return [...prev, ...filteredNewItems];
+            });
+
 
             setHasMore(
                 (orderDataResponse?.data?.length ?? 0) > 0 &&
@@ -171,21 +186,16 @@ const Quotation = () => {
         } catch (err) {
             console.log(err);
         } finally {
-            setLoading(false);
+            reset ? setLoading(false) : setLoadingMore(false);
         }
     };
 
     useFocusEffect(
         useCallback(() => {
             let reset = filters?.page === 1;
-            if (!intialLoading) {
-                reset = intialLoading
-            }
+
             getQuoteListData(reset);
-            setIntialLoading(true)
             return () => {
-                setQuoteData([]);
-                setIntialLoading(false)
             }
         }, [filters, refresh])
     );
@@ -203,7 +213,7 @@ const Quotation = () => {
             <Card style={globalStyles.cardShadowEffect}>
                 {/* Title */}
                 <View className='flex flex-row justify-center items-center' style={{ marginBottom: hp('1.5%') }}>
-                    <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor, { fontSize: scaleFont(18) }]}>{customerData?.name}'s {item?.eventInfo?.eventTitle}</Text>
+                    <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor, { fontSize: scaleFont(18), width: wp('70%'), textAlign: 'center' }]} numberOfLines={1}>{customerData?.name}'s {item?.eventInfo?.eventTitle}</Text>
                 </View>
 
                 {/* Client & Quote Info + Accept/Reject */}
@@ -257,7 +267,7 @@ const Quotation = () => {
                 </Card>
 
                 {/* Action Buttons */}
-                <View className="flex flex-row justify-between items-center gap-1" style={{ marginTop: hp('1%') }}>
+                <View className="flex flex-row justify-end items-center gap-1" style={{ marginTop: hp('1%') }}>
                     {actionButtons.map((btn) => (
                         <Button
                             key={btn.key}
@@ -265,7 +275,7 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{
-                                backgroundColor: globalStyles.buttonColor.backgroundColor,
+                                backgroundColor: btn.color,
                             }}
                             onPress={() => {
                                 if (btn?.key === "edit" || btn?.key === "delete") {
@@ -288,6 +298,7 @@ const Quotation = () => {
         )
 
     }
+
     return (
         <SafeAreaView style={globalStyles.appBackground}>
             <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
@@ -326,10 +337,10 @@ const Quotation = () => {
                                     paddingHorizontal: wp('3%'),
                                 }}
                             >
-                                <Feather name="file" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
+                                <Feather name="file" size={wp('5%')} style={{ marginRight: wp('2%') }} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    2
+                                    {loading ? "..." : totalCount}
                                 </Text>
                             </View>
                         </View>
@@ -380,29 +391,36 @@ const Quotation = () => {
                             />
 
                         </Input>
-                        
+
                     </View>
 
 
                 </View>
                 {loading && <QuoteCardSkeleton count={5} />}
-                {!loading && quoteData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "quotations" : "search"} onAction={() => navigation.navigate("Quotations", { screen: "CreateQuotation" })} />}
 
                 <View style={{ marginVertical: hp('2%') }}>
                     <FlatList
                         data={quoteData ?? []}
-                        style={{ height: hp("65%") }}
+                        style={{ height: hp("60%") }}
                         keyExtractor={(_, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%"), gap: hp('2%') }}
                         renderItem={({ item }) => (
                             <QuoteCardComponent item={item} />
                         )}
+                        ListEmptyComponent={
+                            !loading && quoteData.length <= 0 ? (
+                                <EmptyState
+                                    variant={!filters?.searchQuery ? "quotations" : "search"}
+                                    onAction={() => navigation.navigate("CreateQuotation")}
+                                />
+                            ) : null
+                        }
                         onEndReached={() => {
                             if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                         }}
                         onEndReachedThreshold={0.7}
-                        ListFooterComponent={(hasMore && loading) ? <QuoteCardSkeleton count={1} /> : null}
+                        ListFooterComponent={(loadingMore && quoteData.length > 0) && <QuoteCardSkeleton count={2} />}
                         refreshing={loading}
                         onRefresh={() => {
                             setFilters(prev => ({ ...prev, page: 1 }));

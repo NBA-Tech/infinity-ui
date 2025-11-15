@@ -166,7 +166,7 @@ const UserOnBoarding = () => {
             isDisabled: false,
             value: businessDetails?.userBusinessInfo?.websiteURL ?? "",
             onChange: (value: string) => {
-                patchState("userBusinessInfo", "websiteURL", value, true, setBusinessDetails, setErrors);
+                patchState("userBusinessInfo", "websiteURL", value, false, setBusinessDetails, setErrors);
             },
         },
     }), [businessDetails]);

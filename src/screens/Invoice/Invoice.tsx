@@ -113,12 +113,13 @@ const InvoiceList = () => {
     const showToast = useToastMessage()
     const { triggerReloadInvoices } = useReloadContext();
     const { userDetails } = useUserStore()
+    const [loadingMore, setLoadingMore] = useState(false);
 
 
 
 
     const getInvoiceListData = async (reset: boolean = false) => {
-        setLoading(true);
+        reset ? setLoading(true) : setLoadingMore(true);
         const currFilters: SearchQueryRequest = {
             filters: { userId: getItem("USERID") },
             requiredFields: ["invoiceId", "orderId", "orderName", "amountPaid", "invoiceDate", "billingInfo"],
@@ -128,9 +129,10 @@ const InvoiceList = () => {
             const invoiceDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(currFilters);
             if (!invoiceDataResponse?.success) {
                 showToast({ type: "error", title: "Error", message: invoiceDataResponse?.message });
-                setLoading(false);
+                reset ? setLoading(false) : setLoadingMore(false);
                 return;
             }
+            setTotalCount(invoiceDataResponse?.total ?? 0);
             setInvoiceData(prev =>
                 reset ? invoiceDataResponse?.data ?? [] : [...prev ?? [], ...(invoiceDataResponse?.data ?? [])]
             );
@@ -143,7 +145,7 @@ const InvoiceList = () => {
             console.log(err);
         }
         finally {
-            setLoading(false);
+            reset ? setLoading(false) : setLoadingMore(false);
         }
     }
 
@@ -159,7 +161,6 @@ const InvoiceList = () => {
         }
         setCustomerListFilter(invoiceMetaDataResponse?.data?.customerIds);
         setOrderTypeFilter(invoiceMetaDataResponse?.data?.orderMapping);
-        setTotalCount(invoiceMetaDataResponse?.data?.totalCounts);
 
     }
     const handleSearch = (value: string) => {
@@ -331,7 +332,7 @@ const InvoiceList = () => {
                                 <Feather name="credit-card" size={wp('5%')} color="#fff" style={{marginRight: wp('2%')}} />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    8
+                                    {loading ? "..." : totalCount}
                                 </Text>
                             </View>
                         </View>
@@ -351,7 +352,6 @@ const InvoiceList = () => {
                                         backgroundColor: "rgba(255,255,255,0.2)",
                                         borderColor: "rgba(255,255,255,0.3)",
                                         borderWidth: 1,
-                                        borderRadius: wp('2%'),
                                     },
                                 ]}
                                 onPress={() => navigation.navigate('CreateInvoice')}
@@ -427,12 +427,9 @@ const InvoiceList = () => {
                     <InvoiceCardSkeleton count={5} />
                 )
                 }
-                {!loading && invoiceData?.length === 0 ? (
-                    <EmptyState variant={"invoices"} onAction={() => navigation.navigate('CreateInvoice')} />
-                ) : (
                     <FlatList
                         data={invoiceData}
-                        style={{ height: hp('60%') }}
+                        style={{ height: hp('65%') }}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => (
@@ -443,16 +440,21 @@ const InvoiceList = () => {
                         onEndReached={() => {
                             if (hasMore && !loading) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                         }}
+                        ListEmptyComponent={
+                            !loading && invoiceData?.length <= 0 ? (
+                                <EmptyState
+                                    variant={!filters?.searchQuery ? "invoices" : "search"}
+                                    onAction={() => navigation.navigate("CreateInvoice")}
+                                />
+                            ) : null
+                        }
                         onEndReachedThreshold={0.7}
-                        ListFooterComponent={(hasMore && loading) ? <InvoiceCardSkeleton count={1} /> : null}
+                        ListFooterComponent={loadingMore && <InvoiceCardSkeleton count={2} /> }
                         refreshing={loading}
                         onRefresh={() => {
                             setFilters(prev => ({ ...prev, page: 1 }));
                         }}
                     />
-                )
-
-                }
 
                 {/* <Fab
                     size="lg"

@@ -93,7 +93,7 @@ export interface SearchQueryRequest {
 }
 
 interface ReturnTo {
-  tab: string,
+  tab?: string,
   screen: string
 }
 

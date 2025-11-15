@@ -36,7 +36,6 @@ const ServiceComponent = ({
   handleCheckboxChange,
   handleTotalPriceCharges,
 }: ServiceComponentProps) => {
-  console.log(offeringInfo)
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 

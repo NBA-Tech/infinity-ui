@@ -250,7 +250,7 @@ const Register = ({ setCurrScreen }: any) => {
                     >
                         <FormControlLabel className="gap-2">
                             <FormControlLabelText
-                                style={[globalStyles.normalTextColor, globalStyles.labelText]}
+                                style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}
                             >
                                 {field.label}
                             </FormControlLabelText>

@@ -151,7 +151,7 @@ const InvoiceInfo = (props: InvoiceInfoProps) => {
 
             <View style={{ margin: hp('1%'), gap: hp('2%') }}>
                 {!props?.isLoading && props?.invoiceDetails?.length === 0 && (
-                    <EmptyState variant="invoices" onAction={() => navigation.navigate('Invoice', { screen: 'CreateInvoice' })} />
+                    <EmptyState variant="invoices" onAction={() => navigation.navigate('CreateInvoice')} />
                 )}
                 {props?.isLoading ? (
                     <View>

@@ -12,7 +12,7 @@ import { EmptyState } from "@/src/components/empty-state-data";
 import { useUserStore } from "@/src/store/user/user-store";
 
 type RevenueTrendChartProps = {
-    isLoading: boolean;
+    loading: boolean;
     invoiceDetails: any[];
     investmentDetails: any[];
 };
@@ -42,7 +42,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
 
     // ---------- PREPARE CHART DATA ----------
     useEffect(() => {
-        if (props.isLoading) return;
+        if (props.loading) return;
 
         const revenue = getMonthlyTotals(props.invoiceDetails, "amountPaid", "invoiceDate");
         const expenses = getMonthlyTotals(props.investmentDetails, "investedAmount", "investmentDate");
@@ -120,8 +120,8 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
             )}
 
             {/* CHART */}
-            {props.isLoading ? (
-                <Skeleton height={hp("32%")} width={wp("90%")} />
+            {props?.loading ? (
+                <Skeleton height={hp("32%")} width={wp("93%")} />
             ) : barData.length > 0 ? (
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -246,9 +246,17 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                             { color: "#22C55E", fontWeight: "700" },
                         ]}
                     >
-                        ₹{props?.invoiceDetails
-                            ?.reduce((t, i) => t + i.amountPaid, 0)
-                            .toLocaleString()}
+                        {props?.loading ? (
+                            "..."
+                        ) : (
+                            <>
+                                {userDetails?.currencyIcon} {props?.invoiceDetails
+                                    ?.reduce((t, i) => t + i.amountPaid, 0)
+                                    .toLocaleString() || 0}
+                            </>
+                        )
+                        }
+
                     </Text>
 
                     {/* Expenses Value */}
@@ -258,9 +266,17 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                             { color: "#EF4444", fontWeight: "700" },
                         ]}
                     >
-                        ₹{props?.investmentDetails
-                            ?.reduce((t, i) => t + i.investedAmount, 0)
-                            .toLocaleString()}
+                        {props?.loading ? (
+                            "..."
+                        ) : (
+                            <>
+                                {userDetails?.currencyIcon} {props?.invoiceDetails
+                                    ?.reduce((t, i) => t + i.amountDue, 0)
+                                    .toLocaleString() || 0}
+                            </>
+                        )
+                        }
+
                     </Text>
                 </View>
             </View>

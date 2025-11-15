@@ -58,7 +58,6 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateCustomer">;
 const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { customerID, returnTo = { tab: 'Customer', screen: 'CustomerList' } } = route.params || {};
-    console.log(returnTo)
 
     const { isDark } = useContext(ThemeToggleContext);
     const { triggerReloadCustomer } = useReloadContext()

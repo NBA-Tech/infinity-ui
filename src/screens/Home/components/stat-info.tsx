@@ -27,7 +27,6 @@ export const DashboardStats = (props: DashboardStatsProps) => {
   const { isDark } = useContext(ThemeToggleContext);
 
   const { orders, invoices, investments, loading } = props;
-  console.log(props)
 
   /** ---------------------------------------------------
    *  CALCULATE STATS (Memoized)
@@ -58,7 +57,6 @@ export const DashboardStats = (props: DashboardStatsProps) => {
 
     // ✔ Proper receivables = Total invoice amount - Paid amount
     const outstandingReceivables = totalOrderReceivables - totalPayed;
-    console.log(totalOrderReceivables, invoices, outstandingReceivables);
 
     return {
       totalOrderReceivables: outstandingReceivables || 0, // this is FINAL receivable outstanding

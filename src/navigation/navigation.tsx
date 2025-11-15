@@ -139,9 +139,7 @@ const QuotationNavigatorWrapper = () => (
 
 const ProfileNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
-    <SubscriptionLockOverlay>
       <ProfileNavigator />
-    </SubscriptionLockOverlay>
   </View>
 );
 
@@ -213,7 +211,6 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        <RootStack.Screen name="TransactionHistory" component={TransactionHistory} />
         <RootStack.Screen name="Splash" component={SplashScreen} />
         <RootStack.Screen name="AuthStack" component={AuthStack} />
         <RootStack.Screen name="UnauthStack" component={UnauthStack} />

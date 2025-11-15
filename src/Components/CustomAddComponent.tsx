@@ -19,24 +19,40 @@ const CustomServiceAddComponent: React.FC<Props> = ({
   value = [],
   onChange,
 }) => {
-  const [rows, setRows] = useState<ServiceModel[]>(value);
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
+  const [rows, setRows] = useState<ServiceModel[]>(value);
+
+  // 🔥 Sync only when parent value truly changes
   useEffect(() => {
-    if (Array.isArray(value)) {
+    if (JSON.stringify(value) !== JSON.stringify(rows)) {
       setRows(value);
     }
   }, [value]);
 
-  // ✅ Add one new empty row
-  const handleAddRow = () => {
-    if (rows.length >= serviceList.length) return; // don't exceed total services
-    setRows([...rows, { id: "", name: "", value: 0 } as ServiceModel]);
+  // 🔥 Safe updater: only update & notify parent if real change happened
+  const updateRows = (newRows: ServiceModel[]) => {
+    if (JSON.stringify(newRows) !== JSON.stringify(rows)) {
+      setRows(newRows);
+      onChange?.(newRows);
+    }
   };
 
-  const handleUpdateRow = (index: number, field: "id" | "value", newValue: any) => {
+  // ➕ Add service row
+  const handleAddRow = () => {
+    if (rows.length >= serviceList.length) return;
+    updateRows([...rows, { id: "", name: "", value: 0 } as ServiceModel]);
+  };
+
+  // ✏ Update a row value
+  const handleUpdateRow = (
+    index: number,
+    field: "id" | "value",
+    newValue: any
+  ) => {
     const updated = [...rows];
+
     if (field === "id") {
       const selectedService = serviceList.find((s) => s.id === newValue);
       updated[index] = {
@@ -44,18 +60,19 @@ const CustomServiceAddComponent: React.FC<Props> = ({
         id: selectedService?.id || "",
         name: selectedService?.serviceName || "",
         price: selectedService?.price || 0,
+        serviceType: selectedService?.type
       };
     } else {
       updated[index] = { ...updated[index], value: Number(newValue) || 0 };
     }
-    setRows(updated);
-    onChange?.(updated);
+
+    updateRows(updated);
   };
 
+  // 🗑 Delete a row
   const handleDeleteRow = (index: number) => {
     const newRows = rows.filter((_, i) => i !== index);
-    setRows(newRows);
-    onChange?.(newRows);
+    updateRows(newRows);
   };
 
   if (!serviceList.length) {
@@ -86,33 +103,29 @@ const CustomServiceAddComponent: React.FC<Props> = ({
           {/* Dropdown */}
           <View style={{ flex: 1 }}>
             <Dropdown
-              style={[
-                {
-                  height: hp("5.5%"),
-                  borderWidth: 1,
-                  borderRadius: wp("2%"),
-                  paddingHorizontal: wp("3%"),
-                  borderColor: isDark ? "#2E3A57" : "#D1D5DB", // subtle border tone
-                  backgroundColor: isDark
-                    ? globalStyles.formBackGroundColor.backgroundColor // dark: #1A2238
-                    : "#FFFFFF", // light: clean white
-                },
-              ]}
-              containerStyle={[
-                {
-                  borderRadius: wp("2%"),
-                  backgroundColor: isDark
-                    ? globalStyles.formBackGroundColor.backgroundColor // dark dropdown list bg
-                    : "#FFFFFF",
-                  borderColor: isDark ? "#2E3A57" : "#E5E7EB",
-                  borderWidth: 1,
-                  shadowColor: isDark ? "#000" : "#182D53",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
-                },
-              ]}
+              style={{
+                height: hp("5.5%"),
+                borderWidth: 1,
+                borderRadius: wp("2%"),
+                paddingHorizontal: wp("3%"),
+                borderColor: isDark ? "#2E3A57" : "#D1D5DB",
+                backgroundColor: isDark
+                  ? globalStyles.formBackGroundColor.backgroundColor
+                  : "#FFFFFF",
+              }}
+              containerStyle={{
+                borderRadius: wp("2%"),
+                backgroundColor: isDark
+                  ? globalStyles.formBackGroundColor.backgroundColor
+                  : "#FFFFFF",
+                borderColor: isDark ? "#2E3A57" : "#E5E7EB",
+                borderWidth: 1,
+                shadowColor: isDark ? "#000" : "#182D53",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
               placeholderStyle={[
                 globalStyles.labelText,
                 { color: isDark ? "#9CA3AF" : "#6B7280" },
@@ -133,7 +146,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
                 globalStyles.labelText,
                 { color: isDark ? "#E5E7EB" : "#111827" },
               ]}
-              activeColor={isDark ? "#2C426A" : "#EEF3FF"} // ✅ highlight color when selecting
+              activeColor={isDark ? "#2C426A" : "#EEF3FF"}
               data={serviceList.map((s) => ({
                 label: s.serviceName,
                 value: s.id,
@@ -144,7 +157,6 @@ const CustomServiceAddComponent: React.FC<Props> = ({
               placeholder="Select Service"
               onChange={(item) => handleUpdateRow(index, "id", item.value)}
             />
-
           </View>
 
           {/* Quantity Input */}
@@ -173,7 +185,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
         </View>
       ))}
 
-      {/* Add Service Button */}
+      {/* Add Button */}
       <Button
         size="md"
         variant="solid"

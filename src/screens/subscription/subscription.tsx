@@ -57,7 +57,6 @@ const Subscription = () => {
         customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber,
       },
     };
-    console.log(payload)
     return payload;
   };
 

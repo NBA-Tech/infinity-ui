@@ -43,7 +43,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
                             <View className="flex flex-row justify-start items-center gap-3" >
-                                <Feather name="info" size={wp('6%')} color="#8B5CF6" />
+                                <Feather name="info" size={wp('6%')} color="#3B82F6" />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>General Info</Text>
 
                             </View>
@@ -73,7 +73,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                             Customer Id
                                         </Text>
                                         <View className="flex-row items-center gap-2 mt-1">
-                                            <Feather name="user" size={wp("5%")} color="#8B5CF6" />
+                                            <Feather name="user" size={wp("5%")} color="#3B82F6" />
                                             <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { flexShrink: 1, flexWrap: "wrap" }]} numberOfLines={2}>
                                                 #{props?.customerDetails?.customerID}
                                             </Text>
@@ -133,7 +133,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
                             <View className="flex flex-row justify-start items-center gap-3" >
-                                <Feather name="dollar-sign" size={wp('6%')} color="#8B5CF6" />
+                                <Feather name="dollar-sign" size={wp('6%')} color="#3B82F6" />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Payment Details</Text>
 
                             </View>
@@ -224,7 +224,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
                             <View className="flex flex-row justify-start items-center gap-3" >
-                                <Feather name="map" size={wp('6%')} color="#8B5CF6" />
+                                <Feather name="map" size={wp('6%')} color="#3B82F6" />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Address Details</Text>
 
                             </View>
@@ -242,7 +242,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (
                                             <View className="flex-row items-center gap-2 mt-1">
-                                                <Feather name="map-pin" size={wp("5%")} color="#8B5CF6" />
+                                                <Feather name="map-pin" size={wp("5%")} color="#3B82F6" />
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                                     {props?.customerDetails?.customerBillingInfo?.street} {props?.customerDetails?.customerBillingInfo?.city} {props?.customerDetails?.customerBillingInfo?.state} {props?.customerDetails?.customerBillingInfo?.country} {props?.customerDetails?.customerBillingInfo?.zipCode}
                                                 </Text>
@@ -263,7 +263,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
                             <View className="flex flex-row justify-start items-center gap-3" >
-                                <Feather name="edit" size={wp('6%')} color="#8B5CF6" />
+                                <Feather name="edit" size={wp('6%')} color="#3B82F6" />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Notes</Text>
 
                             </View>
@@ -281,7 +281,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (
                                             <View className="flex-row items-center gap-2 mt-1">
-                                                <Feather name="edit" size={wp("5%")} color="#8B5CF6" />
+                                                <Feather name="edit" size={wp("5%")} color="#3B82F6" />
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                                     {props?.customerDetails?.customerBasicInfo?.notes}
                                                 </Text>

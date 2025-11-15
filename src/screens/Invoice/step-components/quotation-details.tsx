@@ -20,7 +20,6 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const {userDetails}=useUserStore()
-    console.log(props?.orderDetails,"props order details")
 
     const listItems = useMemo(() => {
         return [

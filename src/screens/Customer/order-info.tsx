@@ -9,6 +9,10 @@ import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
 import { useNavigation } from '@react-navigation/native';
+import DeleteConfirmation from '@/src/components/delete-confirmation';
+import { deleteOrderAPI } from '@/src/api/order/order-api-service';
+import { useToastMessage } from '@/src/components/toast/toast-message';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
     projectContainer: {
         flexDirection: 'row',
@@ -34,21 +38,22 @@ type ProjectInfoProps = {
     orderDetails: OrderModel[];
     customerMetaData: Record<string, any>;
     isLoading?: boolean
+    reload: boolean
+    setReload: React.Dispatch<React.SetStateAction<boolean>>
 }
 const ProjectInfo = (props: ProjectInfoProps) => {
     const globalStyles = useContext(StyleContext);
     const navigation = useNavigation();
-    const [statCount, setStatCount] = useState({
-        completed: 0,
-        pending: 0,
-        cancelled: 0
-    });
-
+    const [currId, setCurrId] = useState<string>('');
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
+    const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+    const showToast = useToastMessage()
+    const { triggerReloadOrders } = useReloadContext()
     const statInfo = useMemo(() => {
         const orders = props.orderDetails || [];
 
         const delivered = orders.filter(o => o.status === GlobalStatus.DELIVERED).length;
-        const pendingCount = orders.filter(o => o.status === GlobalStatus.PENDING).length;
+        const pendingCount = orders.filter(o => o.status === GlobalStatus.IN_PROGRESS).length;
         const cancelledCount = orders.filter(o => o.status === GlobalStatus.CANCELLED).length;
 
         return {
@@ -58,7 +63,7 @@ const ProjectInfo = (props: ProjectInfoProps) => {
                 color: "#3B82F6",
             },
             pending: {
-                title: "Pending",
+                title: "Progress",
                 value: pendingCount.toString(),
                 color: "#F59E0B",
             },
@@ -70,12 +75,44 @@ const ProjectInfo = (props: ProjectInfoProps) => {
         };
     }, [props.orderDetails]);
 
+    const actions = {
+        view: {
+            onPress: (orderId: string) => navigation.navigate('Orders',{ screen: 'OrderDetails', params: { orderId: orderId }})
+        },
+        edit: {
+            onPress: (orderId: string) => navigation.navigate('CreateOrder', { orderId })
+        },
+        delete: {
+            onPress: (orderId: string) => {
+                setCurrId(orderId);
+                setOpenDelete(true);
+            }
+        }
+    }
+
+    const handleDelete = async () => {
+        setDeleteLoading(true);
+        const deleteOrderResponse = await deleteOrderAPI(currId);
+        if (!deleteOrderResponse.success) {
+            showToast({ type: "error", title: "Error", message: deleteOrderResponse.message });
+        }
+        else {
+            showToast({ type: "success", title: "Success", message: deleteOrderResponse.message });
+        }
+        setDeleteLoading(false);
+        setOpenDelete(false);
+        props?.setReload(!props?.reload);
+        triggerReloadOrders();
+        
+    }
+
 
     return (
         <ScrollView
             style={{ flex: 1 }}
             showsHorizontalScrollIndicator={false}
         >
+            <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
             <View className='flex flex-col'>
                 <View style={styles.projectContainer}>
                     {Object.values(statInfo).map((stat, index) => (
@@ -120,7 +157,7 @@ const ProjectInfo = (props: ProjectInfoProps) => {
             </View>
             <View style={{ margin: hp('2%'), gap: hp('2%') }}>
                 {!props?.isLoading && props?.orderDetails?.length === 0 && (
-                    <EmptyState variant="orders" onAction={()=>navigation.navigate('Orders', { screen: 'CreateOrder' })}/>
+                    <EmptyState variant="orders" onAction={() => navigation.navigate('CreateOrder')} />
                 )
 
                 }
@@ -142,9 +179,15 @@ const ProjectInfo = (props: ProjectInfoProps) => {
                     <FlatList
                         data={props?.orderDetails || []}
                         renderItem={({ item }) => (
-                            <OrderCard cardData={item} customerMetaData={props?.customerMetaData} />
+                            <OrderCard cardData={item} customerMetaData={props?.customerMetaData} actions={
+                                {
+                                    view: actions.view.onPress,
+                                    edit: actions.edit.onPress,
+                                    delete: actions.delete.onPress
+                                }
+                            }/>
                         )}
-                        contentContainerStyle={{ paddingBottom: hp('2%'),gap: hp('2%') }} // optional spacing at bottom
+                        contentContainerStyle={{ paddingBottom: hp('2%'), gap: hp('2%') }} // optional spacing at bottom
                         keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
                     />
                 )}

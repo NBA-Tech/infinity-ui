@@ -39,7 +39,6 @@ const HomeHeader = (props: HomeHeaderProps) => {
 
             monthlyTotals[key] = (monthlyTotals[key] || 0) + (inv.amountPaid || 0);
         });
-        console.log(monthlyTotals)
 
         // Convert grouped data to sorted array
         const months = Object.keys(monthlyTotals).sort();
@@ -68,7 +67,6 @@ const HomeHeader = (props: HomeHeaderProps) => {
             }, 0)
         )
         const trend = calculateMonthTrend(props?.invoiceDetails)
-        console.log(trend)
     }, [props?.invoiceDetails])
 
 

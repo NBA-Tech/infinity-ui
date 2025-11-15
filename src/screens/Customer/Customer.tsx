@@ -110,6 +110,7 @@ const Customer = () => {
     const { getItem } = useDataStore()
     const showToast = useToastMessage()
     const { triggerReloadCustomer } = useReloadContext()
+    const [totalCount, setTotalCount] = useState(0);
 
 
     const getCustomerDetails = async (reset: boolean = false) => {
@@ -143,6 +144,7 @@ const Customer = () => {
                 });
                 return;
             }
+            setTotalCount(customerDetailsResponse.total)
 
             const customers = customerDetailsResponse?.data ?? [];
             const customerIds = customers.map((item: any) => item?.customerID);
@@ -225,9 +227,17 @@ const Customer = () => {
                 };
             });
 
-            setCustomerData((prev) =>
-                reset ? updatedCustomers : [...prev, ...updatedCustomers]
-            );
+            setCustomerData((prev) => {
+                if (reset) return updatedCustomers;
+            
+                const existingIds = new Set(prev.map((c) => c.customerID));
+                const newItems = updatedCustomers.filter(
+                    (c) => !existingIds.has(c.customerID)
+                );
+            
+                return [...prev, ...newItems];
+            });
+            
             setHasMore(customers.length === (filters.pageSize || 10));
         } catch (err) {
             console.error("Error fetching customer details:", err);
@@ -282,8 +292,9 @@ const Customer = () => {
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1 || !filters?.page;
-            getCustomerDetails(reset || refresh);
-        }, [filters, refresh])
+            console.log(filters)
+            getCustomerDetails(reset);
+        }, [filters])
     );
 
     const CustomerCardComponent = ({ item }: any) => {
@@ -413,7 +424,7 @@ const Customer = () => {
                                 <Feather name="users" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    {customerData?.length}
+                                    {loading ? "..." : totalCount}
                                 </Text>
                             </View>
                         </View>
@@ -432,7 +443,6 @@ const Customer = () => {
                                         backgroundColor: "rgba(255,255,255,0.2)",
                                         borderColor: "rgba(255,255,255,0.3)",
                                         borderWidth: 1,
-                                        borderRadius: wp('2%'),
                                     },
                                 ]}
                                 onPress={() => navigation.navigate('CreateCustomer')}
@@ -490,12 +500,9 @@ const Customer = () => {
                     <CustomerCardSkeleton count={5} />
                 )
                 }
-                {!loading && customerData.length === 0 ? (
-                    <EmptyState variant={"customers"} onAction={() => navigation.navigate('CreateCustomer')} />
-                ) : (
                     <FlatList
                         data={customerData}
-                        style={{ height: hp("70%") }}
+                        style={{ height: hp("65%") }}
                         keyExtractor={(item, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%") }}
@@ -504,8 +511,13 @@ const Customer = () => {
                                 <CustomerCardComponent item={item} />
                             </View>
                         )}
+                        ListEmptyComponent={
+                            !loading && customerData.length <= 0 ? (
+                                <EmptyState variant={!filters?.searchQuery ? "customers" : "search"} onAction={() => navigation.navigate('CreateCustomer')} />
+                            ) : null
+                        }
                         refreshing={loading}
-                        onRefresh={() => {
+                        onRefresh={() => { 
                             setFilters(prev => ({
                                 ...prev,
                                 page: 1,
@@ -520,12 +532,9 @@ const Customer = () => {
                             }
                         }}
                         onEndReachedThreshold={0.7}
-                        ListFooterComponent={loadingMore && <CustomerCardSkeleton count={2} />}
+                        ListFooterComponent={(loadingMore && customerData.length > 0) && <CustomerCardSkeleton count={2} />}
 
                     />
-                )
-
-                }
 
                 {/* <Fab
                     size="lg"

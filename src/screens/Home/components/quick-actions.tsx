@@ -66,7 +66,7 @@ const QuickActions = () => {
                                 {
                                     marginTop: hp("0.8%"),
                                     textAlign: "center",
-                                    width: wp("22%"),
+                                    width: wp("30%"),
                                 },
                             ]}
                         >

@@ -159,12 +159,12 @@ const PackageTab = (props: PackageProps) => {
                     globalStyles.cardShadowEffect,
                      {
                         borderLeftWidth: 4,
-                        borderLeftColor: globalStyles.greenTextColor.color,
+                        borderLeftColor:  isDark ? "#10B981" : "#34D399",
                     },
                 ]}
             >
                 {/* Header */}
-                <View className="flex-row justify-between items-start mb-3">
+                <View className="flex-row justify-between items-center mb-3">
                     <View className="flex-1 pr-3">
                         <Text
                             style={[
@@ -366,7 +366,7 @@ const PackageTab = (props: PackageProps) => {
 
     return (
         <ScrollView
-            style={{ margin: wp('2%'), height: hp('48%') }}
+            style={{ margin: wp('2%')}}
             contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
             showsVerticalScrollIndicator={false}
         >
@@ -392,7 +392,9 @@ const PackageTab = (props: PackageProps) => {
             ) : (
                 <FlatList
                     data={props?.packageData}
+                    style={{ height: hp("65%") }}
                     keyExtractor={(item) => item.id + ''}
+                    contentContainerStyle={{ paddingVertical: hp("1%") }}
                     renderItem={({ item }) => (
                         <View style={{ gap: wp('0.5%'), marginBottom: hp('1%') }}>
                             <PackageCard pkg={item} />

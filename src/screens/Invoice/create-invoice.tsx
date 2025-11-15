@@ -125,7 +125,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
         };
         const res = await getOrderDataListAPI(filter);
         if (res.success) {
-            console.log(res?.data)
             const filteredData = res.data.filter((item: any) => (item.status != OrderStatus.CANCELLED))
             setOrderInfo(filteredData || [])
         }
@@ -249,11 +248,12 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
-                    if (orderDetails?.totalAmountCanPay && numVal > orderDetails.totalAmountCanPay) {
+                    const maxValue= orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0
+                    if (orderDetails?.totalAmountCanPay && numVal > maxValue) {
                         showToast({
                             type: "error",
                             title: "Error",
-                            message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails.totalAmountCanPay}`,
+                            message: `Amount can't exceed ${userDetails?.currencyIcon} ${maxValue}`,
                         });
                     }
                     else {
@@ -550,7 +550,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         <TemplateBuilderComponent
                             quotationFields={invoiceFields}
                             handleCheckboxChange={(v, m) => {
-                                console.log(m)
                                 patchState(m.parentKey, m.childKey, v, true, setInvoiceDetails, setErrors)
                             }
                             }

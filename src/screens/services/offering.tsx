@@ -22,10 +22,10 @@ import { addNewServiceAPI, getOfferingListAPI, updateOfferingServiceAPI } from '
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import CustomServiceAddComponent from '@/src/components/CustomAddComponent';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
 import YoutubePlayer from "react-native-youtube-iframe";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 const styles = StyleSheet.create({
     inputContainer: {
         width: wp('85%'),
@@ -115,8 +115,9 @@ const services = () => {
     const handleEdit = (id: string) => {
         if (id == "") return;
 
-        if (activeTab === "offering") {
+        if (activeTab != "PACKAGE") {
             const filteredData: ServiceModel = serviceData?.find((item) => item.id === id) as ServiceModel;
+            console.log(filteredData)
             setServiceDetails(filteredData);
         } else {
             const filteredData: PackageModel = packageData?.find((item) => item.id === id) as PackageModel;
@@ -136,17 +137,13 @@ const services = () => {
     const CustomFieldWithSwitch = () => {
 
         return (
-            <View>
+            <View style={{marginBottom:hp('-1%')}}>
                 <View className='flex flex-col'>
-                    <View className='flex flex-row justify-between items-center'>
-                        <View>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Custom Price</Text>
-
-                        </View>
+                    <View className='flex flex-row justify-end items-center'>
                         <View className='flex flex-row items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Use calculated price</Text>
                             <Switch
-                                trackColor={{ false: "#d4d4d4", true: "#8B5CF6" }}
+                                trackColor={{ false: "#D1D5DB", true: "#3B82F6" }}
                                 thumbColor="#fafafa"
                                 value={packageDetails.calculatedPrice}
                                 ios_backgroundColor="#d4d4d4"
@@ -160,34 +157,6 @@ const services = () => {
                         </View>
 
                     </View>
-                    {!packageDetails.calculatedPrice && (
-                        <View>
-                            <Input size="lg" variant='rounded'>
-                                <InputSlot>
-                                    <Feather name="dollar-sign" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                </InputSlot>
-                                <InputField
-                                    type="text"
-                                    placeholder="Enter Price"
-                                    value={String(packageDetails.price || 0)}
-                                    keyboardType="numeric"
-                                    onChangeText={(value) => {
-                                        // Remove non-numeric characters except '.'
-                                        const numericValue = value.replace(/[^0-9.]/g, "");
-
-                                        setPackageDetails((prev) => ({
-                                            ...prev,
-                                            price: numericValue === "" ? 0 : parseFloat(numericValue),
-                                        }));
-                                    }}
-                                />
-
-                            </Input>
-
-                        </View>
-                    )
-
-                    }
 
                 </View>
 
@@ -202,7 +171,7 @@ const services = () => {
             icon: <Feather name="package" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
-            value: packageDetails.packageName,
+            value: packageDetails?.packageName,
             isRequired: true,
             isDisabled: false,
             onChange(value: string) {
@@ -216,7 +185,7 @@ const services = () => {
             icon: <Feather name="package" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
-            value: packageDetails.description,
+            value: packageDetails?.description,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: true,
             isDisabled: false,
@@ -229,14 +198,30 @@ const services = () => {
             label: "Choose Offerings",
             type: "custom",
             isRequired: true,
-            customComponent: <CustomServiceAddComponent serviceList={serviceData} onChange={handleServiceChange} value={packageDetails.serviceList} />
+            customComponent: <CustomServiceAddComponent serviceList={serviceData} onChange={handleServiceChange} value={packageDetails?.serviceList} />
         },
-        price: {
-            key: "price",
+        calculatedPrice: {
+            key: "calculatedPrice",
             label: "",
             isRequired: false,
             type: "custom",
+            value: packageDetails?.price,
             customComponent: <CustomFieldWithSwitch />
+        },
+        customPrcice:{
+            key: "price",
+            label:"Custom Price",
+            placeholder: "Eg: 1000",
+            icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+            type: "number",
+            style: "w-full",
+            value: packageDetails?.price,
+            isRequired: !packageDetails?.calculatedPrice,
+            isDisabled: false,
+            isVisible:!packageDetails?.calculatedPrice,
+            onChange(value: string) {
+                patchState("", 'price', value, !packageDetails?.calculatedPrice, setPackageDetails, setErrors)
+            }
         },
         additionalNotes: {
             key: "additionalNotes",
@@ -245,12 +230,12 @@ const services = () => {
             icon: <Feather name="package" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
-            value: packageDetails.additionalNotes,
+            value: packageDetails?.additionalNotes,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
             onChange(value: string) {
-                patchState("", 'additionalNotes', value, true, setPackageDetails, setErrors)
+                patchState("", 'additionalNotes', value, false, setPackageDetails, setErrors)
             }
 
         },
@@ -263,7 +248,7 @@ const services = () => {
             placeholder: "Eg: Photoshoot",
             icon: <Feather name="edit" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
-            value: servieDetails.serviceName,
+            value: servieDetails?.serviceName,
             style: "w-full",
             isRequired: true,
             isDisabled: false,
@@ -278,12 +263,12 @@ const services = () => {
             icon: <Feather name="file-text" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
-            value: servieDetails.description,
+            value: servieDetails?.description,
             extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             isRequired: false,
             isDisabled: false,
             onChange(value: string) {
-                patchState("", 'description', value, true, setServiceDetails, setErrors)
+                patchState("", 'description', value, false, setServiceDetails, setErrors)
             }
         },
         sessionType:{
@@ -293,13 +278,13 @@ const services = () => {
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
-            isRequired: false,
+            isRequired: activeTab==SERVICETYPE.SERVICE,
             isVisible:activeTab==SERVICETYPE.SERVICE,
             isDisabled: false,
-            value: servieDetails.sessionType,
+            value: servieDetails?.sessionType,
             dropDownItems: Object.values(SESSIONTYPE).map((item) => { return { label: item, value: item } }),
             onChange(value: string) {
-                patchState("", 'sessionType', value, true, setServiceDetails, setErrors)
+                patchState("", 'sessionType', value, activeTab==SERVICETYPE.SERVICE, setServiceDetails, setErrors)
             }
         },
         quantity:{
@@ -310,11 +295,11 @@ const services = () => {
             type: "number",
             style: "w-full",
             isVisible:activeTab==SERVICETYPE.DELIVERABLE,
-            isRequired: false,
+            isRequired: activeTab == SERVICETYPE.DELIVERABLE,
             isDisabled: false,
-            value: servieDetails.quantity,
+            value: servieDetails?.quantity,
             onChange(value: string) {
-                patchState("", 'quantity', value, true, setServiceDetails, setErrors)
+                patchState("", 'quantity', value,  activeTab == SERVICETYPE.DELIVERABLE, setServiceDetails, setErrors)
             }
         },
         price: {
@@ -324,7 +309,7 @@ const services = () => {
             icon: <FontAwesome name="money" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
-            value: servieDetails.price,
+            value: servieDetails?.price,
             isRequired: true,
             isDisabled: false,
             onChange(value: number) {
@@ -336,6 +321,7 @@ const services = () => {
 
     const handleSaveService = async () => {
         let currDetails = activeTab == SERVICETYPE.PACKAGE ? packageDetails : servieDetails
+        console.log(currDetails)
         const currFields = activeTab == SERVICETYPE.PACKAGE ? packageInfoFields : serviceInfoFields
         const isUpdate = Boolean(currDetails.id)
         let serviceResponse: ApiGeneralRespose;
@@ -343,7 +329,6 @@ const services = () => {
 
         currDetails = { ...currDetails, type: activeTab };
 
-        console.log(currDetails, activeTab);
 
         const validateInput = validateValues(currDetails, currFields)
         if (!validateInput.success) {
@@ -372,7 +357,6 @@ const services = () => {
             else {
                 serviceResponse = await addNewServiceAPI(currDetails)
             }
-            console.log(serviceResponse)
             setIsOpen(false)
 
             if (!serviceResponse?.success) {
@@ -426,14 +410,24 @@ const services = () => {
         fetchOfferings();
     }, []);
 
+    const reset=()=>{
+        setServiceDetails({
+            userId: getItem("USERID") as string,
+        })
+        setPackageDetails({
+            userId: getItem("USERID") as string,
+        })
+        setIsOpen(false)
+    }
+
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
             <BackHeader screenName='Services' />
             <Modal
                 isVisible={isOpen}
-                onBackdropPress={() => setIsOpen(false)}
-                onBackButtonPress={() => setIsOpen(false)}
+                onBackdropPress={() => reset()}
+                onBackButtonPress={() => reset()}
                 style={{ margin: 0, justifyContent: "flex-end" }} // bottom sheet style
             >
                 <View
@@ -458,7 +452,7 @@ const services = () => {
                         {/* Form Fields */}
                         <View style={{ marginVertical: hp("1%") }}>
                             <CustomFieldsComponent
-                                infoFields={activeTab !== "PACKAGE" ? serviceInfoFields : packageInfoFields}
+                                infoFields={activeTab != "PACKAGE" ? serviceInfoFields : packageInfoFields}
                                 errors={errors}
                                 cardStyle={{ padding: wp('2%') }}
                             />

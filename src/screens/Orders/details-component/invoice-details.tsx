@@ -147,9 +147,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                     {loading && <Skeleton height={hp('25%')} />}
                     {props?.invoiceDetails?.length <= 0 ? (
                         <EmptyState variant='invoices' onAction={() => {
-                            navigation.navigate("Invoice", {
-                                screen: "CreateInvoice",
-                            });
+                            navigation.navigate("CreateInvoice");
 
                         }} />
                     ) : (

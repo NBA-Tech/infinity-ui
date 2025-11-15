@@ -108,7 +108,6 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
     const getCustomerNameList = async (userID: string) => {
         const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
-        console.log(metaData)
         setCustomerList(metaData);
     };
 
@@ -133,11 +132,11 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             value: orderDetails?.orderBasicInfo?.customerID ?? "",
             rightIcon: <Feather name="plus" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             onRightIconPress: () => {
-                navigation.navigate("Customer", {
-                    screen: "CreateCustomer",
-                    params: { returnTo: { tab: 'Orders', screen: 'CreateQuotaion' } },
+                navigation.navigate("CreateCustomer", {
+                    returnTo: {
+                        screen: "CreateQuotation",  
+                    },
                 });
-
             },
             onChange: (value: string) => {
                 patchState('orderBasicInfo', 'customerID', value, true, setOrderDetails, setErrors);
@@ -234,7 +233,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.numberOfHours ?? 0,
             onChange(value: string) {
-                patchState('eventInfo', 'numberOfHours', value, true, setOrderDetails, setErrors)
+                patchState('eventInfo', 'numberOfHours', value, false, setOrderDetails, setErrors)
             },
         },
         eventLocation: {
@@ -447,13 +446,13 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
         showToast({
             type: "success",
             title: "Success",
-            message: saveNewOrder?.message ?? "Order created successfully",
+            message: saveNewOrder?.message ?? "Quotation created successfully",
         });
 
         setOrderDetails({
             userId: orderDetails?.userId,
         });
-        navigation.navigate("Success", { text: saveNewOrder?.message ?? "Order created successfully" ,returnTo:returnTo});
+        navigation.navigate("Success", { text: "Quotation created successfully", returnTo: returnTo });
         setTimeout(() => {
             setCurrStep(0);
         }, 2000);
@@ -645,7 +644,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
-                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
+                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Services')} />
                                         )
                                         }
                                         <FlatList
@@ -688,7 +687,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {isAllLoadingFalse(loadingProvider) && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
+                                            <EmptyState variant='services' onAction={() => navigation.navigate('Services')} />
                                         )
 
                                         }
@@ -754,7 +753,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                             variant="solid"
                             action="primary"
                             style={[globalStyles.buttonColor]}
-                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
+                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0 || currStep == 0}
                             onPress={() => setCurrStep(currStep - 1)}
                         >
                             <Feather name="arrow-left" size={wp("5%")} color="#fff" />

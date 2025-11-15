@@ -72,6 +72,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
         { key: "orders", title: "Orders", icon: "camera" },
         { key: "invoices", title: "Invoices", icon: "file-text" },
     ]);
+    const [reload, setReload] = useState(false);
 
     const renderScene = ({ route }: any) => {
         switch (route.key) {
@@ -82,7 +83,8 @@ export default function CustomerDetails({ navigation, route }: Props) {
                     {
                         name: customerDetails?.customerBasicInfo?.name,
                     }
-                } isLoading={loading} />;
+                } isLoading={loading} 
+                reload={reload} setReload={setReload}/>;
             case "invoices":
                 return <InvoiceInfo key={route.key} invoiceDetails={invoiceDetails} isLoading={loading} />;
             default:
@@ -94,9 +96,9 @@ export default function CustomerDetails({ navigation, route }: Props) {
         <TabBar
             {...props}
             style={{ backgroundColor: globalStyles.appBackground.backgroundColor, marginBottom: hp('3%') }}
-            indicatorStyle={{ backgroundColor: '#8B5CF6', height: 3, borderRadius: 2 }}
+            indicatorStyle={{ backgroundColor: '#3B82F6', height: 3, borderRadius: 2 }}
             activeColor={isDark ? "#fff" : "#000"}
-            inactiveColor={isDark ? "#6B7280" : "#6B7280"}
+            inactiveColor={isDark ? "#3B82F6" : "#6B7280"}
             pressColor="rgba(139,92,246,0.15)"
             tabStyle={{ width: 'auto' }}
         />
@@ -180,7 +182,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
         };
 
         fetchData();
-    }, [customerID]);
+    }, [customerID,reload]);
 
 
     return (
@@ -196,7 +198,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
                 >
                     <Avatar
                         style={{
-                            backgroundColor: "#8B5CF6",
+                            backgroundColor: "#2C426A",
                             transform: [{ scale: 1.2 }],
                         }}
                     >
@@ -222,7 +224,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
                         style={{ flex: 1 }}
                     >
                         <TouchableOpacity onPress={() => navigation.navigate("CreateCustomer", { customerID: customerID })}>
-                            <Feather name="edit" size={wp("6%")} color={"#8B5CF6"} />
+                            <Feather name="edit" size={wp("6%")} color={"#2C426A"} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -236,7 +238,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
                             <Feather
                                 name={route.icon}
                                 size={wp("5%")}
-                                color={focused ? "#8B5CF6" : "#6B7280"}
+                                color={focused ? "#3B82F6" : "#6B7280"}
                             />
                         ),
                     }}

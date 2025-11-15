@@ -113,7 +113,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             isDisabled: false,
             value: investmentDetails?.investmentDescription ?? "",
             onChange: (value: string) => {
-                patchState("", "investmentDescription", value, true, setInvestmentDetails, setErrors);
+                patchState("", "investmentDescription", value, false, setInvestmentDetails, setErrors);
             },
         },
         investmentType: {

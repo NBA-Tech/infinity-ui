@@ -56,7 +56,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
             <View>
                 <View>
                     <View className='flex flex-1 flex-row justify-between items-center'>
-                        <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText, { width: wp('55%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.customerMetaData?.name}'s {orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
+                        <Text style={[globalStyles.themeTextColor, globalStyles.subHeadingText, { width: wp('55%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventTitle}</Text>
                         <View
                             style={[
                                 styles.statusContainer,
@@ -87,19 +87,21 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
 
                     </View>
                     <View>
-                        <View className='flex flex-1 flex-row justify-between items-center' style={{ marginTop: hp('2%') }}>
+                        <View className='flex flex-row justify-between items-center' style={{ marginTop: hp('2%') }}>
                             <View className='flex flex-col items-center'>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Budget</Text>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>₹{orderCardProps?.cardData?.totalPrice || 0}</Text>
 
                             </View>
 
-                            <View className='flex flex-col items-center'>
+                            <View className='flex flex-col items-center' style={{ width: wp('30%') }}>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>Progress</Text>
                                 {getPercentageOfCompletion(orderCardProps?.cardData?.offeringInfo)?.hasDeliverable ? (
-                                    <Progress value={getPercentageOfCompletion(orderCardProps?.cardData?.offeringInfo)?.percentage} style={{ width: wp('30%') }}>
-                                        <ProgressFilledTrack style={{ backgroundColor: '#4F46E5' }} />
-                                    </Progress>
+                                    <View style={{justifyContent: "center" }}>
+                                        <Progress value={getPercentageOfCompletion(orderCardProps?.cardData?.offeringInfo)?.percentage} style={{ width: wp('30%') }}>
+                                            <ProgressFilledTrack style={{ backgroundColor: '#4F46E5' }} />
+                                        </Progress>
+                                    </View>
                                 ) : (
                                     <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>No deliverable yet</Text>
                                 )

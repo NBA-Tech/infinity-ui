@@ -25,7 +25,6 @@ const SubscriptionLockOverlay: React.FC<Props> = ({ children }) => {
     // Otherwise show overlay
     return (
         <View style={globalStyles.appBackground}>
-            <Header />
             <View className='flex flex-col items-center justify-center h-full'>
                 <LottieView
                     source={require("../assets/animations/profile_lock.json")}

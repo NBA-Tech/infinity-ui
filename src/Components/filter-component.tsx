@@ -174,24 +174,6 @@ const FilterComponent = (props: FilterComponentProps) => {
                 }))
             }
         },
-        eventType: {
-            parentKey: "eventType",
-            key: "eventType",
-            label: "Event Type",
-            type: "chips",
-            style: "w-full",
-            dropDownItems: props?.extraValue?.eventTypeList,
-            value: props?.filters?.searchQuery ?? [],
-            onChange: (value: string) => {
-                props?.setRefresh(true)
-                props?.setFilters(prev => ({
-                    ...prev,
-                    page: 1,
-                    searchField: "eventInfo.eventType",
-                    searchQuery: value
-                }))
-            }
-        },
 
     }), [props?.filters, props?.extraValue]);
 

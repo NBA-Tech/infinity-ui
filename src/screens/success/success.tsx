@@ -21,17 +21,22 @@ export default function Success({ route, navigation }: Props) {
     }, []);
 
     const handleGoBack = () => {
-        if (returnTo) {
+        if (returnTo?.tab) {
+            // case: navigate back to a tab screen
             navigation.navigate('MainTabs', {
-                screen: returnTo.tab,      // e.g. 'Customer'
+                screen: returnTo.tab,
                 params: {
-                    screen: returnTo.screen, // e.g. 'CustomerList'
+                    screen: returnTo.screen,
                 },
             });
+        } else if (returnTo?.screen) {
+            // case: navigate to a standalone screen
+            navigation.navigate(returnTo.screen);
         } else {
-            navigation.popToTop();
+            navigation.goBack();
         }
     };
+    
 
 
     return (

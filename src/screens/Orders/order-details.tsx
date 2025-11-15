@@ -81,14 +81,14 @@ const OrderDetails = ({ route, navigation }: Props) => {
         {
             id: 1,
             label: 'Edit',
-            icon: <Feather name="edit" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            icon: <Feather name="edit" size={wp('3%')} color={isDark ? '#fff' : '#000'} />,
             isVisible: true,
             onPress: () => navigation.navigate("CreateOrder", { orderId: orderDetails?.orderId })
         },
         {
             id: 2,
             label: 'Cancel',
-            icon: <Feather name="x" size={wp('5%')} color={isDark ? '#fff' : '#000'} />,
+            icon: <Feather name="x" size={wp('3%')} color={isDark ? '#fff' : '#000'} />,
             isVisible: ![GlobalStatus.COMPLETED, GlobalStatus.DELIVERED].includes(orderDetails?.status),
             onPress: () => handleStatusChange({ key: GlobalStatus.CANCELLED })
         }
@@ -312,7 +312,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     <View className='flex flex-row justify-end items-center gap-3' style={{ marginVertical: hp('1%') }}>
                         {actionButtons.map((action) => (
                             action?.isVisible && (
-                                <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
+                                <Button size="md" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={action.onPress}>
                                     {action.icon}
                                     <ButtonText style={[globalStyles.buttonText, globalStyles.themeTextColor]}>{action.label}</ButtonText>
                                 </Button>

@@ -84,6 +84,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const { triggerConfetti } = useConfetti();
     const [loading, setLoading] = useState(false)
     const { userDetails } = useUserStore()
+    console.log(props)
 
 
     // const getServiceList = async () => {
@@ -158,13 +159,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     // }, [props.offeringData])
 
     const handleStatusChange = async (item: ServiceInfo | OfferingInfo) => {
-        if(props?.orderStatus===OrderStatus.PENDING){
-            return showToast({
-                type: "warning",
-                title: "Oops!!",
-                message: "Please confirm the order before updating status",
-            })
-        }
         if (!item) return;
 
         setLoading(true);
@@ -173,7 +167,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
             props?.orderId ?? '',
             item?.id ?? '',
             !item?.isCompleted, // toggle status
-            props?.offeringData?.orderType ?? OrderType.SERVICE
         );
 
         if (!updateStatusResponse?.success) {
@@ -281,7 +274,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
 
                                         {/* Rows */}
                                         <FlatList
-                                            data={props?.offeringData?.services?.filter((service: ServiceInfo) => service.serviceType == SERVICETYPE.SERVICE)}
+                                            data={props?.offeringData?.services?.filter((service: ServiceInfo) => service?.serviceType == SERVICETYPE.SERVICE)}
                                             keyExtractor={(item) => item.id}
                                             renderItem={({ item }) => (
                                                 <View

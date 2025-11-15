@@ -391,12 +391,6 @@ export const getNextStatus = (status: GlobalStatus) => {
 export const getPercentageOfCompletion = (
   offeringInfo: OfferingInfo
 ): { percentage: number; hasDeliverable: boolean } => {
-  if (offeringInfo?.orderType === OrderType.PACKAGE) {
-    return {
-      percentage: offeringInfo?.isCompleted ? 100 : 0,
-      hasDeliverable: true,
-    };
-  }
 
   const deliverableServices =
     offeringInfo?.services?.filter(

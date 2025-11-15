@@ -111,7 +111,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
     const getCustomerNameList = async (userID: string) => {
         const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
-        console.log(metaData)
         setCustomerList(metaData);
     };
 
@@ -136,9 +135,10 @@ const CreateOrder = ({ navigation, route }: Props) => {
             value: orderDetails?.orderBasicInfo?.customerID ?? "",
             rightIcon: <Feather name="plus" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             onRightIconPress: () => {
-                navigation.navigate("Customer", {
-                    screen: "CreateCustomer",
-                    params: { returnTo: { tab: 'Orders', screen: 'CreateOrder' } },
+                navigation.navigate("CreateCustomer", {
+                    returnTo: {
+                        screen: "CreateOrder",  
+                    },
                 });
 
             },
@@ -237,7 +237,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             isLoading: loadingProvider?.intialLoading,
             value: orderDetails?.eventInfo?.numberOfHours ?? 0,
             onChange(value: string) {
-                patchState('eventInfo', 'numberOfHours', value, true, setOrderDetails, setErrors)
+                patchState('eventInfo', 'numberOfHours', value, false, setOrderDetails, setErrors)
             },
         },
         eventLocation: {
@@ -667,7 +667,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                                 <View>
                                     <View className='flex flex-row justify-between items-center p-4'>
                                         {isAllLoadingFalse(loadingProvider) && packageData?.length == 0 && (
-                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
+                                            <EmptyState variant='packages' onAction={() => navigation.navigate('Services')} />
                                         )
                                         }
                                         <FlatList
@@ -710,7 +710,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('1%') }}>
                                         {isAllLoadingFalse(loadingProvider) && serviceData?.length == 0 && (
-                                            <EmptyState variant='services' onAction={() => navigation.navigate('Profile', { screen: 'Services' })} />
+                                            <EmptyState variant='services' onAction={() => navigation.navigate('Services')} />
                                         )
 
                                         }
@@ -776,7 +776,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             variant="solid"
                             action="primary"
                             style={[globalStyles.buttonColor]}
-                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
+                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0 || currStep == 0}
                             onPress={() => setCurrStep(currStep - 1)}
                         >
                             <Feather name="arrow-left" size={wp("5%")} color="#fff" />

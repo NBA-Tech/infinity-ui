@@ -22,7 +22,7 @@ import { calculateImprovement, getCurrencySymbol, getUpcomingByTimeframe } from 
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
-import { OrderModel, OrderStatus } from '@/src/types/order/order-type';
+import { ApprovalStatus, OrderModel, OrderStatus } from '@/src/types/order/order-type';
 import { getOrderDataListAPI } from '@/src/api/order/order-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
 import RevenueTrendChart from './components/home-bar-chart';
@@ -317,13 +317,13 @@ const Home = () => {
                 <View>
                     <View>
                         <Card style={{ padding: 0, margin: 0 }}>
-                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails} />
+                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails?.filter((order) => order.approvalStatus ==  ApprovalStatus.ACCEPTED)} />
                         </Card>
                         <View>
-                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails}/>
+                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading}/>
                         </View>
                         <View>
-                            <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} isLoading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
+                            <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
                         </View>
                         <View style={{marginBottom:hp('2%')}}>
                             <Card style={{ padding: 0, margin: 0 }}>
@@ -337,13 +337,13 @@ const Home = () => {
 
 
                         <View>
-                            <DeadLines orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
+                            <DeadLines orderDetails={orderDetails?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
 
                         </View>
 
 
                         <View>
-                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.status !== OrderStatus.PENDING)} isLoading={loadingProvider.orderLoading} />
+                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.approvalStatus ==  ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
                         </View>
                     </View>
                 </View>

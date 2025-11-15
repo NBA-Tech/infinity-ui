@@ -60,12 +60,12 @@ const Orders = () => {
     const [openFilter, setOpenFilter] = useState(false);
     const [intialLoading, setIntialLoading] = useState(true);
     const [customerListFilter, setCustomerListFilter] = useState<string[]>();
-    const [eventTypeFilter, setEventTypeFilter] = useState<string[]>();
     const [totalCount, setTotalCount] = useState(0);
     const { triggerReloadOrders } = useReloadContext()
+    const [loadingMore, setLoadingMore] = useState(false);
 
     const getOrderListData = async (reset: boolean = false) => {
-        setLoading(true);
+        reset ? setLoading(true) : setLoadingMore(true);
         const currFilters: SearchQueryRequest = {
             requiredFields: [
                 "orderId",
@@ -82,19 +82,30 @@ const Orders = () => {
                 approvalStatus:ApprovalStatus.ACCEPTED
             },
         };
-        console.log(currFilters)
 
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
             if (!orderDataResponse?.success) {
                 showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
-                setLoading(false);
+                reset ? setLoading(false) : setLoadingMore(false);
                 return;
             }
 
-            setOrderData(prev =>
-                reset ? orderDataResponse?.data ?? [] : [...prev, ...(orderDataResponse?.data ?? [])]
-            );
+            setOrderData((prev: OrderModel[]) => {
+                const newItems = orderDataResponse?.data ?? [];
+            
+                if (reset) return newItems;
+            
+                const existingIds = new Set(prev.map(item => item.orderId));
+            
+                const filteredNewItems = newItems.filter(
+                    item => !existingIds.has(item.orderId)
+                );
+            
+                return [...prev, ...filteredNewItems];
+            });
+            
+            setTotalCount(orderDataResponse?.total ?? 0);
 
             setHasMore(
                 (orderDataResponse?.data?.length ?? 0) > 0 &&
@@ -103,7 +114,7 @@ const Orders = () => {
         } catch (err) {
             console.log(err);
         } finally {
-            setLoading(false);
+            reset ? setLoading(false) : setLoadingMore(false);
         }
     };
 
@@ -113,9 +124,7 @@ const Orders = () => {
             showToast({ type: "error", title: "Error", message: orderMetaDataResponse.message });
         }
         else {
-            setTotalCount(orderMetaDataResponse.data?.totalCounts);
             setCustomerListFilter(orderMetaDataResponse.data?.customerIDs);
-            setEventTypeFilter(orderMetaDataResponse.data?.eventTypes);
         }
     }
 
@@ -167,8 +176,6 @@ const Orders = () => {
             getOrderListData(reset);
             setIntialLoading(true)
             return()=>{
-                setOrderData([]);
-                setIntialLoading(false)
             }
         }, [filters, refresh])
     );
@@ -219,7 +226,7 @@ const Orders = () => {
                                 <Feather name="package" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
                                 <Text
                                     style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    8
+                                    {loading ? "..." : totalCount}
                                 </Text>
                             </View>
                         </View>
@@ -239,7 +246,6 @@ const Orders = () => {
                                         backgroundColor: "rgba(255,255,255,0.2)",
                                         borderColor: "rgba(255,255,255,0.3)",
                                         borderWidth: 1,
-                                        borderRadius: wp('2%'),
                                     },
                                 ]}
                                 onPress={() => navigation.navigate('CreateOrder')}
@@ -264,7 +270,6 @@ const Orders = () => {
                             label: `${c.name}`,
                             value: c.customerID
                         })),
-                    eventTypeList: eventTypeFilter?.map(e => ({ label: e, value: e }))
                 }}
             />
             <View>
@@ -288,14 +293,21 @@ const Orders = () => {
                 </View>
 
                 {loading && <OrderCardSkeleton count={5} />}
-                {!loading && orderData.length <= 0 && <EmptyState variant={!filters?.searchQuery ? "orders" : "search"} onAction={() => navigation.navigate("CreateOrder")} />}
 
                 <FlatList
                     data={orderData ?? []}
-                    style={{ height: hp("65%") }}
+                    style={{ height: hp("60%") }}
                     keyExtractor={(_, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}
+                    ListEmptyComponent={
+                        !loading && orderData.length <= 0 ? (
+                            <EmptyState
+                                variant={!filters?.searchQuery ? "orders" : "search"}
+                                onAction={() => navigation.navigate("CreateOrder")}
+                            />
+                        ) : null
+                    }
                     renderItem={({ item }) => (
                         <View style={{ marginHorizontal: wp("3%"), marginVertical: hp("1%") }}>
                             <OrderCard
@@ -313,7 +325,7 @@ const Orders = () => {
                         if (hasMore) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
                     }}
                     onEndReachedThreshold={0.7}
-                    ListFooterComponent={(hasMore && loading) ? <OrderCardSkeleton count={1} /> : null}
+                    ListFooterComponent={loadingMore && <OrderCardSkeleton count={2} />}
                     refreshing={loading}
                     onRefresh={() => {
                         setFilters(prev => ({ ...prev, page: 1 }));
