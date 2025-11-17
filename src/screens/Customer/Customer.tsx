@@ -292,7 +292,6 @@ const Customer = () => {
     useFocusEffect(
         useCallback(() => {
             const reset = filters?.page === 1 || !filters?.page;
-            console.log(filters)
             getCustomerDetails(reset);
         }, [filters])
     );

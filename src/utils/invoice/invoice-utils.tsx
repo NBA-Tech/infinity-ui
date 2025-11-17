@@ -3,6 +3,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { formatDate } from "../utils";
 import { OrderType } from "@/src/types/order/order-type";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 // Factory function
 export const getInvoiceFields = (
     userDetails: any,
@@ -129,7 +130,7 @@ export const getInvoiceFields = (
                     key: "pricingTable",
                     heading: "Pricing Table",
                     description: "Breakdown of package and services pricing",
-                    icon: <Feather name="dollar-sign" size={wp("5%")} color="#10B981" />,
+                    icon: <FontAwesome name="money" size={wp("5%")} color="#10B981" />,
                     html: `<div class="pricing-container">
                   <div class="pricing-row header-row">
                     <div class="col name heading">Service Info</div>

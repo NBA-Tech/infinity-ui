@@ -432,7 +432,7 @@ const UserOnBoarding = () => {
 
 
     return (
-        <View style={[styles.body, globalStyles.appBackground]}>
+        <View style={[styles.body, globalStyles.formBackGroundColor]}>
             {/* Login Card - Aligned to bottom */}
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <View className="flex-1">
@@ -472,7 +472,7 @@ const UserOnBoarding = () => {
                         <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginTop: hp("2%") }]}>Step {currStep + 1} {headings[currStep]}</Text>
 
                     </View>
-                    <Card style={[globalStyles.cardShadowEffect,styles.cardContainer]}>
+                    <Card style={[globalStyles.cardShadowEffect,styles.cardContainer,globalStyles.formBackGroundColor]}>
                         <ScrollView
                             contentContainerStyle={styles.scrollableContent}
                             keyboardShouldPersistTaps="handled"

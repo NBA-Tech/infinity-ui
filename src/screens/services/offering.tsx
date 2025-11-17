@@ -117,7 +117,6 @@ const services = () => {
 
         if (activeTab != "PACKAGE") {
             const filteredData: ServiceModel = serviceData?.find((item) => item.id === id) as ServiceModel;
-            console.log(filteredData)
             setServiceDetails(filteredData);
         } else {
             const filteredData: PackageModel = packageData?.find((item) => item.id === id) as PackageModel;
@@ -321,7 +320,6 @@ const services = () => {
 
     const handleSaveService = async () => {
         let currDetails = activeTab == SERVICETYPE.PACKAGE ? packageDetails : servieDetails
-        console.log(currDetails)
         const currFields = activeTab == SERVICETYPE.PACKAGE ? packageInfoFields : serviceInfoFields
         const isUpdate = Boolean(currDetails.id)
         let serviceResponse: ApiGeneralRespose;

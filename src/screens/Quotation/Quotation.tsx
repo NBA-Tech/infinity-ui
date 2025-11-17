@@ -371,7 +371,7 @@ const Quotation = () => {
                     </View>
                 </View>
             </GradientCard>
-            <View style={{ marginHorizontal: wp('2%'), marginVertical: hp('1%') }}>
+            <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%') }}>
                 <View style={{ backgroundColor: globalStyles.appBackground.backgroundColor }}>
                     {/* Customer Search is here */}
                     <View

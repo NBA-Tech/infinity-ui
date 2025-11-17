@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { CustomerModel } from "@/src/types/customer/customer-type";
 import Skeleton from "@/components/ui/skeleton";
 import { useUserStore } from "@/src/store/user/user-store";
-
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -133,7 +133,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                     <Card style={[styles.cardContainer, globalStyles.cardShadowEffect]}>
                         <View>
                             <View className="flex flex-row justify-start items-center gap-3" >
-                                <Feather name="dollar-sign" size={wp('6%')} color="#3B82F6" />
+                                <FontAwesome name="money" size={wp('6%')} color="#3B82F6" />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Payment Details</Text>
 
                             </View>

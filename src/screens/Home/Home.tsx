@@ -10,11 +10,8 @@ import GradientCard from '@/src/utils/gradient-card';
 import { GeneralCardModel, GeneralStatInfoModel } from './types/home-type';
 import DashboardStats from './components/stat-info';
 import EventDateKeeper from './components/event-date-keeper';
-import Activity from './components/activity';
-import Popularity from './components/popularity';
 import DeadLines from './components/dead-lines';
 import HeatmapYear from './components/heat-map-year';
-import TopClient from './components/top-client';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -34,6 +31,7 @@ import { NotificationContext } from '@/src/providers/notification/notification-p
 import HomeHeader from './components/home-header';
 import RevenueTrendLineChart from './components/home-trend-line-chart';
 import QuickActions from './components/quick-actions';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 const styles = StyleSheet.create({
     scrollContainer: {
         gap: wp('2%')
@@ -74,7 +72,7 @@ const Home = () => {
             revenue: {
                 label: "Total Revenue",
                 backgroundColor: "#22C55E",
-                icon: <Feather name="dollar-sign" size={wp('6%')} color={'#fff'} />,
+                icon: <FontAwesome name="money" size={wp('6%')} color={'#fff'} />,
                 gradientColors: ["#22C55E", "#10B981"],
                 isTrending: true,
                 count: `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((a, b) => a + b.amountPaid, 0) || 0}`,

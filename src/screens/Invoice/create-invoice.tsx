@@ -68,6 +68,7 @@ import { createNewActivityAPI } from "@/src/services/activity/user-activity-serv
 import { ACTIVITY_TYPE } from "@/src/types/activity/user-activity-type";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
 import { useFocusEffect } from "@react-navigation/native";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const styles = StyleSheet.create({
     userOnBoardBody: { margin: hp("2%") },
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "CreateInvoice">;
 
 const CreateInvoice = ({ navigation, route }: Props) => {
-    const { invoiceId,returnTo={"tab": "Invoice", "screen": "InvoiceList"} } = route.params || {};
+    const { invoiceId, returnTo = { "tab": "Invoice", "screen": "InvoiceList" } } = route.params || {};
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
@@ -94,7 +95,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
     const { triggerReloadInvoices } = useReloadContext()
 
     const [currStep, setCurrStep] = useState(0);
-    const stepIcon = ["user", "calendar", "clock", "dollar-sign"];
+    const stepIcon = ["user", "calendar", "clock", "credit-card"];
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [orderDetails, setOrderDetails] = useState<OrderModel>();
     const [orderInfo, setOrderInfo] = useState<any[]>([]);
@@ -115,7 +116,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * ───────────────────────────────*/
     const getOrderMetaData = async (userId: string) => {
         const filter: SearchQueryRequest = {
-            filters: { userId,approvalStatus:ApprovalStatus.ACCEPTED },
+            filters: { userId, approvalStatus: ApprovalStatus.ACCEPTED },
             requiredFields: ["orderBasicInfo", "_id", "eventInfo.eventTitle", "status"],
             getAll: true,
             searchField: "status",
@@ -242,13 +243,13 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "amountPaid",
                 label: "Amount Paid",
                 placeholder: "Eg: ₹100",
-                icon: <Feather name="dollar-sign" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+                icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "number",
                 isRequired: true,
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
-                    const maxValue= orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0
+                    const maxValue = orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0
                     if (orderDetails?.totalAmountCanPay && numVal > maxValue) {
                         showToast({
                             type: "error",
@@ -364,7 +365,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {
                 text: res.message ?? "Invoice created successfully",
-                returnTo:returnTo
+                returnTo: returnTo
             });
             setCurrStep(0);
             setInvoiceDetails({ userId: getItem("USERID") });
@@ -434,7 +435,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * ───────────────────────────────*/
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
-            <BackHeader screenName="Create Invoice" />
+            <BackHeader screenName={invoiceId ? "Update Invoice" : "Create Invoice"} />
 
             {/* Modal Preview */}
             <Modal
@@ -452,10 +453,10 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 <View className="flex justify-between items-center flex-row">
                     <View className="flex justify-start items-start" style={{ margin: wp("2%") }}>
                         <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>
-                            Create Invoice
+                            {invoiceId ? "Update Invoice" : "Create Invoice"}
                         </Text>
                         <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
-                            <Divider style={{ height: hp("0.5%") }} />
+                            <Divider style={{ height: hp("0.5%") }} width={wp('0%')} />
                         </View>
                     </View>
                 </View>

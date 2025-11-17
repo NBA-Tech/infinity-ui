@@ -79,7 +79,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { orderId, returnTo = { tab: "Orders", screen: "OrderList" } } = route.params ?? {};
-    const stepIcon = ["user", "calendar", "dollar-sign", "file"]
+    const stepIcon = ["user", "calendar", "credit-card", "file"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
     const showToast = useToastMessage();

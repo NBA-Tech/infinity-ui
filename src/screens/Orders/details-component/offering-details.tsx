@@ -84,7 +84,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const { triggerConfetti } = useConfetti();
     const [loading, setLoading] = useState(false)
     const { userDetails } = useUserStore()
-    console.log(props)
 
 
     // const getServiceList = async () => {

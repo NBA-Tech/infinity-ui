@@ -209,7 +209,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     >
                         {field.value
                             ? field.type === "date"
-                                ? new Date(field.value).toLocaleDateString()
+                                ? new Date(field.value).toLocaleDateString("en-GB")
                                 : new Date(`1970-01-01T${field.value}:00`).toLocaleTimeString([], {
                                     hour: "2-digit",
                                     minute: "2-digit",

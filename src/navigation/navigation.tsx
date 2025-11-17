@@ -39,6 +39,7 @@ import {
 import Footer from "../components/footer";
 import SubscriptionLockOverlay from "../components/subscription-overlay";
 import Tutorial from "../screens/profile/tutorial";
+import SubscriptionExpiration from "../components/subscription-expiration";
 
 const RootStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
@@ -99,6 +100,7 @@ function ProfileNavigator() {
 
 const HomeWrapper = () => (
   <View style={{ flex: 1 }}>
+    <SubscriptionExpiration />
     <SubscriptionLockOverlay>
       <Home />
     </SubscriptionLockOverlay>
@@ -107,6 +109,7 @@ const HomeWrapper = () => (
 
 const CustomerNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
+    <SubscriptionExpiration />
     <SubscriptionLockOverlay>
       <CustomerNavigator />
     </SubscriptionLockOverlay>
@@ -115,6 +118,7 @@ const CustomerNavigatorWrapper = () => (
 
 const OrdersNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
+    <SubscriptionExpiration />
     <SubscriptionLockOverlay>
       <OrderNavigator />
     </SubscriptionLockOverlay>
@@ -123,6 +127,7 @@ const OrdersNavigatorWrapper = () => (
 
 const InvoiceNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
+    <SubscriptionExpiration />
     <SubscriptionLockOverlay>
       <InvoiceNavigator />
     </SubscriptionLockOverlay>
@@ -131,6 +136,7 @@ const InvoiceNavigatorWrapper = () => (
 
 const QuotationNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
+    <SubscriptionExpiration />
     <SubscriptionLockOverlay>
       <QuotationNavigator />
     </SubscriptionLockOverlay>
@@ -139,7 +145,8 @@ const QuotationNavigatorWrapper = () => (
 
 const ProfileNavigatorWrapper = () => (
   <View style={{ flex: 1 }}>
-      <ProfileNavigator />
+    <SubscriptionExpiration />
+    <ProfileNavigator />
   </View>
 );
 

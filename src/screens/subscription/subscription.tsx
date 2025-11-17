@@ -1,8 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
-import { View, Text, ImageBackground, Image, StyleSheet } from "react-native";
+import React, { useState, useContext, useEffect, useCallback } from "react";
+import { View, Text, ImageBackground, Image, StyleSheet, ScrollView } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-
-import Background from "../../assets/images/Background.png";
 import Logo from "../../assets/images/logo.png";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
 import { PricingToggle } from "./PricingToggle";
@@ -12,11 +10,11 @@ import { useDataStore } from "@/src/providers/data-store/data-store-provider";
 import { SubscriptionModel, SubscriptionStatus } from "@/src/types/subscription/subscription-type-";
 import { useToastMessage } from "@/src/components/toast/toast-message";
 import { addOrUpdateSubscriptionDetailsAPI } from "@/src/api/subscription/subscription-api-service";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@/src/types/common";
 import { useSubscription } from "@/src/providers/subscription/subscription-context";
 import { PaymentRequestModel } from "@/src/types/payment/payment-request-type";
-import { generateRandomString } from "@/src/utils/utils";
+import { formatDate, generateRandomString } from "@/src/utils/utils";
 import { useUserStore } from "@/src/store/user/user-store";
 import { generatePaymentLinkAPI } from "@/src/api/payment/payment-api-service";
 import { PLAN_DETAILS } from "@/src/constant/constants";
@@ -28,7 +26,7 @@ const Subscription = () => {
   const { getItem } = useDataStore();
   const showToast = useToastMessage();
   const navigation = useNavigation<NavigationProp>();
-  const { refetchSubscription } = useSubscription();
+  const { subscriptionDetails, refetchSubscription } = useSubscription();
   const { userDetails, getUserDetailsUsingID } = useUserStore();
   const [loading, setLoading] = useState<String | null>(null);
 
@@ -131,139 +129,184 @@ const Subscription = () => {
         setLoading(null);
       }
     }
-    finally{
+    finally {
       setLoading(null);
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const userId = getItem("USERID");
+      refetchSubscription()
+
+    }, [])
+  );
+
   useEffect(() => {
-    const userId = getItem("USERID");
-    // getUserDetailsUsingID(userId, showToast);
-  }, []);
+    console.log(subscriptionDetails)
+  }, [subscriptionDetails])
 
   return (
     <SafeAreaView style={globalStyles.appBackground}>
-      <View style={{ marginVertical: hp('4%'), marginHorizontal: wp('2%') }}>
-        <View className="flex flex-col">
-          <View className="justify-center items-center">
-            <Text
-              style={[
-                globalStyles.extraLargeText,
-                globalStyles.blueTextColor,
-                { textAlign: "center" },
-              ]}
-            >
-              Get Premium
-            </Text>
+      <ScrollView
+        style={{ margin: wp('2%') }}
+        contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ marginVertical: hp('4%'), marginHorizontal: wp('2%') }}>
+          <View className="flex flex-col">
+            <View className="justify-center items-center">
+              <Text
+                style={[
+                  globalStyles.extraLargeText,
+                  globalStyles.blueTextColor,
+                  { textAlign: "center" },
+                ]}
+              >
+                Get Premium
+              </Text>
 
-            <Text
-              style={[
-                globalStyles.normalText,
-                globalStyles.greyTextColor,
-                { textAlign: "center", width: "80%" },
-              ]}
-            >
-              Unlock advanced features and insights with our Premium CRM Subscription
-            </Text>
-          </View>
-          <View>
-            <LottieView
-              source={require('../../assets/animations/premium.json')}
-              autoPlay
-              loop
-              style={styles.mainAnimation}
-            />
+              <Text
+                style={[
+                  globalStyles.normalText,
+                  globalStyles.greyTextColor,
+                  { textAlign: "center", width: "80%" },
+                ]}
+              >
+                Unlock advanced features and insights with our Premium CRM Subscription
+              </Text>
+            </View>
+            <View>
+              <LottieView
+                source={require('../../assets/animations/premium.json')}
+                autoPlay
+                loop
+                style={styles.mainAnimation}
+              />
 
-          </View>
-          <View style={{ gap: hp('2%') }}>
-            {Object.values(PLAN_DETAILS.premium).map((plan, index) => (
-              <Card style={globalStyles.cardShadowEffect}>
-                <View className="flex flex-row justify-between items-center">
-                  <View className="flex flex-col gap-3 m-3" style={{ width: wp('60%') }}>
-                    <Text style={[globalStyles.headingText, globalStyles.themeTextColor]}>
-                      {plan?.planName}
+            </View>
+            <View style={{ marginVertical: hp('2%'), alignItems: "center" }}>
+              {subscriptionDetails?.status === "ACTIVE" && (
+                <Card style={[globalStyles.cardShadowEffect, { padding: 15, width: "95%" }]}>
+                  <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { textAlign: "center" }]}>
+                    Your current plan: {subscriptionDetails?.planDetails?.planName}
+                  </Text>
+
+                  <Text style={[globalStyles.normalText, { textAlign: "center", marginTop: 5 }]}>
+                    Expires on{" "}
+                    <Text style={globalStyles.blueTextColor}>
+                      {formatDate(subscriptionDetails?.endDate)}
                     </Text>
-                    <Text style={[globalStyles.heading3Text, globalStyles.blueTextColor]}>
-                      {plan?.planDescription}
-                    </Text>
-                  </View>
-                  <View>
-                    <Button
-                      size="lg"
-                      variant="solid"
-                      action="primary"
-                      style={globalStyles.buttonColor}
-                      onPress={() => handleSubscription(plan?.planId)}
-                      isDisabled={loading != null}
-                    >
-                      {loading == plan?.planId && (
-                        <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                      )}
-                      <ButtonText style={globalStyles.buttonText}>
-                        Buy
-                      </ButtonText>
-                    </Button>
+                  </Text>
 
-                  </View>
-
-                </View>
-
-              </Card>
-
-            ))}
-
-          </View>
-          <View style={{ marginVertical: hp('5%') }}>
-            <Button
-              size="lg"
-              variant="solid"
-              action="primary"
-              style={globalStyles.buttonColor}
-              onPress={() => handleSubscription("FREE")}
-              isDisabled={loading != null}
-            >
-              {loading == "FREE" && (
-                <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                  <Text
+                    style={[
+                      globalStyles.normalText,
+                      globalStyles.greyTextColor,
+                      { textAlign: "center", marginTop: 5 },
+                    ]}
+                  >
+                    You can upgrade or renew now. Your new subscription will
+                    add{" "}
+                    {subscriptionDetails?.planDetails?.validityDays} days
+                    to your existing expiry.
+                  </Text>
+                </Card>
               )}
-              <ButtonText style={globalStyles.buttonText}>
-                Start 7 days free trial
-              </ButtonText>
-            </Button>
+            </View>
 
+            <View style={{ gap: hp('2%') }}>
+              {Object.values(PLAN_DETAILS.premium).map((plan, index) => (
+                <Card style={globalStyles.cardShadowEffect}>
+                  <View className="flex flex-row justify-between items-center">
+                    <View className="flex flex-col gap-3 m-3" style={{ width: wp('60%') }}>
+                      <Text style={[globalStyles.headingText, globalStyles.themeTextColor]}>
+                        {plan?.planName}
+                      </Text>
+                      <Text style={[globalStyles.heading3Text, globalStyles.blueTextColor]}>
+                        {plan?.planDescription}
+                      </Text>
+                    </View>
+                    <View>
+                      <Button
+                        size="lg"
+                        variant="solid"
+                        action="primary"
+                        style={globalStyles.buttonColor}
+                        onPress={() => handleSubscription(plan?.planId)}
+                        isDisabled={loading != null}
+                      >
+                        {loading == plan?.planId && (
+                          <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )}
+                        <ButtonText style={globalStyles.buttonText}>
+                          Buy
+                        </ButtonText>
+                      </Button>
+
+                    </View>
+
+                  </View>
+
+                </Card>
+
+              ))}
+
+            </View>
+            {!subscriptionDetails?.isTrialUsed && (
+              <View style={{ marginVertical: hp('5%') }}>
+                <Button
+                  size="lg"
+                  variant="solid"
+                  action="primary"
+                  style={globalStyles.buttonColor}
+                  onPress={() => handleSubscription("FREE")}
+                  isDisabled={loading != null}
+                >
+                  {loading == "FREE" && (
+                    <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                  )}
+                  <ButtonText style={globalStyles.buttonText}>
+                    Start 7 days free trial
+                  </ButtonText>
+                </Button>
+
+              </View>
+            )
+            }
           </View>
 
         </View>
 
-      </View>
-
-      <View
-        style={{
-          position: "absolute",
-          bottom: 20,
-          width: "100%",
-          alignItems: "center",
-          paddingHorizontal: 20,
-        }}
-      >
-        <Text
+        <View
           style={{
-            textAlign: "center",
-            fontSize: 12,
-            color: "#6B7280", // neutral grey
-            lineHeight: 18,
+            position: "absolute",
+            bottom: 20,
+            width: "100%",
+            alignItems: "center",
+            paddingHorizontal: 20,
           }}
         >
-          By purchasing, you agree to our{" "}
-          <Text style={{ color: "#2563EB", fontWeight: "600" }}>
-            Terms and Conditions
-          </Text>{" "}
-          and{" "}
-          <Text style={{ color: "#2563EB", fontWeight: "600" }}>
-            Privacy Policy
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              color: "#6B7280", // neutral grey
+              lineHeight: 18,
+            }}
+          >
+            By purchasing, you agree to our{" "}
+            <Text style={{ color: "#2563EB", fontWeight: "600" }}>
+              Terms and Conditions
+            </Text>{" "}
+            and{" "}
+            <Text style={{ color: "#2563EB", fontWeight: "600" }}>
+              Privacy Policy
+            </Text>
+            . Learn how we use your data in our policies.
           </Text>
-          . Learn how we use your data in our policies.
-        </Text>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView >
 
   );

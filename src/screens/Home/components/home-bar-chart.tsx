@@ -270,8 +270,8 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                             "..."
                         ) : (
                             <>
-                                {userDetails?.currencyIcon} {props?.invoiceDetails
-                                    ?.reduce((t, i) => t + i.amountDue, 0)
+                                {userDetails?.currencyIcon} {props?.investmentDetails
+                                    ?.reduce((t, i) => t + i.investedAmount, 0)
                                     .toLocaleString() || 0}
                             </>
                         )

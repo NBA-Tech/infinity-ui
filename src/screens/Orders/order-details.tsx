@@ -69,7 +69,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         { key: "deliverables", title: "Deliverables", icon: "package" },
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
-        { key: "investments", title: "Investments", icon: "dollar-sign" },
+        { key: "investments", title: "Investments", icon: "trending-up" },
         { key: "links", title: "Links", icon: "link" },
     ]);
     const { triggerConfetti } = useConfetti()

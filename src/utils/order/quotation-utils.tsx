@@ -4,6 +4,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { OrderType } from "@/src/types/order/order-type";
 import { formatDate } from "../utils";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 export const getQuotationFields = ( 
     userDetails: any,
   orderDetails: any,
@@ -128,7 +129,7 @@ export const getQuotationFields = (
                     key: "pricingTable",
                     heading: "Pricing Table",
                     description: "Breakdown of package and services pricing",
-                    icon: <Feather name="dollar-sign" size={wp("5%")} color="#10B981" />,
+                    icon: <FontAwesome name="money" size={wp("5%")} color="#10B981" />,
                     html: `<div class="pricing-container">
                              <div class="pricing-row header-row">
                                 <div class="col name heading">Service</div>

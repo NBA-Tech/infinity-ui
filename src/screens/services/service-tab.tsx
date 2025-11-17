@@ -192,7 +192,7 @@ const ServiceTab = (props: ServiceTabProps) => {
 
     return (
         <ScrollView
-            style={{ margin: wp('2%'), height: hp('48%') }}
+            style={{ margin: wp('2%') }}
             contentContainerStyle={{ paddingBottom: hp('5%') }}
             showsVerticalScrollIndicator={false}
         >

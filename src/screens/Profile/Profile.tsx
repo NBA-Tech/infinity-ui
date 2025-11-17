@@ -24,6 +24,7 @@ import { getInvoiceListBasedOnFiltersAPI } from "@/src/api/invoice/invoice-api-s
 import { getOrderDataListAPI } from "@/src/api/order/order-api-service";
 import { updateNotificationStatusAPI } from "@/src/services/user/user-service";
 import GradientCard from "@/src/utils/gradient-card";
+import { NotificationContext } from "@/src/providers/notification/notification-provider";
 
 const Profile = () => {
   const globalStyles = useContext(StyleContext);
@@ -33,7 +34,7 @@ const Profile = () => {
   const { getItem } = useDataStore();
   const showToast = useToastMessage();
   const navigation = useNavigation<NavigationProp>();
-
+  const { requestNotificationPermission } = useContext(NotificationContext)
   const [totalPaid, setTotalPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -54,14 +55,7 @@ const Profile = () => {
         message: res?.message ?? "Something went wrong",
       });
 
-    const updated = {
-      ...userDetails,
-      userAuthInfo: {
-        ...userDetails?.userAuthInfo,
-        notificationStatus: value,
-      },
-    };
-    setUserDetails(updated);
+
   };
 
   const getInvoiceList = async (userId: string) => {
@@ -120,7 +114,7 @@ const Profile = () => {
         onPress: () => navigation.navigate("Services"),
       },
       {
-        label:"Tutorial",
+        label: "Tutorial",
         icon: <Feather name="video" size={wp("6%")} color="#3B82F6" />,
         onPress: () => navigation.navigate("Tutorial"),
       },
@@ -133,14 +127,16 @@ const Profile = () => {
             thumbColor="#fafafa"
             ios_backgroundColor="#d4d4d4"
             value={userDetails?.userAuthInfo?.notificationStatus ?? false}
-            onValueChange={(value) =>
-              handleNotificationToggle(userDetails?.userId ?? "", value)
+            onValueChange={(value:boolean) => {
+              console.log(value)
+              requestNotificationPermission(value)
+            }
             }
           />
         ),
       },
       {
-        label:"Subscription",
+        label: "Subscription",
         icon: <Feather name="credit-card" size={wp("6%")} color="#3B82F6" />,
         onPress: () => navigation.navigate("Subscription"),
       },
@@ -224,7 +220,7 @@ const Profile = () => {
               style={[
                 globalStyles.whiteTextColor,
                 globalStyles.smallText,
-                { textAlign: "center", opacity: 0.8,marginVertical:hp('1%') },
+                { textAlign: "center", opacity: 0.8, marginVertical: hp('1%') },
               ]}
             >
               Manage your account, preferences, and profile details.

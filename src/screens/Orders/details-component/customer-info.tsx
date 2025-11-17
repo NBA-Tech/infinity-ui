@@ -66,7 +66,7 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                             </View>
                             <Divider />
                             <View>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Special Instrution</Text>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Special Instructions</Text>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>{props?.orderBasicInfo?.specialInstructions}</Text>
                             </View>
                         </View>

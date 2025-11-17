@@ -17,7 +17,7 @@ import { useUserStore } from "@/src/store/user/user-store";
 import DeleteConfirmation from "@/src/components/delete-confirmation";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
 import { EmptyState } from "@/src/components/empty-state-data";
-
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const styles = StyleSheet.create({
     modalContainer: {
@@ -74,7 +74,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
             key: "investedAmount",
             label: "Invested Amount",
             placeholder: "Eg: 1000",
-            icon: <Feather name="dollar-sign" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+            icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             isRequired: true,
