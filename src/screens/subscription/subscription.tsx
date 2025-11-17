@@ -142,10 +142,6 @@ const Subscription = () => {
     }, [])
   );
 
-  useEffect(() => {
-    console.log(subscriptionDetails)
-  }, [subscriptionDetails])
-
   return (
     <SafeAreaView style={globalStyles.appBackground}>
       <ScrollView
