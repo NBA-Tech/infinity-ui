@@ -52,8 +52,8 @@ const EventDateKeeper = () => {
       calendarBackground: isDark ? "#0E1628" : "#FFFFFF",
 
       // === Header (Month / Arrows) ===
-      textSectionTitleColor: isDark ? "#9CA3AF" : "#6B7280",     // Mon, Tue…
-      monthTextColor: isDark ? "#FFFFFF" : "#182D53",            // JAN 2025
+      textSectionTitleColor: isDark ? "#9CA3AF" : "#6B7280",     // Mon, Tue… (Day headers)
+      monthTextColor: isDark ? "#FFFFFF" : "#182D53",           // JAN 2025
       arrowColor: isDark ? "#3B82F6" : "#2563EB",
       indicatorColor: isDark ? "#3B82F6" : "#2563EB",
 
@@ -70,15 +70,24 @@ const EventDateKeeper = () => {
       dotColor: isDark ? "#3B82F6" : "#2563EB",
       selectedDotColor: "#FFFFFF",
 
-      // === Fonts ===
-      textDayFontWeight: "500",
-      textMonthFontWeight: "700",
-      textDayHeaderFontWeight: "600",
+      // === Fonts - Replacing fontWeight with fontFamily ===
+      // Note: Use the exact PostScript name of your linked font files.
+      // 500 -> OpenSans-Medium
+      textDayFontFamily: "OpenSans-Medium", 
+      // 700 -> OpenSans-Bold
+      textMonthFontFamily: "OpenSans-Bold", 
+      // 600 -> OpenSans-SemiBold
+      textDayHeaderFontFamily: "OpenSans-SemiBold", 
 
-      // === Manual Styles Override ===
+      // Remove the separate textDayFontWeight, textMonthFontWeight, textDayHeaderFontWeight
+      // textDayFontWeight: "500",
+      // textMonthFontWeight: "700",
+      // textDayHeaderFontWeight: "600",
+
+      // === Manual Styles Override (Using fontFamily instead of fontWeight) ===
       textDayStyle: {
         color: isDark ? "#E5E7EB" : "#111827",
-        fontWeight: "500",
+        fontFamily: "OpenSans-Medium", // Replaces fontWeight: "500"
       },
 
       'stylesheet.calendar.header': {
@@ -89,9 +98,16 @@ const EventDateKeeper = () => {
         },
         monthText: {
           fontSize: 18,
-          fontWeight: "700",
+          // This was already correct, just ensuring it stays:
+          fontFamily: "OpenSans-Bold", 
           color: isDark ? "#FFFFFF" : "#182D53",
         },
+        // Also apply to dayHeader (Mon, Tue, Wed...) if not covered by textDayHeaderFontFamily
+        dayHeader: {
+            fontFamily: "OpenSans-SemiBold", 
+            // Also inherit or set color if needed
+            color: isDark ? "#9CA3AF" : "#6B7280",
+        }
       },
     }),
     [isDark]
@@ -443,7 +459,7 @@ const EventDateKeeper = () => {
           <View>
             <Tooltip
               isVisible={toolTipVisible}
-              content={<Text>This Widget helps you keep track of your events</Text>}
+              content={<Text style={globalStyles.normalText}>This Widget helps you keep track of your events</Text>}
               placement={Placement.BOTTOM}
               onClose={() => setToolTipVisible(false)}>
               <TouchableOpacity onPress={() => setToolTipVisible(true)}>

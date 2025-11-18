@@ -117,8 +117,8 @@ const OneTimePassword = ({ navigation, route }: { navigation: any; route: any })
                 pinCodeTextStyle: {
                   color: isDark ? "#E2E8F0" : "#1E3A8A",
                   fontSize: wp("6%"),
-                  fontWeight: "600",
                   textAlign: "center",
+                  fontFamily: "OpenSans-Regular",
                 },
               }}
             />

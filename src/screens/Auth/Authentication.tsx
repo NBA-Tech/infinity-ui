@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   appName: {
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'OpenSans-Bold',
   },
   formContainer: {
     flex: 1,

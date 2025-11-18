@@ -82,7 +82,7 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
           </View>
           <Tooltip
             isVisible={toolTipVisible}
-            content={<Text>This Widget displays the busiest month of the year.</Text>}
+            content={<Text style={globalStyles.normalText}>This Widget displays the busiest month of the year.</Text>}
             placement={Placement.BOTTOM}
             onClose={() => setToolTipVisible(false)}>
             <TouchableOpacity onPress={() => setToolTipVisible(true)}>

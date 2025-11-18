@@ -113,12 +113,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   title: {
-    fontWeight: '700',
     fontSize: 16,
+    fontFamily: 'OpenSans-Bold',
     marginBottom: 4,
   },
   message: {
     fontSize: 14,
+    fontFamily: 'OpenSans-Regular',
     color: '#333',
   },
 });

@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 26,
-        fontWeight: "bold",
         color: "#fff",
+        fontFamily: "OpenSans-Bold",
         marginTop: 20,
     },
     button: {
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "#fff",
         fontSize: 18,
-        fontWeight: "600",
+        fontFamily: "OpenSans-SemiBold",
     },
 });

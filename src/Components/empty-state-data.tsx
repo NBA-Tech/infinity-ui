@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(18),
     textAlign: "center",
     marginBottom: 12,
+    fontFamily: "OpenSans-Bold",
   },
   description: {
     textAlign: "center",
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     fontSize: scaleFont(14),
     lineHeight: 22,
+    fontFamily: "OpenSans-Regular",
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -186,6 +188,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
+    fontFamily: "OpenSans-SemiBold",
     fontSize: scaleFont(14),
   },
   buttonSecondary: {

@@ -109,7 +109,7 @@ const DeadLines = (props: DeadLinesProps) => {
                     </View>
                     <Tooltip
                         isVisible={toolTipVisible}
-                        content={<Text>This Widget will show you the Upcoming Deadlines.</Text>}
+                        content={<Text style={globalStyles.normalText}>This Widget will show you the Upcoming Deadlines.</Text>}
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>

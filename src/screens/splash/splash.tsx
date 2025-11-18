@@ -163,27 +163,26 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: hp("2%"),
   },
   textPrimary: {
     fontSize: scaleFont(26),
-    fontWeight: "700",
+    fontFamily: "OpenSans-Bold",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   textSecondary: {
     fontSize: scaleFont(22),
-    fontWeight: "600",
+    fontFamily: "OpenSans-Bold",
     textTransform: "capitalize",
   },
   textBrand: {
     fontSize: scaleFont(30),
-    fontWeight: "800",
+    fontFamily: "OpenSans-Bold",
     letterSpacing: 1,
   },
   textHighlight: {
     fontSize: scaleFont(32),
-    fontWeight: "900",
+    fontFamily: "OpenSans-Bold",
     color: "#FF2D6B",
     letterSpacing: 1.1,
   },

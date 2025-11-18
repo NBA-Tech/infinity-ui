@@ -128,6 +128,9 @@ const Register = ({ setCurrScreen }: any) => {
                 password: result !== "Strong password",
             }));
         } else if (inputType === "confirmPassword") {
+            if(userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword){
+                setErrorMessage("Password and Confirm Password does not match");
+            }
             setErrors((prev) => ({
                 ...prev,
                 confirmPassword:

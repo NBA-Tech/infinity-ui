@@ -170,7 +170,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                 <View>
                     <Tooltip
                         isVisible={toolTipVisible}
-                        content={<Text>This Widget will show you the cash flow in this particular year.</Text>}
+                        content={<Text style={globalStyles.normalText}>This Widget will show you the cash flow in this particular year.</Text>}
                         placement={Placement.BOTTOM}
                         onClose={() => setToolTipVisible(false)}>
                         <TouchableOpacity onPress={() => setToolTipVisible(true)}>
@@ -212,7 +212,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                 <Skeleton width={wp("92%")} height={hp("36%")} />
             ) : (
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ width: wp("120%"), height: hp("36%") }}>
+                    <View style={{ width: wp("120%"), height: hp("35%") }}>
                         <LineChart
                             style={{ flex: 1 }}
                             data={{
@@ -248,6 +248,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                                 granularityEnabled: true,
                                 granularity: 1,
                                 textColor: processColor("#6B7280"),
+                                fontFamily: "OpenSans-Regular",
                                 position: "BOTTOM",
                                 drawAxisLine: false,
                                 drawGridLines: false,
@@ -261,6 +262,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                                     textColor: processColor("#6B7280"),
                                     gridColor: processColor("#E5E7EB"),
                                     drawGridLines: true,
+                                    fontFamily: "OpenSans-Regular",
                                     // Force chart to start at 0 (avoids negative area)
                                     axisMinimum: 0,
                                 },
@@ -291,7 +293,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
 
 
             {/* Footer summary */}
-            <View style={{ marginTop: hp("2%") }}>
+            <View style={{ marginTop: hp("4%") }}>
 
                 <View style={styles.footerRow}>
                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
@@ -345,8 +347,8 @@ const styles = StyleSheet.create({
     },
     tooltipTitle: {
         fontSize: 14,
-        fontWeight: "700",
         marginBottom: 8,
+        fontFamily: "OpenSans-Bold",
         color: "#111827",
     },
     row: {
@@ -356,10 +358,12 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 13,
+        fontFamily: "OpenSans-Regular",
         color: "#6B7280",
     },
     value: {
         fontSize: 13,
+        fontFamily: "OpenSans-Bold",
         fontWeight: "600",
     },
     footerRow: {

@@ -80,7 +80,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
                         style={[
                             globalStyles.heading2Text,
                             globalStyles.whiteTextColor,
-                            { textAlign: "center", fontWeight: "700" },
+                            { textAlign: "center" },
                         ]}
                     >
                         Welcome {userDetails?.userAuthInfo?.username || "User"}!

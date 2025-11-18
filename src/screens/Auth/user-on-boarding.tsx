@@ -144,7 +144,7 @@ const UserOnBoarding = () => {
             key: "businessEmail",
             label: "Business Email",
             placeholder: "Eg : YJy0g@example.com",
-            icon: <Feather name="mail" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
+            icon: <Feather name="mail" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-full",
             isRequired: true,
@@ -245,7 +245,7 @@ const UserOnBoarding = () => {
             key: "city",
             label: "City",
             placeholder: "Eg : Mumbai",
-            icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
+            icon: <MaterialIcons name="location-city" size={wp('5%')}  color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -260,7 +260,7 @@ const UserOnBoarding = () => {
             key: "address",
             label: "Address",
             placeholder: "Eg : 123 Street, Mumbai",
-            icon: <Feather name="home" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
+            icon: <Feather name="home" size={wp("5%")}  color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -275,7 +275,7 @@ const UserOnBoarding = () => {
             key: "zipCode",
             label: "Pincode",
             placeholder: "Eg : 400001",
-            icon: <Feather name="hash" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
+            icon: <Feather name="hash" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
             isRequired: true,
@@ -432,7 +432,7 @@ const UserOnBoarding = () => {
 
 
     return (
-        <View style={[styles.body, globalStyles.formBackGroundColor]}>
+        <View style={[styles.body, globalStyles.appBackground]}>
             {/* Login Card - Aligned to bottom */}
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <View className="flex-1">

@@ -190,12 +190,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: wp("7%"),
-        fontWeight: "bold",
+        fontFamily: "OpenSans-Bold",
         textAlign: "center",
         marginBottom: hp("1%"),
     },
     description: {
         fontSize: wp("4%"),
+        fontFamily: "OpenSans-Regular",
         textAlign: "center",
         lineHeight: hp("3%"),
         marginHorizontal: wp("6%"),
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     },
     continueText: {
         fontSize: wp("4%"),
-        fontWeight: "bold",
+        fontFamily: "OpenSans-Bold",
     },
     pagination: {
         position: "absolute",

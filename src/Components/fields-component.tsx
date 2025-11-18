@@ -133,6 +133,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     inputSearchStyle={{
                         borderRadius:9999,
                         color: isDark ? "#E2E8F0" : "#182D53",
+                        fontFamily: 'OpenSans-Regular',
                     }}
                     itemContainerStyle={{
                         backgroundColor: isDark ? "#1A2238" : "#FFFFFF",

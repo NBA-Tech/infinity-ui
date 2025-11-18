@@ -39,11 +39,11 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
       if (!subscriptionDetails?.success) {
         setIsSubscribed(false);
         setSubscriptionDetails({} as SubscriptionModel);
-        showToast({
-          type: "error",
-          title: "Error",
-          message: subscriptionDetails?.message ?? "Something went wrong",
-        });
+        // showToast({
+        //   type: "error",
+        //   title: "Error",
+        //   message: subscriptionDetails?.message ?? "Something went wrong",
+        // });
         return;
       }
 

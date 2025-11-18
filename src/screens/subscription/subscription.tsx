@@ -52,7 +52,7 @@ const Subscription = () => {
       customerDetails: {
         customer_email: userDetails?.userAuthInfo?.email,
         customer_name: userDetails?.userAuthInfo?.username,
-        customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber,
+        customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber || "9344262222",
       },
     };
     return payload;
@@ -182,7 +182,7 @@ const Subscription = () => {
 
             </View>
             <View style={{ marginVertical: hp('2%'), alignItems: "center" }}>
-              {subscriptionDetails?.status === "ACTIVE" && (
+              {subscriptionDetails?.planDetails && (
                 <Card style={[globalStyles.cardShadowEffect, { padding: 15, width: "95%" }]}>
                   <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { textAlign: "center" }]}>
                     Your current plan: {subscriptionDetails?.planDetails?.planName}
@@ -289,6 +289,7 @@ const Subscription = () => {
               fontSize: 12,
               color: "#6B7280", // neutral grey
               lineHeight: 18,
+              fontFamily: "OpenSans-Regular",
             }}
           >
             By purchasing, you agree to our{" "}

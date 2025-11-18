@@ -78,7 +78,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
 
                 <Tooltip
                     isVisible={toolTipVisible}
-                    content={<Text>This chart compares monthly revenue and expenses.</Text>}
+                    content={<Text style={globalStyles.normalText}>This chart compares monthly revenue and expenses.</Text>}
                     placement={Placement.BOTTOM}
                     onClose={() => setToolTipVisible(false)}
                 >
@@ -162,10 +162,12 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                                 granularity: 1,
                                 textColor: processColor("#6B7280"),
                                 position: "BOTTOM",
+                                fontFamily: "OpenSans-Regular",
                                 drawAxisLine: false,
                                 drawGridLines: false,
                             }}
                             yAxis={{
+                                fontFamily: "OpenSans-Regular",
                                 left: {
                                     drawAxisLine: false,
                                     drawLabels: true,
@@ -243,7 +245,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                     <Text
                         style={[
                             globalStyles.heading3Text,
-                            { color: "#22C55E", fontWeight: "700" },
+                            { color: "#22C55E" },
                         ]}
                     >
                         {props?.loading ? (
@@ -263,7 +265,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                     <Text
                         style={[
                             globalStyles.heading3Text,
-                            { color: "#EF4444", fontWeight: "700" },
+                            { color: "#EF4444"},
                         ]}
                     >
                         {props?.loading ? (
@@ -306,7 +308,7 @@ const styles = StyleSheet.create({
     },
     tooltipTitle: {
         fontSize: 15,
-        fontWeight: "700",
+        fontFamily: "OpenSans-Bold",
         color: "#111827",
         marginBottom: 8,
     },
@@ -317,10 +319,12 @@ const styles = StyleSheet.create({
     },
     tooltipLabel: {
         fontSize: 13,
+        fontFamily: "OpenSans-Regular",
         color: "#6B7280",
     },
     tooltipValue: {
         fontSize: 13,
+        fontFamily: "OpenSans-Bold",
         fontWeight: "600",
     },
     footerRow: {
