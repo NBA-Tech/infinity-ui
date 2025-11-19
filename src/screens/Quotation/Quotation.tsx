@@ -3,6 +3,7 @@ import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-s
 import GradientCard from '@/src/utils/gradient-card';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import Share from 'react-native-share';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -16,13 +17,17 @@ import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { deleteOrderAPI, getOrderDataListAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
+import { deleteOrderAPI, getOrderDataListAPI, getOrderDetailsAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
 import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { getQuotationFields } from '@/src/utils/order/quotation-utils';
+import { UserModel } from '@/src/types/user/user-type';
+import { buildHtml } from '../orders/utils/html-builder';
+import { generatePDF } from 'react-native-html-to-pdf';
 
 
 const styles = StyleSheet.create({
@@ -64,9 +69,18 @@ const Quotation = () => {
 
     const actionButtons = [
         {
+            key: 'share',
+            label: 'Share',
+            color: '#10B981', // Blue
+            icon: <Feather name="share-2" size={wp('4%')} color="#fff" />,
+            onPress: (orderId: string) => {
+                shareQuote(orderId)
+            }
+        },
+        {
             key: 'edit',
             label: 'Edit',
-            color: '#3B82F6', // Blue
+            color: '#6366F1', // Blue
             icon: <Feather name="edit-2" size={wp('4%')} color="#fff" />,
             onPress: (orderId: string) =>
                 navigation.navigate("CreateQuotation", { orderId })
@@ -80,6 +94,73 @@ const Quotation = () => {
             onPress: (mobileNumber: string) => openDaialler(mobileNumber),
         },
     ];
+
+    const handleShareQuotation = async (userDetails: UserModel, orderDetails: OrderModel, quotationFields:QuotaionHtmlInfo) => {
+        try {
+            const message = `
+                    Hello Sir/Mam 👋,
+                    Thank you for showing interest in our photography services 📸.
+                    Please find attached your customized quotation with detailed packages, services, and pricing.
+
+                    If you have any questions or would like to make changes, feel free to reach out. We’d love to be part of your special moments ✨.
+
+                    📍 Studio Address: ${userDetails?.userBillingInfo?.address}, ${userDetails?.userBillingInfo?.city}, ${userDetails?.userBillingInfo?.state}, ${userDetails?.userBillingInfo?.zipCode}, ${userDetails?.userBillingInfo?.country}
+                    📞 Phone: ${userDetails?.userBusinessInfo?.businessPhoneNumber}
+                    📧 Email: ${userDetails?.userBusinessInfo?.businessEmail}
+                    🌐 Website: ${userDetails?.userBusinessInfo?.websiteURL}
+
+                    Looking forward to capturing memories together! 💫
+
+                    Warm regards,
+                        `;
+
+            const options = {
+                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields),
+                fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
+            };
+            const file = await generatePDF(options);
+            const shareOptions = {
+                title: options.fileName,
+                message: message,
+                url: `file://${file.filePath}`,
+                type: 'application/pdf',
+            }
+
+
+            await Share.open(shareOptions);
+
+        } catch (err) {
+            console.error("Error generating PDF:", err);
+        }
+
+    }
+
+    const shareQuote = async (orderId: string) => {
+        console.log("share quote", orderId);
+        setSaveLoading(true)
+        try {
+            const orderDetails = await getOrderDetailsAPI(orderId)
+            if (!orderDetails?.success) {
+                showToast({ type: "error", title: "Error", message: orderDetails?.message });
+            }
+            else {
+                console.log(orderDetails, customerMetaInfoList)
+                const quotationFields = getQuotationFields(
+                    userDetails,
+                    orderDetails?.data,
+                    customerMetaInfoList,
+                )
+                handleShareQuotation(userDetails, orderDetails?.data, quotationFields)
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+        finally {
+            setSaveLoading(false)
+        }
+
+    }
 
 
     const handleDeletePopUp = (orderId: string) => {
@@ -143,7 +224,8 @@ const Quotation = () => {
                 "totalPrice",
                 "orderBasicInfo.customerID",
                 "eventInfo",
-                "offeringInfo"
+                "offeringInfo",
+                "quotationHtmlInfo"
             ],
             ...filters,
             filters: {
@@ -155,6 +237,7 @@ const Quotation = () => {
 
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
+            console.log(orderDataResponse)
             if (!orderDataResponse?.success) {
                 showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
                 reset ? setLoading(false) : setLoadingMore(false);
@@ -277,8 +360,9 @@ const Quotation = () => {
                             style={{
                                 backgroundColor: btn.color,
                             }}
+                            isDisabled={saveLoading}
                             onPress={() => {
-                                if (btn?.key === "edit" || btn?.key === "delete") {
+                                if (btn?.key === "edit" || btn?.key === "delete" || btn?.key === "share") {
                                     btn.onPress(item?.orderId);
                                 } else if (btn?.key === "call") {
                                     btn.onPress(customerData?.mobileNumber);

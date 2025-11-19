@@ -114,11 +114,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
         setCustomerList(metaData);
     };
 
-    const findServicePrice = (serviceId: string) => {
-        const service = serviceData.find((service) => service.id === serviceId)
-        return service?.price
-    }
-
     const userInfo: FormFields = useMemo(() => ({
         customerId: {
             parentKey: "orderBasicInfo",
@@ -303,11 +298,10 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 userDetails,
                 orderDetails,
                 customerList,
-                packageData,
-                findServicePrice
             ),
         [orderDetails]
     );
+    console.log("orderDetails",orderDetails)
 
     const formOrders = [userInfo, eventInfo, eventTypes]
 

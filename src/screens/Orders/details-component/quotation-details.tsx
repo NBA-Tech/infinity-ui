@@ -100,10 +100,6 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
             console.error("Error generating PDF:", err);
         }
     };
-    const findServicePrice = (serviceId: string) => {
-        const service = props?.serviceData.find((service) => service.id === serviceId)
-        return service?.price
-    }
 
     const loadCustomerData = async () => {
         const userID = getItem("USERID")
@@ -123,8 +119,6 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                 userDetails,
                 props?.orderDetails,
                 customerList,
-                props?.packageData,
-                findServicePrice
             ),
         [customerMetaInfoList, props?.orderDetails, props?.packageData, userDetails]
     );

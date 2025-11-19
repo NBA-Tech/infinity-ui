@@ -111,10 +111,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
         setCustomerList(metaData);
     };
 
-    const findServicePrice = (serviceId: string) => {
-        const service = serviceData.find((service) => service.id === serviceId)
-        return service?.price
-    }
+
 
     const userInfo: FormFields = useMemo(() => ({
         customerId: {
@@ -299,8 +296,6 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                 userDetails,
                 orderDetails,
                 customerList,
-                packageData,
-                findServicePrice
             ),
         [orderDetails]
     );

@@ -315,7 +315,7 @@ const Home = () => {
                 <View>
                     <View>
                         <Card style={{ padding: 0, margin: 0 }}>
-                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails?.filter((order) => order.approvalStatus ==  ApprovalStatus.ACCEPTED)} />
+                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails} />
                         </Card>
                         <View>
                             <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading}/>

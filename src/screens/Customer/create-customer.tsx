@@ -219,7 +219,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
         state: {
             parentKey: "customerBillingInfo",
             key: 'state',
-            label: "State",
+            label: "State *Note : Please select country first",
             placeholder: "Eg: New York",
             icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",

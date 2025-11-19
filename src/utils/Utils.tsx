@@ -655,3 +655,5 @@ export const resetFiltersWithDefaultValue = (
 };
 
 export const priceFloatFormat = (value: number) => value.toFixed(2);
+
+export const sortBasedOnFields=(array:any[],key:string,order:'asc' | 'desc') => array.sort((a:any,b:any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);

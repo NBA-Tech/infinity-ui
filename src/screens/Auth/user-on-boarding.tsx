@@ -30,6 +30,7 @@ import { CustomFieldsComponent } from '@/src/components/fields-component';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useUserStore } from '@/src/store/user/user-store';
 import { sendWelcomeEmailAPI } from '@/src/api/auth/auth-api-service';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     userOnBoardBody: {
         margin: hp("1%"),
@@ -224,7 +225,7 @@ const UserOnBoarding = () => {
         state: {
             parentKey: "userBillingInfo",
             key: "state",
-            label: "State",
+            label: "State *Note : Please select country first",
             placeholder: "Eg : Maharashtra",
             icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
@@ -432,7 +433,7 @@ const UserOnBoarding = () => {
 
 
     return (
-        <View style={[styles.body, globalStyles.appBackground]}>
+        <SafeAreaView style={[styles.body, globalStyles.appBackground]}>
             {/* Login Card - Aligned to bottom */}
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <View className="flex-1">
@@ -529,7 +530,7 @@ const UserOnBoarding = () => {
                     </Card>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

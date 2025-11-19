@@ -321,6 +321,18 @@ const services = () => {
     const handleSaveService = async () => {
         let currDetails = activeTab == SERVICETYPE.PACKAGE ? packageDetails : servieDetails
         const currFields = activeTab == SERVICETYPE.PACKAGE ? packageInfoFields : serviceInfoFields
+
+        if(activeTab==SERVICETYPE.PACKAGE){
+            const isServiceListHasNull=packageDetails?.serviceList?.some((item: any) => item?.name == "" || item?.value == "")
+            if(isServiceListHasNull){
+                return showToast({
+                    type: "warning",
+                    title: "Oops!!",
+                    message: "Please fill all the fields",
+                })
+            }
+            
+        }
         const isUpdate = Boolean(currDetails.id)
         let serviceResponse: ApiGeneralRespose;
         let updateServiceResponse: ApiGeneralRespose;

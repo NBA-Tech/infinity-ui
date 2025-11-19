@@ -32,40 +32,49 @@ export const DashboardStats = (props: DashboardStatsProps) => {
    *  CALCULATE STATS (Memoized)
    *  --------------------------------------------------- */
   const stats = useMemo(() => {
-    const totalOrderReceivables = orders?.reduce(
-      (sum, order) => sum + Number(order?.totalPrice || 0),
-      0
-    );
 
+    // --- Total Paid ---
     const totalPayed = invoices?.reduce(
-      (sum, invoice) => sum + Number(invoice?.amountPaid || 0),
+      (sum, invoice) => sum + Number(invoice?.amountPaid ?? 0),
       0
     );
-
+  
+    // --- Total Investment ---
     const totalInvestment = investments?.reduce(
-      (sum, inv) => sum + Number(inv?.investedAmount || 0),
+      (sum, inv) => sum + Number(inv?.investedAmount ?? 0),
       0
     );
-
-    const totalOrders = orders?.filter(
+  
+    // --- Accepted Orders ----
+    const acceptedOrders = orders?.filter(
       (o) => o.approvalStatus === ApprovalStatus.ACCEPTED
-    ).length;
-
+    ) || [];
+  
+    const totalOrders = acceptedOrders.length;
+  
+    // --- Total Receivable from Accepted Orders ---
+    const totalOrderReceivables = acceptedOrders.reduce(
+      (sum, order) => sum + Number(order?.totalPrice ?? 0),
+      0
+    );
+  
+    // --- Pending Quotes ----
     const totalQuotes = orders?.filter(
       (o) => o.approvalStatus === ApprovalStatus.PENDING
-    ).length;
-
-    // ✔ Proper receivables = Total invoice amount - Paid amount
-    const outstandingReceivables = totalOrderReceivables - totalPayed;
-
+    ).length ?? 0;
+  
+    // --- Outstanding = Total Receivable - Already Paid ---
+    const outstandingReceivables = Math.max(totalOrderReceivables - totalPayed, 0);
+  
     return {
-      totalOrderReceivables: outstandingReceivables || 0, // this is FINAL receivable outstanding
+      totalOrderReceivables: outstandingReceivables, // FINAL OUTSTANDING RECEIVABLE
       totalPayed,
       totalInvestment,
       totalOrders,
       totalQuotes,
     };
   }, [orders, invoices, investments]);
+  
 
 
   /** ---------------------------------------------------

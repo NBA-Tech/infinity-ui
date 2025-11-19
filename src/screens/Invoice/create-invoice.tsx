@@ -243,12 +243,13 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "amountPaid",
                 label: "Amount Paid",
                 placeholder: "Eg: ₹100",
-                icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+                icon: <FontAwesome name="money"  style={{ paddingRight: wp("1%") }} size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "number",
                 isRequired: true,
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
+                    console.log(orderDetails?.totalAmountCanPay, orderDetails?.totalPrice)
                     const maxValue = orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0
                     if (orderDetails?.totalAmountCanPay && numVal > maxValue) {
                         showToast({

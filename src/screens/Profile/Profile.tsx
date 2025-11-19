@@ -25,6 +25,8 @@ import { getOrderDataListAPI } from "@/src/api/order/order-api-service";
 import { updateNotificationStatusAPI } from "@/src/services/user/user-service";
 import GradientCard from "@/src/utils/gradient-card";
 import { NotificationContext } from "@/src/providers/notification/notification-provider";
+import { ApprovalStatus } from "@/src/types/order/order-type";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Profile = () => {
   const globalStyles = useContext(StyleContext);
@@ -75,11 +77,13 @@ const Profile = () => {
     const payload: SearchQueryRequest = {
       filters: { userId },
       getAll: true,
-      requiredFields: ["orderId", "totalPrice"],
+      requiredFields: ["orderId", "totalPrice","approvalStatus"],
     };
     const res = await getOrderDataListAPI(payload);
+    console.log(res)
     if (res?.success) {
-      const total = res.data.reduce((sum, o) => sum + o.totalPrice, 0);
+      const approvedOrders = res.data.filter((order: any) => order.approvalStatus == ApprovalStatus.ACCEPTED);
+      const total = approvedOrders.reduce((sum, o) => sum + o.totalPrice, 0);
       setTotalAmount(total);
     }
   };
@@ -137,8 +141,13 @@ const Profile = () => {
       },
       {
         label: "Subscription",
-        icon: <Feather name="credit-card" size={wp("6%")} color="#3B82F6" />,
+        icon: <FontAwesome name="credit-card" size={wp("6%")} color="#3B82F6" />,
         onPress: () => navigation.navigate("Subscription"),
+      },
+      {
+        label:"Trannsaction History",
+        icon: <FontAwesome name="money" size={wp("6%")} color="#3B82F6" />,
+        onPress: () => navigation.navigate("TransactionHistory"),
       },
       {
         label: "Theme",

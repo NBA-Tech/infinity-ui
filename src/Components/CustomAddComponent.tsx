@@ -63,7 +63,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
         serviceType: selectedService?.type
       };
     } else {
-      updated[index] = { ...updated[index], value: Number(newValue) || 0 };
+      updated[index] = { ...updated[index], value: Number(newValue) || "" };
     }
 
     updateRows(updated);
@@ -163,7 +163,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
           <View style={{ width: wp("18%"), marginHorizontal: wp("2%") }}>
             <Input size="lg" variant="rounded">
               <InputField
-                type="number"
+                type="text"
                 value={String(row.value ?? "")}
                 placeholder="Qty"
                 keyboardType="numeric"

@@ -98,7 +98,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
                                 { color: "rgba(255,255,255,0.7)", fontSize: scaleFont(16) },
                             ]}
                         >
-                            Total Balance
+                            Total Profit
                         </Text>
 
                         <Text

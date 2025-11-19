@@ -186,6 +186,7 @@ function AuthStack() {
       <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
       <Stack.Screen name="CreateQuotation" component={CreateQuotaion} />
       <Stack.Screen name="Services" component={Services} />
+      <Stack.Screen name="TransactionHistory" component={TransactionHistory} />
       <Stack.Screen name="Success" component={Success} />
     </Stack.Navigator>
   );

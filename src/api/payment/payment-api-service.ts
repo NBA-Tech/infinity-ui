@@ -32,3 +32,17 @@ export const savePaymentTransactionAPI=async(payload:PaymentModel,headers?:Recor
     })
     return savePaymentTransactionResponse
 }
+
+export const getTransactionListAPI=async(userId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+    const getPaymentListResponse=await fetchWithTimeout({
+        url:`${API_BASE_URI}/payment/get_payment_list?userId=${userId}`,
+        options: {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            }
+        }
+    })
+    return getPaymentListResponse
+}
