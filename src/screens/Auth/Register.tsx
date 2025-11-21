@@ -86,21 +86,21 @@ const Register = ({ setCurrScreen }: any) => {
         {
             label: "Username",
             type: "text",
-            placeholder: "Eg :John Doe",
+            placeholder: "Enter your username",
             icon: "user",
             key: "username" as const,
         },
         {
             label: "Email",
             type: "email",
-            placeholder: "Eg :YJy0g@example.com",
+            placeholder: "Enter your email address",
             icon: "mail",
             key: "email" as const,
         },
         {
             label: "Password",
             type: showPassword?.password ? "text" : "password",
-            placeholder: "********",
+            placeholder: "Enter your password",
             icon: "lock",
             key: "password" as const,
             isText: false
@@ -108,7 +108,7 @@ const Register = ({ setCurrScreen }: any) => {
         {
             label: "Confirm Password",
             type: showPassword?.confirmPassword ? "text" : "password",
-            placeholder: "********",
+            placeholder: "Re-enter your password",
             icon: "lock",
             key: "confirmPassword" as const,
         },
@@ -260,7 +260,7 @@ const Register = ({ setCurrScreen }: any) => {
                         </FormControlLabel>
 
                         <Input size="lg" variant='rounded'>
-                            <InputSlot>
+                            <InputSlot style={{ paddingLeft: wp('2%') }}>
                                 <Feather name={field.icon} size={wp("5%")} color={isDark ? "#fff" : "#000"} />
                             </InputSlot>
 

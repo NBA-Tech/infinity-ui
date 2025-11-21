@@ -241,22 +241,22 @@ const InvoiceList = () => {
 
                     {/* Details */}
                     <View className="flex flex-row justify-between gap-3">
-                        <View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('30%') }]} numberOfLines={1}>#{item?.invoiceId}</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]} numberOfLines={1}>#{item?.invoiceId}</Text>
                         </View>
-                        <View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Order ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827",width:wp('30%') }]} numberOfLines={1}>#{item?.orderId}</Text>
+                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827"}]} numberOfLines={1}>#{item?.orderId}</Text>
                         </View>
                     </View>
 
                     <View className="flex flex-row justify-between">
-                        <View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Customer</Text>
                             <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{item?.billingInfo?.name}</Text>
                         </View>
-                        <View>
+                        <View style={{ flex: 1 }}>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Date</Text>
                             <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{formatDate(item?.invoiceDate ?? "")}</Text>
                         </View>
@@ -317,35 +317,24 @@ const InvoiceList = () => {
 
                     {/* Stats Row */}
                     <View className="flex flex-row justify-between items-start">
-                        <View className="flex flex-col gap-2">
+                        <View className="flex flex-row items-center gap-2">
+                            <Feather name="credit-card" size={wp('5%')} color="#fff" style={{ marginRight: wp('2%') }} />
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Total Invoices
+                                Invoices :
                             </Text>
-                            <View
-                                className="flex flex-row justify-center items-center rounded-full"
-                                style={{
-                                    backgroundColor: "rgba(255,255,255,0.15)",
-                                    paddingVertical: hp('1%'),
-                                    paddingHorizontal: wp('3%'),
-                                }}
-                            >
-                                <Feather name="credit-card" size={wp('5%')} color="#fff" style={{marginRight: wp('2%')}} />
-                                <Text
-                                    style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    {loading ? "..." : totalCount}
-                                </Text>
-                            </View>
+                            <Text
+                                style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                {loading ? "..." : totalCount}
+                            </Text>
                         </View>
 
                         {/* Create Customers */}
                         <View className="flex flex-col gap-2">
-                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Create Invoice
-                            </Text>
                             <Button
-                                size="md"
+                                size="sm"
                                 variant="solid"
                                 action="primary"
+                                className='gap-1'
                                 style={[
                                     globalStyles.buttonColor,
                                     {
@@ -427,34 +416,34 @@ const InvoiceList = () => {
                     <InvoiceCardSkeleton count={5} />
                 )
                 }
-                    <FlatList
-                        data={invoiceData}
-                        style={{ height: hp('65%') }}
-                        keyExtractor={(item, index) => index.toString()}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                                <InvoiceCardComponent item={item} />
-                            </View>
-                        )}
-                        onEndReached={() => {
-                            if (hasMore && !loading) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
-                        }}
-                        ListEmptyComponent={
-                            !loading && invoiceData?.length <= 0 ? (
-                                <EmptyState
-                                    variant={!filters?.searchQuery ? "invoices" : "search"}
-                                    onAction={() => navigation.navigate("CreateInvoice")}
-                                />
-                            ) : null
-                        }
-                        onEndReachedThreshold={0.7}
-                        ListFooterComponent={loadingMore && <InvoiceCardSkeleton count={2} /> }
-                        refreshing={loading}
-                        onRefresh={() => {
-                            setFilters(prev => ({ ...prev, page: 1 }));
-                        }}
-                    />
+                <FlatList
+                    data={invoiceData}
+                    style={{ height: hp('65%') }}
+                    keyExtractor={(item, index) => index.toString()}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
+                            <InvoiceCardComponent item={item} />
+                        </View>
+                    )}
+                    onEndReached={() => {
+                        if (hasMore && !loading) setFilters(prev => ({ ...prev, page: (prev?.page ?? 1) + 1 }));
+                    }}
+                    ListEmptyComponent={
+                        !loading && invoiceData?.length <= 0 ? (
+                            <EmptyState
+                                variant={!filters?.searchQuery ? "invoices" : "search"}
+                                onAction={() => navigation.navigate("CreateInvoice")}
+                            />
+                        ) : null
+                    }
+                    onEndReachedThreshold={0.7}
+                    ListFooterComponent={loadingMore && <InvoiceCardSkeleton count={2} />}
+                    refreshing={loading}
+                    onRefresh={() => {
+                        setFilters(prev => ({ ...prev, page: 1 }));
+                    }}
+                />
 
                 {/* <Fab
                     size="lg"

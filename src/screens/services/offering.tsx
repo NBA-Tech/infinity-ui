@@ -472,7 +472,7 @@ const services = () => {
                     {/* Footer Buttons (outside scroll) */}
                     <View className="flex flex-row justify-end items-center mt-2 pt-2 border-t border-gray-500/20">
                         <Button
-                            size="lg"
+                            size="md"
                             variant="solid"
                             action="primary"
                             style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
@@ -484,7 +484,7 @@ const services = () => {
                         </Button>
 
                         <Button
-                            size="lg"
+                            size="md"
                             variant="solid"
                             action="primary"
                             style={[globalStyles.buttonColor, { marginHorizontal: wp("2%") }]}

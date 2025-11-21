@@ -58,14 +58,14 @@ const Login = ({ setCurrScreen }: any) => {
             label: 'Email',
             key: 'email',
             type: 'email',
-            placeholder: 'Eg :YJy0g@example.com',
+            placeholder: 'Email address',
             icon: "mail",
         },
         {
             label: 'Password',
             key: 'password',
             type: 'password',
-            placeholder: '********',
+            placeholder: 'Enter your password',
             icon: "lock"
         },
     ]

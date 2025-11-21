@@ -79,7 +79,7 @@ const Orders = () => {
             filters: {
                 ...(filters?.filters || {}),
                 userId: getItem("USERID"),
-                approvalStatus:ApprovalStatus.ACCEPTED
+                approvalStatus: ApprovalStatus.ACCEPTED
             },
         };
 
@@ -93,18 +93,18 @@ const Orders = () => {
 
             setOrderData((prev: OrderModel[]) => {
                 const newItems = orderDataResponse?.data ?? [];
-            
+
                 if (reset) return newItems;
-            
+
                 const existingIds = new Set(prev.map(item => item.orderId));
-            
+
                 const filteredNewItems = newItems.filter(
                     item => !existingIds.has(item.orderId)
                 );
-            
+
                 return [...prev, ...filteredNewItems];
             });
-            
+
             setTotalCount(orderDataResponse?.total ?? 0);
 
             setHasMore(
@@ -165,21 +165,21 @@ const Orders = () => {
     const handleView = (orderId: string) => {
         navigation.navigate("OrderDetails", { orderId: orderId });
     }
-    
+
 
     useFocusEffect(
         useCallback(() => {
             let reset = filters?.page === 1;
-            if(!intialLoading){
-                reset=intialLoading
+            if (!intialLoading) {
+                reset = intialLoading
             }
             getOrderListData(reset);
             setIntialLoading(true)
-            return()=>{
+            return () => {
             }
         }, [filters, refresh])
     );
-    
+
 
     useEffect(() => {
         const userId = getItem("USERID");
@@ -189,7 +189,7 @@ const Orders = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-           <GradientCard
+            <GradientCard
                 colors={isDark
                     ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue
                     : ["#1372F0", "#6FADFF"]  // Light mode: vibrant blue → soft sky blue
@@ -210,36 +210,29 @@ const Orders = () => {
                     </View>
 
                     {/* Stats Row */}
-                    <View className="flex flex-row justify-between items-start">
-                        <View className="flex flex-col gap-2">
+                    <View className="flex flex-row justify-between items-start items-center">
+                        <View className="flex flex-row items-center gap-2">
+                            <Feather
+                                name="package"
+                                size={wp('5%')}
+                                color="#fff"
+                            />
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Total Orders
+                                 Orders :
                             </Text>
-                            <View
-                                className="flex flex-row justify-center items-center rounded-full"
-                                style={{
-                                    backgroundColor: "rgba(255,255,255,0.15)",
-                                    paddingVertical: hp('1%'),
-                                    paddingHorizontal: wp('3%'),
-                                }}
-                            >
-                                <Feather name="package" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
-                                <Text
-                                    style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    {loading ? "..." : totalCount}
-                                </Text>
-                            </View>
+                            <Text
+                                style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                {loading ? "..." : totalCount}
+                            </Text>
                         </View>
 
                         {/* Create Customers */}
-                        <View className="flex flex-col gap-2">
-                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Create Orders
-                            </Text>
+                        <View className="flex flex-col gap-1">
                             <Button
-                                size="md"
+                                size="sm"
                                 variant="solid"
                                 action="primary"
+                                className='gap-1'
                                 style={[
                                     globalStyles.buttonColor,
                                     {
@@ -250,7 +243,7 @@ const Orders = () => {
                                 ]}
                                 onPress={() => navigation.navigate('CreateOrder')}
                             >
-                                <Feather name="plus" size={wp('5%')} color="#fff" />
+                                <Feather name="plus" size={wp('4%')} color="#fff" />
                                 <ButtonText style={globalStyles.buttonText}>Create</ButtonText>
                             </Button>
                         </View>
@@ -274,7 +267,7 @@ const Orders = () => {
             />
             <View>
                 <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
-                <View  style={{ marginVertical: hp('1%') }}>
+                <View style={{ marginVertical: hp('1%') }}>
                     <View className="flex flex-row items-center gap-3" style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
                         <Input size="lg" style={styles.inputContainer} variant='rounded'>
                             <InputSlot>

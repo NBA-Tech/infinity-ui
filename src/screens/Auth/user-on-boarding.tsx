@@ -95,7 +95,7 @@ const UserOnBoarding = () => {
             parentKey: "userBusinessInfo",
             key: "companyName",
             label: "Company Name",
-            placeholder: "Eg : ABC Company",
+            placeholder: "Enter your company name",
             icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -110,7 +110,7 @@ const UserOnBoarding = () => {
             parentKey: "userBusinessInfo",
             key: "businessType",
             label: "Business Type",
-            placeholder: "Eg : IT Services",
+            placeholder: "Select business type",
             icon: <Feather name="layers" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
@@ -129,7 +129,7 @@ const UserOnBoarding = () => {
             parentKey: "userBusinessInfo",
             key: "businessPhoneNumber",
             label: "Business Phone Number",
-            placeholder: "Eg : 1234567890",
+            placeholder: "Enter business phone number",
             icon: <Feather name="phone" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
@@ -144,7 +144,7 @@ const UserOnBoarding = () => {
             parentKey: "userBusinessInfo",
             key: "businessEmail",
             label: "Business Email",
-            placeholder: "Eg : YJy0g@example.com",
+            placeholder: "Enter business email address",
             icon: <Feather name="mail" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-full",
@@ -158,8 +158,8 @@ const UserOnBoarding = () => {
         websiteURL: {
             parentKey: "userBusinessInfo",
             key: "websiteURL",
-            label: "Website",
-            placeholder: "Eg : https://abc.com (Optional)",
+            label: "Website (Optional)",
+            placeholder: "https://yourcompany.com",
             icon: <Feather name="globe" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -177,7 +177,7 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "gstNumber",
             label: "GST Number",
-            placeholder: "Eg : 1234567890",
+            placeholder: "Enter GST number",
             icon: <Feather name="file" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -192,7 +192,7 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "panNumber",
             label: "PAN Number",
-            placeholder: "Eg : 1234567890",
+            placeholder: "Enter PAN number",
             icon: <Feather name="file-text" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -207,7 +207,7 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "country",
             label: "Country",
-            placeholder: "Eg : India",
+            placeholder: "Select country",
             icon: <MaterialIcons name="public" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
@@ -225,13 +225,15 @@ const UserOnBoarding = () => {
         state: {
             parentKey: "userBillingInfo",
             key: "state",
-            label: "State *Note : Please select country first",
-            placeholder: "Eg : Maharashtra",
-            icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
+            label: "State",
+            placeholder: !businessDetails?.userBillingInfo?.country
+                ? "Select country first"
+                : "Select state",
+            icon: <Feather name="map-pin" size={wp("4%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
             isRequired: true,
-            isDisabled: false,
+            isDisabled: !businessDetails?.userBillingInfo?.country,
             value: businessDetails?.userBillingInfo?.state ?? "",
             dropDownItems: getStates(businessDetails?.userBillingInfo?.country as string).map((state) => ({
                 label: state.name,
@@ -245,8 +247,8 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "city",
             label: "City",
-            placeholder: "Eg : Mumbai",
-            icon: <MaterialIcons name="location-city" size={wp('5%')}  color={isDark ? "#fff" : "#000"} />,
+            placeholder: "Enter your city",
+            icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -260,8 +262,8 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "address",
             label: "Address",
-            placeholder: "Eg : 123 Street, Mumbai",
-            icon: <Feather name="home" size={wp("5%")}  color={isDark ? "#fff" : "#000"} />,
+            placeholder: "Enter your address",
+            icon: <Feather name="home" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: true,
@@ -275,7 +277,7 @@ const UserOnBoarding = () => {
             parentKey: "userBillingInfo",
             key: "zipCode",
             label: "Pincode",
-            placeholder: "Eg : 400001",
+            placeholder: "Enter pincode",
             icon: <Feather name="hash" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-full",
@@ -482,7 +484,7 @@ const UserOnBoarding = () => {
                             {currStep == 0 && (
                                 <View>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Company Logo*
+                                        Company Logo<Text style={{ color: "red" }}>*</Text>
                                     </Text>
                                     <View className="flex justify-center items-center">
                                         <TouchableOpacity onPress={openGallery}>
@@ -509,7 +511,7 @@ const UserOnBoarding = () => {
                             )
 
                             }
-                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
+                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors}/>
 
                         </ScrollView>
                         <View style={[styles.fixedButtonContainer, globalStyles.cardShadowEffect]}>

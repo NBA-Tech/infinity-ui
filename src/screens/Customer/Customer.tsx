@@ -234,10 +234,10 @@ const Customer = () => {
                 const newItems = updatedCustomers.filter(
                     (c) => !existingIds.has(c.customerID)
                 );
-            
+
                 return [...prev, ...newItems];
             });
-            
+
             setHasMore(customers.length === (filters.pageSize || 10));
         } catch (err) {
             console.error("Error fetching customer details:", err);
@@ -314,7 +314,7 @@ const Customer = () => {
 
                                 <View style={styles.detailRow}>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Created Date : {formatDate(item?.createdDate)}
+                                        Created Date : {formatDate(item?.createdDate)} 
                                     </Text>
                                 </View>
 
@@ -367,7 +367,7 @@ const Customer = () => {
                             <Feather name="phone" size={wp('5%')} color={isDark ? "#A3BFFA" : "#1372F0"} />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => { openWhatsApp(item?.customerBasicInfo?.mobileNumber,"Hi hope you are doing good,") }}>
+                        <TouchableOpacity onPress={() => { openWhatsApp(item?.customerBasicInfo?.mobileNumber, "Hi hope you are doing good,") }}>
                             <FontAwesome name="whatsapp" size={wp('5%')} color={isDark ? "#25D366" : "#22C55E"} />
                         </TouchableOpacity>
 
@@ -408,34 +408,23 @@ const Customer = () => {
                     {/* Stats Row */}
                     <View className="flex flex-row justify-between items-start">
                         {/* Total Customers */}
-                        <View className="flex flex-col gap-2">
+                        <View className="flex flex-row items-center gap-2">
+                            <Feather name="users" size={wp('5%')} color="#fff" />
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Total Customers
+                                Customers :
                             </Text>
-                            <View
-                                className="flex flex-row justify-center items-center rounded-full"
-                                style={{
-                                    backgroundColor: "rgba(255,255,255,0.15)",
-                                    paddingVertical: hp('1%'),
-                                    paddingHorizontal: wp('3%'),
-                                }}
-                            >
-                                <Feather name="users" size={wp('5%')} style={{marginRight: wp('2%')}} color="#fff" />
-                                <Text
-                                    style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    {loading ? "..." : totalCount}
-                                </Text>
-                            </View>
+                            <Text
+                                style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                {loading ? "..." : totalCount}
+                            </Text>
                         </View>
 
                         {/* Create Customers */}
                         <View className="flex flex-col gap-2">
-                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Create Customers
-                            </Text>
                             <Button
-                                size="md"
+                                size="sm"
                                 variant="solid"
+                                className='gap-1'
                                 style={[
                                     globalStyles.buttonColor,
                                     {
@@ -499,41 +488,41 @@ const Customer = () => {
                     <CustomerCardSkeleton count={5} />
                 )
                 }
-                    <FlatList
-                        data={customerData}
-                        style={{ height: hp("65%") }}
-                        keyExtractor={(item, index) => index.toString()}
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingVertical: hp("1%") }}
-                        renderItem={({ item }) => (
-                            <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
-                                <CustomerCardComponent item={item} />
-                            </View>
-                        )}
-                        ListEmptyComponent={
-                            !loading && customerData.length <= 0 ? (
-                                <EmptyState variant={!filters?.searchQuery ? "customers" : "search"} onAction={() => navigation.navigate('CreateCustomer')} />
-                            ) : null
-                        }
-                        refreshing={loading}
-                        onRefresh={() => { 
+                <FlatList
+                    data={customerData}
+                    style={{ height: hp("65%") }}
+                    keyExtractor={(item, index) => index.toString()}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingVertical: hp("1%") }}
+                    renderItem={({ item }) => (
+                        <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
+                            <CustomerCardComponent item={item} />
+                        </View>
+                    )}
+                    ListEmptyComponent={
+                        !loading && customerData.length <= 0 ? (
+                            <EmptyState variant={!filters?.searchQuery ? "customers" : "search"} onAction={() => navigation.navigate('CreateCustomer')} />
+                        ) : null
+                    }
+                    refreshing={loading}
+                    onRefresh={() => {
+                        setFilters(prev => ({
+                            ...prev,
+                            page: 1,
+                        }))
+                    }}
+                    onEndReached={() => {
+                        if (hasMore && !loading) {
                             setFilters(prev => ({
                                 ...prev,
-                                page: 1,
+                                page: prev.page ? prev.page + 1 : 2,
                             }))
-                        }}
-                        onEndReached={() => {
-                            if (hasMore && !loading) {
-                                setFilters(prev => ({
-                                    ...prev,
-                                    page: prev.page ? prev.page + 1 : 2,
-                                }))
-                            }
-                        }}
-                        onEndReachedThreshold={0.7}
-                        ListFooterComponent={(loadingMore && customerData.length > 0) && <CustomerCardSkeleton count={2} />}
+                        }
+                    }}
+                    onEndReachedThreshold={0.7}
+                    ListFooterComponent={(loadingMore && customerData.length > 0) && <CustomerCardSkeleton count={2} />}
 
-                    />
+                />
 
                 {/* <Fab
                     size="lg"
