@@ -29,12 +29,12 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                         <View>
                             <Feather name="alert-triangle" size={wp('10%')} color="red" />
                         </View>
-                        <View>
+                        <View style={{marginVertical:hp('2%')}}>
                             <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>{props?.text ?? "Are you sure you want to delete?"}</Text>
                         </View>
-                        <View className="flex flex-row justify-end items-center" style={{marginVertical:hp('2%')}}>
+                        <View className="flex flex-row justify-end items-center">
                             <Button
-                                size="lg"
+                                size="md"
                                 variant="solid"
                                 action="primary"
                                 style={[globalStyles.transparentBackground, { marginHorizontal: wp("2%") }]}
@@ -46,7 +46,7 @@ const DeleteConfirmation = (props: DeleteConfirmationProps) => {
                             </Button>
 
                             <Button
-                                size="lg"
+                                size="md"
                                 variant="solid"
                                 action="primary"
                                 onPress={props?.handleDelete}

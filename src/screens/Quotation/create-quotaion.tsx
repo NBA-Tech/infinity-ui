@@ -567,7 +567,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                     {currStep == 0 && (
                         <Card style={[globalStyles.cardShadowEffect, { padding: 0, marginBottom: hp('2%') }]}>
                             {/* Header */}
-                            <View className='flex flex-row justify-between items-center' style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", padding: hp("2%") }}>
+                            <View className='flex flex-row justify-between items-center' style={{ backgroundColor: isDark ? "#164E63" : "#ECFEFF", paddingVertical: hp("2%") }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                                     <Feather name="user" size={wp("7%")} color="#06B6D4" />
                                     <Text
@@ -734,7 +734,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
                             <TemplateBuilderComponent quotationFields={quotationFields} handleCheckboxChange={handleCheckboxChange} templateValueData={orderDetails} />
                             <View className="p-1">
-                                <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
+                                <Text style={[globalStyles.smallText, { color: '#E11D48' }]}>
                                     *Note You can't select if the value doesn't exists
                                 </Text>
                             </View>

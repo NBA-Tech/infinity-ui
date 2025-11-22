@@ -145,7 +145,7 @@ const Profile = () => {
         onPress: () => navigation.navigate("Subscription"),
       },
       {
-        label:"Trannsaction History",
+        label:"Transaction History",
         icon: <FontAwesome name="money" size={wp("6%")} color="#3B82F6" />,
         onPress: () => navigation.navigate("TransactionHistory"),
       },

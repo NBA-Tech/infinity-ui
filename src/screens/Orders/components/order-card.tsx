@@ -73,13 +73,13 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                             <Text style={[globalStyles.whiteTextColor, globalStyles.smallText]}>{orderCardProps?.cardData?.status}</Text>
                         </View>
                     </View>
-                    <View className='flex flex-1 flex-row justify-start items-center gap-3'>
-                        <View className='flex flex-row gap-3'>
+                    <View className='flex flex-1 flex-row justify-start items-center gap-5'>
+                        <View className='flex flex-row gap-2 items-center'>
                             <Feather name="calendar" size={wp('3%')} color="#6B7280" />
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>{formatDate(orderCardProps?.cardData?.eventInfo?.eventDate)} : {orderCardProps?.cardData?.eventInfo?.eventTime}</Text>
 
                         </View>
-                        <View className='flex flex-row gap-3'>
+                        <View className='flex flex-row gap-2 items-center'>
                             <Feather name="map" size={wp('3%')} color="#6B7280" />
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText, { width: wp('30%') }]} numberOfLines={1} ellipsizeMode='tail'>{orderCardProps?.cardData?.eventInfo?.eventLocation}</Text>
 
@@ -103,7 +103,7 @@ const OrderCard = (orderCardProps: OrderCardProps) => {
                                         </Progress>
                                     </View>
                                 ) : (
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>No deliverable yet</Text>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>No deliverables</Text>
                                 )
                                 }
                             </View>

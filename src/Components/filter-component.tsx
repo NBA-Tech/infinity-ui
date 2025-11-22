@@ -276,10 +276,10 @@ const FilterComponent = (props: FilterComponentProps) => {
                     {filterComponents[props?.filterName].component()}
                     <Divider style={{ marginVertical: hp('2%') }} />
                     <View className='flex flex-row justify-end items-center gap-2'>
-                        <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={() => props?.setOpenFilter(false)}>
+                        <Button size="md" variant="solid" action="primary" style={globalStyles.transparentBackground} onPress={() => props?.setOpenFilter(false)}>
                             <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Cancel</ButtonText>
                         </Button>
-                        <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={() => {
+                        <Button size="md" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={() => {
                             props?.setOpenFilter(false)
                             props?.setFilters(prev => ({ page: 1,pageSize: 10 }))
                         }

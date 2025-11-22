@@ -409,35 +409,25 @@ const Quotation = () => {
                     {/* Stats Row */}
                     <View className="flex flex-row justify-between items-start">
                         {/* Total Customers */}
-                        <View className="flex flex-col gap-2">
+                        <View className="flex flex-row items-center gap-2">
+                            <Feather name="file" size={wp('5%')} color="#fff" />
                             <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Pending Quote
+                                Pending :
                             </Text>
-                            <View
-                                className="flex flex-row justify-center items-center rounded-full"
-                                style={{
-                                    backgroundColor: "rgba(255,255,255,0.15)",
-                                    paddingVertical: hp('1%'),
-                                    paddingHorizontal: wp('3%'),
-                                }}
-                            >
-                                <Feather name="file" size={wp('5%')} style={{ marginRight: wp('2%') }} color="#fff" />
-                                <Text
-                                    style={[globalStyles.headingText, globalStyles.whiteTextColor]}>
-                                    {loading ? "..." : totalCount}
-                                </Text>
-                            </View>
+                            <Text
+                                style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
+                                {loading ? "..." : totalCount}
+                            </Text>
                         </View>
 
                         {/* Create Customers */}
-                        <View className="flex flex-col gap-2">
-                            <Text style={[globalStyles.subHeadingText, globalStyles.whiteTextColor]}>
-                                Create Quote
-                            </Text>
+                        <View className="flex flex-row items-center gap-2">
                             <Button
-                                size="md"
+                                size="sm"
                                 variant="solid"
                                 action="primary"
+                                className='gap-1'
+                                removeClippedSubviews
                                 style={[
                                     globalStyles.buttonColor,
                                     {

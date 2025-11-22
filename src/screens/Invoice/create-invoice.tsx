@@ -558,7 +558,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                             templateValueData={invoiceDetails}
                         />
                         <View className="p-1">
-                            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
+                            <Text style={[globalStyles.smallText, { color: '#E11D48' }]}>
                                 *Note You can't select if the value doesn't exists
                             </Text>
                         </View>

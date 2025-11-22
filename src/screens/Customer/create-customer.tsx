@@ -80,7 +80,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "name",
             label: "Full Name",
-            placeholder: "Eg: John",
+            placeholder: "Full name",
             icon: <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
@@ -96,7 +96,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "mobileNumber",
             label: "Mobile Number",
-            placeholder: "Eg: 1234567890",
+            placeholder: "Mobile number",
             icon: <Feather name="phone" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
@@ -112,7 +112,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "email",
             label: "Email",
-            placeholder: "Eg: D6f5U@example.com",
+            placeholder: "Email Address",
             icon: <Feather name="mail" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-1/2",
@@ -127,7 +127,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
         leadSource: {
             key: "leadSource",
             label: "Lead Source",
-            placeholder: "Eg: Referral",
+            placeholder: "Select source",
             icon: <Feather name="link" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -147,7 +147,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "notes",
             label: "Notes",
-            placeholder: "Eg: Special instructions for the customer",
+            placeholder: "Additional notes about the customer",
             icon: <Feather name="file-text" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -167,7 +167,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "home",
             label: "Street/Landmark",
-            placeholder: "eg: 123 Main Street",
+            placeholder: "Street or landmark",
             icon: <Feather name="home" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -184,7 +184,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "city",
             label: "City",
-            placeholder: "Eg: New York",
+            placeholder: "City",
             icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
@@ -200,7 +200,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "country",
             label: "Country",
-            placeholder: "Eg: United States",
+            placeholder: "Select Country",
             icon: <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -219,8 +219,10 @@ const CreateCustomer = ({ navigation, route }: Props) => {
         state: {
             parentKey: "customerBillingInfo",
             key: 'state',
-            label: "State *Note : Please select country first",
-            placeholder: "Eg: New York",
+            label: "State",
+            placeholder: customerDetails?.customerBillingInfo?.country
+                ? "Select state"
+                : "Select country first",
             icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -240,7 +242,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "zipCode",
             label: "Zip Code",
-            placeholder: "Eg: 12345",
+            placeholder: "Zip code",
             icon: <Feather name="hash" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
@@ -370,14 +372,14 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             >
 
                 <View>
-                    <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
+                    <View style={{ marginBottom: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                             <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
                             <View style={[{ width: wp('25%') },globalStyles.glassBackgroundColor]}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </View>
                         </View>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
                             {loadingProvider.saveLoading && (
                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )
