@@ -59,7 +59,7 @@ const FilterComponent = (props: FilterComponentProps) => {
         state: {
             parentKey: "userBillingInfo",
             key: "state",
-            label: "State",
+            label: "State (Note : Select Country First)",
             placeholder: "Select State",
             icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
@@ -219,28 +219,6 @@ const FilterComponent = (props: FilterComponentProps) => {
             }
 
         },
-        paymentType:{
-            parentKey: "paymentType",
-            key: "paymentType",
-            label: "Payment Type",
-            type: "chips",
-            style: "w-full",
-            dropDownItems: ["bank","cash"].map((paymentType) => ({
-                label: paymentType.toUpperCase(),
-                value: paymentType
-            })),
-            value: props?.filters?.searchQuery ?? [],
-            onChange: (value: string) => {
-                props?.setRefresh(true)
-                props?.setFilters(prev => ({
-                    ...prev,
-                    page: 1,
-                    searchField: "paymentType",
-                    searchQuery: value
-                }))
-            }
-
-        }
     }),[props?.filters,props?.extraValue])
 
     const filterComponents = {

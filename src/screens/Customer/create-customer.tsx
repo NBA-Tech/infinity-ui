@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, navigateToSuccess, patchState, validateValues } from '@/src/utils/utils';
+import { checkValidEmail, getCountries, getStates, isAllLoadingFalse,  patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
 import { SelectItem } from '@/components/ui/select';
-import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, LEADSOURCE, STATUS } from '@/src/types/customer/customer-type';
+import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, LEADSOURCE } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, FormFields, RootStackParamList } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "CreateCustomer">;
 const CreateCustomer = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
-    const { customerID, returnTo = { tab: 'Customer', screen: 'CustomerList' } } = route.params || {};
+    const { customerID } = route.params || {};
 
     const { isDark } = useContext(ThemeToggleContext);
     const { triggerReloadCustomer } = useReloadContext()
@@ -80,7 +80,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "name",
             label: "Full Name",
-            placeholder: "Full name",
+            placeholder: "Eg: John Doe",
             icon: <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
@@ -96,7 +96,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "mobileNumber",
             label: "Mobile Number",
-            placeholder: "Mobile number",
+            placeholder: "Eg: +12 12331123",
             icon: <Feather name="phone" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
@@ -112,7 +112,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBasicInfo",
             key: "email",
             label: "Email",
-            placeholder: "Email Address",
+            placeholder: "Eg: a@gmail.com",
             icon: <Feather name="mail" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-1/2",
@@ -122,12 +122,21 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             value: customerDetails?.customerBasicInfo?.email ?? "",
             onChange: (value: string) => {
                 patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
+            },
+            onBlur: (value: string) => {
+                const isValid = checkValidEmail(value);
+                if (!isValid) {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        email: "Invalid email address",
+                    }));
+                }
             }
         },
         leadSource: {
             key: "leadSource",
             label: "Lead Source",
-            placeholder: "Select source",
+            placeholder: "Eg: Referral",
             icon: <Feather name="link" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -167,7 +176,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "home",
             label: "Street/Landmark",
-            placeholder: "Street or landmark",
+            placeholder: "Eg: No3 street name",
             icon: <Feather name="home" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -184,7 +193,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "city",
             label: "City",
-            placeholder: "City",
+            placeholder: "Eg: New York",
             icon: <MaterialIcons name="location-city" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
@@ -200,7 +209,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "country",
             label: "Country",
-            placeholder: "Select Country",
+            placeholder: "Eg: United States",
             icon: <MaterialIcons name="public" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -219,10 +228,8 @@ const CreateCustomer = ({ navigation, route }: Props) => {
         state: {
             parentKey: "customerBillingInfo",
             key: 'state',
-            label: "State",
-            placeholder: customerDetails?.customerBillingInfo?.country
-                ? "Select state"
-                : "Select country first",
+            label: "State (select country first)",
+            placeholder: "Eg: New York",
             icon: <Feather name="map-pin" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-1/2",
@@ -242,7 +249,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             parentKey: "customerBillingInfo",
             key: "zipCode",
             label: "Zip Code",
-            placeholder: "Zip code",
+            placeholder: "Eg: 12345",
             icon: <Feather name="hash" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
@@ -341,7 +348,9 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
                 }
                 setloadingProvider({ ...loadingProvider, saveLoading: false });
-                navigateToSuccess(navigation, returnTo.tab, returnTo.screen, addNewCustomerResponse?.message ?? "Customer Created Successfully")
+                navigation.navigate("Success", {
+                    text: addNewCustomerResponse?.message ?? "Order created successfully",
+                });
                 setCustomerDetails({
                     userId: "",
                     leadSource: undefined,
@@ -372,7 +381,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             >
 
                 <View>
-                    <View style={{ marginBottom: hp('1%') }} className='flex justify-between items-center flex-row'>
+                    <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                             <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
                             <View style={[{ width: wp('25%') },globalStyles.glassBackgroundColor]}>

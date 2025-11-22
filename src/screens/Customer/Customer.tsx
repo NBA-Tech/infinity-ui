@@ -455,7 +455,7 @@ const Customer = () => {
             }
 
 
-            <View>
+            <View style={{ flex: 1 }}>
                 <View style={{ backgroundColor: globalStyles.appBackground.backgroundColor }}>
                     {/* Customer Search is here */}
                     <View
@@ -490,7 +490,7 @@ const Customer = () => {
                 }
                 <FlatList
                     data={customerData}
-                    style={{ height: hp("65%") }}
+                    extraData={customerData}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}

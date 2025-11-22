@@ -76,7 +76,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "CreateQuotaion">;
 const CreateQuotaion = ({ navigation, route }: Props) => {
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
-    const { orderId, returnTo = { tab: "Quotations", screen: "QuotationList" } } = route.params ?? {};
+    const { orderId } = route.params ?? {};
     const stepIcon = ["user", "calendar", "credit-card", "file"]
     const { getItem } = useDataStore()
     const [customerList, setCustomerList] = useState<CustomerOption[]>();
@@ -118,7 +118,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "orderBasicInfo",
             key: "customerID",
             label: "Customer Name",
-            placeholder: "Choose Customer",
+            placeholder: "Eg: John Doe",
             icon: <Feather name="user" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
@@ -143,7 +143,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "orderBasicInfo",
             key: "specialInstructions",
             label: "Special Instruction",
-            placeholder: "Enter Special Instruction",
+            placeholder: "Eg: Special Instruction",
             icon: <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -164,7 +164,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: 'eventInfo',
             key: 'eventTitle',
             label: "Event Title",
-            placeholder: "Enter Event Title",
+            placeholder: "Eg: Wedding",
             icon: <Feather name="edit-3" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-1/2",
@@ -180,7 +180,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "eventInfo",
             key: "eventDate",
             label: "Event Date",
-            placeholder: "Enter Event Date",
+            placeholder: "Eg: 01/01/2023",
             icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "date",
             style: "w-1/2",
@@ -201,7 +201,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "eventInfo",
             key: "eventTime",
             label: "Event Time",
-            placeholder: "Enter Event Time",
+            placeholder: "Eg: 10:00 AM",
             icon: <Feather name="clock" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "time",
             style: "w-1/2",
@@ -221,7 +221,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "eventInfo",
             key: "numberOfHours",
             label: "No. of Hours",
-            placeholder: "Enter No. of Hours",
+            placeholder: "Eg: 2",
             icon: <MaterialIcons name="hourglass-empty" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
             style: "w-1/2",
@@ -237,7 +237,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
             parentKey: "eventInfo",
             key: "eventLocation",
             label: "Event Location",
-            placeholder: "Enter Event Location",
+            placeholder: "Eg: New York",
             icon: <Feather name="map-pin" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
@@ -447,7 +447,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
         setOrderDetails({
             userId: orderDetails?.userId,
         });
-        navigation.navigate("Success", { text: "Quotation created successfully", returnTo: returnTo });
+        navigation.navigate("Success", { text: "Quotation created successfully" });
         setTimeout(() => {
             setCurrStep(0);
         }, 2000);
@@ -604,7 +604,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginBottom: hp('1%') }]}>Event Type</Text>
 
-                                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%') }}>
+                                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%'),marginBottom:hp('2%') }}>
                                     {Object.values(eventTypes).map((eventType, index) => (
                                         <CustomCheckBox key={index} onPress={() => { handleCheckboxChange(eventType.value, { parentKey: 'eventInfo', childKey: 'eventType' }) }} value={eventType.value} selected={eventType.value == orderDetails?.eventInfo?.eventType}>
                                             <View className='flex flex-row items-center gap-2'>

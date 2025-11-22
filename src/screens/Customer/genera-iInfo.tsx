@@ -74,7 +74,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                         </Text>
                                         <View className="flex-row items-center gap-2 mt-1">
                                             <Feather name="user" size={wp("5%")} color="#3B82F6" />
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { flexShrink: 1, flexWrap: "wrap" }]} numberOfLines={2}>
+                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { width: wp('40%') }]} numberOfLines={1}>
                                                 #{props?.customerDetails?.customerID}
                                             </Text>
                                         </View>
@@ -235,14 +235,11 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                 <View className="flex-row justify-between gap-4">
                                     {/* Customer Id */}
                                     <View className="flex-1">
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
-                                            Address
-                                        </Text>
+                                      
                                         {props?.isLoading ? (
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (
                                             <View className="flex-row items-center gap-2 mt-1">
-                                                <Feather name="map-pin" size={wp("5%")} color="#3B82F6" />
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                                     {props?.customerDetails?.customerBillingInfo?.street} {props?.customerDetails?.customerBillingInfo?.city} {props?.customerDetails?.customerBillingInfo?.state} {props?.customerDetails?.customerBillingInfo?.country} {props?.customerDetails?.customerBillingInfo?.zipCode}
                                                 </Text>
@@ -274,14 +271,11 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                 <View className="flex-row justify-between gap-4">
                                     {/* Customer Id */}
                                     <View className="flex-1">
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
-                                            Notes
-                                        </Text>
+                                        
                                         {props?.isLoading ? (
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (
                                             <View className="flex-row items-center gap-2 mt-1">
-                                                <Feather name="edit" size={wp("5%")} color="#3B82F6" />
                                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
                                                     {props?.customerDetails?.customerBasicInfo?.notes}
                                                 </Text>

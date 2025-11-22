@@ -92,23 +92,20 @@ export interface SearchQueryRequest {
 
 }
 
-interface ReturnTo {
-  tab?: string,
-  screen: string
-}
+
 
 export interface RootStackParamList extends ParamListBase {
   OneTimePassword: { authData: AuthModel, otpCode: string };
   useronboarding: undefined;
   OrderDetails: { orderId: string };
-  CreateOrder: { orderId: string, returnTo?: ReturnTo };
+  CreateOrder: { orderId: string };
   InvoiceDetails: { invoiceId: string };
-  Success: { text?: string, returnTo?: ReturnTo };
-  CreateInvoice: { invoiceId: string, returnTo?: ReturnTo };
-  CreateCustomer: { customerID: string, returnTo?: ReturnTo };
+  Success: { text?: string };
+  CreateInvoice: { invoiceId: string };
+  CreateCustomer: { customerID: string };
   CustomerDetails: { customerID: string };
   PaymentGateway: { paymentData: any, successCallBack?: Function };
-  CreateQuotaion: { orderId: string, returnTo?: ReturnTo };
+  CreateQuotaion: { orderId: string };
 }
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -142,7 +139,7 @@ export interface FormField {
     (value: any): void;
     (value: any, label: any): void;
   };
-  onBlur?: (parentKey?: string, childKey?: string) => void;
+  onBlur?: (value: any) => void;
   setIsOpen?: (value: boolean) => void;
 }
 export type FormFields = Record<string, FormField>;

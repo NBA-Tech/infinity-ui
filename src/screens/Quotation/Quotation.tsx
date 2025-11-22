@@ -28,6 +28,8 @@ import { getQuotationFields } from '@/src/utils/order/quotation-utils';
 import { UserModel } from '@/src/types/user/user-type';
 import { buildHtml } from '../orders/utils/html-builder';
 import { generatePDF } from 'react-native-html-to-pdf';
+import { EventModel } from '@/src/types/event/event-type';
+import { createNewEventAPI } from '@/src/api/event/event-api-service';
 
 
 const styles = StyleSheet.create({
@@ -136,7 +138,6 @@ const Quotation = () => {
     }
 
     const shareQuote = async (orderId: string) => {
-        console.log("share quote", orderId);
         setSaveLoading(true)
         try {
             const orderDetails = await getOrderDetailsAPI(orderId)
@@ -144,7 +145,6 @@ const Quotation = () => {
                 showToast({ type: "error", title: "Error", message: orderDetails?.message });
             }
             else {
-                console.log(orderDetails, customerMetaInfoList)
                 const quotationFields = getQuotationFields(
                     userDetails,
                     orderDetails?.data,
@@ -188,16 +188,27 @@ const Quotation = () => {
     }
 
 
-    const updateApprovalStatus = async (orderId: string, status: ApprovalStatus) => {
+    const updateApprovalStatus = async (orderDetails: OrderModel, status: ApprovalStatus) => {
         try {
             setSaveLoading(true)
             let response;
 
             if (status == ApprovalStatus.REJECTED) {
-                response = await deleteOrderAPI(orderId)
+                response = await deleteOrderAPI(orderDetails?.orderId)
             }
             else {
-                response = await updateApprovalStatusAPI(orderId, status)
+                response = await updateApprovalStatusAPI(orderDetails?.orderId, status)
+                const eventPayload: EventModel = {
+                    eventTitle: orderDetails?.eventInfo?.eventTitle,
+                    eventDate: orderDetails?.eventInfo?.eventDate,
+                    eventDateString: new Date(orderDetails?.eventInfo?.eventDate)
+                        .toISOString()
+                        .split("T")[0],
+                    eventDescription: `Order ${orderDetails?.eventInfo?.eventTitle} added to event timeline.`,
+                    eventPriority: "HIGH",
+                    userId: getItem("USERID")
+                };
+                await createNewEventAPI(eventPayload)
 
             }
             triggerReloadOrders()
@@ -237,7 +248,6 @@ const Quotation = () => {
 
         try {
             const orderDataResponse: ApiGeneralRespose = await getOrderDataListAPI(currFilters);
-            console.log(orderDataResponse)
             if (!orderDataResponse?.success) {
                 showToast({ type: "error", title: "Error", message: orderDataResponse?.message });
                 reset ? setLoading(false) : setLoadingMore(false);
@@ -313,7 +323,7 @@ const Quotation = () => {
                             variant="solid"
                             action="primary"
                             style={{ backgroundColor: "#22C55E", paddingHorizontal: wp('2%'), paddingVertical: hp('0.8%'), borderRadius: 8 }}
-                            onPress={() => updateApprovalStatus(item?.orderId, ApprovalStatus.ACCEPTED)}
+                            onPress={() => updateApprovalStatus(item, ApprovalStatus.ACCEPTED)}
                             isDisabled={saveLoading}
                         >
                             <Feather name="check" size={wp('4%')} color="#fff" />
@@ -344,7 +354,7 @@ const Quotation = () => {
                         </View>
                         <View className='flex flex-row justify-between items-center'>
                             <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Amount</Text>
-                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>{userDetails?.currencyIcon} {item?.totalPrice}</Text>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor,{color:"#22C55E"}]}>{userDetails?.currencyIcon} {item?.totalPrice}</Text>
                         </View>
                     </View>
                 </Card>
@@ -445,7 +455,7 @@ const Quotation = () => {
                     </View>
                 </View>
             </GradientCard>
-            <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%') }}>
+            <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%'),flex:1 }}>
                 <View style={{ backgroundColor: globalStyles.appBackground.backgroundColor }}>
                     {/* Customer Search is here */}
                     <View
@@ -475,7 +485,7 @@ const Quotation = () => {
                 <View style={{ marginVertical: hp('2%') }}>
                     <FlatList
                         data={quoteData ?? []}
-                        style={{ height: hp("60%") }}
+                        extraData={quoteData}
                         keyExtractor={(_, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingVertical: hp("1%"), gap: hp('2%') }}

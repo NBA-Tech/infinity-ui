@@ -12,6 +12,7 @@ import Modal from 'react-native-modal';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { checkEmailExistsAPI, getOtpAPI, resetPasswordAPI } from '@/src/api/auth/auth-api-service';
 import { AuthModel } from '@/src/types/auth/auth-type';
+import { OtpInput } from 'react-native-otp-entry';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
@@ -66,8 +67,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
         confirmPassword: "",
     });
     const [errors, setErrors] = useState({});
-    const [otp, setOtp] = useState(Array(numInputs).fill(""));
-    const inputRefs = useRef(Array(numInputs).fill(null));
+    const [otp, setOtp] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [apiOtp, setApiOtp] = useState("");
@@ -125,23 +125,6 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
         }
     }), [forgotPasswordDetails])
 
-    const handleChange = (text: string, index: number) => {
-        if (/^\d$/.test(text)) {
-            const newOtp = [...otp];
-            newOtp[index] = text;
-            setOtp(newOtp);
-
-            // Move focus to next input
-            if (index < numInputs - 1) {
-                inputRefs.current[index + 1]?.focus();
-            }
-        } else if (text === "") {
-            const newOtp = [...otp];
-            newOtp[index] = "";
-            setOtp(newOtp);
-        }
-    };
-
     const handleResetPassword = async () => {
         if (forgotPasswordDetails?.password !== forgotPasswordDetails?.confirmPassword) {
             return showToast({
@@ -174,7 +157,7 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
     }
 
     const verifyOtp = () => {
-        if (otp.join("") === apiOtp) {
+        if (otp === apiOtp) {
             setIsVerified(true);
             setIsOpen(false);
         }
@@ -229,29 +212,40 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
                         </Text>
                     </View>
                     <View style={styles.otpContainer}>
-                        {otp.map((digit, index) => (
-                            <TextInput
-                                key={index}
-                                ref={inputRefs.current[index]}
-                                style={[globalStyles.greyInputBox, styles.otp]}
-                                keyboardType="number-pad"
-                                maxLength={1}
-                                value={digit}
-                                onChangeText={(text) => handleChange(text, index)}
-                                onKeyPress={({ nativeEvent }) => {
-                                    if (nativeEvent.key === 'Backspace' && otp[index] === "" && index > 0) {
-                                        inputRefs.current[index - 1]?.focus(); // move back
-                                    }
-                                }}
-                            />
-                        ))}
+
+                        <OtpInput
+                            numberOfDigits={4}
+                            onTextChange={(code: string) => setOtp(code)}
+                            focusColor="#3B82F6"
+                            autoFocus
+                            theme={{
+                                containerStyle: {
+                                    width: wp("80%"),
+                                    justifyContent: "space-between",
+                                },
+                                pinCodeContainerStyle: {
+                                    width: wp("16%"),
+                                    height: hp("7%"),
+                                    borderRadius: wp("2%"),
+                                    backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
+                                    borderWidth: 2,
+                                    borderColor: isDark ? "#2E3A57" : "#E5E7EB",
+                                },
+                                pinCodeTextStyle: {
+                                    color: isDark ? "#E2E8F0" : "#1E3A8A",
+                                    fontSize: wp("6%"),
+                                    textAlign: "center",
+                                    fontFamily: "OpenSans-Regular",
+                                },
+                            }}
+                        />
                     </View>
                     <View className='flex flex-row justify-between items-center'>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.transparentBackground, { marginVertical: hp('3%') }]}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.transparentBackground, { marginVertical: hp('3%') }]} onPress={() => setIsOpen(false)}>
 
                             <ButtonText style={globalStyles.buttonText}>Cancel</ButtonText>
                         </Button>
-                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.purpleBackground, { marginVertical: hp('3%') }]} onPress={verifyOtp}>
+                        <Button size="lg" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginVertical: hp('3%') }]} onPress={verifyOtp}>
 
                             <ButtonText style={globalStyles.buttonText}>Verify OTP</ButtonText>
                         </Button>
@@ -260,8 +254,8 @@ const ForgotPassword = ({ setCurrScreen }: any) => {
             </Modal>
             <Card style={[styles.loginContainer, globalStyles.cardShadowEffect]}>
                 <View style={{ paddingBottom: hp("20%") }}>
-                    <CustomFieldsComponent infoFields={forgotPasswordFields} cardStyle={{ padding: hp("1%") }} />
-                    {isVerified && <CustomFieldsComponent infoFields={forgotPasswordResetFields} cardStyle={{ padding: hp("1%") }} />
+                    <CustomFieldsComponent infoFields={forgotPasswordFields} cardStyle={{ padding: hp("1%"), backgroundColor: globalStyles.appBackground.backgroundColor }} />
+                    {isVerified && <CustomFieldsComponent infoFields={forgotPasswordResetFields} cardStyle={{ padding: hp("1%"), backgroundColor: globalStyles.appBackground.backgroundColor }} />
 
                     }
                     <Button

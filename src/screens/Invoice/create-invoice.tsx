@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
 type Props = NativeStackScreenProps<RootStackParamList, "CreateInvoice">;
 
 const CreateInvoice = ({ navigation, route }: Props) => {
-    const { invoiceId, returnTo = { "tab": "Invoice", "screen": "InvoiceList" } } = route.params || {};
+    const { invoiceId } = route.params || {};
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
@@ -228,7 +228,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     <Feather
                         name="camera"
                         size={wp("5%")}
-                        style={{ paddingRight: wp("1%") }}
                         color={isDark ? "#fff" : "#000"}
                     />
                 ),
@@ -243,13 +242,12 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "amountPaid",
                 label: "Amount Paid",
                 placeholder: "Eg: ₹100",
-                icon: <FontAwesome name="money"  style={{ paddingRight: wp("1%") }} size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+                icon: <FontAwesome name="money"  size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "number",
                 isRequired: true,
                 value: invoiceDetails?.amountPaid,
                 onChange(value: string) {
                     const numVal = Number(value);
-                    console.log(orderDetails?.totalAmountCanPay, orderDetails?.totalPrice)
                     const maxValue = orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0
                     if (orderDetails?.totalAmountCanPay && numVal > maxValue) {
                         showToast({
@@ -267,7 +265,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "invoiceDate",
                 label: "Invoice Date",
                 placeholder: "Eg: 12/02/2003",
-                icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+                icon: <Feather name="calendar" style={{ paddingRight: wp("3%") }} size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "date",
                 maxDate: new Date(),
                 value: invoiceDetails?.invoiceDate
@@ -300,7 +298,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 return showToast({
                     type: "error",
                     title: "Error",
-                    message: `Amount can't exceed ${userDetails?.currencyIcon} ${orderDetails?.totalAmountCanPay || 0}`,
+                    message: `Amount can't exceed ${userDetails?.currencyIcon} ${(orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice) || 0}`,
                 });
             }
         }
@@ -366,7 +364,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             showToast({ type: "success", title: "Success", message: res.message });
             navigation.navigate("Success", {
                 text: res.message ?? "Invoice created successfully",
-                returnTo: returnTo
             });
             setCurrStep(0);
             setInvoiceDetails({ userId: getItem("USERID") });
@@ -510,7 +507,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     />
                 )}
 
-                {currStep === 1 && <PaymentComponent paymentForm={paymentForm} />}
+                {currStep === 1 && <PaymentComponent paymentForm={paymentForm} errors={errors}/>}
 
                 {currStep === 2 && (
                     <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
@@ -597,7 +594,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     variant="solid"
                     action="primary"
                     style={[globalStyles.buttonColor, { flex: 1, marginLeft: wp("2%") }]}
-                    isDisabled={!isAllLoadingFalse(loadingProvider)}
+                    isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
                     onPress={currStep === 2 ? handleCreateInvoice : handleNext}
                 >
                     {loadingProvider.saveLoading && (

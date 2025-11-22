@@ -15,7 +15,8 @@ type Variant =
   | "orders"
   | "quotations"
   | "invoices"
-  | "packages";
+  | "packages"
+  | "deliverables";
 
 interface EmptyStateProps {
   title?: string;
@@ -50,6 +51,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     orders: ["#F3F4F6CC", "#CCFCF1CC"],
     quotations: ["#F3F4F6CC", "#FFF7EDCC"],
     invoices: ["#F3F4F6CC", "#CCFCF1CC"],
+    deliverables: ["#F3F4F6CC", "#CCFCF1CC"],
     default: ["#F3F4F6CC", "#ECF0FFCC"],
   };
 
@@ -95,6 +97,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       defaultTitle: "No invoices to process",
       defaultDescription: "Generate professional invoices for completed photography sessions. Track payments and maintain financial records effortlessly.",
       defaultActionLabel: "Create Invoice",
+    },
+    deliverables: {
+      icon: <Feather name="image" size={80} color="#142850" />,
+      defaultTitle: "No deliverables uploaded yet",
+      defaultDescription: "Upload your edited photos, videos, or albums here. Deliver beautiful final outputs to your clients with ease.",
+      defaultActionLabel: "Add Deliverable",
     },
     default: {
       icon: <Feather name="alert-circle" size={80} color="#142850" />,

@@ -58,14 +58,14 @@ const Login = ({ setCurrScreen }: any) => {
             label: 'Email',
             key: 'email',
             type: 'email',
-            placeholder: 'Email address',
+            placeholder: 'Eg: g8TtK@example.com',
             icon: "mail",
         },
         {
             label: 'Password',
             key: 'password',
             type: 'password',
-            placeholder: 'Enter your password',
+            placeholder: 'Password',
             icon: "lock"
         },
     ]
@@ -110,6 +110,8 @@ const Login = ({ setCurrScreen }: any) => {
         }
 
     }
+
+    const underDevelopment = () => showToast({ type: "warning", title: "Oops!!", message: "This feature is under development" });
 
     const handleGoogleLogin = async () => {
         setLoadingProvider("google")
@@ -196,18 +198,22 @@ const Login = ({ setCurrScreen }: any) => {
                     </View>
                     <View className='flex-row justify-center items-center gap-2'>
                         <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleLogin} disabled={loadingProvider != null}>
-                                <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
+                            <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
                         </TouchableOpacity>
 
                         {/* Facebook */}
-                        <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
-                            <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
-                        </View>
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                                <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
 
                         {/* Instagram */}
-                        <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
-                            <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
-                        </View>
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
+                                <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
 
                     </View>
                     <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>

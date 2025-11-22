@@ -265,7 +265,7 @@ const Orders = () => {
                         })),
                 }}
             />
-            <View>
+            <View style={{ flex: 1 }}>
                 <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
                 <View style={{ marginVertical: hp('1%') }}>
                     <View className="flex flex-row items-center gap-3" style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
@@ -289,7 +289,7 @@ const Orders = () => {
 
                 <FlatList
                     data={orderData ?? []}
-                    style={{ height: hp("60%") }}
+                    extraData={orderData}
                     keyExtractor={(_, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingVertical: hp("1%") }}

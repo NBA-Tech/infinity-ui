@@ -10,6 +10,7 @@ import { CustomFieldsComponent } from '@/src/components/fields-component';
 
 type PaymentComponentProps = {
     paymentForm: FormFields
+    errors:Record<string, string>
 }
 const PaymentComponent = (props: PaymentComponentProps) => {
     const { isDark } = useContext(ThemeToggleContext);
@@ -28,7 +29,7 @@ const PaymentComponent = (props: PaymentComponentProps) => {
                         </Text>
                     </View>
                 </View>
-                <CustomFieldsComponent infoFields={props.paymentForm} cardStyle={{ padding: hp("2%") }} />
+                <CustomFieldsComponent infoFields={props.paymentForm} cardStyle={{ padding: hp("2%") }} errors={props?.errors}/>
             </Card>
         </View>
 

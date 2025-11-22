@@ -363,7 +363,7 @@ const InvoiceList = () => {
 
             }
 
-            <View>
+            <View style={{flex:1}}>
                 <FilterComponent
                     filterName='invoice'
                     filters={filters}
@@ -418,7 +418,7 @@ const InvoiceList = () => {
                 }
                 <FlatList
                     data={invoiceData}
-                    style={{ height: hp('65%') }}
+                    extraData={invoiceData}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (

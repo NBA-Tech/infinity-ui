@@ -574,7 +574,7 @@ const services = () => {
 
                         {!loadingProvider && activeTab == SERVICETYPE.DELIVERABLE && (
                             serviceData?.filter((item) => item?.type === SERVICETYPE.DELIVERABLE)?.length === 0 ? (
-                                <EmptyState variant='services' onAction={() => setIsOpen(true)} />
+                                <EmptyState variant='deliverables' onAction={() => setIsOpen(true)} />
                             ) : (
                                 <ServiceTab
                                     serviceData={serviceData?.filter((item) => item?.type === SERVICETYPE.DELIVERABLE)}

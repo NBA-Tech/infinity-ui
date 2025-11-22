@@ -86,21 +86,21 @@ const Register = ({ setCurrScreen }: any) => {
         {
             label: "Username",
             type: "text",
-            placeholder: "Enter your username",
+            placeholder: "Eg: John Doe",
             icon: "user",
             key: "username" as const,
         },
         {
             label: "Email",
             type: "email",
-            placeholder: "Enter your email address",
+            placeholder: "Eg: d1u8o@example.com",
             icon: "mail",
             key: "email" as const,
         },
         {
             label: "Password",
             type: showPassword?.password ? "text" : "password",
-            placeholder: "Enter your password",
+            placeholder: "Password",
             icon: "lock",
             key: "password" as const,
             isText: false
@@ -108,7 +108,7 @@ const Register = ({ setCurrScreen }: any) => {
         {
             label: "Confirm Password",
             type: showPassword?.confirmPassword ? "text" : "password",
-            placeholder: "Re-enter your password",
+            placeholder: "Re-enter password",
             icon: "lock",
             key: "confirmPassword" as const,
         },
@@ -118,7 +118,7 @@ const Register = ({ setCurrScreen }: any) => {
         if (inputType === "email") {
             setErrors((prev) => ({
                 ...prev,
-                email: checkValidEmail(userRegisterRefs.current.email),
+                email: !checkValidEmail(userRegisterRefs.current.email),
             }));
         } else if (inputType === "password") {
             const result = checkPasswordStrength(userRegisterRefs.current.password);
@@ -128,7 +128,7 @@ const Register = ({ setCurrScreen }: any) => {
                 password: result !== "Strong password",
             }));
         } else if (inputType === "confirmPassword") {
-            if(userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword){
+            if (userRegisterRefs.current.password !== userRegisterRefs.current.confirmPassword) {
                 setErrorMessage("Password and Confirm Password does not match");
             }
             setErrors((prev) => ({
@@ -184,7 +184,7 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     const handleEmailRegister = async () => {
-        if(!userRegisterRefs.current.username){
+        if (!userRegisterRefs.current.username) {
             setLoadingProvider(null);
             return showToast({ type: "error", title: "Error", message: "Please enter username" });
         }
@@ -218,6 +218,7 @@ const Register = ({ setCurrScreen }: any) => {
         await handleRegister(payload);
         setLoadingProvider(null);
     };
+    const underDevelopment = () => showToast({ type: "warning", title: "Oops!!", message: "This feature is under development" });
 
     const handleGoogleRegister = async () => {
         setLoadingProvider("google");
@@ -244,7 +245,7 @@ const Register = ({ setCurrScreen }: any) => {
 
     return (
         <SafeAreaView >
-            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect,{ flex: 1 }]}>
+            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect, { flex: 1 }]}>
                 {formFields.map((field, index) => (
                     <FormControl
                         key={index}
@@ -348,18 +349,22 @@ const Register = ({ setCurrScreen }: any) => {
 
                     <View className='flex-row justify-center items-center gap-2'>
                         <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleRegister} disabled={loadingProvider != null}>
-                                <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
+                            <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
                         </TouchableOpacity>
 
                         {/* Facebook */}
-                        <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
-                            <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
-                        </View>
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                                <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
 
                         {/* Instagram */}
-                        <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
-                            <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
-                        </View>
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
+                                <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
 
                     </View>
 

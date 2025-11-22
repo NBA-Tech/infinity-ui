@@ -67,9 +67,9 @@ const inputFieldStyle = tva({
   },
   parentVariants: {
     variant: {
-      underlined: 'web:outline-0 px-0',
-      outline: 'web:outline-0',
-      rounded: 'web:outline-0 px-4  rounded-full',
+      underlined: 'web:outline-0 px-1',
+      outline: 'web:outline-0 px-1',
+      rounded: 'web:outline-0 px-3  rounded-full',
     },
     size: {
       '2xs': 'text-2xs',

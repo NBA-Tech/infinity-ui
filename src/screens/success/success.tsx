@@ -10,7 +10,7 @@ import { RootStackParamList } from "@/src/types/common";
 type Props = NativeStackScreenProps<RootStackParamList, "Success">;
 
 export default function Success({ route, navigation }: Props) {
-    const { text, returnTo } = route.params || {};
+    const { text } = route.params || {};
     const confettiRef = useRef<any>(null);
 
     // 🎉 Automatically trigger confetti on mount
@@ -21,22 +21,9 @@ export default function Success({ route, navigation }: Props) {
     }, []);
 
     const handleGoBack = () => {
-        if (returnTo?.tab) {
-            // case: navigate back to a tab screen
-            navigation.navigate('MainTabs', {
-                screen: returnTo.tab,
-                params: {
-                    screen: returnTo.screen,
-                },
-            });
-        } else if (returnTo?.screen) {
-            // case: navigate to a standalone screen
-            navigation.navigate(returnTo.screen);
-        } else {
-            navigation.goBack();
-        }
+        navigation.pop(2);
     };
-    
+
 
 
     return (

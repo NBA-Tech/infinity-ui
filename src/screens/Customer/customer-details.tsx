@@ -191,7 +191,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
             <BackHeader screenName="Customer Details" />
 
             {/* Top Info Section */}
-            <View style={styles.infoContainer}>
+            <View style={{marginTop:hp('2%')}}>
                 <View
                     className="flex flex-row justify-between items-center gap-4"
                     style={{ marginHorizontal: wp("4%") }}

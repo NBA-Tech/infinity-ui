@@ -7,6 +7,7 @@ import { useAuth } from '@/src/context/auth-context/auth-context';
 
 type SubscriptionContextType = {
   isSubscribed: boolean;
+  isLoading: boolean;
   subscriptionDetails: SubscriptionModel;
   setSubscriptionStatus: (status: boolean) => void;
   refetchSubscription: () => Promise<void>;
@@ -14,6 +15,7 @@ type SubscriptionContextType = {
 
 const SubscriptionContext = createContext<SubscriptionContextType>({
   isSubscribed: false,
+  isLoading: false,
   subscriptionDetails: {} as SubscriptionModel,
   setSubscriptionStatus: () => {},
   refetchSubscription: async () => {},
@@ -26,6 +28,7 @@ type Props = {
 export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
   const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionModel>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isInitialized, getItem } = useDataStore();
   const { isAuthenticated } = useAuth();
   const showToast = useToastMessage();
@@ -34,6 +37,7 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
 
   const getLicenseDetails = useCallback(async (userId: string) => {
     try {
+      setIsLoading(true);
       const subscriptionDetails = await getSubscriptionDetailsUsingUserIdAPI(userId);
 
       if (!subscriptionDetails?.success) {
@@ -44,6 +48,7 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
         //   title: "Error",
         //   message: subscriptionDetails?.message ?? "Something went wrong",
         // });
+        setIsLoading(false);
         return;
       }
 
@@ -51,6 +56,9 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
     } catch (error) {
       console.error("Failed to fetch subscription:", error);
       setIsSubscribed(false);
+    }
+    finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -80,6 +88,7 @@ export const SubscriptionProvider: React.FC<Props> = ({ children }) => {
     <SubscriptionContext.Provider
       value={{
         isSubscribed,
+        isLoading,
         subscriptionDetails: subscriptionDetails ?? ({} as SubscriptionModel),
         setSubscriptionStatus,
         refetchSubscription,

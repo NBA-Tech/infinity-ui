@@ -49,7 +49,6 @@ const NotificationProvider: React.FC<Props> = ({ children }) => {
         notificationStatus: status,
       },
     };
-    console.log(updated)
     setUserDetails(updated);
     const saveResponse = await updateNotificationStatusAPI(userID, status)
 

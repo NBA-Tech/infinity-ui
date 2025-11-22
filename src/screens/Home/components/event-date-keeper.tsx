@@ -16,6 +16,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { TouchableOpacity } from 'react-native';
 import { createNewEventAPI, deleteEventAPI, getEventBasedMonthYearAPI, updateEventAPI } from '@/src/api/event/event-api-service';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
+import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
   dot: {
     width: wp('3%'),
@@ -44,6 +45,7 @@ const EventDateKeeper = () => {
   const { getItem } = useDataStore();
   const [toolTipVisible, setToolTipVisible] = useState(false);
   const showToast = useToastMessage();
+  const { reloadOrders } = useReloadContext()
 
   const calendarStyleTheme = useMemo(
     () => ({
@@ -73,11 +75,11 @@ const EventDateKeeper = () => {
       // === Fonts - Replacing fontWeight with fontFamily ===
       // Note: Use the exact PostScript name of your linked font files.
       // 500 -> OpenSans-Medium
-      textDayFontFamily: "OpenSans-Medium", 
+      textDayFontFamily: "OpenSans-Medium",
       // 700 -> OpenSans-Bold
-      textMonthFontFamily: "OpenSans-Bold", 
+      textMonthFontFamily: "OpenSans-Bold",
       // 600 -> OpenSans-SemiBold
-      textDayHeaderFontFamily: "OpenSans-SemiBold", 
+      textDayHeaderFontFamily: "OpenSans-SemiBold",
 
       // Remove the separate textDayFontWeight, textMonthFontWeight, textDayHeaderFontWeight
       // textDayFontWeight: "500",
@@ -99,14 +101,14 @@ const EventDateKeeper = () => {
         monthText: {
           fontSize: 18,
           // This was already correct, just ensuring it stays:
-          fontFamily: "OpenSans-Bold", 
+          fontFamily: "OpenSans-Bold",
           color: isDark ? "#FFFFFF" : "#182D53",
         },
         // Also apply to dayHeader (Mon, Tue, Wed...) if not covered by textDayHeaderFontFamily
         dayHeader: {
-            fontFamily: "OpenSans-SemiBold", 
-            // Also inherit or set color if needed
-            color: isDark ? "#9CA3AF" : "#6B7280",
+          fontFamily: "OpenSans-SemiBold",
+          // Also inherit or set color if needed
+          color: isDark ? "#9CA3AF" : "#6B7280",
         }
       },
     }),
@@ -207,7 +209,7 @@ const EventDateKeeper = () => {
                 style={[
                   globalStyles.heading3Text,
                   globalStyles.themeTextColor,
-                  { marginLeft: wp("3%"),width:wp('20%') }
+                  { marginLeft: wp("3%"), width: wp('20%') }
                 ]}
                 numberOfLines={1}
               >
@@ -365,6 +367,21 @@ const EventDateKeeper = () => {
 
   const onDayPress = (day: any) => {
     const selectedDateObj = new Date(day.dateString);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const selected = new Date(selectedDateObj);
+    selected.setHours(0, 0, 0, 0);
+
+    if (selected < today) {
+      return showToast({
+        type: "error",
+        title: "Error",
+        message: "Cannot select past date",
+      });
+    }
+
     setSelectedDate(day.dateString);
     setCurrEventDetails((prevDetails) => ({ ...prevDetails, eventDateString: day.dateString, eventDate: selectedDateObj }));
     setOpen(true);
@@ -397,7 +414,7 @@ const EventDateKeeper = () => {
 
   useEffect(() => {
     getMonthEvents(new Date().getMonth() + 1, new Date().getFullYear())
-  }, [])
+  }, [reloadOrders])
 
   return (
     <Card>
@@ -412,11 +429,11 @@ const EventDateKeeper = () => {
           <View className='flex flex-row justify-end items-center'>
             {currEventDetails?.eventId &&
               <Button
-                size="sm"
+                size="md"
                 variant="solid"
                 action="primary"
                 onPress={handleDelete}
-                style={[globalStyles.purpleBackground, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444', borderRadius: wp("2%"), borderWidth: wp("0.5%"), borderColor: 'transparent' }]}
+                style={[globalStyles.buttonColor, { marginHorizontal: wp("2%"), backgroundColor: '#EF4444' }]}
                 isDisabled={loadingProvider.deleteLoading}
               >
                 {loadingProvider.deleteLoading && (
@@ -429,10 +446,10 @@ const EventDateKeeper = () => {
             }
 
             <Button
-              size="lg"
+              size="md"
               variant="solid"
               action="primary"
-              style={[globalStyles.purpleBackground, { marginVertical: hp('2%') }]}
+              style={[globalStyles.buttonColor, { marginVertical: hp('2%') }]}
               onPress={addOrUpdateEvent}
               isDisabled={loadingProvider.saveLoading || Object.keys(errors).length > 0}
             >
@@ -499,7 +516,7 @@ const EventDateKeeper = () => {
         keyExtractor={(item) => item.eventId}
         renderItem={({ item }) => <AppointmentCard item={item} />}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: hp('2%'),gap: wp('2%') }}
+        contentContainerStyle={{ paddingBottom: hp('2%'), gap: wp('2%') }}
         style={{
           maxHeight: hp('30%'), // control visible list height
           marginVertical: hp('2%'),

@@ -6,7 +6,7 @@ import BackHeader from "@/src/components/back-header";
 import { Card } from "@/components/ui/card";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { FormFields } from "@/src/types/common";
-import { getCountries, getCurrencySymbol, getStates, patchState } from "@/src/utils/utils";
+import { checkValidEmail, getCountries, getCurrencySymbol, getStates, patchState } from "@/src/utils/utils";
 import { BUSINESSTYPE } from "@/src/constant/constants";
 import Feather from "react-native-vector-icons/Feather";
 import { UserModel } from "@/src/types/user/user-type";
@@ -114,6 +114,15 @@ const BusinessDetails = () => {
             onChange: (value: string) => {
                 patchState("userBusinessInfo", "businessEmail", value, true, setBusinessDetails, setErrors);
             },
+            onBlur: (value: string) => {
+                const isValid = checkValidEmail(value);
+                if (!isValid) {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        businessEmail: "Invalid email address",
+                    }));
+                }
+            }
         },
         websiteURL: {
             parentKey: "userBusinessInfo",
@@ -194,7 +203,7 @@ const BusinessDetails = () => {
             icon: <Feather name="map-pin" size={wp("5%")} style={{ paddingRight: wp("3%") }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",
-            isRequired: false,
+            isRequired: true,
             isDisabled: false,
             isLoading: loading,
             value: businessDetails?.userBillingInfo?.state ?? "",
@@ -203,7 +212,7 @@ const BusinessDetails = () => {
                 value: state.isoCode,
             })),
             onChange: (value: string) => {
-                patchState("userBillingInfo", "state", value, false, setBusinessDetails, setErrors);
+                patchState("userBillingInfo", "state", value, true, setBusinessDetails, setErrors);
             },
         },
         city: {

@@ -27,6 +27,7 @@ import GradientCard from "@/src/utils/gradient-card";
 import { NotificationContext } from "@/src/providers/notification/notification-provider";
 import { ApprovalStatus } from "@/src/types/order/order-type";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useReloadContext } from "@/src/providers/reload/reload-context";
 
 const Profile = () => {
   const globalStyles = useContext(StyleContext);
@@ -40,6 +41,7 @@ const Profile = () => {
   const [totalPaid, setTotalPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { reloadOrders, reloadInvoices } = useReloadContext()
 
   const handleNotificationToggle = async (userId: string, value: boolean) => {
     if (!userId)
@@ -77,10 +79,9 @@ const Profile = () => {
     const payload: SearchQueryRequest = {
       filters: { userId },
       getAll: true,
-      requiredFields: ["orderId", "totalPrice","approvalStatus"],
+      requiredFields: ["orderId", "totalPrice", "approvalStatus"],
     };
     const res = await getOrderDataListAPI(payload);
-    console.log(res)
     if (res?.success) {
       const approvedOrders = res.data.filter((order: any) => order.approvalStatus == ApprovalStatus.ACCEPTED);
       const total = approvedOrders.reduce((sum, o) => sum + o.totalPrice, 0);
@@ -103,7 +104,7 @@ const Profile = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [reloadOrders,reloadInvoices]);
 
   const options = useMemo(
     () => [
@@ -119,20 +120,19 @@ const Profile = () => {
       },
       {
         label: "Tutorial",
-        icon: <Feather name="video" size={wp("6%")} color="#3B82F6" />,
+        icon: <Feather name="video" size={wp("6%")} color="#0EA5E9" />,
         onPress: () => navigation.navigate("Tutorial"),
       },
       {
         label: "Notifications",
-        icon: <Feather name="bell" size={wp("6%")} color={isDark ? "#fff" : "#000"} />,
+        icon: <Feather name="bell" size={wp("6%")} color={"#F59E0B"} />,
         rightElement: (
           <Switch
             trackColor={{ false: "#D1D5DB", true: "#3B82F6" }}
             thumbColor="#fafafa"
             ios_backgroundColor="#d4d4d4"
             value={userDetails?.userAuthInfo?.notificationStatus ?? false}
-            onValueChange={(value:boolean) => {
-              console.log(value)
+            onValueChange={(value: boolean) => {
               requestNotificationPermission(value)
             }
             }
@@ -141,17 +141,17 @@ const Profile = () => {
       },
       {
         label: "Subscription",
-        icon: <FontAwesome name="credit-card" size={wp("6%")} color="#3B82F6" />,
+        icon: <FontAwesome name="credit-card" size={wp("6%")} color="#10B981" />,
         onPress: () => navigation.navigate("Subscription"),
       },
       {
-        label:"Transaction History",
-        icon: <FontAwesome name="money" size={wp("6%")} color="#3B82F6" />,
+        label: "Transaction History",
+        icon: <FontAwesome name="money" size={wp("6%")} color="#14B8A6" />,
         onPress: () => navigation.navigate("TransactionHistory"),
       },
       {
         label: "Theme",
-        icon: <Feather name="moon" size={wp("6%")} color={isDark ? "#fff" : "#000"} />,
+        icon: <Feather name="moon" size={wp("6%")} color={"#8B5CF6"} />,
         rightElement: (
           <Switch
             trackColor={{ false: "#D1D5DB", true: "#3B82F6" }}

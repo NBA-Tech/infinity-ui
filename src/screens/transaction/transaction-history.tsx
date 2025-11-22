@@ -247,7 +247,7 @@ const TransactionHistory = () => {
 
         {/* EMPTY STATE */}
         {!loading && transactions.length === 0 && (
-          <EmptyState variant="orders" />
+          <EmptyState variant="orders" noAction={true}/>
         )}
 
         {/* TRANSACTION LIST */}

@@ -15,11 +15,26 @@ type Props = {
 };
 
 const SubscriptionLockOverlay: React.FC<Props> = ({ children }) => {
-    const { isSubscribed } = useSubscription();
+    const { isLoading, isSubscribed } = useSubscription();
     const globalStyles = useContext(StyleContext);
     const navigation = useNavigation<NavigationProp>();
 
     // If subscribed, just render children
+    if (isLoading) {
+        return (
+            <View className='flex flex-col items-center justify-center h-full'>
+                <LottieView
+                    source={require("../assets/animations/preparing-dasboard.json")}
+                    autoPlay
+                    loop={true}
+                    style={{ width: wp('100%'), height: hp('50%') }}
+                />
+                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Hold On Preparing Your Dashboard...</Text>
+
+
+            </View>
+        )
+    }
     if (isSubscribed) return <>{children}</>;
 
     // Otherwise show overlay

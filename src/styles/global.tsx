@@ -82,7 +82,7 @@ const createGlobalStyle = (isDark = false) =>
       labelText: {
         fontSize: scaleFont(13),
         lineHeight: scaleLineHeight(13),
-        fontFamily: 'OpenSans-SemiBold', // Replaces fontWeight: '500'
+        fontFamily: 'OpenSans-Regular', // Replaces fontWeight: '500'
         flexWrap: "wrap",
         flexShrink: 1,
       },
@@ -96,7 +96,7 @@ const createGlobalStyle = (isDark = false) =>
       normalBoldText: {
         fontSize: scaleFont(14),
         lineHeight: scaleLineHeight(14),
-        fontFamily: 'OpenSans-Bold', // Replaces fontWeight: 'bold'
+        fontFamily: 'OpenSans-SemiBold', // Replaces fontWeight: 'bold'
         flexWrap: "wrap",
         flexShrink: 1,
       },
@@ -156,12 +156,6 @@ const createGlobalStyle = (isDark = false) =>
 
     greyInputBox: {
       backgroundColor: isDark ? "#1F1F1F" : "#efefef",
-      height: hp('5.2%'),
-      borderRadius: wp('1%'),
-      paddingHorizontal: wp('2%'),
-      fontSize: scaleFont(14),
-      color: isDark ? "#E5E7EB" : "#2a2a2a",
-      width: wp('80%'),
     },
 
     // containers

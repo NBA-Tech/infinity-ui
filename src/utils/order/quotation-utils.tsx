@@ -135,8 +135,7 @@ export const getQuotationFields = (
                                 <div class="col price heading">Unit Price</div>
                                 <div class="col total heading">Total</div>
                             </div>
-                            ${orderDetails?.offeringInfo?.orderType === OrderType.SERVICE
-                            ? orderDetails?.offeringInfo?.services?.map(
+                            ${ orderDetails?.offeringInfo?.services?.map(
                                 (service) => `
                                         <div class="pricing-row">
                                             <div class="col name">${service.name}</div>
@@ -146,8 +145,7 @@ export const getQuotationFields = (
                                         </div>
                                         `
                             )
-                                .join("")
-                            : ""}
+                                .join("")}
 
                             <div class="pricing-row grand-total">
                                 <div class="col name heading">Grand Total</div>

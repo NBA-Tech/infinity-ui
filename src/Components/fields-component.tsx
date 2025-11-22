@@ -96,7 +96,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         {
                             height: hp("6%"),
                             borderWidth: 1,
-                            borderRadius:9999,
+                            borderRadius: 9999,
                             paddingHorizontal: wp("3%"),
                             borderColor: isDark ? "#1E293B" : "#D1D5DB", // subtle border tone
                             backgroundColor: isDark
@@ -121,17 +121,16 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     ]}
                     placeholderStyle={[
                         globalStyles.labelText,
-                        { color: isDark ? "#9CA3AF" : "#6B7280" },
+                        { color: isDark ? "#94A3B8" : "#6B7280" },
                     ]}
                     selectedTextStyle={[
                         globalStyles.labelText,
                         {
                             color: isDark ? "#E2E8F0" : "#182D53",
-                            fontWeight: "500",
                         },
                     ]}
                     inputSearchStyle={{
-                        borderRadius:9999,
+                        borderRadius: 9999,
                         color: isDark ? "#E2E8F0" : "#182D53",
                         fontFamily: 'OpenSans-Regular',
                     }}
@@ -195,7 +194,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#1E293B" : "#CBD5E1", borderRadius: wp("6%"),borderWidth: 1 },
+                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#1E293B" : "#CBD5E1", borderRadius: wp("6%"), borderWidth: 1 },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                     disabled={field.isDisabled || field?.isLoading}
@@ -290,7 +289,13 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     itemLeadingIconContainerStyle={{ backgroundColor: isDark ? "#fff" : "#fff", borderRadius: wp("4%") }}
                     setSelectedValues={field.onChange}
                 />) : (
-                <Input size="lg" variant="rounded" isDisabled={field.isDisabled || field?.isLoading} style={field.extraStyles}>
+                <Input
+                    size="lg"
+                    variant="rounded"
+                    isDisabled={field.isDisabled || field?.isLoading}
+                    style={[field?.extraStyles]}
+                >
+
                     <InputSlot>{field.icon}</InputSlot>
                     <InputField
                         type={field.type}
@@ -298,7 +303,8 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         value={String(field.value || "")}
                         keyboardType={field.type === "number" ? "numeric" : "default"}
                         onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
-                        onBlur={() => field.onBlur?.(field.parentKey || "", field.key)}
+                        onBlur={() => field.onBlur?.(field.value)}
+                        className={field?.isDisabled || field?.isLoading ? "bg-red" : ""}
 
                     />
                 </Input>

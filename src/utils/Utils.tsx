@@ -34,7 +34,7 @@ export const getCurrencySymbol = (countryCode: string): string => {
 
 export const checkValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return !emailRegex.test(email);
+  return emailRegex.test(email);
 }
 
 export const checkValidNumber = (number: string) => {
@@ -635,12 +635,6 @@ export const isValidPAN = (pan: string): boolean => {
   return panRegex.test(pan.trim().toUpperCase());
 };
 
-export const navigateToSuccess = (navigation:any, originTab: string, originScreen: string,text: string) => {
-  navigation.navigate('Success', {
-    returnTo: { tab: originTab, screen: originScreen },
-    text
-  });
-};
 export const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
 export const resetFiltersWithDefaultValue = (
