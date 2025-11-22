@@ -750,7 +750,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             <TemplateBuilderComponent quotationFields={quotationFields} handleCheckboxChange={handleCheckboxChange} templateValueData={orderDetails} />
                             <View className="p-1">
                                 <Text style={[globalStyles.smallText, { color: '#E11D48' }]}>
-                                    *Note You can't select if the value doesn't exists
+                                    *Note: Any field without a value won’t be included in the template.
                                 </Text>
                             </View>
                         </Card>

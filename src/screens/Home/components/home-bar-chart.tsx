@@ -10,6 +10,7 @@ import Feather from "react-native-vector-icons/Feather";
 import Tooltip, { Placement } from "react-native-tooltip-2";
 import { EmptyState } from "@/src/components/empty-state-data";
 import { useUserStore } from "@/src/store/user/user-store";
+import { formatCurrency } from "@/src/utils/utils";
 
 type RevenueTrendChartProps = {
     loading: boolean;
@@ -252,9 +253,10 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                             "..."
                         ) : (
                             <>
-                                {userDetails?.currencyIcon} {props?.invoiceDetails
-                                    ?.reduce((t, i) => t + i.amountPaid, 0)
-                                    .toLocaleString() || 0}
+                                {formatCurrency(props?.invoiceDetails
+                                    ?.reduce((t, i) => t + i.amountPaid, 0))
+
+                                }
                             </>
                         )
                         }
@@ -265,16 +267,16 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                     <Text
                         style={[
                             globalStyles.heading3Text,
-                            { color: "#EF4444"},
+                            { color: "#EF4444" },
                         ]}
                     >
                         {props?.loading ? (
                             "..."
                         ) : (
                             <>
-                                {userDetails?.currencyIcon} {props?.investmentDetails
-                                    ?.reduce((t, i) => t + i.investedAmount, 0)
-                                    .toLocaleString() || 0}
+                            {formatCurrency(props?.investmentDetails
+                                ?.reduce((t, i) => t + i.investedAmount, 0))
+                            }
                             </>
                         )
                         }

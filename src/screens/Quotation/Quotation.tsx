@@ -19,7 +19,7 @@ import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { deleteOrderAPI, getOrderDataListAPI, getOrderDetailsAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
-import { formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
+import { formatCurrency, formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
@@ -30,6 +30,7 @@ import { buildHtml } from '../orders/utils/html-builder';
 import { generatePDF } from 'react-native-html-to-pdf';
 import { EventModel } from '@/src/types/event/event-type';
 import { createNewEventAPI } from '@/src/api/event/event-api-service';
+import debounce from "lodash.debounce";
 
 
 const styles = StyleSheet.create({
@@ -306,7 +307,7 @@ const Quotation = () => {
             <Card style={globalStyles.cardShadowEffect}>
                 {/* Title */}
                 <View className='flex flex-row justify-center items-center' style={{ marginBottom: hp('1.5%') }}>
-                    <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor, { fontSize: scaleFont(18), width: wp('70%'), textAlign: 'center' }]} numberOfLines={1}>{customerData?.name}'s {item?.eventInfo?.eventTitle}</Text>
+                    <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor, { fontSize: scaleFont(18), width: wp('70%'), textAlign: 'center' }]} numberOfLines={1}>{item?.eventInfo?.eventTitle}</Text>
                 </View>
 
                 {/* Client & Quote Info + Accept/Reject */}
@@ -354,7 +355,7 @@ const Quotation = () => {
                         </View>
                         <View className='flex flex-row justify-between items-center'>
                             <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Amount</Text>
-                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor,{color:"#22C55E"}]}>{userDetails?.currencyIcon} {item?.totalPrice}</Text>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor,{color:"#22C55E"}]}>{formatCurrency(item?.totalPrice)}</Text>
                         </View>
                     </View>
                 </Card>
@@ -392,6 +393,19 @@ const Quotation = () => {
         )
 
     }
+
+
+    const handleSearch = (value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            searchQuery: value,
+            searchField: "eventInfo.eventTitle",
+            page: 1
+        }))
+    }
+
+
+    const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
@@ -472,6 +486,7 @@ const Quotation = () => {
                             <InputField
                                 type="text"
                                 placeholder="Search Quote"
+                                onChangeText={(value) => debouncedSearch(value)}
                             />
 
                         </Input>

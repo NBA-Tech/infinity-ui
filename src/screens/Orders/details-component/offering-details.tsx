@@ -16,6 +16,7 @@ import { updateServiceCompletionStatus } from '@/src/api/order/order-api-service
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import Skeleton from '@/components/ui/skeleton';
 import { useUserStore } from '@/src/store/user/user-store';
+import { formatCurrency } from '@/src/utils/utils';
 const styles = StyleSheet.create({
     statusContainer: {
         padding: wp('2%'),
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
 
 type OfferingDetailsProps = {
     orderId?: string
-    orderStatus:OrderStatus
+    orderStatus: OrderStatus
     offeringData?: OfferingInfo
     totalPrice?: number
     isLoading?: boolean
@@ -286,7 +287,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                         {item.name} x{item.value}
                                                     </Text>
                                                     <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                                        {userDetails?.currencyIcon} {item.price}
+                                                        {formatCurrency(item.price)}
                                                     </Text>
                                                 </View>
                                             )}
@@ -294,7 +295,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                     </View>
                                 </View>
                             }
-                            {props?.offeringData?.services && props?.offeringData?.services?.some((service) => service?.serviceType=== SERVICETYPE.DELIVERABLE) &&
+                            {props?.offeringData?.services && props?.offeringData?.services?.some((service) => service?.serviceType === SERVICETYPE.DELIVERABLE) &&
                                 <View style={{ flexDirection: "column", gap: 12 }}>
                                     <View
                                         style={[
@@ -341,7 +342,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                         {item.name} x{item.value}
                                                     </Text>
                                                     <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                                        {userDetails?.currencyIcon} {item.price}
+                                                        {formatCurrency(item.price)}
                                                     </Text>
                                                     <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
                                                         {loading && (

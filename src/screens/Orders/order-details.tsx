@@ -31,7 +31,7 @@ import Skeleton from '@/components/ui/skeleton';
 import { COLORCODES } from '@/src/constant/constants';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import { getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
+import { formatCurrency, getNextStatus, isAllLoadingFalse } from '@/src/utils/utils';
 import { useConfetti } from '@/src/providers/confetti/confetti-provider';
 import { useUserStore } from '@/src/store/user/user-store';
 import InvestmentInfo from './details-component/investment-info';
@@ -89,7 +89,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             id: 2,
             label: 'Cancel',
             icon: <Feather name="x" size={wp('3%')} color={isDark ? '#fff' : '#000'} />,
-            isVisible: ![GlobalStatus.COMPLETED, GlobalStatus.DELIVERED].includes(orderDetails?.status),
+            isVisible: ![GlobalStatus.COMPLETED, GlobalStatus.CANCELLED].includes(orderDetails?.status),
             onPress: () => handleStatusChange({ key: GlobalStatus.CANCELLED })
         }
     ], [orderDetails]);
@@ -328,7 +328,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Quoted</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${orderDetails?.totalPrice}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(orderDetails?.totalPrice)}`}</Text>
 
                         </View>
                     </Card>
@@ -337,7 +337,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Paid</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((total, invoice) => total + invoice?.amountPaid, 0)}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(invoiceDetails?.reduce((total, invoice) => total + invoice?.amountPaid, 0))}`}</Text>
 
                         </View>
                     </Card>
@@ -345,7 +345,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Invested</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${userDetails?.currencyIcon} ${investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0)}`}</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0))}`}</Text>
 
                         </View>
                     </Card>
@@ -369,7 +369,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 }}
 
             />
-            {(orderDetails?.status != GlobalStatus.DELIVERED && orderDetails?.status != GlobalStatus.CANCELLED) && !loadingProvider.intialLoading && (
+            {(orderDetails?.status != GlobalStatus.COMPLETED && orderDetails?.status != GlobalStatus.CANCELLED) && !loadingProvider.intialLoading && (
                 <ClickButton
                     text={`Click to make order as ${getNextStatus(orderDetails?.status as GlobalStatus)?.label}`}
                     isDisabled={loadingProvider.saveLoading}

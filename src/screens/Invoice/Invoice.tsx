@@ -22,7 +22,7 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatDate, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
+import { formatCurrency, formatDate, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
 import { deleteCustomerAPI } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -268,8 +268,7 @@ const InvoiceList = () => {
                     {/* Footer with Amount + Actions */}
                     <View className="flex flex-row justify-between items-center">
                         <View className="flex flex-row items-center gap-2">
-                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{userDetails?.currencyIcon ?? "$"}</Text>
-                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{item?.amountPaid ?? 0}</Text>
+                            <Text style={[globalStyles.heading3Text, { color: "#22C55E" }]}>{formatCurrency(item?.amountPaid ?? 0)}</Text>
                         </View>
 
                         <View className="flex flex-row gap-5">

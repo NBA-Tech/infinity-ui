@@ -9,6 +9,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { OfferingInfo, OrderType } from "@/src/types/order/order-type";
 import { ServiceInfo } from "@/src/types/order/order-type";
 import { useUserStore } from "@/src/store/user/user-store";
+import { formatCurrency } from "@/src/utils/utils";
 const styles = StyleSheet.create({
     packageContainer: {
         borderRadius: wp("2%"),
@@ -106,7 +107,7 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
                         { color: isSelected ? "#3B82F6" : "#fff", marginBottom: 8 },
                     ]}
                 >
-                    {userDetails?.currencyIcon} {price}
+                    {formatCurrency(price)}
                 </Text>
 
                 {/* Service List */}

@@ -8,7 +8,6 @@ export enum OrderStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
-  DELIVERED = 'DELIVERED'
 }
 
 export enum ApprovalStatus {

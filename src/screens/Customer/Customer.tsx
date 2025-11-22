@@ -22,7 +22,7 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatDate, isFilterApplied, openDaialler, openEmailClient, openMessageBox, openWhatsApp } from '@/src/utils/utils';
+import { formatCurrency, formatDate, isFilterApplied, openDaialler, openEmailClient, openMessageBox, openWhatsApp } from '@/src/utils/utils';
 import { deleteCustomerAPI, getCustomerListBasedOnFilters } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -320,13 +320,13 @@ const Customer = () => {
 
                                 <View style={styles.detailRow}>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Total Quoted : {userDetails?.currencyIcon || "$"} {item?.totalQuotation || 0}
+                                        Total Quoted : {formatCurrency(item?.totalQuotation || 0)}
                                     </Text>
                                 </View>
 
                                 <View style={styles.detailRow}>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Total Paid : {userDetails?.currencyIcon || "$"} {item?.totalInvoice || 0}
+                                        Total Paid : {formatCurrency(item?.totalInvoice || 0)}
                                     </Text>
                                 </View>
                             </View>

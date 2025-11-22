@@ -1,7 +1,7 @@
 import React from "react";
 import Feather from "react-native-vector-icons/Feather";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { formatDate } from "../utils";
+import { formatCurrency, formatDate } from "../utils";
 import { OrderType } from "@/src/types/order/order-type";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 // Factory function
@@ -146,7 +146,7 @@ export const getInvoiceFields = (
                 </div>
                 
                     <div class="col count">${invoiceDetails?.invoiceDate}</div>
-                    <div class="col price">${userDetails?.currencyIcon || "$"} ${invoiceDetails?.amountPaid}</div>
+                    <div class="col price">${formatCurrency(invoiceDetails?.amountPaid)}</div>
                   </div>
                   <div class="pricing-row grand-total">
                     <div class="col name heading">Grand Total</div>

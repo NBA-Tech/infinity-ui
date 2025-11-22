@@ -65,7 +65,7 @@ const DeadLines = (props: DeadLinesProps) => {
 
 
     const deadLineComponent = ({ item }: { item: OrderModel }) => {
-        if (item?.status == GlobalStatus.COMPLETED || item?.status == GlobalStatus.DELIVERED) return null
+        if (item?.status == GlobalStatus.COMPLETED) return null
         return (
             <View style={{ marginTop: hp('2%') }}>
                 <View style={styles.activityRow}>

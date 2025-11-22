@@ -15,7 +15,7 @@ import HeatmapYear from './components/heat-map-year';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { calculateImprovement, getCurrencySymbol, getUpcomingByTimeframe } from '@/src/utils/utils';
+import { calculateImprovement, formatCurrency, getCurrencySymbol, getUpcomingByTimeframe } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
@@ -50,92 +50,8 @@ const Home = () => {
     const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
     const { userDetails, setUserDetails, getUserDetailsUsingID } = useUserStore()
     const [investmentDataList, setInvestmentDataList] = useState<InvestmentModel[]>([]);
-    const [orderStatus, setOrderStatus] = useState();
     const { setReqPermission } = useContext(NotificationContext)
     const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false, investmentLoading: false });
-    const generalStatData = useMemo<GeneralStatInfoModel>(() => {
-        return {
-            customer: {
-                label: "Total Customers",
-                backgroundColor: "#66D8E6",
-                icon: <Feather name="users" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#3B82F6", "#22D3EE", "#06B6D4"],
-                isTrending: true,
-                count: customerMetaInfoList.length,
-                percentageOfChange: calculateImprovement<CustomerMetaModel>(
-                    customerMetaInfoList,
-                    "createdDate",
-                    "month"
-                ).formatted,
-                tooltip: "Gets the total number of customers"
-            },
-            revenue: {
-                label: "Total Revenue",
-                backgroundColor: "#22C55E",
-                icon: <FontAwesome name="money" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#22C55E", "#10B981"],
-                isTrending: true,
-                count: `${userDetails?.currencyIcon} ${invoiceDetails?.reduce((a, b) => a + b.amountPaid, 0) || 0}`,
-                percentageOfChange: calculateImprovement<ApiGeneralRespose>(
-                    invoiceDetails,
-                    "invoiceDate",
-                    "month"
-                ).formatted,
-                tooltip: "Gets the total revenue of all orders in this month"
-            },
-            upcomingShoots: {
-                label: "Upcoming Shoots",
-                backgroundColor: "#EF4444",
-                icon: <Feather name="calendar" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#EF4444", "#F87171"],
-                isTrending: false,
-                count: getUpcomingByTimeframe(orderDetails?.filter((item) => item.status !== OrderStatus.PENDING), "eventDate", "month")?.length || 0,
-                tooltip: "Gets the total number of upcoming shoots in theis month",
-            },
-            deliveredOrders: {
-                label: "Delivered Orders",
-                backgroundColor: "#F59E0B",
-                icon: <Feather name="check-circle" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#F59E0B", "#FBBF24"],
-                isTrending: true,
-                count: `${orderStatus?.delivered?.length || 0}`,
-                percentageOfChange: calculateImprovement<OrderModel>(
-                    orderStatus?.delivered,
-                    "createdDate",
-                    "month"
-                )?.formatted,
-                tooltip: "Gets the total number of delivered orders in this month",
-            },
-            pendingOrders: {
-                label: "Pending Orders",
-                backgroundColor: "#8B5CF6",
-                icon: <Feather name="clock" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#8B5CF6", "#A78BFA"],
-                isTrending: true,
-                count: orderStatus?.pending?.length || 0,
-                percentageOfChange: calculateImprovement<OrderModel>(
-                    orderStatus?.pending,
-                    "createdDate",
-                    "month"
-                )?.formatted,
-                tooltip: "Gets the total number of pending orders in this month",
-            },
-            totalInvoice: {
-                label: "Total Invoice",
-                backgroundColor: "#3B82F6",
-                icon: <Feather name="file-text" size={wp('6%')} color={'#fff'} />,
-                gradientColors: ["#3B82F6", "#2563EB"],
-                isTrending: true,
-                count: invoiceDetails?.length || 0,
-                percentageOfChange: calculateImprovement<ApiGeneralRespose>(
-                    invoiceDetails,
-                    "invoiceDate",
-                    "month"
-                )?.formatted,
-                tooltip: "Gets the total number of invoices in this month",
-            },
-        };
-    }, [customerMetaInfoList, orderStatus, orderDetails, invoiceDetails]);
 
     const getOrderDetails = async (userId: string) => {
         const payload: SearchQueryRequest = {
@@ -162,10 +78,6 @@ const Home = () => {
             };
         })
         setOrderDetails(normalisedOrders)
-        setOrderStatus({
-            delivered: orderMetaDataResponse?.data?.filter((order: OrderModel) => order?.status === GlobalStatus.DELIVERED),
-            pending: orderMetaDataResponse?.data?.filter((order: OrderModel) => order?.status === GlobalStatus.PENDING),
-        })
     }
 
     const getInvoiceDetails = async (userId: string) => {
@@ -247,7 +159,7 @@ const Home = () => {
             try {
                 await loadCustomerMetaInfoList(userId, showToast);
             } finally {
-                triggerReloadActivity()
+                // triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, customerLoading: false }));
             }
         };
@@ -263,7 +175,7 @@ const Home = () => {
             try {
                 await getOrderDetails(userId);
             } finally {
-                triggerReloadActivity()
+                // triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
             }
         };
@@ -279,7 +191,7 @@ const Home = () => {
             try {
                 await getInvoiceDetails(userId);
             } finally {
-                triggerReloadActivity()
+                // triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
             }
         };
@@ -295,7 +207,7 @@ const Home = () => {
             try {
                 await getInvestmentDetails(userId);
             } finally {
-                triggerReloadActivity()
+                // triggerReloadActivity()
                 setLoadingProvider(prev => ({ ...prev, investmentLoading: false }));
             }
         }
@@ -310,7 +222,7 @@ const Home = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground}>
-            <HomeHeader invoiceDetails={invoiceDetails} loading={loadingProvider.invoiceLoading}/>
+            <HomeHeader invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading}/>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View>
                     <View>

@@ -12,7 +12,7 @@ import { SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import { formatDate } from '@/src/utils/utils';
+import { formatCurrency, formatDate } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
 import { useUserStore } from '@/src/store/user/user-store';
 import { getInvoiceFields } from '@/src/utils/invoice/invoice-utils';
@@ -103,7 +103,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                     <View className='flex flex-col'>
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>Invoice #{item?.invoiceId}</Text>
                         <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Invoice Date: {formatDate(item?.invoiceDate)}</Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: {userDetails?.currencyIcon} {item?.amountPaid}</Text>
+                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Price: {formatCurrency(item?.amountPaid)}</Text>
                     </View>
                     <View>
                         <TouchableOpacity onPress={() => { handlePreview(item?.invoiceId) }}>

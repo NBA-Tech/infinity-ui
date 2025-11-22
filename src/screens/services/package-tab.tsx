@@ -10,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Menu, MenuItem, MenuItemLabel } from '@/components/ui/menu';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { generateRandomString } from '@/src/utils/utils';
+import { formatCurrency, generateRandomString } from '@/src/utils/utils';
 import { deleteOfferingApi } from '@/src/api/offering/offering-service';
 import Modal from 'react-native-modal';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
@@ -356,7 +356,7 @@ const PackageTab = (props: PackageProps) => {
                         >
                             {pkg?.calculatedPrice
                                 ? "AUTO PRICING"
-                                : `${userDetails?.currencyIcon} ${pkg?.price}`}
+                                : `${formatCurrency(pkg?.price)}`}
                         </Text>
                     </View>
                 </View>

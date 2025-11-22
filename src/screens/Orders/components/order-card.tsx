@@ -7,7 +7,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
-import { OrderModel } from '@/src/types/order/order-type';
+import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { formatDate, getPercentageOfCompletion } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { GLOBALSTATUS } from '@/src/types/common';
@@ -30,6 +30,7 @@ type OrderCardProps = {
     actions: any
 }
 const OrderCard = (orderCardProps: OrderCardProps) => {
+    if(orderCardProps?.cardData?.approvalStatus==ApprovalStatus.PENDING) return null
     const globalStyles = useContext(StyleContext);
 
     const options = [

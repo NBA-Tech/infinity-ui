@@ -28,6 +28,7 @@ import { NotificationContext } from "@/src/providers/notification/notification-p
 import { ApprovalStatus } from "@/src/types/order/order-type";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
+import { formatCurrency } from "@/src/utils/utils";
 
 const Profile = () => {
   const globalStyles = useContext(StyleContext);
@@ -262,7 +263,7 @@ const Profile = () => {
                   >
                     {loading
                       ? "..."
-                      : `${userDetails?.currencyIcon} ${item.value}`}
+                      : `${formatCurrency(item.value)}`}
                   </Text>
                 </View>
               ))}

@@ -7,7 +7,6 @@ export enum GlobalStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
-  DELIVERED = "DELIVERED",
 }
 
 // 2. Status metadata map
@@ -38,12 +37,6 @@ export const GLOBALSTATUS: Record<
     label: "Cancelled",
     color: "#EF4444", // Red 500 (error)
     icon: "x-circle",
-  },
-  [GlobalStatus.DELIVERED]: {
-    key: "DELIVERED",
-    label: "Delivered",
-    color: "#22C55E", // Green 500/600 (success, slightly different)
-    icon: "check-circle",
   },
 };
 

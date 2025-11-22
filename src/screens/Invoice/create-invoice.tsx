@@ -55,6 +55,7 @@ import { BillingInfo, Invoice } from "@/src/types/invoice/invoice-type";
 import { ApprovalStatus, OrderModel, OrderStatus } from "@/src/types/order/order-type";
 
 import {
+    formatCurrency,
     formatDate,
     generateRandomStringBasedType,
     isAllLoadingFalse,
@@ -253,7 +254,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         showToast({
                             type: "error",
                             title: "Error",
-                            message: `Amount can't exceed ${userDetails?.currencyIcon} ${maxValue}`,
+                            message: `Amount can't exceed ${formatCurrency(maxValue)}`,
                         });
                     }
                     else {
@@ -298,7 +299,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 return showToast({
                     type: "error",
                     title: "Error",
-                    message: `Amount can't exceed ${userDetails?.currencyIcon} ${(orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice) || 0}`,
+                    message: `Amount can't exceed ${formatCurrency(orderDetails?.totalAmountCanPay ?? orderDetails?.totalPrice ?? 0)}`,
                 });
             }
         }
@@ -556,7 +557,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         />
                         <View className="p-1">
                             <Text style={[globalStyles.smallText, { color: '#E11D48' }]}>
-                                *Note You can't select if the value doesn't exists
+                                *Note: Any field without a value won’t be included in the template.
                             </Text>
                         </View>
                     </Card>

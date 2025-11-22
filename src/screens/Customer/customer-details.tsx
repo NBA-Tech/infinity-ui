@@ -110,7 +110,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
                 "orderBasicInfo.customerID": customerId
             },
             getAll: true,
-            requiredFields: ["orderId", "createdDate", "status", "eventInfo", "offeringInfo", "totalPrice"]
+            requiredFields: ["orderId", "createdDate", "status", "eventInfo", "offeringInfo", "totalPrice","approvalStatus"]
         }
         const orderDetailsResponse = await getOrderDataListAPI(payload)
         if (!orderDetailsResponse?.success) {

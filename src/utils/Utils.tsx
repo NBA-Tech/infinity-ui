@@ -7,7 +7,7 @@ import { useCustomerStore } from "../store/customer/customer-store";
 import { useOfferingStore } from "../store/offering/offering-store";
 import { OfferingInfo, OrderType } from "../types/order/order-type";
 import { isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
-import { COUNTRY_CURRENCY_SYMBOLS } from "../constant/constants";
+import { COUNTRY_CURRENCY } from "../constant/constants";
 import { SERVICETYPE } from "../types/offering/offering-type";
 
 
@@ -29,7 +29,7 @@ export const formatDate = (dateStr?: string) => {
 
 
 export const getCurrencySymbol = (countryCode: string): string => {
-  return COUNTRY_CURRENCY_SYMBOLS[countryCode] || "$";
+  return COUNTRY_CURRENCY[countryCode]?.symbol || "$";
 };
 
 export const checkValidEmail = (email: string) => {
@@ -379,9 +379,6 @@ export const getNextStatus = (status: GlobalStatus) => {
     case GlobalStatus.IN_PROGRESS:
       nextStatus = GlobalStatus.COMPLETED;
       break;
-    case GlobalStatus.COMPLETED:
-      nextStatus = GlobalStatus.DELIVERED;
-      break;
     default:
       nextStatus = status; // CANCELLED/DELIVERED stay the same
   }
@@ -581,7 +578,7 @@ export function getMonthlyRevenue<T extends { [key: string]: any }>(
 }
 
 export function isExpiringSoon(expiryDate: Date | string): boolean {
-  if(!expiryDate) return false
+  if (!expiryDate) return false
   const now = new Date();
   const expiry = typeof expiryDate === 'string' ? new Date(expiryDate) : expiryDate;
 
@@ -625,12 +622,12 @@ function getRandomAlphaNumeric(length: number): string {
 
 // Example usage:
 export const isValidGST = (gst: string): boolean => {
-  if(gst=="") return true
+  if (gst == "") return true
   const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   return gstRegex.test(gst.trim().toUpperCase());
 };
 export const isValidPAN = (pan: string): boolean => {
-  if(pan=="") return true
+  if (pan == "") return true
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   return panRegex.test(pan.trim().toUpperCase());
 };
@@ -650,4 +647,37 @@ export const resetFiltersWithDefaultValue = (
 
 export const priceFloatFormat = (value: number) => value.toFixed(2);
 
-export const sortBasedOnFields=(array:any[],key:string,order:'asc' | 'desc') => array.sort((a:any,b:any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);
+
+export const formatCurrency = (balance: number) => {
+  const { userDetails } = useUserStore.getState();
+
+  const countryCode = userDetails?.userBillingInfo?.country;
+
+  const config = COUNTRY_CURRENCY[countryCode] ?? {
+    symbol: "$",
+    spacing: "international",
+  };
+
+  // Convert to float with 2 decimals
+  const floatValue = Number(balance ?? 0).toFixed(2);
+
+  let formattedNumber: string;
+
+  if (config.spacing === "indian") {
+    formattedNumber = Number(floatValue).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  } else {
+    formattedNumber = Number(floatValue).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  return `${config.symbol} ${formattedNumber}`;
+};
+
+
+
+export const sortBasedOnFields = (array: any[], key: string, order: 'asc' | 'desc') => array.sort((a: any, b: any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);

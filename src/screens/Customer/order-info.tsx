@@ -4,7 +4,7 @@ import { StyleContext } from '@/src/providers/theme/global-style-provider';
 import { Card } from '@/components/ui/card';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import OrderCard from '../orders/components/order-card';
-import { OrderModel } from '@/src/types/order/order-type';
+import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
 import { GlobalStatus } from '@/src/types/common';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
@@ -51,21 +51,22 @@ const ProjectInfo = (props: ProjectInfoProps) => {
     const { triggerReloadOrders } = useReloadContext()
     const statInfo = useMemo(() => {
         const orders = props.orderDetails || [];
+        console.log(orders)
 
-        const delivered = orders.filter(o => o.status === GlobalStatus.DELIVERED).length;
+        const pending = orders.filter(o => o.approvalStatus === ApprovalStatus.PENDING).length;
         const pendingCount = orders.filter(o => o.status === GlobalStatus.IN_PROGRESS).length;
         const cancelledCount = orders.filter(o => o.status === GlobalStatus.CANCELLED).length;
 
         return {
-            delivered: {
-                title: "Delivered",
-                value: delivered.toString(),
-                color: "#3B82F6",
-            },
             pending: {
+                title: "Pending",
+                value: pending.toString(),
+                color: "#F59E0B",
+            },
+            progress: {
                 title: "Progress",
                 value: pendingCount.toString(),
-                color: "#F59E0B",
+                color: "#3B82F6",
             },
             cancelled: {
                 title: "Cancelled",

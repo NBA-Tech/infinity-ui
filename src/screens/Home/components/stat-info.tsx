@@ -13,6 +13,7 @@ import { Invoice } from "@/src/types/invoice/invoice-type";
 import { InvestmentModel } from "@/src/types/investment/investment-type";
 import { ApprovalStatus, OrderModel } from "@/src/types/order/order-type";
 import { useUserStore } from "@/src/store/user/user-store";
+import { formatCurrency } from "@/src/utils/utils";
 
 interface DashboardStatsProps {
   invoices: Invoice[];
@@ -38,34 +39,34 @@ export const DashboardStats = (props: DashboardStatsProps) => {
       (sum, invoice) => sum + Number(invoice?.amountPaid ?? 0),
       0
     );
-  
+
     // --- Total Investment ---
     const totalInvestment = investments?.reduce(
       (sum, inv) => sum + Number(inv?.investedAmount ?? 0),
       0
     );
-  
+
     // --- Accepted Orders ----
     const acceptedOrders = orders?.filter(
       (o) => o.approvalStatus === ApprovalStatus.ACCEPTED
     ) || [];
-  
+
     const totalOrders = acceptedOrders.length;
-  
+
     // --- Total Receivable from Accepted Orders ---
     const totalOrderReceivables = acceptedOrders.reduce(
       (sum, order) => sum + Number(order?.totalPrice ?? 0),
       0
     );
-  
+
     // --- Pending Quotes ----
     const totalQuotes = orders?.filter(
       (o) => o.approvalStatus === ApprovalStatus.PENDING
     ).length ?? 0;
-  
+
     // --- Outstanding = Total Receivable - Already Paid ---
     const outstandingReceivables = Math.max(totalOrderReceivables - totalPayed, 0);
-  
+
     return {
       totalOrderReceivables: outstandingReceivables, // FINAL OUTSTANDING RECEIVABLE
       totalPayed,
@@ -74,7 +75,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
       totalQuotes,
     };
   }, [orders, invoices, investments]);
-  
+
 
 
   /** ---------------------------------------------------
@@ -106,6 +107,25 @@ export const DashboardStats = (props: DashboardStatsProps) => {
           backgroundColor: leftCardBg,
         }}
       >
+        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+          Total Invoiced
+        </Text>
+        <Text
+          style={[
+            globalStyles.heading2Text,
+            globalStyles.darkBlueTextColor,
+            { marginTop: hp("0.5%") },
+          ]}
+        >
+          {loading ? (
+            "Loading..."
+          ) : (
+            <>
+              {formatCurrency(stats.totalPayed)}
+            </>
+          )}
+        </Text>
+        <View style={{ height: hp("2%") }} />
         {/* Receivables */}
         <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
           Total Receivables
@@ -121,7 +141,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
             "Loading..."
           ) : (
             <>
-              {userDetails?.currencyIcon} {stats.totalOrderReceivables}
+              {formatCurrency(stats.totalOrderReceivables)}
             </>
           )}
         </Text>
@@ -143,7 +163,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
             "Loading..."
           ) : (
             <>
-              {userDetails?.currencyIcon} {stats.totalInvestment}
+              {formatCurrency(stats.totalInvestment)}
             </>
           )}
         </Text>
@@ -155,7 +175,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
         <TouchableOpacity>
           <Card
             style={{
-              paddingVertical: hp("2%"),
+              paddingVertical: hp("3%"),
               paddingHorizontal: wp("4%"),
               borderRadius: wp("5%"),
               backgroundColor: rightBoxBg,
@@ -179,7 +199,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
         <TouchableOpacity style={{ marginTop: hp("2%") }}>
           <Card
             style={{
-              paddingVertical: hp("2%"),
+              paddingVertical: hp("3%"),
               paddingHorizontal: wp("4%"),
               borderRadius: wp("5%"),
               backgroundColor: rightBoxBg,

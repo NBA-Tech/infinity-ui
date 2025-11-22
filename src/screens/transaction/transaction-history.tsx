@@ -12,7 +12,7 @@ import { useToastMessage } from '@/src/components/toast/toast-message';
 import { PaymentModel } from '@/src/types/payment/payment-type';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatDate } from '@/src/utils/utils';
+import { formatCurrency, formatDate } from '@/src/utils/utils';
 const TransactionHistory = () => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
@@ -58,7 +58,7 @@ const TransactionHistory = () => {
           }}
         >
           <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-            {userDetails?.currencyIcon} {item.amount}
+            {formatCurrency(item.amount)}
           </Text>
   
           {/* STATUS BADGE */}

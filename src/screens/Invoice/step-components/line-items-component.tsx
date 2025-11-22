@@ -8,7 +8,7 @@ import { Divider } from '@/components/ui/divider';
 import { OfferingInfo, OrderType } from '@/src/types/order/order-type';
 import { InvoiceItem } from '@/src/types/invoice/invoice-type';
 import { Button, ButtonText } from '@/components/ui/button';
-import { patchState } from '@/src/utils/utils';
+import { formatCurrency, patchState } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 
 const styles = StyleSheet.create({
@@ -148,7 +148,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
                                             {item.itemName}
                                         </Text>
                                         <Text style={[globalStyles.normalText, globalStyles.greyTextColor]}>
-                                            Unit Price: {userDetails?.currencyIcon} {item.unitPrice}
+                                            Unit Price: {formatCurrency(item.unitPrice)}
                                         </Text>
                                     </View>
                                     <TouchableOpacity onPress={() => handleDeleteLineItem(item.itemId)}>
@@ -206,7 +206,7 @@ const LineItemsComponent = (props: LineItemsComponentProps) => {
 
                                 <View className='flex flex-row justify-between items-center'>
                                     <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>Total</Text>
-                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>{userDetails?.currencyIcon} {item.amountPaying}</Text>
+                                    <Text style={[globalStyles.normalBoldText, globalStyles.themeTextColor]}>${formatCurrency(item.amountPaying)}</Text>
                                 </View>
                             </View>
                         </Card>

@@ -6,7 +6,7 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import Feather from 'react-native-vector-icons/Feather';
 import { useUserStore } from '@/src/store/user/user-store';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import { formatDate } from '@/src/utils/utils';
+import { formatCurrency, formatDate } from '@/src/utils/utils';
 import Skeleton from '@/components/ui/skeleton';
 
 type InvoiceInfoProps = {
@@ -141,7 +141,7 @@ const InvoiceInfo = ({ invoiceDetails, loading }: InvoiceInfoProps) => {
                   { fontWeight: '600', marginTop: 2 },
                 ]}
               >
-                {userDetails?.currencyIcon || '₹'} {invoiceDetails?.amountPaid ?? 0}
+                {formatCurrency(invoiceDetails?.amountPaid ?? 0)}
               </Text>
             </View>
           </View>
@@ -168,7 +168,7 @@ const InvoiceInfo = ({ invoiceDetails, loading }: InvoiceInfoProps) => {
                   },
                 ]}
               >
-                {userDetails?.currencyIcon || '₹'} {invoiceDetails?.balanceDue ?? 0}
+                {formatCurrency(invoiceDetails?.balanceDue ?? 0)}
               </Text>
             </View>
           )}

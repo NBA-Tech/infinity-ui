@@ -7,10 +7,12 @@ import { useUserStore } from '@/src/store/user/user-store';
 import { scaleFont } from '@/src/styles/global';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import { priceFloatFormat } from '@/src/utils/utils';
+import { formatCurrency, priceFloatFormat } from '@/src/utils/utils';
+import { InvestmentModel } from '@/src/types/investment/investment-type';
 
 interface HomeHeaderProps {
     invoiceDetails: Invoice[]
+    investmentDetails:InvestmentModel[]
     loading: boolean
 }
 
@@ -61,11 +63,17 @@ const HomeHeader = (props: HomeHeaderProps) => {
 
 
     useEffect(() => {
+        const invoicesAmount = props?.invoiceDetails?.reduce((acc, curr) => {
+            return acc + Number(curr?.amountPaid ?? 0);
+        }, 0); 
+    
+        const investmentAmount = props?.investmentDetails?.reduce((acc, curr) => {
+            return acc + Number(curr?.investedAmount ?? 0);
+        }, 0); 
+    
         setBalance(
-            props?.invoiceDetails?.reduce((acc, curr) => {
-                return acc + curr.amountPaid
-            }, 0)
-        )
+            priceFloatFormat((invoicesAmount ?? 0) - (investmentAmount ?? 0))
+        );
         const trend = calculateMonthTrend(props?.invoiceDetails)
     }, [props?.invoiceDetails])
 
@@ -111,7 +119,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
                                 "Loading..."
                             ) : (
                                 <>
-                                    {userDetails?.currencyIcon} {priceFloatFormat(balance) || "0.00"}
+                                    {formatCurrency(balance)}
                                 </>
                             )}
                         </Text>

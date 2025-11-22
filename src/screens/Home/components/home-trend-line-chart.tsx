@@ -13,6 +13,7 @@ import Tooltip, { Placement } from "react-native-tooltip-2";
 import Feather from "react-native-vector-icons/Feather";
 import Skeleton from "@/components/ui/skeleton";
 import { useUserStore } from "@/src/store/user/user-store";
+import { formatCurrency } from "@/src/utils/utils";
 interface Props {
     invoices: Invoice[];
     investments: InvestmentModel[];
@@ -156,12 +157,6 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
     }, [openingBeforeRange, monthsInfo, incomeByMonth, outgoingByMonth, invoices, investments, today]);
 
 
-    const formatCurrency = (value: number) => {
-        if (loading) return "...";
-        return `${userDetails?.currencyIcon} ${Number(value).toLocaleString()}`;
-    };
-
-
 
     return (
         <Card style={{ padding: wp("4%"), marginVertical: hp("2%") }}>
@@ -189,22 +184,23 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Opening Bal.</Text>
-                        <Text style={styles.value}>₹{Number(markerData.opening).toLocaleString()}</Text>
+                        <Text style={styles.value}>{formatCurrency(markerData.opening)}</Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={[styles.label, { color: "#16A34A" }]}>Income</Text>
-                        <Text style={[styles.value, { color: "#16A34A" }]}>₹{Number(markerData.income).toLocaleString()}</Text>
+                        
+                        <Text style={[styles.value, { color: "#16A34A" }]}>{formatCurrency(markerData.income)}</Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={[styles.label, { color: "#DC2626" }]}>Outgoing</Text>
-                        <Text style={[styles.value, { color: "#DC2626" }]}>₹{Number(markerData.outgoing).toLocaleString()}</Text>
+                        <Text style={[styles.value, { color: "#DC2626" }]}>{formatCurrency(markerData.outgoing)}</Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={[styles.label, { color: "#2563EB" }]}>Ending Bal.</Text>
-                        <Text style={[styles.value, { color: "#2563EB" }]}>₹{Number(markerData.ending).toLocaleString()}</Text>
+                        <Text style={[styles.value, { color: "#2563EB" }]}>{formatCurrency(markerData.ending)}</Text>
                     </View>
                 </View>
             )}

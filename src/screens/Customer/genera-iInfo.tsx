@@ -13,6 +13,7 @@ import { CustomerModel } from "@/src/types/customer/customer-type";
 import Skeleton from "@/components/ui/skeleton";
 import { useUserStore } from "@/src/store/user/user-store";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { formatCurrency } from "@/src/utils/utils";
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -149,7 +150,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                     title: "Quoted",
                                     value: props?.isLoading
                                         ? "Loading..."
-                                        : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalAmount || 0}`,
+                                        : `${formatCurrency(props?.paymentDetails?.totalAmount || 0)}`,
                                     bg: "#ECFDF5", // emerald-50
                                     color: "#059669", // emerald-600
                                 },
@@ -157,7 +158,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                     title: "Received",
                                     value: props?.isLoading
                                         ? "Loading..."
-                                        : `${userDetails?.currencyIcon} ${props?.paymentDetails?.totalPaid || 0}`,
+                                        : `${formatCurrency(props?.paymentDetails?.totalPaid || 0)}`,
                                     bg: "#EEF2FF", // indigo-50
                                     color: "#4F46E5", // indigo-600
                                 },

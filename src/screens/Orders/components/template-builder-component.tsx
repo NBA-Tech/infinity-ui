@@ -1,5 +1,5 @@
 import { Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import Feather from 'react-native-vector-icons/Feather';
@@ -44,6 +44,25 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
 
         handleCheckboxChange(updatedQuotationHtmlInfo, { parentKey: 'quotationHtmlInfo', childKey: '' });
     }
+
+    useEffect(() => {
+        if (!templateValueData?.quotationHtmlInfo?.length) {
+            // NEW quotation → set all fields selected
+            let defaultSelected: QuotaionHtmlInfo[] = [];
+    
+            Object.entries(quotationFields)?.forEach(([sectionKey, section]) => {
+                section.fields?.forEach((field: any) => {
+                    defaultSelected.push({
+                        key: field.key,
+                        section: sectionKey,
+                    });
+                });
+            });
+    
+            handleCheckboxChange(defaultSelected, { parentKey: "quotationHtmlInfo", childKey: "" });
+        }
+    }, [quotationFields]);
+    
 
     return (
         <View style={{ marginTop: hp('2%') }}>
@@ -97,7 +116,11 @@ const TemplateBuilderComponent = ({ quotationFields, templateValueData, handleCh
                                                 true: '#3B82F6', // ✅ brand blue
                                                 false: isDark ? '#64748B' : '#9CA3AF',
                                             }}
-                                            value={field?.isSelected}
+                                            value={
+                                                templateValueData?.quotationHtmlInfo?.some(
+                                                  (item: any) => item.key === field.key
+                                                ) ?? true
+                                              }
                                             onValueChange={(value) =>
                                                 handleOnChange(value, field, sectionKey)
                                             }

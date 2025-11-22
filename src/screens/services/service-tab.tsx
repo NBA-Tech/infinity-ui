@@ -11,7 +11,7 @@ import { Menu, MenuItem, MenuItemLabel } from '@/components/ui/menu';
 import Modal from 'react-native-modal';
 import { useOfferingStore } from '@/src/store/offering/offering-store';
 import { deleteOfferingApi } from '@/src/api/offering/offering-service';
-import { generateRandomString } from '@/src/utils/utils';
+import { formatCurrency, generateRandomString } from '@/src/utils/utils';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import Skeleton from '@/components/ui/skeleton';
@@ -145,7 +145,7 @@ const ServiceTab = (props: ServiceTabProps) => {
                         style={[globalStyles.greenTextColor, globalStyles.heading3Text]}
                         className="text-right"
                     >
-                        {userDetails?.currencyIcon} {service?.price ?? 0}
+                        {formatCurrency(service?.price || 0)}
                     </Text>
                 </View>
 
