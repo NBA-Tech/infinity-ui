@@ -9,7 +9,6 @@ import {
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
-import clsx from "clsx";
 
 const SCOPE = 'INPUT';
 
@@ -102,48 +101,49 @@ const inputIconStyle = tva({
 ------------------------------------------------------------ */
 
 type IInputProps = React.ComponentProps<typeof UIInput.Root> &
-  VariantProps<typeof inputStyle> & { className?: string };
+  VariantProps<typeof inputStyle> & {
+    className?: string;
+  };
 
-const Input = React.forwardRef<any, IInputProps>(
-  function Input({ className, variant = 'outline', size = 'md', ...props }, ref) {
-    const { isDark = false } = useContext(ThemeToggleContext) || {};
+const Input = React.forwardRef<any, IInputProps>(function Input(
+  { className = '', variant = 'outline', size = 'md', ...props },
+  ref
+) {
+  const { isDark = false } = useContext(ThemeToggleContext) || {};
 
-    // ⭐ pull error state from FormControl
-    const formCtx = useStyleContext("FORM_CONTROL") ?? {};
-    const { isInvalid } = formCtx;
+  const formCtx = useStyleContext('FORM_CONTROL') ?? {};
+  const { isInvalid } = formCtx;
 
-    return (
-      <UIInput.Root
-        ref={ref}
-        {...props}
-        className={clsx(
+  return (
+    <UIInput.Root
+      ref={ref}
+      {...props}
+      className={
+        [
           inputStyle({ variant, size, isDark }),
           className,
-          isInvalid && "border-error-700"
-        )}
-        context={{ variant, size, isDark }}
-      />
-    );
-  }
-);
+          isInvalid ? 'border-error-700' : '',
+        ].join(' ')
+      }
+      context={{ variant, size, isDark }}
+    />
+  );
+});
 
 /* -----------------------------------------------------------
                          INPUT FIELD
 ------------------------------------------------------------ */
 
 const InputField = React.forwardRef<any, any>(function InputField(
-  { className, onFocus, onBlur, ...props },
+  { className = '', onFocus, onBlur, ...props },
   ref
 ) {
   const { isDark = false } = useContext(ThemeToggleContext) || {};
   const { variant: parentVariant, size: parentSize } = useStyleContext(SCOPE);
+  const { isInvalid } = useStyleContext('FORM_CONTROL') ?? {};
 
-  // We get invalid state from FormControl
-  const { isInvalid } = useStyleContext("FORM_CONTROL") ?? {};
-
-  // ⭐ Track focus state
   const [isFocused, setFocused] = useState(false);
-  const globalStyles=useContext(StyleContext)
+  const globalStyles = useContext(StyleContext);
 
   return (
     <UIInput.Input
@@ -157,30 +157,24 @@ const InputField = React.forwardRef<any, any>(function InputField(
         setFocused(false);
         onBlur?.(e);
       }}
-      className={clsx(
-        inputFieldStyle({
-          isDark,
-          parentVariants: { variant: parentVariant, size: parentSize },
-        }),
-
-        className,
-
-        // ⭐ Focus border
-        isFocused && "border-blue-600",
-
-        // ⭐ Invalid border
-        isInvalid && "border-error-700",
-
-        // ⭐ Remove default shadow on focus in iOS
-        "outline-none"
-      )}
+      className={
+        [
+          inputFieldStyle({
+            isDark,
+            parentVariants: { variant: parentVariant, size: parentSize },
+          }),
+          className,
+          isFocused ? 'border-blue-600' : '',
+          isInvalid ? 'border-error-700' : '',
+          'outline-none',
+        ].join(' ')
+      }
       style={[
-        // Native fallback for border color
         globalStyles.normalText,
         isFocused
-          ? { borderColor: "#2563EB" } // blue-600
+          ? { borderColor: '#2563EB' }
           : isInvalid
-          ? { borderColor: "#B91C1C" } // red-700
+          ? { borderColor: '#B91C1C' }
           : {},
       ]}
     />
@@ -192,7 +186,7 @@ const InputField = React.forwardRef<any, any>(function InputField(
 ------------------------------------------------------------ */
 
 const InputIcon = React.forwardRef<any, any>(function InputIcon(
-  { className, size, ...props },
+  { className = '', size, ...props },
   ref
 ) {
   const { isDark = false } = useContext(ThemeToggleContext) || {};
@@ -200,7 +194,10 @@ const InputIcon = React.forwardRef<any, any>(function InputIcon(
     <UIInput.Icon
       ref={ref}
       {...props}
-      className={inputIconStyle({ isDark, class: className })}
+      className={[
+        inputIconStyle({ isDark }),
+        className,
+      ].join(' ')}
       size={size}
     />
   );
@@ -211,7 +208,7 @@ const InputIcon = React.forwardRef<any, any>(function InputIcon(
 ------------------------------------------------------------ */
 
 const InputSlot = React.forwardRef<any, any>(function InputSlot(
-  { className, ...props },
+  { className = '', ...props },
   ref
 ) {
   const { isDark = false } = useContext(ThemeToggleContext) || {};
@@ -220,7 +217,7 @@ const InputSlot = React.forwardRef<any, any>(function InputSlot(
     <UIInput.Slot
       ref={ref}
       {...props}
-      className={inputSlotStyle({ isDark, class: className })}
+      className={[inputSlotStyle({ isDark }), className].join(' ')}
     />
   );
 });
@@ -229,9 +226,9 @@ const InputSlot = React.forwardRef<any, any>(function InputSlot(
                           EXPORTS
 ------------------------------------------------------------ */
 
-Input.displayName = "Input";
-InputField.displayName = "InputField";
-InputSlot.displayName = "InputSlot";
-InputIcon.displayName = "InputIcon";
+Input.displayName = 'Input';
+InputField.displayName = 'InputField';
+InputSlot.displayName = 'InputSlot';
+InputIcon.displayName = 'InputIcon';
 
 export { Input, InputField, InputIcon, InputSlot };
