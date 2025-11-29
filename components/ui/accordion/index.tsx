@@ -18,7 +18,8 @@ import {
 
 import { H3 } from '@expo/html-elements';
 import { cssInterop } from 'nativewind';
-import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
+
+
 
 const SCOPE = 'ACCORDION';
 
@@ -87,7 +88,7 @@ const UIAccordion = {
   Item: View,
   Header,
   Trigger: Pressable,
-  Icon: UIIcon,
+  Icon: View,
   TitleText: Text,
   Content: View,
   ContentText: Text,
@@ -96,18 +97,6 @@ const UIAccordion = {
 /* -------------------------------------------------------------------------- */
 /*                                cssInterop                                   */
 /* -------------------------------------------------------------------------- */
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: 'classNameColor',
-      stroke: true,
-    },
-  },
-});
 
 cssInterop(H3, { className: { target: 'style' } });
 

@@ -12,7 +12,6 @@ import {
   useStyleContext,
 } from '@gluestack-ui/nativewind-utils/withStyleContext';
 import { cssInterop } from 'nativewind';
-import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 
 const SCOPE = 'BUTTON';
@@ -25,18 +24,7 @@ cssInterop(Pressable, { className: { target: 'style' } });
 cssInterop(Text, { className: { target: 'style' } });
 cssInterop(View, { className: { target: 'style' } });
 cssInterop(ActivityIndicator, { className: { target: 'style' } });
-cssInterop(UIIcon, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      stroke: true,
-      color: 'classNameColor',
-    },
-  },
-});
+
 
 /* --------------------------------------------
    ROOT COMPONENT (IMPORTANT FIX!!)
@@ -53,7 +41,7 @@ const UIButton = {
   Text,
   Group: View,
   Spinner: ActivityIndicator,
-  Icon: UIIcon,
+  Icon: View,
 };
 
 /* --------------------------------------------
@@ -243,21 +231,13 @@ const ButtonSpinner = React.forwardRef<any>((props, ref) => {
 --------------------------------------------- */
 
 const ButtonIcon = React.forwardRef<any, any>(function ButtonIcon(
-  { className, size, ...props },
+  { children, className, ...props },
   ref
 ) {
-  const parent = useStyleContext(SCOPE);
-
   return (
-    <UIButton.Icon
-      ref={ref}
-      {...props}
-      className={buttonIconStyle({
-        parentVariants: parent,
-        size,
-        class: className,
-      })}
-    />
+    <View ref={ref} className={className} {...props}>
+      {children}
+    </View>
   );
 });
 

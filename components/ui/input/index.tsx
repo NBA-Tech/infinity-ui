@@ -8,25 +8,12 @@ import {
 } from '@gluestack-ui/nativewind-utils/withStyleContext';
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
-import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
 import clsx from "clsx";
 
 const SCOPE = 'INPUT';
 
 cssInterop(TextInput, { className: { target: 'style' } });
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: 'classNameColor',
-      stroke: true,
-    },
-  },
-});
 
 /* -----------------------------------------------------------
                       Manual Input Component
@@ -38,7 +25,7 @@ const UIInput = {
   Root,
   Slot: Pressable,
   Input: TextInput,
-  Icon: UIIcon,
+  Icon: View,
 };
 
 /* -----------------------------------------------------------

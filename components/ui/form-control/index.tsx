@@ -7,8 +7,6 @@ import {
   withStyleContext,
   useStyleContext,
 } from '@gluestack-ui/nativewind-utils/withStyleContext';
-import { UIIcon } from '@gluestack-ui/icon';
-import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 
 const SCOPE = 'FORM_CONTROL';
 
@@ -17,18 +15,7 @@ const SCOPE = 'FORM_CONTROL';
 -------------------------------------------------- */
 cssInterop(View, { className: { target: 'style' } });
 cssInterop(Text, { className: { target: 'style' } });
-cssInterop(UIIcon, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: true,
-      stroke: true,
-    },
-  },
-});
+
 
 /* -------------------------------------------------
    FORM CONTROL ROOT STYLE
@@ -201,8 +188,9 @@ export const FormControlErrorText = React.forwardRef<any, any>(
 export const FormControlErrorIcon = React.forwardRef<any, any>(
   function FormControlErrorIcon({ className, size, ...props }, ref) {
     const ctx = useStyleContext(SCOPE);
+
     return (
-      <UIIcon
+      <View
         ref={ref}
         {...props}
         className={errorIconStyle({

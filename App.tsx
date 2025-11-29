@@ -25,11 +25,15 @@ import SubscriptionLockOverlay from './src/components/subscription-overlay';
 import { ConnectivityProvider } from './src/providers/internet-connection/connectivity-provider';
 import NoInternetPopup from './src/components/nointernet-popup';
 import { PortalProvider } from '@gorhom/portal';
+import ToastManager from "toastify-react-native";
+
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
+    <>
+      <ToastManager animationDuration={300} />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <PortalProvider>
           <ConnectivityProvider>
@@ -54,6 +58,7 @@ function App() {
           </ConnectivityProvider>
         </PortalProvider>
       </GestureHandlerRootView>
+    </>
   );
 }
 
