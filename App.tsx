@@ -24,35 +24,36 @@ import { SubscriptionProvider } from './src/providers/subscription/subscription-
 import SubscriptionLockOverlay from './src/components/subscription-overlay';
 import { ConnectivityProvider } from './src/providers/internet-connection/connectivity-provider';
 import NoInternetPopup from './src/components/nointernet-popup';
+import { PortalProvider } from '@gorhom/portal';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <GluestackUIProvider mode="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ConnectivityProvider>
-          <SafeAreaProvider>
-            <DataStoreProvider>
-              <ReloadProvider>
-                <AuthProvider>
-                  <GlobalStyleProvider>
-                    <ConfettiProvider>
-                      <NotificationProvider>
-                        <SubscriptionProvider>
-                          <Navigation />
-                          <NoInternetPopup/>
-                        </SubscriptionProvider>
-                      </NotificationProvider>
-                    </ConfettiProvider>
-                  </GlobalStyleProvider>
-                </AuthProvider>
-              </ReloadProvider>
-            </DataStoreProvider>
-          </SafeAreaProvider>
-        </ConnectivityProvider>
+        <PortalProvider>
+          <ConnectivityProvider>
+            <SafeAreaProvider>
+              <DataStoreProvider>
+                <ReloadProvider>
+                  <AuthProvider>
+                    <GlobalStyleProvider>
+                      <ConfettiProvider>
+                        <NotificationProvider>
+                          <SubscriptionProvider>
+                            <Navigation />
+                            <NoInternetPopup />
+                          </SubscriptionProvider>
+                        </NotificationProvider>
+                      </ConfettiProvider>
+                    </GlobalStyleProvider>
+                  </AuthProvider>
+                </ReloadProvider>
+              </DataStoreProvider>
+            </SafeAreaProvider>
+          </ConnectivityProvider>
+        </PortalProvider>
       </GestureHandlerRootView>
-    </GluestackUIProvider>
   );
 }
 

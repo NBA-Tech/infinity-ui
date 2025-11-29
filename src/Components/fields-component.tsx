@@ -305,7 +305,6 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         onChangeText={(value) => field.onChange?.(field.type === "number" ? Number(value) : value)}
                         onBlur={() => field.onBlur?.(field.value)}
                         className={field?.isDisabled || field?.isLoading ? "bg-red" : ""}
-
                     />
                 </Input>
             )}

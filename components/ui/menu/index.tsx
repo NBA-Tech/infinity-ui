@@ -1,25 +1,14 @@
 'use client';
-import React, { useContext } from 'react';
-import { createMenu } from '@gluestack-ui/menu';
-import { tva } from '@gluestack-ui/nativewind-utils/tva';
-import { cssInterop } from 'nativewind';
-import { Pressable, Text, View, ViewStyle } from 'react-native';
-import {
-  Motion,
-  AnimatePresence,
-  MotionComponentProps,
-} from '@legendapp/motion';
-import type { VariantProps } from '@gluestack-ui/nativewind-utils';
+import React, { useState, useContext, useRef } from 'react';
+import { Pressable, View, Text } from 'react-native';
+import { Motion, AnimatePresence } from '@legendapp/motion';
 import { ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
+import { tva } from '@gluestack-ui/nativewind-utils/tva';
+import { Portal } from '@gorhom/portal';
 
-type IMotionViewProps = React.ComponentProps<typeof View> &
-  MotionComponentProps<typeof View, ViewStyle, unknown, unknown, unknown>;
-
-const MotionView = Motion.View as React.ComponentType<IMotionViewProps>;
-
-// ------------------------- TVA STYLES -------------------------
-const menuStyle = tva({
-  base: 'rounded-md border p-1 shadow-hard-5',
+// ----------- TVA -----------
+const menuPanelStyle = tva({
+  base: 'absolute rounded-md border p-1 shadow-hard-5 z-50',
   variants: {
     isDark: {
       true: 'bg-[#0E1628] border-[#1E293B]',
@@ -28,185 +17,93 @@ const menuStyle = tva({
   },
 });
 
-const menuItemStyle = tva({
-  base: 'min-w-[200px] p-3 flex-row items-center rounded transition-all',
+const itemStyle = tva({
+  base: 'p-3 flex-row items-center rounded gap-2 min-w-[180px]',
   variants: {
     isDark: {
-      true: 'text-[#F5F7FA] data-[hover=true]:bg-[#1E293B] data-[active=true]:bg-[#2D3748]',
-      false: 'text-[#182D53] data-[hover=true]:bg-[#E2E8F0] data-[active=true]:bg-[#CBD5E1]',
+      true: 'text-white active:bg-[#1E293B]',
+      false: 'text-black active:bg-[#E2E8F0]',
     },
   },
 });
 
-const menuBackdropStyle = tva({
-  base: 'absolute top-0 bottom-0 left-0 right-0 web:cursor-default',
-  variants: {
-    isDark: {
-      true: 'bg-black/50',
-      false: 'bg-black/20',
-    },
-  },
-});
-
-const menuSeparatorStyle = tva({
-  base: 'h-px w-full',
-  variants: {
-    isDark: {
-      true: 'bg-[#334155]',
-      false: 'bg-[#E2E8F0]',
-    },
-  },
-});
-
-const menuItemLabelStyle = tva({
-  base: 'font-body font-normal',
-  variants: {
-    isDark: {
-      true: 'text-[#F5F7FA]',
-      false: 'text-[#182D53]',
-    },
-    isTruncated: {
-      true: 'web:truncate',
-    },
-    bold: { true: 'font-bold' },
-    underline: { true: 'underline' },
-    strikeThrough: { true: 'line-through' },
-    size: {
-      'sm': 'text-sm',
-      'md': 'text-base',
-      'lg': 'text-lg',
-    },
-  },
-});
-
-// ------------------------- COMPONENTS -------------------------
-
-const BackdropPressable = React.forwardRef<
-  React.ComponentRef<typeof Pressable>,
-  React.ComponentPropsWithoutRef<typeof Pressable> &
-    VariantProps<typeof menuBackdropStyle>
->(function BackdropPressable({ className, ...props }, ref) {
+// ----------- ITEM -----------
+export const MenuItem = ({ className, onPress, children }: any) => {
   const { isDark } = useContext(ThemeToggleContext);
   return (
     <Pressable
-      ref={ref}
-      className={menuBackdropStyle({
-        isDark,
-        class: className,
-      })}
-      {...props}
-    />
+      onPress={onPress}
+      className={itemStyle({ isDark, class: className })}
+    >
+      {children}
+    </Pressable>
   );
-});
+};
 
-type IMenuItemProps = VariantProps<typeof menuItemStyle> & {
-  className?: string;
-} & React.ComponentPropsWithoutRef<typeof Pressable>;
-
-const Item = React.forwardRef<
-  React.ComponentRef<typeof Pressable>,
-  IMenuItemProps
->(function Item({ className, ...props }, ref) {
-  const { isDark } = useContext(ThemeToggleContext);
-  return (
-    <Pressable
-      ref={ref}
-      className={menuItemStyle({
-        isDark,
-        class: className,
-      })}
-      {...props}
-    />
-  );
-});
-
-const Separator = React.forwardRef<
-  React.ComponentRef<typeof View>,
-  React.ComponentPropsWithoutRef<typeof View> &
-    VariantProps<typeof menuSeparatorStyle>
->(function Separator({ className, ...props }, ref) {
-  const { isDark } = useContext(ThemeToggleContext);
-  return (
-    <View
-      ref={ref}
-      className={menuSeparatorStyle({
-        isDark,
-        class: className,
-      })}
-      {...props}
-    />
-  );
-});
-
-// ------------------------- MENU CREATION -------------------------
-export const UIMenu = createMenu({
-  Root: MotionView,
-  Item: Item,
-  Label: Text,
-  Backdrop: BackdropPressable,
-  AnimatePresence: AnimatePresence,
-  Separator: Separator,
-});
-
-cssInterop(MotionView, { className: 'style' });
-
-// ------------------------- MAIN MENU WRAPPER -------------------------
-type IMenuProps = React.ComponentProps<typeof UIMenu> &
-  VariantProps<typeof menuStyle> & { className?: string };
-type IMenuItemLabelProps = React.ComponentProps<typeof UIMenu.ItemLabel> &
-  VariantProps<typeof menuItemLabelStyle> & { className?: string };
-
-const Menu = React.forwardRef<React.ComponentRef<typeof UIMenu>, IMenuProps>(
-  function Menu({ className, ...props }, ref) {
-    const { isDark } = useContext(ThemeToggleContext);
-
-    return (
-      <UIMenu
-        ref={ref}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8 }}
-        transition={{ type: 'timing', duration: 100 }}
-        className={menuStyle({ isDark, class: className })}
-        {...props}
-      />
-    );
-  }
+export const MenuItemLabel = ({ style, children }: any) => (
+  <Text style={style}>{children}</Text>
 );
 
-const MenuItem = UIMenu.Item;
-
-const MenuItemLabel = React.forwardRef<
-  React.ComponentRef<typeof UIMenu.ItemLabel>,
-  IMenuItemLabelProps
->(function MenuItemLabel(
-  { className, isTruncated, bold, underline, strikeThrough, size = 'md', ...props },
-  ref
-) {
+// ----------- MAIN MENU -----------
+export const Menu = ({
+  trigger,
+  placement = 'bottom',
+  offset = 6,
+  style,
+  children,
+}: any) => {
   const { isDark } = useContext(ThemeToggleContext);
+
+  const [open, setOpen] = useState(false);
+  const [triggerPos, setTriggerPos] = useState({ x: 0, y: 0, w: 0, h: 0 });
+
   return (
-    <UIMenu.ItemLabel
-      ref={ref}
-      className={menuItemLabelStyle({
-        isDark,
-        isTruncated,
-        bold,
-        underline,
-        strikeThrough,
-        size,
-        class: className,
-      })}
-      {...props}
-    />
+    <>
+      {/* TRIGGER */}
+      <View
+        onLayout={(e) => {
+          const { x, y, width, height } = e.nativeEvent.layout;
+          setTriggerPos({ x, y, w: width, h: height });
+        }}
+      >
+        {trigger({ onPress: () => setOpen(true) })}
+      </View>
+
+      {/* MENU */}
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* BACKDROP */}
+            <Pressable
+              className="absolute left-0 right-0 top-0 bottom-0 z-40"
+              onPress={() => setOpen(false)}
+            />
+
+            {/* POPUP */}
+            <Portal>
+              <Motion.View
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: 'timing', duration: 120 }}
+                style={[
+                  {
+                    position: 'absolute',
+                    top: triggerPos.y + triggerPos.h + offset,
+                    left: triggerPos.x,
+                    zIndex: 9999,
+                  },
+                  style,
+                ]}
+                className={menuPanelStyle({ isDark })}
+              >
+                {children}
+              </Motion.View>
+            </Portal>
+
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
-});
-
-const MenuSeparator = UIMenu.Separator;
-
-// ------------------------- DISPLAY NAMES -------------------------
-Menu.displayName = 'Menu';
-MenuItem.displayName = 'MenuItem';
-MenuItemLabel.displayName = 'MenuItemLabel';
-MenuSeparator.displayName = 'MenuSeparator';
-
-export { Menu, MenuItem, MenuItemLabel, MenuSeparator };
+};

@@ -20,7 +20,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { checkValidEmail, getCountries, getStates, isAllLoadingFalse,  patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { SelectItem } from '@/components/ui/select';
 import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, LEADSOURCE } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, FormFields, RootStackParamList } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';

@@ -1,23 +1,18 @@
 import GradientCard from '@/src/utils/gradient-card';
 import React, { use, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView,Image } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { Divider } from '@/components/ui/divider';
 import { Card } from '@/components/ui/card';
 import Feather from 'react-native-vector-icons/Feather';
-import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
 import { Input, InputField, InputSlot } from '@/components/ui/input';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { FormFields } from '@/src/types/common';
-import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { BUSINESSTYPE } from '@/src/constant/constants';
 import { getCountries, getStates, isValidGST, isValidPAN, patchState, validateValues } from '@/src/utils/utils';
-import { Image } from '@/components/ui/image';
-import Logo from '../../assets/images/logo.png'
-import { Country } from 'country-state-city';
 import { firebaseUploadImage } from '@/src/services/firebase/firebase-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { UserModel } from '@/src/types/user/user-type';
