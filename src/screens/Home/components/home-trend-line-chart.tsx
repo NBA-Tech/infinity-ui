@@ -157,7 +157,6 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
     }, [openingBeforeRange, monthsInfo, incomeByMonth, outgoingByMonth, invoices, investments, today]);
 
 
-
     return (
         <TouchableWithoutFeedback onPress={() => setMarkerData(null)}>
 
@@ -210,7 +209,8 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                     <Skeleton width={wp("92%")} height={hp("36%")} />
                 ) : (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View style={{ width: wp("120%"), height: hp("35%") }}>
+
+                        <View style={{ width: wp("100%"), height: hp("35%") }}>
                             <LineChart
                                 style={{ flex: 1 }}
                                 data={{
@@ -219,6 +219,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                                             values: dataPoints,
                                             label: "Ending Balance",
                                             config: {
+                                                fitScreen: true,
                                                 mode: "CUBIC_BEZIER",
                                                 drawCircles: true,
                                                 circleRadius: 5,
@@ -243,15 +244,18 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                                 }}
                                 xAxis={{
                                     valueFormatter: monthsInfo.map((m) => m.label),
-                                    granularityEnabled: true,
                                     granularity: 1,
                                     textColor: processColor("#6B7280"),
                                     fontFamily: "OpenSans-Regular",
                                     position: "BOTTOM",
                                     drawAxisLine: false,
                                     drawGridLines: false,
-                                    axisMinimum: 0,
-                                    axisMaximum: monthsInfo.length - 1,
+                                    granularityEnabled: false,
+                                    axisMinimum: -0.5,
+                                    axisMaximum: monthsInfo.length - 0.5,
+                                    labelCount: monthsInfo.length,
+                                    spaceBetweenLabels: 0,
+
                                 }}
                                 yAxis={{
                                     left: {
@@ -263,6 +267,8 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                                         fontFamily: "OpenSans-Regular",
                                         // Force chart to start at 0 (avoids negative area)
                                         axisMinimum: 0,
+                                        valueFormatter: dataPoints.some((d) => parseInt(d.y) > 0) && "largeValue"
+
                                     },
                                     right: { enabled: false },
                                 }}
