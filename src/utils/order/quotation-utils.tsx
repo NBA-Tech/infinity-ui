@@ -172,14 +172,7 @@ export const getQuotationFields = (
                 html: `<div class="card"><span>Terms & Conditions:</span> ${userDetails?.userBusinessInfo?.termsAndConditions}</div>`,
                 isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "terms" && userDetails?.userBusinessInfo?.termsAndConditions),
             },
-            {
-                key: "signature",
-                heading: "Authorized Signature",
-                description: "Signature of the photographer/studio",
-                icon: <Feather name="edit-3" size={wp("5%")} color="#F59E0B" />,
-                html: `<div class="signature-box">Authorized Signature<br/>____________________</div>`,
-                isSelected: orderDetails?.quotationHtmlInfo?.some((section) => section?.key === "signature"),
-            },
+          
         ],
     },
 })

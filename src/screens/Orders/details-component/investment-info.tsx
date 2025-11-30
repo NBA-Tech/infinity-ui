@@ -135,7 +135,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 patchState("", "investmentType", value, true, setInvestmentDetails, setErrors);
             },
         }
-    }), [investmentDetails])
+    }), [investmentDetails,openDate])
 
     const handleCreateOrUpdateInvestment = async () => {
         const validateInput = validateValues(investmentDetails, investmentFormFields)
@@ -313,7 +313,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Investments</Text>
                     <CustomFieldsComponent infoFields={investmentFormFields} cardStyle={{ padding: hp("2%") }} />
                     <Button
-                        size="sm"
+                        size="lg"
                         variant="solid"
                         action="primary"
                         style={[globalStyles.buttonColor, { marginVertical: hp('2%') }]}

@@ -55,11 +55,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
 
                 </Text>
             </Card>
-            {props?.orderForm?.orderId?.value && (
-                <Divider />
-            )
-
-            }
+           
             {props?.orderForm?.orderId?.value && (
                 <Card style={globalStyles.cardShadowEffect}>
                     <ScrollView

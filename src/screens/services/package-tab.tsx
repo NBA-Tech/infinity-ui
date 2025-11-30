@@ -157,9 +157,9 @@ const PackageTab = (props: PackageProps) => {
                 className="p-4 mb-3 rounded-2xl"
                 style={[
                     globalStyles.cardShadowEffect,
-                     {
+                    {
                         borderLeftWidth: 4,
-                        borderLeftColor:  isDark ? "#10B981" : "#34D399",
+                        borderLeftColor: isDark ? "#10B981" : "#34D399",
                     },
                 ]}
             >
@@ -186,11 +186,9 @@ const PackageTab = (props: PackageProps) => {
                             {pkg.description}
                         </Text>
                     </View>
-
                     {/* Menu */}
                     <Menu
                         placement="bottom"
-                        offset={5}
                         style={globalStyles.appBackground}
                         trigger={({ ...triggerProps }) => (
                             <Button
@@ -274,44 +272,46 @@ const PackageTab = (props: PackageProps) => {
                     )}
 
                     {/* Services List */}
-                    {pkg.serviceList && pkg.serviceList.length > 0 && (
-                        <View className="mt-2">
-                            {pkg.serviceList.slice(0, 5).map((serviceItem) => (
-                                <View
-                                    key={serviceItem.id}
-                                    className="flex-row justify-between mb-1"
-                                >
-                                    <Text
-                                        style={[
-                                            globalStyles.smallText,
-                                            { color: isDark ? "#9CA3AF" : "#374151" },
-                                        ]}
+                    <View style={{marginRight: wp("5%")}}>
+                        {pkg.serviceList && pkg.serviceList.length > 0 && (
+                            <View className="mt-2">
+                                {pkg.serviceList.slice(0, 5).map((serviceItem) => (
+                                    <View
+                                        key={serviceItem.id}
+                                        className="flex-row justify-between mb-1"
                                     >
-                                        {serviceItem.name}
-                                    </Text>
-                                    <Text
-                                        style={[
-                                            globalStyles.smallText,
-                                            { color: isDark ? "#9CA3AF" : "#6B7280" },
-                                        ]}
-                                    >
-                                        x{serviceItem.value}
-                                    </Text>
-                                </View>
-                            ))}
+                                        <Text
+                                            style={[
+                                                globalStyles.smallText,
+                                                { color: isDark ? "#9CA3AF" : "#374151" },
+                                            ]}
+                                        >
+                                            {serviceItem.name}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                globalStyles.smallText,
+                                                { color: isDark ? "#9CA3AF" : "#6B7280" },
+                                            ]}
+                                        >
+                                            x{serviceItem.value}
+                                        </Text>
+                                    </View>
+                                ))}
 
-                            {pkg.serviceList.length > 5 && (
-                                <Text
-                                    style={[
-                                        globalStyles.smallText,
-                                        { color: isDark ? "#9CA3AF" : "#6B7280", marginTop: 2 },
-                                    ]}
-                                >
-                                    +{pkg.serviceList.length - 5} more services
-                                </Text>
-                            )}
-                        </View>
-                    )}
+                                {pkg.serviceList.length > 5 && (
+                                    <Text
+                                        style={[
+                                            globalStyles.smallText,
+                                            { color: isDark ? "#9CA3AF" : "#6B7280", marginTop: 2 },
+                                        ]}
+                                    >
+                                        +{pkg.serviceList.length - 5} more services
+                                    </Text>
+                                )}
+                            </View>
+                        )}
+                    </View>
                 </View>
 
                 {/* Footer */}
@@ -366,7 +366,7 @@ const PackageTab = (props: PackageProps) => {
 
     return (
         <ScrollView
-            style={{ margin: wp('2%')}}
+            style={{ margin: wp('2%') }}
             contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
             showsVerticalScrollIndicator={false}
         >

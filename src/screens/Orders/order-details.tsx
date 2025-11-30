@@ -325,7 +325,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
             <View>
                 <View className='flex flex-row justify-between items-center' style={{marginVertical:hp('2%')}}>
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
+                        style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Quoted</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(orderDetails?.totalPrice)}`}</Text>
@@ -334,7 +334,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     </Card>
 
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
+                        style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Paid</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(invoiceDetails?.reduce((total, invoice) => total + invoice?.amountPaid, 0))}`}</Text>
@@ -342,7 +342,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         </View>
                     </Card>
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('30%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
+                        style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-col justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Invested</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0))}`}</Text>
