@@ -323,21 +323,6 @@ export const PLAN_DETAILS = {
 
   },
   premium: {
-    PREMIUM_YEARLY: {
-      planId: "PREMIUM_YEARLY",
-      planName: "Annual Price",
-      planTitle: "$10/month",
-      planDescription: "₹2999/year — Gain full access to premium CRM tools and in-depth business insights.",
-      durationInDays: 365,
-      price: 365,
-      featureList: [
-        "Full feature access",
-        "Unlimited users",
-        "Unlimited projects",
-        "Unlimited tasks",
-        "Unlimited team members",
-      ]
-    },
     PREMIUM_MONTHLY: {
       planId: "PREMIUM_MONTHLY",
       planName: "Monthly Price",
@@ -352,6 +337,22 @@ export const PLAN_DETAILS = {
         "Unlimited tasks",
         "Unlimited team members",
       ]
-    }
+    },
+    PREMIUM_YEARLY: {
+      planId: "PREMIUM_YEARLY",
+      planName: "Annual Price",
+      planTitle: "$10/month",
+      planDescription: "₹2999/year — Gain full access to premium CRM tools and Save 2 month subscription!).",
+      durationInDays: 365,
+      price: 365,
+      featureList: [
+        "Full feature access",
+        "Unlimited users",
+        "Unlimited projects",
+        "Unlimited tasks",
+        "Unlimited team members",
+      ]
+    },
+  
   }
 }

@@ -310,14 +310,6 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                 </Input>
             )}
 
-            {/* Validation */}
-            {field.isRequired && !errors?.[field.key] && (
-                <FormControlHelper>
-                    <FormControlHelperText style={[globalStyles.greyTextColor, globalStyles.smallText]}>
-                        This field is required
-                    </FormControlHelperText>
-                </FormControlHelper>
-            )}
             {field.isRequired && errors?.[field.key] && (
                 <FormControlError style={globalStyles.errorContainer}>
                     <Feather name="alert-triangle" size={20} color="#D32F2F" />

@@ -67,7 +67,7 @@ export const useToastMessage = () => {
           nativeID={`toast-${id}`}
           style={[
             styles.toastContainer,
-            { backgroundColor: theme.backgroundColor, borderColor: theme.borderColor }
+            { backgroundColor: theme.backgroundColor, borderColor: theme.borderColor },
           ]}
         >
           <View style={styles.toastContent}>

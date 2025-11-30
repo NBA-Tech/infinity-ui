@@ -151,7 +151,7 @@ const Login = ({ setCurrScreen }: any) => {
                 {formFields.map((field, index) => (
                     <FormControl key={index} style={{ marginVertical: hp("1%") }}>
                         <FormControlLabel>
-                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{field?.label}</FormControlLabelText>
+                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{field?.label}</FormControlLabelText>
                         </FormControlLabel>
                         <Input size='lg' variant='rounded'>
                             <InputSlot style={{ paddingLeft: wp('2%') }}>
@@ -182,7 +182,7 @@ const Login = ({ setCurrScreen }: any) => {
                 ))}
                 <View style={styles.forgotPasswordContainer}>
                     <TouchableOpacity onPress={() => setCurrScreen("forgot")}>
-                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor, globalStyles.subHeadingText]}>Forgot Password?</Text>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor, globalStyles.normalBoldText]}>Forgot Password?</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ marginVertical: hp("1%") }}>

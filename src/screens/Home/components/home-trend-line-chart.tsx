@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useContext } from "react";
-import { View, Text, processColor, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, processColor, ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { LineChart } from "react-native-charts-wrapper";
 import { Card } from "@/components/ui/card";
 import {
@@ -159,168 +159,171 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
 
 
     return (
-        <Card style={{ padding: wp("4%"), marginVertical: hp("2%") }}>
-            <View className="flex flex-row justify-between items-center">
-                <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Cash Flow ({today.getFullYear()})</Text>
-                <View>
-                    <Tooltip
-                        isVisible={toolTipVisible}
-                        content={<Text style={globalStyles.normalText}>This Widget will show you the cash flow in this particular year.</Text>}
-                        placement={Placement.BOTTOM}
-                        onClose={() => setToolTipVisible(false)}>
-                        <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-                            <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                        </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={() => setMarkerData(null)}>
 
-                    </Tooltip>
+            <Card style={{ padding: wp("4%"), marginVertical: hp("2%") }}>
+                <View className="flex flex-row justify-between items-center">
+                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Cash Flow ({today.getFullYear()})</Text>
+                    <View>
+                        <Tooltip
+                            isVisible={toolTipVisible}
+                            content={<Text style={globalStyles.normalText}>This Widget will show you the cash flow in this particular year.</Text>}
+                            placement={Placement.BOTTOM}
+                            onClose={() => setToolTipVisible(false)}>
+                            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                                <Feather name="info" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                            </TouchableOpacity>
 
-                </View>
-            </View>
+                        </Tooltip>
 
-            {/* Tooltip */}
-            {markerData && (
-                <View style={styles.tooltip}>
-                    <Text style={styles.tooltipTitle}>{markerData.month} {markerData.year}</Text>
-
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Opening Bal.</Text>
-                        <Text style={styles.value}>{formatCurrency(markerData.opening)}</Text>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={[styles.label, { color: "#16A34A" }]}>Income</Text>
-                        
-                        <Text style={[styles.value, { color: "#16A34A" }]}>{formatCurrency(markerData.income)}</Text>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={[styles.label, { color: "#DC2626" }]}>Outgoing</Text>
-                        <Text style={[styles.value, { color: "#DC2626" }]}>{formatCurrency(markerData.outgoing)}</Text>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={[styles.label, { color: "#2563EB" }]}>Ending Bal.</Text>
-                        <Text style={[styles.value, { color: "#2563EB" }]}>{formatCurrency(markerData.ending)}</Text>
                     </View>
                 </View>
-            )}
-            {loading ? (
-                <Skeleton width={wp("92%")} height={hp("36%")} />
-            ) : (
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ width: wp("120%"), height: hp("35%") }}>
-                        <LineChart
-                            style={{ flex: 1 }}
-                            data={{
-                                dataSets: [
-                                    {
-                                        values: dataPoints,
-                                        label: "Ending Balance",
-                                        config: {
-                                            mode: "CUBIC_BEZIER",
-                                            drawCircles: true,
-                                            circleRadius: 5,
-                                            circleColor: processColor("#2563EB"),
-                                            drawValues: false,
-                                            lineWidth: 3,
-                                            color: processColor("#2563EB"),
-                                            drawFilled: true,
-                                            fillGradient: {
-                                                colors: [
-                                                    processColor("rgba(37, 99, 235, 0.35)"),
-                                                    processColor("rgba(255,255,255,0)"),
-                                                ],
-                                                positions: [0, 1],
-                                                angle: 90,
-                                                orientation: "TOP_BOTTOM",
+
+                {/* Tooltip */}
+                {markerData && (
+                    <View style={styles.tooltip}>
+                        <Text style={styles.tooltipTitle}>{markerData.month} {markerData.year}</Text>
+
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Opening Bal.</Text>
+                            <Text style={styles.value}>{formatCurrency(markerData.opening)}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={[styles.label, { color: "#16A34A" }]}>Income</Text>
+
+                            <Text style={[styles.value, { color: "#16A34A" }]}>{formatCurrency(markerData.income)}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={[styles.label, { color: "#DC2626" }]}>Outgoing</Text>
+                            <Text style={[styles.value, { color: "#DC2626" }]}>{formatCurrency(markerData.outgoing)}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={[styles.label, { color: "#2563EB" }]}>Ending Bal.</Text>
+                            <Text style={[styles.value, { color: "#2563EB" }]}>{formatCurrency(markerData.ending)}</Text>
+                        </View>
+                    </View>
+                )}
+                {loading ? (
+                    <Skeleton width={wp("92%")} height={hp("36%")} />
+                ) : (
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <View style={{ width: wp("120%"), height: hp("35%") }}>
+                            <LineChart
+                                style={{ flex: 1 }}
+                                data={{
+                                    dataSets: [
+                                        {
+                                            values: dataPoints,
+                                            label: "Ending Balance",
+                                            config: {
+                                                mode: "CUBIC_BEZIER",
+                                                drawCircles: true,
+                                                circleRadius: 5,
+                                                circleColor: processColor("#2563EB"),
+                                                drawValues: false,
+                                                lineWidth: 3,
+                                                color: processColor("#2563EB"),
+                                                drawFilled: true,
+                                                fillGradient: {
+                                                    colors: [
+                                                        processColor("rgba(37, 99, 235, 0.35)"),
+                                                        processColor("rgba(255,255,255,0)"),
+                                                    ],
+                                                    positions: [0, 1],
+                                                    angle: 90,
+                                                    orientation: "TOP_BOTTOM",
+                                                },
+                                                fillAlpha: 180,
                                             },
-                                            fillAlpha: 180,
                                         },
-                                    },
-                                ],
-                            }}
-                            xAxis={{
-                                valueFormatter: monthsInfo.map((m) => m.label),
-                                granularityEnabled: true,
-                                granularity: 1,
-                                textColor: processColor("#6B7280"),
-                                fontFamily: "OpenSans-Regular",
-                                position: "BOTTOM",
-                                drawAxisLine: false,
-                                drawGridLines: false,
-                                axisMinimum: 0,
-                                axisMaximum: monthsInfo.length - 1,
-                            }}
-                            yAxis={{
-                                left: {
-                                    drawAxisLine: false,
-                                    drawLabels: true,
+                                    ],
+                                }}
+                                xAxis={{
+                                    valueFormatter: monthsInfo.map((m) => m.label),
+                                    granularityEnabled: true,
+                                    granularity: 1,
                                     textColor: processColor("#6B7280"),
-                                    gridColor: processColor("#E5E7EB"),
-                                    drawGridLines: true,
                                     fontFamily: "OpenSans-Regular",
-                                    // Force chart to start at 0 (avoids negative area)
+                                    position: "BOTTOM",
+                                    drawAxisLine: false,
+                                    drawGridLines: false,
                                     axisMinimum: 0,
-                                },
-                                right: { enabled: false },
-                            }}
-                            dragEnabled
-                            scaleEnabled={false}
-                            pinchZoom={false}
-                            doubleTapToZoomEnabled={false}
-                            onSelect={(e: any) => {
-                                const d = e?.nativeEvent;
-                                // the chart returns the clicked entry with .data or .raw depending on lib version; handle both.
-                                const raw = d?.data?.raw ?? d?.entry?.data?.raw ?? d?.entry?.raw ?? d?.data;
-                                if (raw) setMarkerData(raw);
-                            }}
-                            marker={{ enabled: false }}
-                            animation={{ durationX: 600 }}
-                            chartDescription={{ text: "" }}
-                            legend={{ enabled: false }}
-                        />
+                                    axisMaximum: monthsInfo.length - 1,
+                                }}
+                                yAxis={{
+                                    left: {
+                                        drawAxisLine: false,
+                                        drawLabels: true,
+                                        textColor: processColor("#6B7280"),
+                                        gridColor: processColor("#E5E7EB"),
+                                        drawGridLines: true,
+                                        fontFamily: "OpenSans-Regular",
+                                        // Force chart to start at 0 (avoids negative area)
+                                        axisMinimum: 0,
+                                    },
+                                    right: { enabled: false },
+                                }}
+                                dragEnabled
+                                scaleEnabled={false}
+                                pinchZoom={false}
+                                doubleTapToZoomEnabled={false}
+                                onSelect={(e: any) => {
+                                    const d = e?.nativeEvent;
+                                    // the chart returns the clicked entry with .data or .raw depending on lib version; handle both.
+                                    const raw = d?.data?.raw ?? d?.entry?.data?.raw ?? d?.entry?.raw ?? d?.data;
+                                    if (raw) setMarkerData(raw);
+                                }}
+                                marker={{ enabled: false }}
+                                animation={{ durationX: 600 }}
+                                chartDescription={{ text: "" }}
+                                legend={{ enabled: false }}
+                            />
+                        </View>
+                    </ScrollView>
+
+                )
+
+                }
+
+
+
+                {/* Footer summary */}
+                <View style={{ marginTop: hp("4%") }}>
+
+                    <View style={styles.footerRow}>
+                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                            Cash as on {today.toLocaleDateString()}
+                        </Text>
+                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                            {formatCurrency(cashAsOnToday)}
+                        </Text>
                     </View>
-                </ScrollView>
 
-            )
+                    <View style={styles.footerRow}>
+                        <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
+                            + Incoming
+                        </Text>
+                        <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
+                            {formatCurrency(totalIncome)}
+                        </Text>
+                    </View>
 
-            }
+                    <View style={styles.footerRow}>
+                        <Text style={[globalStyles.heading3Text, { color: "#DC2626" }]}>
+                            - Outgoing
+                        </Text>
+                        <Text style={[globalStyles.heading3Text, { color: "#DC2626" }]}>
+                            {formatCurrency(totalOutgoing)}
+                        </Text>
+                    </View>
 
-
-
-            {/* Footer summary */}
-            <View style={{ marginTop: hp("4%") }}>
-
-                <View style={styles.footerRow}>
-                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-                        Cash as on {today.toLocaleDateString()}
-                    </Text>
-                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-                        {formatCurrency(cashAsOnToday)}
-                    </Text>
                 </View>
 
-                <View style={styles.footerRow}>
-                    <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
-                        + Incoming
-                    </Text>
-                    <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
-                        {formatCurrency(totalIncome)}
-                    </Text>
-                </View>
-
-                <View style={styles.footerRow}>
-                    <Text style={[globalStyles.heading3Text, { color: "#DC2626" }]}>
-                        - Outgoing
-                    </Text>
-                    <Text style={[globalStyles.heading3Text, { color: "#DC2626" }]}>
-                        {formatCurrency(totalOutgoing)}
-                    </Text>
-                </View>
-
-            </View>
-
-        </Card>
+            </Card>
+        </TouchableWithoutFeedback>
     );
 }
 

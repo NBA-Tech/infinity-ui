@@ -42,7 +42,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
   // ➕ Add service row
   const handleAddRow = () => {
     if (rows.length >= serviceList.length) return;
-    updateRows([...rows, { id: "", name: "", value: 0 } as ServiceModel]);
+    updateRows([...rows, { id: "", name: "", value: "" } as ServiceModel]);
   };
 
   // ✏ Update a row value
@@ -167,11 +167,15 @@ const CustomServiceAddComponent: React.FC<Props> = ({
                 value={String(row.value ?? "")}
                 placeholder="Qty"
                 keyboardType="numeric"
+                style={{
+                  textAlign: "center"     // ⭐ Center text here
+                }}
                 onChangeText={(val) =>
                   handleUpdateRow(index, "value", parseInt(val))
                 }
               />
             </Input>
+
           </View>
 
           {/* Delete Button */}

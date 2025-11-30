@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
 import { Spinner } from "@/components/ui/spinner";
 import { scaleFont } from "@/src/styles/global";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -36,7 +37,7 @@ export default function SplashScreen() {
   }, [navigation, isInitialized]);
 
   return (
-    <View style={[styles.root, globalStyles.appBackground]}>
+    <SafeAreaView style={[globalStyles.appBackground]}>
       {/* Center Section */}
       <View style={styles.centerContainer}>
         {/* Circular Logo Section */}
@@ -72,7 +73,7 @@ export default function SplashScreen() {
       {/* Info Card */}
       <Card
         style={[globalStyles.cardShadowEffect, styles.infoCard]}
-        className="rounded-3xl bg-white dark:bg-[#0E1628] p-5 mx-4 my-6"
+        className="rounded-3xl bg-white dark:bg-[#0E1628]"
       >
         {/* Title Section */}
         <View style={styles.titleContainer}>
@@ -106,7 +107,7 @@ export default function SplashScreen() {
           <Spinner size={"large"} color={isDark ? "#9CC4FF" : "#182D53"} />
         </View>
       </Card>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -114,52 +115,51 @@ export default function SplashScreen() {
  * RESPONSIVE STYLES
  * -------------------------------------- */
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   centerContainer: {
-    justifyContent: "center",
+    justifyContent: "flex-start",   // <--- change
     alignItems: "center",
-    flexGrow: 1,
-    paddingTop: hp("4%"),
-  },
+    flex: 1,
+    paddingTop: hp("2%"),           // <--- reduce height
+  },  
   logoCircle: {
     justifyContent: "center",
     alignItems: "center",
     borderRadius: hp("10%"),
-    width: hp("18%"),
-    height: hp("18%"),
+    width: hp("20%"),        // increased
+    height: hp("20%"),       // increased
+    paddingTop: hp("1.5%"),  // NEW
+    paddingBottom: hp("1.5%"), // NEW
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 7,
     elevation: 7,
     marginBottom: hp("2%"),
-  },
+  },  
   logoImage: {
-    height: hp("8%"),
-    width: hp("8%"),
+    height: hp("7.2%"),
+    width: hp("7.2%"),
   },
   lottie: {
     width: wp("90%"),
     height: hp("40%"),
   },
   infoCard: {
-    paddingVertical: hp("3%"),
+    paddingVertical: hp("2.5%"),
     borderTopLeftRadius: wp("8%"),
     borderTopRightRadius: wp("8%"),
     paddingHorizontal: wp("5%"),
-    marginBottom: hp("1.5%"),
+    minHeight: hp("32%"),           // <--- NEW (forces visibility)
     ...Platform.select({
-      android: { elevation: 8 },
+      android: { elevation: 10 },
       ios: {
         shadowColor: "#000",
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.18,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
       },
     }),
-  },
+  },  
   titleContainer: {
     alignItems: "center",
     justifyContent: "center",

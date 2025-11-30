@@ -281,7 +281,14 @@ const services = () => {
             isVisible:activeTab==SERVICETYPE.SERVICE,
             isDisabled: false,
             value: servieDetails?.sessionType,
-            dropDownItems: Object.values(SESSIONTYPE).map((item) => { return { label: item, value: item } }),
+            dropDownItems: Object.values(SESSIONTYPE).map((item) => ({
+                value: item,
+                label: item
+                  .toLowerCase()
+                  .split("_")
+                  .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                  .join(" "),
+              })),
             onChange(value: string) {
                 patchState("", 'sessionType', value, activeTab==SERVICETYPE.SERVICE, setServiceDetails, setErrors)
             }
@@ -433,7 +440,7 @@ const services = () => {
 
     return (
         <SafeAreaView style={globalStyles.appBackground} >
-            <BackHeader screenName='Services' />
+            <BackHeader screenName='Services & Packages' />
             <Modal
                 isVisible={isOpen}
                 onBackdropPress={() => reset()}

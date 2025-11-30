@@ -13,10 +13,10 @@ const QuickActions = () => {
 
     const quickActionsList = [
         { label: "Create Customer", icon: "user-plus", color: "#8B5CF6", onPress: () => navigation.navigate("CreateCustomer") },
-        { label: "Create Service", icon: "settings", color: "#3B82F6", onPress: () => navigation.navigate("Services") },
+        { label: "Create Quote", icon: "tag", color: "#EF4444", onPress: () => navigation.navigate("CreateQuotation") },
         { label: "Create Order", icon: "shopping-cart", color: "#F97316", onPress: () => navigation.navigate("CreateOrder") },
         { label: "Create Invoice", icon: "file-text", color: "#22C55E", onPress: () => navigation.navigate("CreateInvoice") },
-        { label: "Create Quote", icon: "tag", color: "#EF4444", onPress: () => navigation.navigate("CreateQuotation") },
+        { label: "Create Service", icon: "settings", color: "#3B82F6", onPress: () => navigation.navigate("Services") },
     ];
 
     return (

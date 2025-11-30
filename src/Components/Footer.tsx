@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet,Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { ThemeToggleContext, StyleContext } from '../providers/theme/global-style-provider';
@@ -212,8 +212,20 @@ const Footer = (props: FooterProps) => {
                         onPress={onPress}
                         style={styles.footerElements}
                     >
-                        <View style={isFocused ? styles.activeIconWrapper : null}>
+                        <View style={{ alignItems: "center" }}>
                             {iconSet ? (isFocused ? iconSet.active : iconSet.inactive) : null}
+
+                            <Text
+                                style={[
+                                    globalStyle.smallText,
+                                    {
+                                        color: isFocused ? activeIconColorStart : "#888",
+                                        marginTop: hp("0.3%")
+                                    }
+                                ]}
+                            >
+                                {routeName.charAt(0).toUpperCase() + routeName.slice(1)}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 );

@@ -14,7 +14,9 @@ import { InvestmentModel } from "@/src/types/investment/investment-type";
 import { ApprovalStatus, OrderModel } from "@/src/types/order/order-type";
 import { useUserStore } from "@/src/store/user/user-store";
 import { formatCurrency } from "@/src/utils/utils";
-
+import Feather from "react-native-vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@/src/types/common";
 interface DashboardStatsProps {
   invoices: Invoice[];
   investments: InvestmentModel[];
@@ -24,6 +26,7 @@ interface DashboardStatsProps {
 
 export const DashboardStats = (props: DashboardStatsProps) => {
   const globalStyles = useContext(StyleContext);
+  const navigation=useNavigation<NavigationProp>();
   const { userDetails } = useUserStore();
   const { isDark } = useContext(ThemeToggleContext);
 
@@ -107,7 +110,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
           backgroundColor: leftCardBg,
         }}
       >
-        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+        <Text style={[globalStyles.normalBoldText, globalStyles.greyTextColor]}>
           Total Invoiced
         </Text>
         <Text
@@ -127,7 +130,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
         </Text>
         <View style={{ height: hp("2%") }} />
         {/* Receivables */}
-        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+        <Text style={[globalStyles.normalBoldText, globalStyles.greyTextColor]}>
           Total Receivables
         </Text>
         <Text
@@ -149,7 +152,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
         <View style={{ height: hp("2%") }} />
 
         {/* Investments */}
-        <Text style={[globalStyles.heading3Text, globalStyles.greyTextColor]}>
+        <Text style={[globalStyles.normalBoldText, globalStyles.greyTextColor]}>
           Total Invested
         </Text>
         <Text
@@ -172,31 +175,50 @@ export const DashboardStats = (props: DashboardStatsProps) => {
       {/* RIGHT SIDE BOXES ------------------------------------- */}
       <View style={{ width: wp("36%"), justifyContent: "space-between" }}>
         {/* Total Orders */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
           <Card
             style={{
               paddingVertical: hp("3%"),
-              paddingHorizontal: wp("4%"),
               borderRadius: wp("5%"),
               backgroundColor: rightBoxBg,
             }}
           >
-            <Text
-              style={[
-                globalStyles.heading2Text,
-                { color: rightBoxHeading, marginBottom: hp("0.5%") },
-              ]}
+            {/* FIRST ROW → number + right arrow */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: hp("0.8%"),
+              }}
             >
-              {loading ? "..." : stats.totalOrders}
-            </Text>
+              <Text
+                style={[
+                  globalStyles.heading2Text,
+                  { color: rightBoxHeading }
+                ]}
+              >
+                {loading ? "..." : stats.totalOrders}
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={hp("2.5%")}
+                color={rightBoxHeading}
+              />
+            </View>
+
+            {/* SECOND ROW → subtitle */}
             <Text style={[globalStyles.smallText, { color: rightBoxSub }]}>
               Total Orders
             </Text>
           </Card>
+
+
         </TouchableOpacity>
 
         {/* Pending Quotes */}
-        <TouchableOpacity style={{ marginTop: hp("2%") }}>
+        <TouchableOpacity style={{ marginTop: hp("2%") }} onPress={() => navigation.navigate("Quotations")}>
           <Card
             style={{
               paddingVertical: hp("3%"),
@@ -205,18 +227,37 @@ export const DashboardStats = (props: DashboardStatsProps) => {
               backgroundColor: rightBoxBg,
             }}
           >
-            <Text
-              style={[
-                globalStyles.heading2Text,
-                { color: rightBoxHeading, marginBottom: hp("0.5%") },
-              ]}
+            {/* ROW: value + chevron */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: hp("0.8%"),
+              }}
             >
-              {loading ? "..." : stats.totalQuotes}
-            </Text>
+              <Text
+                style={[
+                  globalStyles.heading2Text,
+                  { color: rightBoxHeading }
+                ]}
+              >
+                {loading ? "..." : stats.totalQuotes}
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={hp("2.5%")}
+                color={rightBoxHeading}
+              />
+            </View>
+
+            {/* Subtitle */}
             <Text style={[globalStyles.smallText, { color: rightBoxSub }]}>
               Pending Quotes
             </Text>
           </Card>
+
         </TouchableOpacity>
       </View>
     </View>
