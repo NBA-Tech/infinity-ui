@@ -122,31 +122,29 @@ const ServiceComponent = ({
         <View className="flex-row flex-1 items-center gap-3">
           {/* Gradient Icon */}
           <GradientCard
-            colors={
-              selected
-                ? isDark
-                  ? ['#1E293B', '#3B82F6']
-                  : ['#3B82F6', '#60A5FA']
-                : isDark
-                  ? ['#0E1628', '#1A2238', '#2E3A57']
-                  : ['#F9FAFB', '#E5E7EB', '#D1D5DB']
-            }
+            colors={selected ? ["#2C426A", "#3B82F6"] : ["#CBD5E1", "#94A3B8"]}
             style={{
-              padding: wp('2.5%'),
-              width: wp('11%'),
-              height: wp('11%'),
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: wp('2%'),
+              padding: wp("2%"),
+              minWidth: wp("12%"),
+              minHeight: wp("12%"),
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 8,
+              marginBottom: 8,
             }}
           >
-            <MaterialCommunityIcons
-              name={eventType?.icon ?? 'format-text'}
-              size={wp('5%')}
-              color={selected ? '#FFFFFF' : isDark ? '#E2E8F0' : '#182D53'}
-            />
+            <Text
+              style={{
+                color: "white",
+                fontSize: wp("5%"),
+                fontFamily: "OpenSans-Bold",
+                textTransform: "uppercase",
+              }}
+            >
+              {eventType?.serviceName?.[0] ?? "?"}
+            </Text>
           </GradientCard>
-  
+
           {/* Text Section */}
           <View className="flex-1">
             <Text
@@ -159,7 +157,7 @@ const ServiceComponent = ({
             >
               {eventType?.serviceName}
             </Text>
-  
+
             <Text
               style={[
                 globalStyles.labelText,
@@ -170,25 +168,9 @@ const ServiceComponent = ({
             >
               {eventType?.description}
             </Text>
-  
+
             <View className="flex-row items-center gap-3 mt-1 flex-wrap">
-              <View className="flex-row gap-1 items-center">
-                <Feather
-                  name="clock"
-                  size={wp('3%')}
-                  color={isDark ? '#E2E8F0' : '#475569'}
-                />
-                <Text
-                  style={[
-                    globalStyles.smallText,
-                    globalStyles.greyTextColor,
-                    { flexShrink: 1 },
-                  ]}
-                >
-                  {eventType?.serviceCategory}
-                </Text>
-              </View>
-  
+
               <Text
                 style={[
                   globalStyles.smallText,
@@ -203,7 +185,7 @@ const ServiceComponent = ({
             </View>
           </View>
         </View>
-  
+
         {/* RIGHT SIDE - Quantity Controls */}
         <View className="flex-row items-center gap-2 ml-3">
           {/* Decrement */}
@@ -221,7 +203,7 @@ const ServiceComponent = ({
           >
             <Feather name="minus" size={wp('4%')} color="#fff" />
           </TouchableOpacity>
-  
+
           {/* Quantity Input */}
           <TextInput
             style={{
@@ -242,7 +224,7 @@ const ServiceComponent = ({
               setQuantity(val === '' ? 1 : Math.max(1, parseInt(val) || 1))
             }
           />
-  
+
           {/* Increment */}
           <TouchableOpacity
             onPress={increment}
@@ -262,7 +244,7 @@ const ServiceComponent = ({
       </View>
     </CustomCheckBox>
   );
-  
+
 };
 
 export default ServiceComponent;

@@ -78,11 +78,16 @@ export const PackageComponent = ({ pkg, isSelected, serviceData, handleCalculate
                         marginBottom: 8,
                     }}
                 >
-                    <MaterialCommunityIcons
-                        name={pkg?.icon ?? "format-text"}
-                        size={wp("5%")}
-                        color="white"
-                    />
+                    <Text
+                        style={{
+                            color: "white",
+                            fontSize: wp("5%"),
+                            fontFamily:"OpenSans-Bold",
+                            textTransform: "uppercase",
+                        }}
+                    >
+                        {pkg?.packageName?.[0] ?? "?"}
+                    </Text>
                 </GradientCard>
 
                 {/* Package name & description */}

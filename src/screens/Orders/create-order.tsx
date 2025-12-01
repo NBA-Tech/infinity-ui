@@ -98,7 +98,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
         quotationHtmlInfo: []
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [currStep, setCurrStep] = useState(0);
+    const [currStep, setCurrStep] = useState(() => (orderId ? 1 : 0));
     const [loadingProvider, setloadingProvider] = useState({
         saveLoading: false,
         intialLoading: false
@@ -619,7 +619,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                                 <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginBottom: hp('1%') }]}>Event Type</Text>
 
-                                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%'),marginBottom:hp('2%') }}>
+                                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: wp('3%'), marginBottom: hp('2%') }}>
                                     {Object.values(eventTypes).map((eventType, index) => (
                                         <CustomCheckBox key={index} onPress={() => { handleCheckboxChange(eventType.value, { parentKey: 'eventInfo', childKey: 'eventType' }) }} value={eventType.value} selected={eventType.value == orderDetails?.eventInfo?.eventType}>
                                             <View className='flex flex-row items-center gap-2'>
@@ -763,7 +763,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             variant="solid"
                             action="primary"
                             style={[globalStyles.buttonColor]}
-                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0 || currStep == 0}
+                            isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0 || currStep == (orderId ? 1 : 0)}
                             onPress={() => setCurrStep(currStep - 1)}
                         >
                             <Feather name="arrow-left" size={wp("5%")} color="#fff" />

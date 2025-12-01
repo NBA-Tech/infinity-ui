@@ -61,7 +61,6 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
         setBarData(chartData);
     }, [props.invoiceDetails, props.investmentDetails]);
 
-    const maxValue = Math.max(...barData.map((d) => Math.max(d.y1, d.y2)), 2000);
 
     return (
         <Card style={{ padding: wp("3%"), marginVertical: hp("2%") }}>
@@ -126,7 +125,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
             ) : barData.length > 0 ? (
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ width: wp("140%"), height: hp("32%") }}>
+                    <View style={{ width: wp("95%"), height: hp("32%") }}>
                         <BarChart
                             style={{ flex: 1 }}
                             data={{
@@ -175,6 +174,7 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                                     textColor: processColor("#6B7280"),
                                     gridColor: processColor("#E5E7EB"),
                                     drawGridLines: true,
+                                    valueFormatter: barData.some((d) => parseInt(d.net) > 0 || parseInt(d.revenue) > 0) && "largeValue"
                                 },
                                 right: { enabled: false },
                             }}

@@ -388,15 +388,6 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </View>
                         </View>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
-                            {loadingProvider.saveLoading && (
-                                <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                            )
-                            }
-                            <Feather name="save" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>{loadingProvider.saveLoading ? "Saving..." : "Save"}</ButtonText>
-                        </Button>
-
                     </View>
                     <View >
 
@@ -426,6 +417,14 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                             </View>
 
                         </Card>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%'),marginTop:hp('4%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                            {loadingProvider.saveLoading && (
+                                <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                            )
+                            }
+                            <Feather name="save" size={wp('5%')} color="#fff" />
+                            <ButtonText style={globalStyles.buttonText}>{loadingProvider.saveLoading ? "Saving..." : "Save"}</ButtonText>
+                        </Button>
 
 
                     </View>

@@ -296,7 +296,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                             </TouchableOpacity>
                             <View className="flex flex-col">
                                 <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Order Details</Text>
-                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor,{width:wp('50%')}]}>
+                                <Text style={[globalStyles.labelText, globalStyles.greyTextColor, { width: wp('50%') }]}>
                                     Order #{orderDetails?.orderId}
                                 </Text>
                             </View>
@@ -323,19 +323,32 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 </View>
             </BackHeader>
             <View>
-                <View className='flex flex-row justify-between items-center' style={{marginVertical:hp('2%')}}>
+                <View className='flex flex-row justify-between items-center' style={{ marginVertical: hp('2%') }}>
                     <Card
-                        style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
-                        <View className='flex flex-col justify-center items-center'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Quoted</Text>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(orderDetails?.totalPrice)}`}</Text>
+                        style={[
+                            globalStyles.cardShadowEffect,
+                            { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }
+                        ]}
+                    >
+                        <View className='flex flex-1 justify-center items-center'>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>
+                                Total Quoted
+                            </Text>
 
+                            <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
+                                {loadingProvider.intialLoading ? (
+                                    <Skeleton height={hp('5%')} />
+                                ) : (
+                                    `${formatCurrency(orderDetails?.totalPrice)}`
+                                )}
+                            </Text>
                         </View>
                     </Card>
 
+
                     <Card
                         style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
-                        <View className='flex flex-col justify-center items-center'>
+                        <View className='flex flex-1 justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Paid</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(invoiceDetails?.reduce((total, invoice) => total + invoice?.amountPaid, 0))}`}</Text>
 
@@ -343,7 +356,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     </Card>
                     <Card
                         style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
-                        <View className='flex flex-col justify-center items-center'>
+                        <View className='flex flex-1 justify-center items-center'>
                             <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Invested</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0))}`}</Text>
 

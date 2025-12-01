@@ -9,7 +9,7 @@ import { OfferingInfo, OrderType } from "../types/order/order-type";
 import { isAfter, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 import { COUNTRY_CURRENCY } from "../constant/constants";
 import { SERVICETYPE } from "../types/offering/offering-type";
-
+import Share, { ShareSingleOptions } from 'react-native-share';
 
 export const getCountries = (): ICountry[] => {
   return Country.getAllCountries();
@@ -286,16 +286,38 @@ export function openDaialler(phoneNumber: string) {
   Linking.openURL(phoneUrl);
 }
 
-export function openWhatsApp(phoneNumber: string, message?: string) {
-  // Encode the message (in case it has spaces or special characters)
+export async function openWhatsApp(phoneNumber: string, message?: string, filePath?: string) {
+  const cleanPhone = phoneNumber.replace(/[^0-9]/g, "");
   const encodedMessage = message ? encodeURIComponent(message) : "";
-  const smsUrl = encodedMessage
-    ? `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`
-    : `https://api.whatsapp.com/send?phone=${phoneNumber}`;
 
-  Linking.openURL(smsUrl).catch((err) =>
-    console.error("Failed to open WhatsApp:", err)
-  );
+  try {
+    // ----------------------------
+    // 📄 1) SEND PDF (FILE SHARE)
+    // ----------------------------
+    if (filePath) {
+      const shareOptions: ShareSingleOptions = {
+        title: "Share PDF",
+        url: `file://${filePath}`,
+        type: "application/pdf",
+        social: Share.Social.WHATSAPP,
+      };
+
+      // ❗ Do NOT include whatsAppNumber → makes WhatsApp ignore file
+      await Share.shareSingle(shareOptions);
+      return;
+    }
+
+    // ----------------------------
+    // 💬 2) TEXT-ONLY SHARE (CHAT OPEN)
+    // ----------------------------
+    const url = encodedMessage
+      ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`
+      : `https://api.whatsapp.com/send?phone=${cleanPhone}`;
+
+    await Linking.openURL(url);
+  } catch (error) {
+    console.error("WhatsApp share error:", error);
+  }
 }
 
 export function openMessageBox(phoneNumber: string, message?: string) {

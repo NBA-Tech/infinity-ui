@@ -188,7 +188,7 @@ const ProjectInfo = (props: ProjectInfoProps) => {
                                 }
                             }/>
                         )}
-                        contentContainerStyle={{ paddingBottom: hp('2%'), gap: hp('2%') }} // optional spacing at bottom
+                        contentContainerStyle={{gap: hp('0.3%') }} // optional spacing at bottom
                         keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
                     />
                 )}

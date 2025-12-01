@@ -15,11 +15,11 @@ import { Card } from '@/components/ui/card';
 import { scaleFont } from '@/src/styles/global';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
-import { ApprovalStatus, OrderModel } from '@/src/types/order/order-type';
+import { ApprovalStatus, OrderModel, QuotaionHtmlInfo } from '@/src/types/order/order-type';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { deleteOrderAPI, getOrderDataListAPI, getOrderDetailsAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
-import { formatCurrency, formatDate, openDaialler, resetFiltersWithDefaultValue } from '@/src/utils/utils';
+import { formatCurrency, formatDate, openDaialler, openWhatsApp, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
@@ -31,7 +31,7 @@ import { generatePDF } from 'react-native-html-to-pdf';
 import { EventModel } from '@/src/types/event/event-type';
 import { createNewEventAPI } from '@/src/api/event/event-api-service';
 import debounce from "lodash.debounce";
-
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
     inputContainer: {
@@ -71,6 +71,13 @@ const Quotation = () => {
     const { triggerReloadOrders } = useReloadContext()
 
     const actionButtons = [
+        // {
+        //     key: "whatsapp",
+        //     label: 'WhatsApp',
+        //     color: '#10B981', // Blue
+        //     icon: <FontAwesome name="whatsapp" size={wp('4%')} color="#fff" />,
+        //     onPress: (orderId: string) => shareQuote(orderId, 'whatsapp'),
+        // },
         {
             key: 'share',
             label: 'Share',
@@ -98,7 +105,7 @@ const Quotation = () => {
         },
     ];
 
-    const handleShareQuotation = async (userDetails: UserModel, orderDetails: OrderModel, quotationFields:QuotaionHtmlInfo) => {
+    const handleShareQuotation = async (userDetails: UserModel, orderDetails: OrderModel, quotationFields: QuotaionHtmlInfo, type?: string) => {
         try {
             const message = `
                     Hello Sir/Mam 👋,
@@ -128,8 +135,19 @@ const Quotation = () => {
                 url: `file://${file.filePath}`,
                 type: 'application/pdf',
             }
+            console.log(orderDetails)
+            if (type === 'whatsapp') {
+                const customerDetails = customerMetaInfoList?.filter((item: any) => item?.customerID === orderDetails?.orderBasicInfo?.customerID)
+                const mobileNumber= customerDetails?.[0]?.mobileNumber
+                if(mobileNumber){
+                    openWhatsApp(mobileNumber, message, file.filePath)
+                }
+                else{
+                    showToast({ type: "error", title: "Error", message: "Customer mobile number not found" });
+                }
+                return
 
-
+            }
             await Share.open(shareOptions);
 
         } catch (err) {
@@ -138,10 +156,11 @@ const Quotation = () => {
 
     }
 
-    const shareQuote = async (orderId: string) => {
+    const shareQuote = async (orderId: string, type?: string) => {
         setSaveLoading(true)
         try {
             const orderDetails = await getOrderDetailsAPI(orderId)
+            console.log(orderDetails)
             if (!orderDetails?.success) {
                 showToast({ type: "error", title: "Error", message: orderDetails?.message });
             }
@@ -151,7 +170,7 @@ const Quotation = () => {
                     orderDetails?.data,
                     customerMetaInfoList,
                 )
-                handleShareQuotation(userDetails, orderDetails?.data, quotationFields)
+                handleShareQuotation(userDetails, orderDetails?.data, quotationFields, type)
             }
         }
         catch (e) {
@@ -355,7 +374,7 @@ const Quotation = () => {
                         </View>
                         <View className='flex flex-row justify-between items-center'>
                             <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor]}>Amount</Text>
-                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor,{color:"#22C55E"}]}>{formatCurrency(item?.totalPrice)}</Text>
+                            <Text style={[globalStyles.subHeadingText, globalStyles.themeTextColor, { color: "#22C55E" }]}>{formatCurrency(item?.totalPrice)}</Text>
                         </View>
                     </View>
                 </Card>
@@ -373,7 +392,7 @@ const Quotation = () => {
                             }}
                             isDisabled={saveLoading}
                             onPress={() => {
-                                if (btn?.key === "edit" || btn?.key === "delete" || btn?.key === "share") {
+                                if (["edit", "delete", "share", "whatsapp"].includes(btn?.key)) {
                                     btn.onPress(item?.orderId);
                                 } else if (btn?.key === "call") {
                                     btn.onPress(customerData?.mobileNumber);
@@ -469,7 +488,7 @@ const Quotation = () => {
                     </View>
                 </View>
             </GradientCard>
-            <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%'),flex:1 }}>
+            <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%'), flex: 1 }}>
                 <View style={{ backgroundColor: globalStyles.appBackground.backgroundColor }}>
                     {/* Customer Search is here */}
                     <View

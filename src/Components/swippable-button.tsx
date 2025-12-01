@@ -8,8 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-const BUTTON_WIDTH = wp("90%");
-const BUTTON_HEIGHT = hp("7%");
+const BUTTON_WIDTH = wp("80%");
+const BUTTON_HEIGHT = hp("6%");
 
 type ClickButtonProps = {
   onConfirm: () => void;

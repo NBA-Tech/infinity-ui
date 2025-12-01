@@ -96,7 +96,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                         {
                             height: hp("6%"),
                             borderWidth: 1,
-                            borderRadius: 9999,
+                            borderRadius: wp('2.5%'),
                             paddingHorizontal: wp("3%"),
                             borderColor: isDark ? "#1E293B" : "#D1D5DB", // subtle border tone
                             backgroundColor: isDark
@@ -194,7 +194,7 @@ const RenderField = ({ field, errors, globalStyles }: { field: FormField; errors
                     onPress={() => field.setIsOpen?.(true)}
                     style={[
                         styles.dropdown,
-                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#1E293B" : "#CBD5E1", borderRadius: wp("6%"), borderWidth: 1 },
+                        { flexDirection: "row", alignItems: "center", backgroundColor: isDark ? "#0E1628" : "#F5F7FB", borderColor: isDark ? "#1E293B" : "#CBD5E1", borderRadius: wp("2.5%"), borderWidth: 1 },
                         field.isDisabled && { backgroundColor: "#f5f5f5" },
                     ]}
                     disabled={field.isDisabled || field?.isLoading}

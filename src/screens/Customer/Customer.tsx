@@ -335,8 +335,6 @@ const Customer = () => {
                         <View style={styles.statusContainer}>
                             <Menu
                                 placement="bottom"
-                                offset={5}
-                                style={globalStyles.appBackground}
                                 trigger={({ ...triggerProps }) => {
                                     return (
                                         <Button {...triggerProps} variant="ghost" style={{ backgroundColor: 'transparent' }}>

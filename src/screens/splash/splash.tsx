@@ -1,5 +1,15 @@
-import React, { useContext, useEffect } from "react";
-import { View, Text, Image, StyleSheet, Dimensions, Platform } from "react-native";
+// SplashScreen.tsx (updated)
+import React, { useContext, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import LottieView from "lottie-react-native";
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
@@ -11,7 +21,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { scaleFont } from "@/src/styles/global";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import * as Keychain from "react-native-keychain";
+
 const { width } = Dimensions.get("window");
+
+const DUMMY_USERNAME = "infinity_dummy_user";
+const DUMMY_PASSWORD = "infinity_dummy_token";
 
 export default function SplashScreen() {
   const { isInitialized, getItem } = useDataStore();
@@ -19,28 +34,131 @@ export default function SplashScreen() {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
 
-  useEffect(() => {
-    const checkNavigation = async () => {
-      if (!isInitialized) return;
-      const isNewDevice = getItem("IS_NEW_DEVICE");
-      const isAuthenticated = getItem("isAuthenticated");
-      if (isAuthenticated) {
-        navigation.replace("AuthStack");
-      } else if (!isNewDevice) {
-        navigation.replace("UnauthStack", { screen: "FeatureSlide" });
-      } else {
-        navigation.replace("UnauthStack", { screen: "Authentication" });
+  const [authInProgress, setAuthInProgress] = useState(true);
+  const [authFailed, setAuthFailed] = useState(false);
+
+  // 1) Ensure a protected credential exists (first-run).
+  const ensureProtectedCredential = async () => {
+    try {
+      const hasCred = await Keychain.getGenericPassword();
+      if (!hasCred) {
+        // Create a credential protected by device auth (accessControl)
+        await Keychain.setGenericPassword(DUMMY_USERNAME, DUMMY_PASSWORD, {
+          accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY_OR_DEVICE_PASSCODE // iOS: requires biometric (or use DEVICE_PASSCODE_OR_BIOMETRICS)
+          // For broader compatibility you can use ACCESS_CONTROL.DEVICE_PASSCODE_OR_BIOMETRICS on iOS.
+          // Note: Android behavior is handled automatically but some flags are iOS-specific.
+        });
       }
+    } catch (e) {
+      // Not fatal — we'll still try to prompt later
+      console.warn("Keychain setup error:", e);
+    }
+  };
+
+  // 2) Trigger authentication prompt (this uses OS-level prompt)
+  const authenticateOnDevice = async (): Promise<boolean> => {
+    setAuthInProgress(true);
+    setAuthFailed(false);
+    try {
+      // This will show the device auth UI (biometrics / passcode)
+      const creds = await Keychain.getGenericPassword({
+        authenticationPrompt: {
+          title: "Unlock Infinity CRM",
+          subtitle: "Authenticate to continue",
+          description: "",
+          cancel: "Cancel",
+        },
+      } as any); // type loosened — react-native-keychain types vary across versions
+
+      if (creds) {
+        // creds.username & creds.password will be the stored dummy values.
+        setAuthInProgress(false);
+        setAuthFailed(false);
+        return true;
+      } else {
+        // If no credentials returned, treat as failure
+        setAuthInProgress(false);
+        setAuthFailed(true);
+        return false;
+      }
+    } catch (err) {
+      // User canceled or failed auth
+      console.warn("Auth error / canceled:", err);
+      setAuthInProgress(false);
+      setAuthFailed(true);
+      return false;
+    }
+  };
+
+  // navigation logic that depends on your data store
+  const checkNavigation = async () => {
+    // preserve original logic but only call after successful auth
+    if (!isInitialized) return;
+    const isNewDevice = getItem("IS_NEW_DEVICE");
+    const isAuthenticated = getItem("isAuthenticated");
+    if (isAuthenticated) {
+      navigation.replace("AuthStack");
+    } else if (!isNewDevice) {
+      navigation.replace("UnauthStack", { screen: "FeatureSlide" });
+    } else {
+      navigation.replace("UnauthStack", { screen: "Authentication" });
+    }
+  };
+
+  // main effect: ensure credential, then auth -> then navigation
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      await ensureProtectedCredential();
+
+      // Wait until data-store has initialized (so your original navigation decision can run after auth)
+      // Polling / waiting for isInitialized:
+      const waitForInit = async () => {
+        if (!isInitialized) {
+          // small delay loop; adjust as needed
+          return new Promise<void>((resolve) => {
+            const id = setInterval(() => {
+              if (!mounted) { clearInterval(id); resolve(); }
+              if (isInitialized) { clearInterval(id); resolve(); }
+            }, 150);
+          });
+        }
+      };
+      await waitForInit();
+
+      const ok = await authenticateOnDevice();
+      if (ok) {
+        await checkNavigation();
+      } else {
+        // stay on splash and show retry UI; you can optionally route to an "unlock help" screen
+      }
+    })();
+
+    return () => {
+      mounted = false;
     };
-    const timer = setTimeout(checkNavigation, 3000);
-    return () => clearTimeout(timer);
-  }, [navigation, isInitialized]);
+  }, [isInitialized]);
+
+  const runDeviceAuthentication = async (): Promise<boolean> => {
+    try {
+      const result = await Keychain.getGenericPassword({
+        authenticationPrompt: {
+          title: "Unlock Infinity CRM",
+          subtitle: "Authenticate to continue",
+          cancel: "Cancel",
+        }
+      });
+      return !!result;
+    } catch (e) {
+      return false;
+    }
+  };
+  
 
   return (
     <SafeAreaView style={[globalStyles.appBackground]}>
       {/* Center Section */}
       <View style={styles.centerContainer}>
-        {/* Circular Logo Section */}
         <View style={[styles.logoCircle, { backgroundColor: isDark ? "#1A2235" : "#FFFFFF" }]}>
           <Image
             source={require("../../assets/images/logo.png")}
@@ -61,7 +179,6 @@ export default function SplashScreen() {
           </Text>
         </View>
 
-        {/* Lottie Illustration */}
         <LottieView
           source={require("../../assets/animations/studio-photography.json")}
           autoPlay
@@ -70,12 +187,7 @@ export default function SplashScreen() {
         />
       </View>
 
-      {/* Info Card */}
-      <Card
-        style={[globalStyles.cardShadowEffect, styles.infoCard]}
-        className="rounded-3xl bg-white dark:bg-[#0E1628]"
-      >
-        {/* Title Section */}
+      <Card style={[globalStyles.cardShadowEffect, styles.infoCard]} className="rounded-3xl bg-white dark:bg-[#0E1628]">
         <View style={styles.titleContainer}>
           <Text style={[styles.textPrimary, { color: isDark ? "#9CC4FF" : "#182D53" }]}>Welcome</Text>
           <Text style={[styles.textSecondary, { color: isDark ? "#BFD7FF" : "#3A4C7A" }]}>to</Text>
@@ -84,7 +196,6 @@ export default function SplashScreen() {
           <Text style={[styles.textHighlight]}>Photographers</Text>
         </View>
 
-        {/* Description */}
         <View style={styles.descriptionContainer}>
           <Text
             style={[
@@ -102,9 +213,43 @@ export default function SplashScreen() {
           </Text>
         </View>
 
-        {/* Spinner */}
         <View style={styles.spinnerContainer}>
-          <Spinner size={"large"} color={isDark ? "#9CC4FF" : "#182D53"} />
+          {authInProgress ? (
+            <Spinner size={"large"} color={isDark ? "#9CC4FF" : "#182D53"} />
+          ) : authFailed ? (
+            <View style={{ alignItems: "flex-end" }}>
+              <Text style={{ marginBottom: 8, color: isDark ? "#FFD6E0" : "#FF2D6B" }}>
+                Unlock required to continue
+              </Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  setAuthInProgress(true);
+                  setAuthFailed(false);
+
+                  // Delay to allow native layer reset (important for Android)
+                  await new Promise(resolve => setTimeout(resolve, 150));
+
+                  const ok = await runDeviceAuthentication();  // new wrapper function
+                  if (ok) {
+                    checkNavigation();
+                  } else {
+                    setAuthInProgress(false);
+                    setAuthFailed(true);
+                  }
+                }}
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  backgroundColor: isDark ? "#26344F" : "#EFEFF4",
+                }}
+              >
+                <Text style={{ color: isDark ? "#C7D2FE" : "#182D53" }}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Spinner size={"large"} color={isDark ? "#9CC4FF" : "#182D53"} />
+          )}
         </View>
       </Card>
     </SafeAreaView>
@@ -112,30 +257,30 @@ export default function SplashScreen() {
 }
 
 /* ---------------------------------------
- * RESPONSIVE STYLES
+ * RESPONSIVE STYLES (unchanged)
  * -------------------------------------- */
 const styles = StyleSheet.create({
   centerContainer: {
-    justifyContent: "flex-start",   // <--- change
+    justifyContent: "flex-start",
     alignItems: "center",
     flex: 1,
-    paddingTop: hp("2%"),           // <--- reduce height
-  },  
+    paddingTop: hp("2%"),
+  },
   logoCircle: {
     justifyContent: "center",
     alignItems: "center",
     borderRadius: hp("10%"),
-    width: hp("20%"),        // increased
-    height: hp("20%"),       // increased
-    paddingTop: hp("1.5%"),  // NEW
-    paddingBottom: hp("1.5%"), // NEW
+    width: hp("20%"),
+    height: hp("20%"),
+    paddingTop: hp("1.5%"),
+    paddingBottom: hp("1.5%"),
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 7,
     elevation: 7,
     marginBottom: hp("2%"),
-  },  
+  },
   logoImage: {
     height: hp("7.2%"),
     width: hp("7.2%"),
@@ -149,7 +294,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: wp("8%"),
     borderTopRightRadius: wp("8%"),
     paddingHorizontal: wp("5%"),
-    minHeight: hp("32%"),           // <--- NEW (forces visibility)
+    minHeight: hp("32%"),
     ...Platform.select({
       android: { elevation: 10 },
       ios: {
@@ -159,7 +304,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
       },
     }),
-  },  
+  },
   titleContainer: {
     alignItems: "center",
     justifyContent: "center",
