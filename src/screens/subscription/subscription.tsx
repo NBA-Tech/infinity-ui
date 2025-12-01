@@ -149,7 +149,7 @@ const Subscription = () => {
         contentContainerStyle={{ paddingBottom: hp('5%') }} // optional bottom padding
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ marginVertical: hp('2%'), marginHorizontal: wp('2%') }}>
+        <View style={{ marginVertical: hp('1%'), marginHorizontal: wp('2%') }}>
           <View className="flex flex-col">
             <View className="justify-center items-center">
               <Text

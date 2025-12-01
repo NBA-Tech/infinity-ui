@@ -92,34 +92,39 @@ export const useToastMessage = () => {
 };
 const styles = StyleSheet.create({
   toastContainer: {
-    padding: 16,
+    paddingVertical: 20,      // ⬆️ more height
+    paddingHorizontal: 20,    // wider padding
     borderWidth: 1,
-    borderRadius: 10,
-    maxWidth: 443,
+    borderRadius: 14,         // slightly more rounded
+    maxWidth: 480,            // wider container
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOpacity: 0.22,
+    shadowRadius: 8,
+    elevation: 8,
   },
+
   toastContent: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: 'center',       // center vertically now
+    gap: 14,                    // spacing between icon + text
     flex: 1,
   },
+
   icon: {
-    marginRight: 12,
-    marginTop: 4,
+    marginTop: 2,
   },
+
   title: {
-    fontSize: 16,
+    fontSize: 18,               // ⬆️ bigger title
     fontFamily: 'OpenSans-Bold',
-    marginBottom: 4,
+    marginBottom: 6,
   },
+
   message: {
-    fontSize: 14,
+    fontSize: 15,               // ⬆️ slightly bigger message
     fontFamily: 'OpenSans-Regular',
     color: '#333',
+    lineHeight: 22,             // ⬆️ nice readability
   },
 });

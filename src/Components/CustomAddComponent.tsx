@@ -42,7 +42,7 @@ const CustomServiceAddComponent: React.FC<Props> = ({
   // ➕ Add service row
   const handleAddRow = () => {
     if (rows.length >= serviceList.length) return;
-    updateRows([...rows, { id: "", name: "", value: "" } as ServiceModel]);
+    updateRows([...rows, { id: "", name: "", value: 1 } as ServiceModel]);
   };
 
   // ✏ Update a row value

@@ -273,7 +273,7 @@ const services = () => {
         sessionType:{
             key: "sessionType",
             label: "Session Type",
-            placeholder: "Eg: One Time",
+            placeholder: "Eg: Single Session",
             icon: <Feather name="image" size={wp('5%')} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
             style: "w-full",

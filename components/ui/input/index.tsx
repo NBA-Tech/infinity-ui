@@ -52,7 +52,7 @@ const inputStyle = tva({
       underlined:
         'rounded-none border-b data-[invalid=true]:border-error-700',
       outline: 'rounded border data-[invalid=true]:border-error-700',
-      rounded: 'rounded-full border data-[invalid=true]:border-error-700',
+      rounded: 'rounded-xl border data-[invalid=true]:border-error-700',
     },
   },
 });

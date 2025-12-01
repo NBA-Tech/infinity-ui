@@ -24,7 +24,7 @@ const Footer = (props: FooterProps) => {
 
     if (!props?.state || !props?.state.routes) return null;
 
-    const activeIconColorStart = "#6FADFF"; // start of gradient
+    const activeIconColorStart = "#2563EB"; // start of gradient
     const activeIconColorEnd = "#1372F0";   // end of gradient (underline)
 
     const iconsMapping: any = {
@@ -44,7 +44,7 @@ const Footer = (props: FooterProps) => {
                 </View>
             ),
             inactive: (
-                <Feather name="home" size={hp("3.2%")} color="#888" />
+                <Feather name="home" size={hp("3.2%")} color="#000" />
             ),
         },
         customer: {
@@ -70,7 +70,7 @@ const Footer = (props: FooterProps) => {
                 <MaterialCommunityIcons
                     name="account-multiple-outline"
                     size={hp("3.2%")}
-                    color="#888"
+                    color="#000"
                 />
             ),
         },
@@ -89,7 +89,7 @@ const Footer = (props: FooterProps) => {
                     />
                 </View>
             ),
-            inactive: <Ionicons name="receipt-outline" size={hp("3.2%")} color="#888" />,
+            inactive: <Ionicons name="receipt-outline" size={hp("3.2%")} color="#000" />,
         },
         orders: {
             active: (
@@ -114,7 +114,7 @@ const Footer = (props: FooterProps) => {
                 <MaterialCommunityIcons
                     name="clipboard-text-outline"
                     size={hp("3.2%")}
-                    color="#888"
+                    color="#000"
                 />
             ),
         },
@@ -141,7 +141,7 @@ const Footer = (props: FooterProps) => {
                 <Feather
                     name="user"
                     size={hp("3%")}
-                    color="#AAA"
+                    color="#000"
                 />
             ),
         },
@@ -168,7 +168,7 @@ const Footer = (props: FooterProps) => {
                 <Feather
                     name="file-text"
                     size={hp("3.2%")}
-                    color="#888"
+                    color="#000"
                 />
             ),
         },
@@ -219,8 +219,9 @@ const Footer = (props: FooterProps) => {
                                 style={[
                                     globalStyle.smallText,
                                     {
-                                        color: isFocused ? activeIconColorStart : "#888",
-                                        marginTop: hp("0.3%")
+                                        color: isFocused ? activeIconColorStart : "#000",
+                                        marginTop: hp("0.3%"),
+                                        fontFamily:"OpenSans-Bold"
                                     }
                                 ]}
                             >

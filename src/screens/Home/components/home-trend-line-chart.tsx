@@ -210,7 +210,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                 ) : (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
 
-                        <View style={{ width: wp("100%"), height: hp("35%") }}>
+                        <View style={{ width: wp("95%"), height: hp("35%") }}>
                             <LineChart
                                 style={{ flex: 1 }}
                                 data={{

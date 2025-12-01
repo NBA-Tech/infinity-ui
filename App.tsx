@@ -29,10 +29,10 @@ function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <GluestackUIProvider mode="light">
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ConnectivityProvider>
-          <SafeAreaProvider>
+    <SafeAreaProvider>
+      <GluestackUIProvider mode="light">
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ConnectivityProvider>
             <DataStoreProvider>
               <ReloadProvider>
                 <AuthProvider>
@@ -41,7 +41,7 @@ function App() {
                       <NotificationProvider>
                         <SubscriptionProvider>
                           <Navigation />
-                          <NoInternetPopup/>
+                          <NoInternetPopup />
                         </SubscriptionProvider>
                       </NotificationProvider>
                     </ConfettiProvider>
@@ -49,10 +49,11 @@ function App() {
                 </AuthProvider>
               </ReloadProvider>
             </DataStoreProvider>
-          </SafeAreaProvider>
-        </ConnectivityProvider>
-      </GestureHandlerRootView>
-    </GluestackUIProvider>
+          </ConnectivityProvider>
+        </GestureHandlerRootView>
+      </GluestackUIProvider>
+    </SafeAreaProvider>
+
   );
 }
 
