@@ -369,7 +369,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                         `;
 
             const options = {
-                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields),
+                html: buildHtml(orderDetails?.orderId?.replace("ORDER","QUOTE"), formatDate(new Date()), quotationFields,"quotation"),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -509,6 +509,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
         }
     }, [])
 
+
     return (
         <SafeAreaView style={[globalStyles.appBackground]}>
             <BackHeader screenName={orderId ? `Update Quotation` : `Create Quotation`} />
@@ -517,7 +518,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
-                <TemplatePreview html={buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields)} />
+                <TemplatePreview html={buildHtml(orderDetails?.orderId?.replace("ORDER","QUOTE"), formatDate(new Date()), quotationFields,"Quotation")} />
 
             </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>

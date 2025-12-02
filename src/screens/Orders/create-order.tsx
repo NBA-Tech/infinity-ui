@@ -367,7 +367,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         `;
 
             const options = {
-                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields),
+                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields,"Order"),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -532,7 +532,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 onBackdropPress={() => setIsOpen({ ...isOpen, modal: false })}
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
-                <TemplatePreview html={buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields)} />
+                <TemplatePreview html={buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields, "Order")} />
 
             </Modal>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>

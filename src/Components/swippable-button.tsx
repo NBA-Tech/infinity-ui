@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-const BUTTON_WIDTH = wp("80%");
+const BUTTON_WIDTH = wp("90%");
 const BUTTON_HEIGHT = hp("6%");
 
 type ClickButtonProps = {
@@ -45,7 +45,7 @@ const ClickButton: React.FC<ClickButtonProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.fixedBottomContainer}>
       <Animated.View style={[styles.animatedContainer, animatedStyle]}>
         <TouchableOpacity
           activeOpacity={0.8}
@@ -61,8 +61,6 @@ const ClickButton: React.FC<ClickButtonProps> = ({
             },
           ]}
         >
-
-          {/* Button Label */}
           <Text
             style={[
               styles.label,
@@ -78,13 +76,18 @@ const ClickButton: React.FC<ClickButtonProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  fixedBottomContainer: {
+    position: "absolute",
+    bottom: hp("1%"),
+    left: 0,
+    right: 0,
     alignItems: "center",
-    marginVertical: hp("2%"),
+    paddingHorizontal: wp("5%"),
   },
   animatedContainer: {
     borderRadius: BUTTON_HEIGHT / 2,
     overflow: "hidden",
+    width: "100%",
   },
   button: {
     width: BUTTON_WIDTH,
@@ -94,10 +97,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.2,
-  },
-  iconContainer: {
-    position: "absolute",
-    left: wp("6%"),
   },
   label: {
     fontSize: wp("4%"),

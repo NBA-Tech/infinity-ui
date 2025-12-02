@@ -376,7 +376,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
     const handleShareQuotation = async () => {
         try {
-            const html = buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields);
+            const html = buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields,"Invoice");
             const pdf = await generatePDF({
                 html,
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle || "Invoice"}`,
@@ -443,7 +443,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 onBackButtonPress={() => setIsOpen({ ...isOpen, modal: false })}
             >
                 <TemplatePreview
-                    html={buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields)}
+                    html={buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields, "Invoice")}
                 />
             </Modal>
 

@@ -69,10 +69,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    body: {
-        flex: 1,
-        justifyContent: "space-between"
-    }
+
 });
 
 const UserOnBoarding = () => {
@@ -160,7 +157,7 @@ const UserOnBoarding = () => {
             key: "websiteURL",
             label: "Website (Optional)",
             placeholder: "Eg: https://yourcompany.com",
-            icon: <Feather name="globe" size={wp("5%")}  color={isDark ? "#fff" : "#000"} />,
+            icon: <Feather name="globe" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
             style: "w-full",
             isRequired: false,
@@ -433,7 +430,7 @@ const UserOnBoarding = () => {
 
 
     return (
-        <SafeAreaView style={[styles.body, globalStyles.appBackground]}>
+        <SafeAreaView style={globalStyles.appBackground}>
             {/* Login Card - Aligned to bottom */}
             <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                 <View className="flex-1">
@@ -473,45 +470,47 @@ const UserOnBoarding = () => {
                         <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginTop: hp("2%") }]}>Step {currStep + 1} {headings[currStep]}</Text>
 
                     </View>
-                    <Card style={[globalStyles.cardShadowEffect,styles.cardContainer,globalStyles.formBackGroundColor]}>
-                        <ScrollView
-                            contentContainerStyle={styles.scrollableContent}
-                            keyboardShouldPersistTaps="handled"
-                            showsVerticalScrollIndicator={false}
-                        >
-                            {currStep == 0 && (
-                                <View>
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Company Logo<Text style={{ color: "red" }}>*</Text>
-                                    </Text>
-                                    <View className="flex justify-center items-center">
-                                        <TouchableOpacity onPress={openGallery}>
-                                            {businessDetails.userBusinessInfo?.companyLogoURL ? (
-                                                <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
-                                            ) : (
-                                                <View style={styles.imageUploadContainer}>
-                                                    <Feather name="upload" size={wp("10%")} color="#d1d5db" />
-                                                    <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                        Upload
-                                                    </Text>
-                                                    <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                        Size less than 5MB
-                                                    </Text>
+                    <Card style={[globalStyles.cardShadowEffect, styles.cardContainer, globalStyles.formBackGroundColor]}>
+                        <View style={{ flex: 1 }}>
+                            <ScrollView
+                                contentContainerStyle={styles.scrollableContent}
+                                keyboardShouldPersistTaps="handled"
+                                showsVerticalScrollIndicator={false}
+                            >
+                                {currStep == 0 && (
+                                    <View>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                            Company Logo<Text style={{ color: "red" }}>*</Text>
+                                        </Text>
+                                        <View className="flex justify-center items-center">
+                                            <TouchableOpacity onPress={openGallery}>
+                                                {businessDetails.userBusinessInfo?.companyLogoURL ? (
+                                                    <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
+                                                ) : (
+                                                    <View style={styles.imageUploadContainer}>
+                                                        <Feather name="upload" size={wp("10%")} color="#d1d5db" />
+                                                        <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                            Upload
+                                                        </Text>
+                                                        <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                            Size less than 5MB
+                                                        </Text>
 
-                                                </View>
-                                            )
+                                                    </View>
+                                                )
 
-                                            }
+                                                }
 
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                </View>
-                            )
+                                )
 
-                            }
-                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors}/>
+                                }
+                                <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
 
-                        </ScrollView>
+                            </ScrollView>
+                        </View>
                         <View style={[styles.fixedButtonContainer, globalStyles.cardShadowEffect]}>
                             <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} isDisabled={currStep == 0 || loading} onPress={() => setCurrStep(currStep - 1)}>
                                 <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />

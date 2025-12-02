@@ -132,7 +132,7 @@ const InvoiceDetails = (props: InvoiceDetailsProps) => {
                 onBackButtonPress={() => setOpen(false)}
             >
                 <View style={globalStyles?.appBackground}>
-                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId, formatDate(props?.orderDetails?.createdDate), invoiceTemplateFields)} />
+                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId, formatDate(props?.orderDetails?.createdDate), invoiceTemplateFields, "Invoice")} />
                 </View>
 
             </Modal>

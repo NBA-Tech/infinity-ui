@@ -1,4 +1,4 @@
-export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString(), quotationFields: any) => {
+export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLocaleDateString(), quotationFields: any, type: string) => {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -248,8 +248,8 @@ export const buildHtml = (invoiceId = "INV-0001", invoiceDate = new Date().toLoc
 
         <!-- Invoice Metadata -->
         <section class="metadata">
-          <div><strong>Invoice ID:</strong> ${invoiceId}</div>
-          <div><strong>Invoice Date:</strong> ${invoiceDate}</div>
+          <div><strong>${type} ID:</strong> ${invoiceId}</div>
+          <div><strong>${type} Date:</strong> ${invoiceDate}</div>
         </section>
 
         <!-- Body Section -->

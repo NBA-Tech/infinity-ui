@@ -82,7 +82,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                             `;
 
             const options = {
-                html: buildHtml("1", new Date().toLocaleDateString(), quotationFields),
+                html: buildHtml("1", new Date().toLocaleDateString(), quotationFields,"Quotation"),
                 fileName: `Quotation_${props?.orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -150,7 +150,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
                 onBackButtonPress={() => setOpen(false)}
             >
                 <View style={globalStyles?.appBackground}>
-                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId, formatDate(props?.orderDetails?.createdDate), quotationFields)} />
+                    <TemplatePreview html={buildHtml(props?.orderDetails?.orderId, formatDate(props?.orderDetails?.createdDate), quotationFields, "Quotation")} />
                 </View>
 
             </Modal>

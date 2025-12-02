@@ -7,7 +7,7 @@
 
 import './global.css';
 import { GluestackUIProvider } from './components/ui/gluestack-ui-provider';
-import { StatusBar, StyleSheet, useColorScheme, View, Text } from 'react-native';
+import { StatusBar, StyleSheet, useColorScheme, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -30,28 +30,33 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <GluestackUIProvider mode="light">
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <ConnectivityProvider>
-            <DataStoreProvider>
-              <ReloadProvider>
-                <AuthProvider>
-                  <GlobalStyleProvider>
-                    <ConfettiProvider>
-                      <NotificationProvider>
-                        <SubscriptionProvider>
-                          <Navigation />
-                          <NoInternetPopup />
-                        </SubscriptionProvider>
-                      </NotificationProvider>
-                    </ConfettiProvider>
-                  </GlobalStyleProvider>
-                </AuthProvider>
-              </ReloadProvider>
-            </DataStoreProvider>
-          </ConnectivityProvider>
-        </GestureHandlerRootView>
-      </GluestackUIProvider>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <GluestackUIProvider mode="light">
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <ConnectivityProvider>
+              <DataStoreProvider>
+                <ReloadProvider>
+                  <AuthProvider>
+                    <GlobalStyleProvider>
+                      <ConfettiProvider>
+                        <NotificationProvider>
+                          <SubscriptionProvider>
+                            <Navigation />
+                            <NoInternetPopup />
+                          </SubscriptionProvider>
+                        </NotificationProvider>
+                      </ConfettiProvider>
+                    </GlobalStyleProvider>
+                  </AuthProvider>
+                </ReloadProvider>
+              </DataStoreProvider>
+            </ConnectivityProvider>
+          </GestureHandlerRootView>
+        </GluestackUIProvider>
+      </KeyboardAvoidingView>
     </SafeAreaProvider>
 
   );

@@ -125,7 +125,7 @@ const Quotation = () => {
                         `;
 
             const options = {
-                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields),
+                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields,"Quotation"),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -522,7 +522,7 @@ const Quotation = () => {
                         extraData={quoteData}
                         keyExtractor={(_, index) => index.toString()}
                         showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingVertical: hp("1%"), gap: hp('2%') }}
+                        contentContainerStyle={{ paddingBottom: hp("2%"), gap: hp('2%') }}
                         renderItem={({ item }) => (
                             <QuoteCardComponent item={item} />
                         )}
