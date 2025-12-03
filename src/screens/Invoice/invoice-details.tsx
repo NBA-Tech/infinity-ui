@@ -53,7 +53,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
         getInvoiceDetails()
     }, [invoiceId])
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             <BackHeader>
                 <View className='flex flex-col'>
                     <View className="flex flex-row justify-between items-center w-full">
@@ -102,7 +102,7 @@ const InvoiceDetails = ({ route, navigation }: Props) => {
                 </View>
             </ScrollView>
 
-        </SafeAreaView>
+        </View>
     );
 };
 

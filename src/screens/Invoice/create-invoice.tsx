@@ -433,7 +433,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
      * RENDER
      * ───────────────────────────────*/
     return (
-        <SafeAreaView style={[globalStyles.appBackground]}>
+        <View style={[globalStyles.appBackground]}>
             <BackHeader screenName={invoiceId ? "Update Invoice" : "Create Invoice"} />
 
             {/* Modal Preview */}
@@ -613,7 +613,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     )}
                 </Button>
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

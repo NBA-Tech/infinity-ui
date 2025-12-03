@@ -2,6 +2,7 @@ import { useToast, Toast, ToastTitle, ToastDescription } from "@/components/ui/t
 import { View, StyleSheet } from "react-native";
 import { useRef } from "react";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const useToastMessage = () => {
   const toast = useToast();
@@ -14,7 +15,7 @@ export const useToastMessage = () => {
     error: "error-outline"
   };
 
-  const toastStylesByType:Record<string, any> = {
+  const toastStylesByType: Record<string, any> = {
     success: {
       borderColor: '#4CAF50',
       backgroundColor: '#f1fdf3',
@@ -60,7 +61,8 @@ export const useToastMessage = () => {
       id: toastId,
       placement: "top",
       duration: 3000,
-      render: ({ id }:{ id: string }) => (
+      render: ({ id }: { id: string }) => (
+        <SafeAreaView edges={["top"]}>
         <Toast
           action={type}
           variant="outline"
@@ -70,15 +72,16 @@ export const useToastMessage = () => {
             { backgroundColor: theme.backgroundColor, borderColor: theme.borderColor },
           ]}
         >
-          <View style={styles.toastContent}>
-            {/* <Icon as={HelpCircleIcon} style={[styles.icon, { color: theme.iconColor }]} /> */}
-            <MaterialIcons name={icons?.[type] || icons?.success} size={24} style={[styles.icon, { color: theme.iconColor }]} />
-            <View style={styles.textContainer}>
-              <ToastTitle style={[styles.title, { color: theme.titleColor }]}>{title}</ToastTitle>
-              <ToastDescription style={styles.message}>{message}</ToastDescription>
+            <View style={styles.toastContent}>
+              {/* <Icon as={HelpCircleIcon} style={[styles.icon, { color: theme.iconColor }]} /> */}
+              <MaterialIcons name={icons?.[type] || icons?.success} size={24} style={[styles.icon, { color: theme.iconColor }]} />
+              <View style={styles.textContainer}>
+                <ToastTitle style={[styles.title, { color: theme.titleColor }]}>{title}</ToastTitle>
+                <ToastDescription style={styles.message}>{message}</ToastDescription>
+              </View>
             </View>
-          </View>
         </Toast>
+        </SafeAreaView>
       ),
       onCloseComplete: () => {
         if (currentToastIdRef.current === toastId) {
@@ -92,8 +95,6 @@ export const useToastMessage = () => {
 };
 const styles = StyleSheet.create({
   toastContainer: {
-    paddingVertical: 20,      // ⬆️ more height
-    paddingHorizontal: 20,    // wider padding
     borderWidth: 1,
     borderRadius: 14,         // slightly more rounded
     maxWidth: 480,            // wider container

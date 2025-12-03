@@ -439,7 +439,7 @@ const services = () => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground} >
+        <View style={globalStyles.appBackground} >
             <BackHeader screenName='Services & Packages' />
             <Modal
                 isVisible={isOpen}
@@ -607,7 +607,7 @@ const services = () => {
                 </View>
             </ScrollView>
 
-        </SafeAreaView >
+        </View >
     );
 };
 

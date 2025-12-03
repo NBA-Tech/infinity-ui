@@ -373,7 +373,7 @@ useEffect(() => {
 
 
     return (
-        <SafeAreaView style={[globalStyles.appBackground]}>
+        <View style={[globalStyles.appBackground]}>
             <BackHeader screenName="Edit Business Details" />
 
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -437,7 +437,7 @@ useEffect(() => {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 
 }

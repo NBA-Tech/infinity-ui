@@ -166,7 +166,7 @@ const ServiceComponent = ({
               ]}
               numberOfLines={1}
             >
-              {eventType?.description}
+              {eventType?.type}
             </Text>
 
             <View className="flex-row items-center gap-3 mt-1 flex-wrap">

@@ -514,7 +514,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
 
     return (
-        <SafeAreaView style={[globalStyles.appBackground]}>
+        <View style={[globalStyles.appBackground]}>
             <BackHeader screenName={orderId ? `Update Quotation` : `Create Quotation`} />
             <Modal
                 isVisible={isOpen?.modal}
@@ -856,7 +856,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
 
                 </View>
             </Card>
-        </SafeAreaView>
+        </View>
 
     );
 };

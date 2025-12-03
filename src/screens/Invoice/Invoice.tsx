@@ -22,7 +22,7 @@ import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import Skeleton from '@/components/ui/skeleton';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { formatCurrency, formatDate, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
+import { formatCurrency, formatDate, getPaddingBasedOS, isFilterApplied, openDaialler, openEmailClient } from '@/src/utils/utils';
 import { deleteCustomerAPI } from '@/src/api/customer/customer-api-service';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
@@ -293,7 +293,7 @@ const InvoiceList = () => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             <GradientCard
                 colors={isDark
                     ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue
@@ -302,7 +302,7 @@ const InvoiceList = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ paddingTop:getPaddingBasedOS() }}>
                         <Text
                             style={[
                                 globalStyles.headingText,
@@ -421,7 +421,7 @@ const InvoiceList = () => {
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
-                        <View style={{ marginHorizontal: wp('3%'), marginVertical: hp('1%') }}>
+                        <View style={{ marginHorizontal: wp('1%'), marginVertical: hp('1%') }}>
                             <InvoiceCardComponent item={item} />
                         </View>
                     )}
@@ -457,7 +457,7 @@ const InvoiceList = () => {
             </View>
 
 
-        </SafeAreaView>
+        </View>
     );
 };
 

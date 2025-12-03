@@ -24,7 +24,6 @@ import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
-import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
@@ -244,140 +243,138 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     return (
-        <SafeAreaView >
-            <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect, { flex: 1 }]}>
-                {formFields.map((field, index) => (
-                    <FormControl
-                        key={index}
-                        style={{ marginVertical: hp("1%") }}
-                        isInvalid={!!errors[field.key as keyof Errors]}
-                    >
-                        <FormControlLabel className="gap-2">
-                            <FormControlLabelText
-                                style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}
-                            >
-                                {field.label}
-                            </FormControlLabelText>
-                        </FormControlLabel>
-
-                        <Input size="lg" variant='rounded'>
-                            <InputSlot style={{ paddingLeft: wp('2%') }}>
-                                <Feather name={field.icon} size={wp("5%")} color={isDark ? "#fff" : "#000"} />
-                            </InputSlot>
-
-                            <InputField
-                                type={field.type}
-                                onChangeText={(text) => {
-                                    userRegisterRefs.current[field.key] = text;
-                                }}
-                                onBlur={() => validateInputs(field.key)}
-                                placeholder={field.placeholder}
-                                keyboardType={field?.type}
-                                secureTextEntry={
-                                    field.key === "password" ? !showPassword.password :
-                                        field.key === "confirmPassword" ? !showPassword.confirmPassword :
-                                            false
-                                }
-                            />
-
-                            {(field.key === "password" || field.key === "confirmPassword") && (
-                                <InputSlot
-                                    onPress={() =>
-                                        setShowPassword((prev) => ({
-                                            ...prev,
-                                            [field.key]: !prev[field.key],
-                                        }))
-                                    }
-                                >
-                                    <Feather
-                                        name={
-                                            showPassword[field.key]
-                                                ? "eye-off"
-                                                : "eye"
-                                        }
-                                        size={wp("5%")}
-                                        color={isDark ? "#fff" : "#000"}
-                                    />
-                                </InputSlot>
-                            )}
-                        </Input>
-
-                        {errors[field.key as keyof Errors] && (
-                            <FormControlError style={globalStyles.errorContainer}>
-                                <Feather name="alert-triangle" size={20} color="#D32F2F" />
-                                <FormControlErrorText style={globalStyles.errorText}>
-                                    {field.type === "email"
-                                        ? "Please enter valid email"
-                                        : errorMessage}
-                                </FormControlErrorText>
-                            </FormControlError>
-                        )}
-                    </FormControl>
-                ))}
-
-                {/* buttons */}
-                <View style={{ marginVertical: hp("1%") }}>
-                    <Button
-                        size="lg"
-                        variant="solid"
-                        action="primary"
-                        style={globalStyles.buttonColor}
-                        onPress={handleEmailRegister}
-                        isDisabled={(loadingProvider != null) || Object.values(errors).some(Boolean)}
-                    >
-                        {loadingProvider === "email" && (
-                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                        )}
-                        <FontAwesome name="envelope" size={wp("5%")} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>
-                            {loadingProvider == "email"
-                                ? "Signing Up...."
-                                : "Sign Up"}
-                        </ButtonText>
-                    </Button>
-
-                    <View className="flex-row justify-center items-center">
-                        <Text
-                            style={[
-                                globalStyles.normalTextColor,
-                                { marginVertical: hp("1%") },
-                            ]}
+        <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect, { flex: 1 }]}>
+            {formFields.map((field, index) => (
+                <FormControl
+                    key={index}
+                    style={{ marginVertical: hp("1%") }}
+                    isInvalid={!!errors[field.key as keyof Errors]}
+                >
+                    <FormControlLabel className="gap-2">
+                        <FormControlLabelText
+                            style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}
                         >
-                            ────── OR ──────
-                        </Text>
-                    </View>
+                            {field.label}
+                        </FormControlLabelText>
+                    </FormControlLabel>
 
-                    <View className='flex-row justify-center items-center gap-2'>
-                        <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleRegister} disabled={loadingProvider != null}>
-                            <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
-                        </TouchableOpacity>
+                    <Input size="lg" variant='rounded'>
+                        <InputSlot style={{ paddingLeft: wp('2%') }}>
+                            <Feather name={field.icon} size={wp("5%")} color={isDark ? "#fff" : "#000"} />
+                        </InputSlot>
 
-                        {/* Facebook */}
-                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
-                            <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
-                                <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
-                            </View>
-                        </TouchableOpacity>
+                        <InputField
+                            type={field.type}
+                            onChangeText={(text) => {
+                                userRegisterRefs.current[field.key] = text;
+                            }}
+                            onBlur={() => validateInputs(field.key)}
+                            placeholder={field.placeholder}
+                            keyboardType={field?.type}
+                            secureTextEntry={
+                                field.key === "password" ? !showPassword.password :
+                                    field.key === "confirmPassword" ? !showPassword.confirmPassword :
+                                        false
+                            }
+                        />
 
-                        {/* Instagram */}
-                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
-                            <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
-                                <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
-                            </View>
-                        </TouchableOpacity>
+                        {(field.key === "password" || field.key === "confirmPassword") && (
+                            <InputSlot
+                                onPress={() =>
+                                    setShowPassword((prev) => ({
+                                        ...prev,
+                                        [field.key]: !prev[field.key],
+                                    }))
+                                }
+                            >
+                                <Feather
+                                    name={
+                                        showPassword[field.key]
+                                            ? "eye"
+                                            : "eye-off"
+                                    }
+                                    size={wp("5%")}
+                                    color={isDark ? "#fff" : "#000"}
+                                />
+                            </InputSlot>
+                        )}
+                    </Input>
 
-                    </View>
+                    {errors[field.key as keyof Errors] && (
+                        <FormControlError style={globalStyles.errorContainer}>
+                            <Feather name="alert-triangle" size={20} color="#D32F2F" />
+                            <FormControlErrorText style={globalStyles.errorText}>
+                                {field.type === "email"
+                                    ? "Please enter valid email"
+                                    : errorMessage}
+                            </FormControlErrorText>
+                        </FormControlError>
+                    )}
+                </FormControl>
+            ))}
 
-                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
-                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
-                        <TouchableOpacity onPress={() => setCurrScreen('login')}>
-                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
-                        </TouchableOpacity>
+            {/* buttons */}
+            <View style={{ marginVertical: hp("1%") }}>
+                <Button
+                    size="lg"
+                    variant="solid"
+                    action="primary"
+                    style={globalStyles.buttonColor}
+                    onPress={handleEmailRegister}
+                    isDisabled={(loadingProvider != null) || Object.values(errors).some(Boolean)}
+                >
+                    {loadingProvider === "email" && (
+                        <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                    )}
+                    <FontAwesome name="envelope" size={wp("5%")} color="#fff" />
+                    <ButtonText style={globalStyles.buttonText}>
+                        {loadingProvider == "email"
+                            ? "Signing Up...."
+                            : "Sign Up"}
+                    </ButtonText>
+                </Button>
 
-                    </View>
+                <View className="flex-row justify-center items-center">
+                    <Text
+                        style={[
+                            globalStyles.normalTextColor,
+                            { marginVertical: hp("1%") },
+                        ]}
+                    >
+                        ────── OR ──────
+                    </Text>
                 </View>
-            </Card>
-        </SafeAreaView>
+
+                <View className='flex-row justify-center items-center gap-2'>
+                    <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleRegister} disabled={loadingProvider != null}>
+                        <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
+                    </TouchableOpacity>
+
+                    {/* Facebook */}
+                    <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                        <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                            <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
+                        </View>
+                    </TouchableOpacity>
+
+                    {/* Instagram */}
+                    <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                        <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
+                            <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                        </View>
+                    </TouchableOpacity>
+
+                </View>
+
+                <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
+                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
+                    <TouchableOpacity onPress={() => setCurrScreen('login')}>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
+                    </TouchableOpacity>
+
+                </View>
+            </View>
+        </Card>
     );
 };
 

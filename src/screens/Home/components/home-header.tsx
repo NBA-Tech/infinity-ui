@@ -7,7 +7,7 @@ import { useUserStore } from '@/src/store/user/user-store';
 import { scaleFont } from '@/src/styles/global';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Invoice } from '@/src/types/invoice/invoice-type';
-import { formatCurrency, priceFloatFormat } from '@/src/utils/utils';
+import { formatCurrency, getPaddingBasedOS, priceFloatFormat } from '@/src/utils/utils';
 import { InvestmentModel } from '@/src/types/investment/investment-type';
 
 interface HomeHeaderProps {
@@ -80,7 +80,7 @@ const HomeHeader = (props: HomeHeaderProps) => {
 
     return (
         <GradientCard colors={gradientColors}>
-            <View style={{ padding: wp("4%"), paddingVertical: hp("3%"), gap: hp("2%") }}>
+            <View style={{ padding: wp("4%"), paddingVertical: hp("3%"), gap: hp("2%"),paddingTop:getPaddingBasedOS() }}>
 
                 {/* Welcome Text */}
                 <View style={{ alignItems: "center" }}>

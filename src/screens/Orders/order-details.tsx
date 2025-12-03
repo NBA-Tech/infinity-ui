@@ -285,7 +285,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             <BackHeader>
                 <View className='flex flex-col'>
                     <View className="flex flex-row justify-between items-center w-full">
@@ -392,7 +392,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
             }
 
-        </SafeAreaView>
+        </View>
 
     );
 };

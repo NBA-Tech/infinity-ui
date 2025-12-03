@@ -23,7 +23,7 @@ import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import FilterComponent from '@/src/components/filter-component';
-import { isFilterApplied } from '@/src/utils/utils';
+import { getPaddingBasedOS, isFilterApplied } from '@/src/utils/utils';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 const styles = StyleSheet.create({
@@ -188,7 +188,7 @@ const Orders = () => {
     }, []);
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             <GradientCard
                 colors={isDark
                     ? ["#0D3B8F", "#1372F0"]  // Dark mode: deep navy → vibrant blue
@@ -197,7 +197,7 @@ const Orders = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ paddingTop:getPaddingBasedOS() }}>
                         <Text
                             style={[
                                 globalStyles.headingText,
@@ -302,7 +302,7 @@ const Orders = () => {
                         ) : null
                     }
                     renderItem={({ item }) => (
-                        <View style={{ marginHorizontal: wp("3%"), marginVertical: hp("1%") }}>
+                        <View style={{ marginHorizontal: wp("1%"), marginVertical: hp("1%") }}>
                             <OrderCard
                                 cardData={item}
                                 customerMetaData={customerMetaInfoList?.find(c => c?.customerID === item?.orderBasicInfo?.customerID) ?? []}
@@ -329,7 +329,7 @@ const Orders = () => {
                     <Feather name="plus" size={wp('6%')} color="#fff" />
                 </Fab> */}
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

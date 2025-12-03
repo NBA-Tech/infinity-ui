@@ -19,16 +19,12 @@ import Register from './register';
 import ForgotPassword from './forgot-password';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   body: {
     flex: 1,
   },
   animationContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: hp('2%'),
   },
   mainAnimation: {
     width: wp('100%'),
@@ -37,7 +33,6 @@ const styles = StyleSheet.create({
   headingContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: hp('1%'),
     marginBottom: hp('2%'),
   },
   titleText: {
@@ -51,7 +46,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    marginTop: hp('1.5%'), // smaller spacing
     marginBottom: 0, // ✅ no bottom gap
   },
 });
@@ -67,15 +61,17 @@ const Authentication = () => {
   const renderAuthContent = () => (
     <View style={styles.body}>
       {/* Animation Section */}
-      <View style={styles.animationContainer}>
-        <LottieView
-          source={require('../../assets/animations/login.json')}
-          autoPlay
-          loop
-          style={styles.mainAnimation}
-        />
-      </View>
-  
+      <SafeAreaView edges={["top"]}>
+        <View style={styles.animationContainer}>
+          <LottieView
+            source={require('../../assets/animations/login.json')}
+            autoPlay
+            loop
+            style={styles.mainAnimation}
+          />
+        </View>
+      </SafeAreaView>
+
       {/* Header + Auth Form */}
       <View style={styles.formContainer}>
         {/* Title Section (Moved here) */}
@@ -90,10 +86,10 @@ const Authentication = () => {
             {currScreen === 'login'
               ? 'Sign in to'
               : currScreen === 'register'
-              ? 'Sign up to'
-              : 'Reset your password for'}
+                ? 'Sign up to'
+                : 'Reset your password for'}
           </Text>
-  
+
           <Text
             style={[
               globalStyles.headingText,
@@ -104,7 +100,7 @@ const Authentication = () => {
             INFINITY CRM
           </Text>
         </View>
-  
+
         {/* Auth Card */}
         {currScreen === 'login' ? (
           <Login setCurrScreen={setCurrScreen} />
@@ -116,32 +112,25 @@ const Authentication = () => {
       </View>
     </View>
   );
-  
+
 
   return (
-    <SafeAreaView
+    <View
       style={[
         globalStyles.appBackground,
-        styles.container,
-        { paddingBottom: 0 }, // ✅ remove SafeAreaView padding bottom
       ]}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 0, // ✅ removes any ScrollView bottom padding
+        }}
       >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingBottom: 0, // ✅ removes any ScrollView bottom padding
-          }}
-        >
-          {renderAuthContent()}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        {renderAuthContent()}
+      </ScrollView>
+    </View>
   );
 };
 

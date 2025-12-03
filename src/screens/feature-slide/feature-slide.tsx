@@ -21,7 +21,8 @@ import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@/src/types/common";
 import { useDataStore } from "@/src/providers/data-store/data-store-provider";
-import { ThemeToggleContext,StyleContext } from "@/src/providers/theme/global-style-provider";
+import { ThemeToggleContext, StyleContext } from "@/src/providers/theme/global-style-provider";
+import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 const AnimatedFlatList = Animated.createAnimatedComponent(RNFlatList);
 
@@ -66,7 +67,7 @@ const FeatureSlide = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const navigation = useNavigation<NavigationProp>();
     const { setItem } = useDataStore();
-    const globalStyles=useContext(StyleContext);
+    const globalStyles = useContext(StyleContext);
 
     // Track scroll with Reanimated
     const scrollHandler = useAnimatedScrollHandler({
@@ -89,19 +90,19 @@ const FeatureSlide = () => {
                         style={styles.mainAnimation}
                     />
 
-                    <Text style={[styles.title,globalStyles.themeTextColor]}>{item.title}</Text>
-                    <Text style={[styles.description,globalStyles.greyTextColor]}>{item.description}</Text>
+                    <Text style={[styles.title, globalStyles.themeTextColor]}>{item.title}</Text>
+                    <Text style={[styles.description, globalStyles.greyTextColor]}>{item.description}</Text>
                 </View>
             </View>
             {currentIndex < slides.length - 1 ? (
-                <View style={[styles.continueButton,{backgroundColor:'transparent'}]}>
-                    <Text style={[styles.continueText,globalStyles.blueTextColor]}>
+                <View style={[styles.continueButton, { backgroundColor: 'transparent' }]}>
+                    <Text style={[styles.continueText, globalStyles.blueTextColor]}>
                         {"Swipe Right ->"}
                     </Text>
                 </View>
             ) : (
                 <TouchableOpacity
-                    style={[styles.continueButton,globalStyles.buttonColor]}
+                    style={[styles.continueButton, globalStyles.buttonColor]}
                     onPress={async () => {
                         if (currentIndex < slides.length - 1) {
                             flatListRef.current?.scrollToIndex({
@@ -115,7 +116,7 @@ const FeatureSlide = () => {
                         }
                     }}
                 >
-                    <Text style={[styles.continueText,globalStyles.whiteTextColor]}>
+                    <Text style={[styles.continueText, globalStyles.whiteTextColor]}>
                         Register →
                     </Text>
                 </TouchableOpacity>
@@ -146,17 +147,19 @@ const FeatureSlide = () => {
 
 
             {/* Pagination Dots */}
-            <View style={styles.pagination}>
-                {slides.map((_, i) => (
-                    <View
-                        key={i}
-                        style={[
-                            styles.dot,
-                            i === currentIndex ? styles.activeDot : null,
-                        ]}
-                    />
-                ))}
-            </View>
+            <SafeAreaView edges={["bottom"]}>
+                <View style={styles.pagination}>
+                    {slides.map((_, i) => (
+                        <View
+                            key={i}
+                            style={[
+                                styles.dot,
+                                i === currentIndex ? styles.activeDot : null,
+                            ]}
+                        />
+                    ))}
+                </View>
+            </SafeAreaView>
         </View>
     );
 };

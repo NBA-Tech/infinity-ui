@@ -28,7 +28,7 @@ import { NotificationContext } from "@/src/providers/notification/notification-p
 import { ApprovalStatus } from "@/src/types/order/order-type";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useReloadContext } from "@/src/providers/reload/reload-context";
-import { formatCurrency } from "@/src/utils/utils";
+import { formatCurrency, getPaddingBasedOS } from "@/src/utils/utils";
 
 const Profile = () => {
   const globalStyles = useContext(StyleContext);
@@ -181,7 +181,7 @@ const Profile = () => {
   );
 
   return (
-    <SafeAreaView style={globalStyles.appBackground}>
+    <View style={globalStyles.appBackground}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* 🌈 Gradient Profile Header */}
         <GradientCard
@@ -191,7 +191,7 @@ const Profile = () => {
               : ["#1372F0", "#6FADFF"]
           }
         >
-          <View className="flex flex-col items-center justify-center p-4 mt-4">
+          <View className="flex flex-col items-center justify-center p-4 mt-4" style={{paddingTop:getPaddingBasedOS()}}>
             <View
               style={{
                 width: wp("26%"),
@@ -306,7 +306,7 @@ const Profile = () => {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

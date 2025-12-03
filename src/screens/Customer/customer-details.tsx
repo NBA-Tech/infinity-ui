@@ -186,7 +186,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
 
 
     return (
-        <SafeAreaView style={[globalStyles.appBackground, { flex: 1 }]}>
+        <View style={globalStyles.appBackground}>
             {/* Header */}
             <BackHeader screenName="Customer Details" />
 
@@ -249,7 +249,7 @@ export default function CustomerDetails({ navigation, route }: Props) {
                     renderTabBar={renderTabBar}
                 />
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 

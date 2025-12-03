@@ -32,9 +32,6 @@ import { useUserStore } from '@/src/store/user/user-store';
 import { sendWelcomeEmailAPI } from '@/src/api/auth/auth-api-service';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
-    userOnBoardBody: {
-        margin: hp("1%"),
-    },
     roundWrapper: {
         borderRadius: wp("50%"),
         width: wp("13%"),
@@ -60,9 +57,6 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         flex: 1,
-    },
-    scrollableContent: {
-        paddingBottom: hp("5%"),
     },
     fixedButtonContainer: {
         padding: hp("2%"),
@@ -430,106 +424,103 @@ const UserOnBoarding = () => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             {/* Login Card - Aligned to bottom */}
-            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                <View className="flex-1">
-                    <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
-                        <View className="flex flex-row align-middle items-center">
-                            {[0, 1].map((step, index) => (
-                                <View className="flex flex-row align-middle items-center" key={index}>
-                                    <View
-                                        className="rounded-2xl p-4"
-                                        style={[
-                                            styles.roundWrapper,
-                                            {
-                                                backgroundColor:
-                                                    currStep === index
-                                                        ? "#2563EB" // Active step → blue
-                                                        : currStep > index
-                                                            ? "#22C55E" // Completed step → green
-                                                            : "#E5E7EB", // Upcoming step → grey
-                                            },
-                                        ]}
-                                    >
-                                        <View className="justify-center items-center">
-                                            {currStep > index ? (
-                                                <Feather name="check" size={wp("5%")} color="white" />
-                                            ) : (
-                                                <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
-                                                    {index + 1}
-                                                </Text>
-                                            )}
-                                        </View>
+            <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
+                <SafeAreaView edges={["top"]}>
+                    <View className="flex flex-row align-middle items-center">
+                        {[0, 1].map((step, index) => (
+                            <View className="flex flex-row align-middle items-center" key={index}>
+                                <View
+                                    className="rounded-2xl p-4"
+                                    style={[
+                                        styles.roundWrapper,
+                                        {
+                                            backgroundColor:
+                                                currStep === index
+                                                    ? "#2563EB" // Active step → blue
+                                                    : currStep > index
+                                                        ? "#22C55E" // Completed step → green
+                                                        : "#E5E7EB", // Upcoming step → grey
+                                        },
+                                    ]}
+                                >
+                                    <View className="justify-center items-center">
+                                        {currStep > index ? (
+                                            <Feather name="check" size={wp("5%")} color="white" />
+                                        ) : (
+                                            <Text style={[globalStyles.whiteTextColor, globalStyles.subHeadingText]}>
+                                                {index + 1}
+                                            </Text>
+                                        )}
                                     </View>
-
-                                    {index != 1 && <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
                                 </View>
-                            ))}
-                        </View>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginTop: hp("2%") }]}>Step {currStep + 1} {headings[currStep]}</Text>
 
+                                {index != 1 && <Divider style={[styles.divider, { backgroundColor: currStep > index ? "#38A169" : "#d1d5db" }]} />}
+                            </View>
+                        ))}
                     </View>
-                    <Card style={[globalStyles.cardShadowEffect, styles.cardContainer, globalStyles.formBackGroundColor]}>
-                        <View style={{ flex: 1 }}>
-                            <ScrollView
-                                contentContainerStyle={styles.scrollableContent}
-                                keyboardShouldPersistTaps="handled"
-                                showsVerticalScrollIndicator={false}
-                            >
-                                {currStep == 0 && (
-                                    <View>
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                            Company Logo<Text style={{ color: "red" }}>*</Text>
-                                        </Text>
-                                        <View className="flex justify-center items-center">
-                                            <TouchableOpacity onPress={openGallery}>
-                                                {businessDetails.userBusinessInfo?.companyLogoURL ? (
-                                                    <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
-                                                ) : (
-                                                    <View style={styles.imageUploadContainer}>
-                                                        <Feather name="upload" size={wp("10%")} color="#d1d5db" />
-                                                        <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                            Upload
-                                                        </Text>
-                                                        <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                            Size less than 5MB
-                                                        </Text>
+                </SafeAreaView>
+                <Text style={[globalStyles.normalTextColor, globalStyles.labelText, { marginTop: hp("2%") }]}>Step {currStep + 1} {headings[currStep]}</Text>
 
-                                                    </View>
-                                                )
-
-                                                }
-
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                )
-
-                                }
-                                <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
-
-                            </ScrollView>
-                        </View>
-                        <View style={[styles.fixedButtonContainer, globalStyles.cardShadowEffect]}>
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} isDisabled={currStep == 0 || loading} onPress={() => setCurrStep(currStep - 1)}>
-                                <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
-                                <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Prev</ButtonText>
-                            </Button>
-                            <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
-                                {
-                                    loading && (
-                                        <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                                    )
-                                }
-                                <ButtonText style={globalStyles.buttonText}>{currStep == 1 ? "Submit" : "Next"}</ButtonText>
-                                {currStep != 1 && <Feather name="arrow-right" size={wp("5%")} color="#fff" />}
-                            </Button>
-                        </View>
-                    </Card>
-                </View>
             </View>
-        </SafeAreaView>
+            <Card style={[globalStyles.cardShadowEffect, styles.cardContainer, globalStyles.formBackGroundColor]}>
+                <View style={{ flex: 1 }}>
+                    <ScrollView
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {currStep == 0 && (
+                            <View>
+                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                    Company Logo<Text style={{ color: "red" }}>*</Text>
+                                </Text>
+                                <View className="flex justify-center items-center">
+                                    <TouchableOpacity onPress={openGallery}>
+                                        {businessDetails.userBusinessInfo?.companyLogoURL ? (
+                                            <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
+                                        ) : (
+                                            <View style={styles.imageUploadContainer}>
+                                                <Feather name="upload" size={wp("10%")} color="#d1d5db" />
+                                                <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                    Upload
+                                                </Text>
+                                                <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                    Size less than 5MB
+                                                </Text>
+
+                                            </View>
+                                        )
+
+                                        }
+
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        )
+
+                        }
+                        <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
+
+                    </ScrollView>
+                </View>
+            </Card>
+            <View style={[styles.fixedButtonContainer, globalStyles.cardShadowEffect]}>
+                <Button size="lg" variant="solid" action="primary" style={globalStyles.transparentBackground} isDisabled={currStep == 0 || loading} onPress={() => setCurrStep(currStep - 1)}>
+                    <Feather name="arrow-left" size={wp("5%")} color={isDark ? "#fff" : "#000"} />
+                    <ButtonText style={[globalStyles.buttonText, globalStyles.blackTextColor, globalStyles.themeTextColor]}>Prev</ButtonText>
+                </Button>
+                <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={currStep == 1 ? handleSubmit : handleNext} isDisabled={loading || Object.keys(errors).length > 0}>
+                    {
+                        loading && (
+                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )
+                    }
+                    <ButtonText style={globalStyles.buttonText}>{currStep == 1 ? "Submit" : "Next"}</ButtonText>
+                    {currStep != 1 && <Feather name="arrow-right" size={wp("5%")} color="#fff" />}
+                </Button>
+            </View>
+        </View>
     );
 };
 

@@ -1,26 +1,14 @@
 import React, { JSX, useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { ThemeToggleContext, StyleContext } from '@/src/providers/theme/global-style-provider';
-import Header from '@/src/components/header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientCard from '@/src/utils/gradient-card';
 import { Divider } from '@/components/ui/divider';
-import {
-    Accordion,
-    AccordionItem,
-    AccordionHeader,
-    AccordionTrigger,
-    AccordionTitleText,
-    AccordionContentText,
-    AccordionIcon,
-    AccordionContent,
-} from "@/components/ui/accordion"
 import Feather from 'react-native-vector-icons/Feather';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { checkValidEmail, getCountries, getStates, isAllLoadingFalse,  patchState, validateValues } from '@/src/utils/utils';
+import { checkValidEmail, getCountries, getStates, isAllLoadingFalse, patchState, validateValues } from '@/src/utils/utils';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { CustomFieldsComponent } from '@/src/components/fields-component';
-import { SelectItem } from '@/components/ui/select';
 import { CustomerApiResponse, CustomerBasicInfo, CustomerBillingInfo, CustomerModel, LEADSOURCE } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, FormFields, RootStackParamList } from '@/src/types/common';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
@@ -372,8 +360,8 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
-            <BackHeader screenName={customerID ? "Update Customer" : "Create Customer"}/>
+        <View style={globalStyles.appBackground}>
+                <BackHeader screenName={customerID ? "Update Customer" : "Create Customer"} />
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom
@@ -384,15 +372,15 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                     <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
                         <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
                             <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
-                            <View style={[{ width: wp('25%') },globalStyles.glassBackgroundColor]}>
+                            <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
                                 <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
                             </View>
                         </View>
                     </View>
                     <View >
 
-                        <Card style={[{ padding:0}]}>
-                            <View style={[styles.accordionHeader,{ backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
+                        <Card style={[{ padding: 0 }]}>
+                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                     <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
@@ -404,7 +392,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                             </View>
 
                         </Card>
-                        <Card style={[{ padding:0,marginTop:hp('4%')}]}>
+                        <Card style={[{ padding: 0, marginTop: hp('4%') }]}>
                             <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
                                 <View className='flex flex-row  items-start justify-start'>
                                     <Feather name="credit-card" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
@@ -417,7 +405,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                             </View>
 
                         </Card>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%'),marginTop:hp('4%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%'), marginTop: hp('4%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
                             {loadingProvider.saveLoading && (
                                 <ButtonSpinner color={"#fff"} size={wp("4%")} />
                             )
@@ -431,7 +419,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
                 </View>
             </ScrollView>
-        </SafeAreaView >
+        </View >
     );
 };
 

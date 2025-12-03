@@ -529,7 +529,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
     }, [])
 
     return (
-        <SafeAreaView style={[globalStyles.appBackground]}>
+        <View style={[globalStyles.appBackground]}>
             <BackHeader screenName={orderId ? `Update Order` : `Create Order`} />
             <Modal
                 isVisible={isOpen?.modal}
@@ -870,7 +870,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
 
                 </View>
             </Card>
-        </SafeAreaView>
+        </View>
 
     );
 };

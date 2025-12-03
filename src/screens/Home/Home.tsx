@@ -15,7 +15,7 @@ import HeatmapYear from './components/heat-map-year';
 import { useCustomerStore } from '@/src/store/customer/customer-store';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { useToastMessage } from '@/src/components/toast/toast-message';
-import { calculateImprovement, formatCurrency, getCurrencySymbol, getUpcomingByTimeframe } from '@/src/utils/utils';
+import { calculateImprovement, formatCurrency, getCurrencySymbol, getPaddingBasedOS, getUpcomingByTimeframe } from '@/src/utils/utils';
 import { CustomerMetaModel } from '@/src/types/customer/customer-type';
 import { ApiGeneralRespose, GlobalStatus, SearchQueryRequest } from '@/src/types/common';
 import { getInvoiceListBasedOnFiltersAPI } from '@/src/api/invoice/invoice-api-service';
@@ -59,7 +59,7 @@ const Home = () => {
                 userId: userId
             },
             getAll: true,
-            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID","approvalStatus","totalPrice"]
+            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID", "approvalStatus", "totalPrice"]
         }
         const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
         if (!orderMetaDataResponse.success) {
@@ -82,8 +82,8 @@ const Home = () => {
 
     const getInvoiceDetails = async (userId: string) => {
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      
-        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   
+        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
         const payload: SearchQueryRequest = {
             filters: {
                 userId: userId
@@ -221,8 +221,8 @@ const Home = () => {
 
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
-            <HomeHeader invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading}/>
+        <View style={globalStyles.appBackground}>
+            <HomeHeader invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading} />
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View>
                     <View>
@@ -230,14 +230,14 @@ const Home = () => {
                             <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails} />
                         </Card>
                         <View>
-                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading}/>
+                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
                         </View>
                         <View>
                             <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
                         </View>
-                        <View style={{marginBottom:hp('2%')}}>
+                        <View style={{ marginBottom: hp('2%') }}>
                             <Card style={{ padding: 0, margin: 0 }}>
-                                <QuickActions/>
+                                <QuickActions />
                             </Card>
 
                         </View>
@@ -253,12 +253,12 @@ const Home = () => {
 
 
                         <View>
-                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.approvalStatus ==  ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
+                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
                         </View>
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 

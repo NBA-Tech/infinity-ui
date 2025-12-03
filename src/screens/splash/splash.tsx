@@ -153,31 +153,33 @@ export default function SplashScreen() {
       return false;
     }
   };
-  
+
 
   return (
-    <SafeAreaView style={[globalStyles.appBackground]}>
+    <View style={[globalStyles.appBackground]}>
       {/* Center Section */}
       <View style={styles.centerContainer}>
-        <View style={[styles.logoCircle, { backgroundColor: isDark ? "#1A2235" : "#FFFFFF" }]}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            resizeMode="contain"
-            style={styles.logoImage}
-          />
-          <Text
-            style={[
-              globalStyles.headingText,
-              {
-                color: isDark ? "#E3ECFF" : "#182D53",
-                fontSize: scaleFont(13),
-                marginTop: hp("0.8%"),
-              },
-            ]}
-          >
-            INFINITY COLORLAB
-          </Text>
-        </View>
+        <SafeAreaView edges={["top"]}>
+          <View style={[styles.logoCircle, { backgroundColor: isDark ? "#1A2235" : "#FFFFFF" }]}>
+            <Image
+              source={require("../../assets/images/logo.png")}
+              resizeMode="contain"
+              style={styles.logoImage}
+            />
+            <Text
+              style={[
+                globalStyles.headingText,
+                {
+                  color: isDark ? "#E3ECFF" : "#182D53",
+                  fontSize: scaleFont(13),
+                  marginTop: hp("0.8%"),
+                },
+              ]}
+            >
+              INFINITY COLORLAB
+            </Text>
+          </View>
+        </SafeAreaView>
 
         <LottieView
           source={require("../../assets/animations/studio-photography.json")}
@@ -252,7 +254,7 @@ export default function SplashScreen() {
           )}
         </View>
       </Card>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -264,7 +266,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     flex: 1,
-    paddingTop: hp("2%"),
   },
   logoCircle: {
     justifyContent: "center",
@@ -272,14 +273,12 @@ const styles = StyleSheet.create({
     borderRadius: hp("10%"),
     width: hp("20%"),
     height: hp("20%"),
-    paddingTop: hp("1.5%"),
     paddingBottom: hp("1.5%"),
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 7,
     elevation: 7,
-    marginBottom: hp("2%"),
   },
   logoImage: {
     height: hp("7.2%"),
@@ -290,7 +289,6 @@ const styles = StyleSheet.create({
     height: hp("40%"),
   },
   infoCard: {
-    paddingVertical: hp("2.5%"),
     borderTopLeftRadius: wp("8%"),
     borderTopRightRadius: wp("8%"),
     paddingHorizontal: wp("5%"),

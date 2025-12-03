@@ -30,10 +30,6 @@ function App() {
 
   return (
     <SafeAreaProvider>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
         <GluestackUIProvider mode="light">
           <GestureHandlerRootView style={{ flex: 1 }}>
             <ConnectivityProvider>
@@ -56,7 +52,6 @@ function App() {
             </ConnectivityProvider>
           </GestureHandlerRootView>
         </GluestackUIProvider>
-      </KeyboardAvoidingView>
     </SafeAreaProvider>
 
   );

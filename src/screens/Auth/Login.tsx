@@ -174,7 +174,7 @@ const Login = ({ setCurrScreen }: any) => {
                             />
                             {field?.type === 'password' && (
                                 <InputSlot onPress={() => setShowPassword(!showPassword)}>
-                                    <Feather name={showPassword ? "eye-off" : "eye"} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                                    <Feather name={showPassword ? "eye" : "eye-off"} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                 </InputSlot>
                             )}
                         </Input>

@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        paddingVertical: hp('1%'),
         borderTopWidth: 1,
         elevation: 10,
         shadowOffset: { width: 0, height: 2 },
@@ -251,7 +250,6 @@ const styles = StyleSheet.create({
     footerElements: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: hp('1%'),
     },
 
     footerText: {

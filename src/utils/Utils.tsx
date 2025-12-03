@@ -1,7 +1,7 @@
 import { Country, ICountry, IState, State } from "country-state-city";
 import { FormFields, GLOBALSTATUS, GlobalStatus, SearchQueryRequest } from "../types/common";
 import { v4 as uuidv4 } from 'uuid';
-import { Linking } from "react-native";
+import { Linking, Platform, StatusBar } from "react-native";
 import { useUserStore } from "../store/user/user-store";
 import { useCustomerStore } from "../store/customer/customer-store";
 import { useOfferingStore } from "../store/offering/offering-store";
@@ -700,6 +700,8 @@ export const formatCurrency = (balance: number) => {
   return `${config.symbol} ${formattedNumber}`;
 };
 
-
+export const getPaddingBasedOS = () => {
+  return Platform.OS === 'ios' ? 0 + 8 : StatusBar.currentHeight;
+}
 
 export const sortBasedOnFields = (array: any[], key: string, order: 'asc' | 'desc') => array.sort((a: any, b: any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);

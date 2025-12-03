@@ -19,7 +19,7 @@ import { ApprovalStatus, OrderModel, QuotaionHtmlInfo } from '@/src/types/order/
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { deleteOrderAPI, getOrderDataListAPI, getOrderDetailsAPI, updateApprovalStatusAPI } from '@/src/api/order/order-api-service';
 import Skeleton from '@/components/ui/skeleton';
-import { formatCurrency, formatDate, openDaialler, openWhatsApp, resetFiltersWithDefaultValue } from '@/src/utils/utils';
+import { formatCurrency, formatDate, getPaddingBasedOS, openDaialler, openWhatsApp, resetFiltersWithDefaultValue } from '@/src/utils/utils';
 import { useUserStore } from '@/src/store/user/user-store';
 import { EmptyState } from '@/src/components/empty-state-data';
 import DeleteConfirmation from '@/src/components/delete-confirmation';
@@ -427,7 +427,7 @@ const Quotation = () => {
     const debouncedSearch = useCallback(debounce(handleSearch, 300), []);
 
     return (
-        <SafeAreaView style={globalStyles.appBackground}>
+        <View style={globalStyles.appBackground}>
             <DeleteConfirmation openDelete={openDelete} loading={deleteLoading} setOpenDelete={setOpenDelete} handleDelete={handleDelete} />
             <GradientCard
                 colors={isDark
@@ -437,7 +437,7 @@ const Quotation = () => {
             >
                 <View className="flex flex-col p-4 gap-5">
                     {/* Header */}
-                    <View className="flex flex-row justify-center items-center mb-2" style={{ marginTop: hp('2.5%') }}>
+                    <View className="flex flex-row justify-center items-center mb-2" style={{ paddingTop:getPaddingBasedOS() }}>
                         <Text
                             style={[
                                 globalStyles.headingText,
@@ -547,7 +547,7 @@ const Quotation = () => {
                 </View>
             </View>
 
-        </SafeAreaView>
+        </View>
     );
 };
 
