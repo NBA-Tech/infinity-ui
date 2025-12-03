@@ -45,6 +45,7 @@ import { createNewNotificationAPI } from '@/src/services/activity/notification-s
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { EventModel } from '@/src/types/event/event-type';
 import { createNewEventAPI } from '@/src/api/event/event-api-service';
+import { Input,InputField } from '@/components/ui/input';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -108,6 +109,9 @@ const CreateOrder = ({ navigation, route }: Props) => {
         time: false,
         modal: false
     })
+
+    const [isEditingTotal, setIsEditingTotal] = useState(false);
+    const [tempTotal, setTempTotal] = useState(orderDetails?.totalPrice ?? 0);
 
     const getCustomerNameList = async (userID: string) => {
         const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
@@ -367,7 +371,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         `;
 
             const options = {
-                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields,"Order"),
+                html: buildHtml(orderDetails?.orderId, formatDate(new Date()), quotationFields, "Order"),
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle}`,
             };
             const file = await generatePDF(options);
@@ -797,8 +801,67 @@ const CreateOrder = ({ navigation, route }: Props) => {
             <Card style={[globalStyles.cardShadowEffect, styles.bottomCard]}>
                 <View style={{ margin: hp("1%") }}>
                     <View className='flex flex-row justify-between items-center'>
-                        <View className='flex flex-col'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Total Price: ₹ {orderDetails?.totalPrice}</Text>
+                        <View className="flex flex-row items-center gap-3">
+
+                            {!isEditingTotal ? (
+                                <>
+                                    {/* Normal display */}
+                                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                                        Total Price: ₹ {orderDetails?.totalPrice}
+                                    </Text>
+
+                                    {/* Edit icon */}
+                                    {currStep == 2 && (orderDetails?.offeringInfo?.packageId != undefined || orderDetails?.offeringInfo?.services?.length > 0) &&
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setTempTotal(orderDetails?.totalPrice ?? 0);
+                                                setIsEditingTotal(true);
+                                            }}
+                                        >
+                                            <Feather name="edit" size={wp("5%")} color="#3B82F6" />
+                                        </TouchableOpacity>
+                                    }
+
+                                </>
+                            ) : (
+                                /* Editing mode */
+                                <View className="flex-row items-center gap-2">
+
+                                    <Input
+                                        size="lg"
+                                        variant="rounded"
+                                        style={{ width: wp("25%"), height: hp("5%") }}
+                                    >
+                                        <InputField
+                                            type="number"
+                                            value={String(tempTotal)}
+                                            keyboardType="numeric"
+                                            onChangeText={(v) => setTempTotal(Number(v) || "")}
+                                        />
+                                    </Input>
+
+                                    {/* Save new total */}
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            const newTotal = Number(tempTotal) || 0;
+
+                                            setOrderDetails((prev) => ({
+                                                ...prev,
+                                                totalPrice: newTotal,
+                                            }));
+
+                                            setIsEditingTotal(false);
+                                        }}
+                                    >
+                                        <Feather name="check" size={wp("5%")} color="#16A34A" />
+                                    </TouchableOpacity>
+
+                                    {/* Cancel editing */}
+                                    <TouchableOpacity onPress={() => setIsEditingTotal(false)}>
+                                        <Feather name="x" size={wp("5%")} color="#EF4444" />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                         <View>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 1 : orderDetails?.offeringInfo?.services?.length} {orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 'Package' : 'Service'} is selected</Text>

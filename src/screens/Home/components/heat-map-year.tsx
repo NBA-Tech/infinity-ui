@@ -99,7 +99,14 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
         <View style={styles.grid}>
           {months.map((month, idx) => (
             <View key={month} style={styles.monthWrapper}>
-              <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>
+              <Text
+                style={[
+                  globalStyles.normalText,
+                  idx === new Date().getMonth()
+                    ? [globalStyles.blueTextColor,globalStyles.normalBoldText]   // 🔵 highlight current month
+                    : globalStyles.normalTextColor
+                ]}
+              >
                 {month}
               </Text>
               {isLoading ? (

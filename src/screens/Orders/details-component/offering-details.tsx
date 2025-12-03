@@ -83,7 +83,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const { isDark } = useContext(ThemeToggleContext);
     const showToast = useToastMessage();
     const { triggerConfetti } = useConfetti();
-    const [loading, setLoading] = useState(false)
+    const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
     const { userDetails } = useUserStore()
 
 
@@ -161,7 +161,8 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
     const handleStatusChange = async (item: ServiceInfo | OfferingInfo) => {
         if (!item) return;
 
-        setLoading(true);
+        setLoadingItemId(item.id);
+
 
         const updateStatusResponse = await updateServiceCompletionStatus(
             props?.orderId ?? '',
@@ -175,7 +176,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                 title: "Error",
                 message: updateStatusResponse?.message ?? "Something went wrong",
             });
-            setLoading(false);
+            setLoadingItemId(null);
             return;
         }
 
@@ -217,7 +218,7 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
             return prev;
         });
 
-        setLoading(false);
+        setLoadingItemId(null);
         triggerConfetti();
     };
 
@@ -332,11 +333,11 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                         {item.name} x{item.value}
                                                     </Text>
                                                     <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
-                                                        {loading && (
+                                                        {loadingItemId === item.id && (
                                                             <Text style={[globalStyles.normalText, globalStyles.smallText, { color: isDark ? "#fff" : "#111827" }]}>Updating...</Text>
                                                         )
                                                         }
-                                                        {!loading && (
+                                                        {loadingItemId !== item.id && (
                                                             item?.isCompleted ? (
                                                                 <MaterialCommunityIcons
                                                                     name="check-all"
