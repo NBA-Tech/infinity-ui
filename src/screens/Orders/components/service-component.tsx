@@ -7,8 +7,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { StyleContext, ThemeToggleContext } from '@/src/providers/theme/global-style-provider';
 import { OfferingInfo, OrderType, ServiceInfo } from '@/src/types/order/order-type';
-import { Input, InputField } from '@/components/ui/input';
-import { useUserStore } from '@/src/store/user/user-store';
+import { toTitleCase } from '@/src/utils/utils';
 
 type ServiceComponentProps = {
   eventType: any;
@@ -42,11 +41,6 @@ const ServiceComponent = ({
 
   const [quantity, setQuantity] = useState<number>(1);
   const [selected, setSelected] = useState<boolean>(selectedElement?.id === eventType?.id);
-  const { userDetails, getUserDetailsUsingID } = useUserStore()
-
-  const [isEditingPrice, setIsEditingPrice] = useState(false);
-  const [tempPrice, setTempPrice] = useState(eventType?.price ?? 0);
-
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -103,8 +97,6 @@ const ServiceComponent = ({
   useEffect(() => {
     setSelected(selectedElement?.id === eventType?.id);
   }, [selectedElement]);
-
-
 
   return (
     <CustomCheckBox
@@ -174,90 +166,23 @@ const ServiceComponent = ({
               ]}
               numberOfLines={1}
             >
-              {eventType?.type}
+              {eventType?.description}
             </Text>
 
             <View className="flex-row items-center gap-3 mt-1 flex-wrap">
 
-              {!isEditingPrice ? (
-                <>
-                  {/* Normal Price Display */}
-                  <Text
-                    style={[
-                      globalStyles.normalText,
-                      selected ? globalStyles.blueTextColor : globalStyles.themeTextColor,
-                      { fontWeight: '600' },
-                    ]}
-                  >
-                    {userDetails?.currencyIcon} {selectedElement?.price || eventType?.price}
-                  </Text>
-
-                  {/* Edit Icon */}
-                  {selected && (
-                    <TouchableOpacity onPress={() => {
-                      setTempPrice(eventType?.price);  // preload
-                      setIsEditingPrice(true);
-                    }}>
-                      <Feather name="edit" size={wp('4%')} color={'#3B82F6'} />
-                    </TouchableOpacity>
-                  )
-
-                  }
-
-                </>
-              ) : (
-                /* Editable Input */
-                <View className="flex-row items-center gap-2">
-                  <Input
-                    size="lg"
-                    variant="rounded"
-                    style={{ width: wp("25%"), height: hp("5%") }}
-                  >
-                    <InputField
-                      type="number"
-                      value={String(tempPrice)}
-                      keyboardType="numeric"
-                      onChangeText={(v) => setTempPrice(Number(v))}
-                    />
-                  </Input>
-
-                  {/* Save Button */}
-                  <TouchableOpacity
-                    onPress={() => {
-
-                      // Update price inside offeringInfo.services[]
-                      const updatedServices = (offeringInfo.services || []).map((service) =>
-                        service.id === eventType.id
-                          ? { ...service, price: tempPrice }
-                          : service
-                      );
-
-                      const updatedOffer: OfferingInfo = {
-                        ...offeringInfo,
-                        orderType: OrderType.SERVICE,
-                        services: updatedServices,
-                        packageId: undefined,
-                        packageName: undefined,
-                      };
-                      console.log(updatedOffer)
-
-                      handleCheckboxChange(updatedOffer, { parentKey: "offeringInfo", childKey: "" });
-                      handleTotalPriceCharges(updatedOffer);
-
-                      setIsEditingPrice(false);
-                    }}
-                  >
-                    <Feather name="check" size={wp("5%")} color="#16A34A" />
-                  </TouchableOpacity>
-
-                  {/* Cancel Button */}
-                  <TouchableOpacity onPress={() => setIsEditingPrice(false)}>
-                    <Feather name="x" size={wp("5%")} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-              )}
+              <Text
+                style={[
+                  globalStyles.smallText,
+                  selected
+                    ? globalStyles.blueTextColor
+                    : globalStyles.themeTextColor,
+                  { fontWeight: '600' },
+                ]}
+              >
+                ₹{eventType?.price}
+              </Text>
             </View>
-
           </View>
         </View>
 

@@ -171,7 +171,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         switch (route.key) {
             case "customer":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <CustomerInfo
                             key={orderDetails?.orderId}
                             customerData={customerList.find((customer) => customer.customerID === orderDetails?.orderBasicInfo?.customerID) as CustomerMetaModel}
@@ -182,7 +182,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
 
             case "event":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <EventInfoCard
                             key={orderDetails?.orderId}
                             eventData={orderDetails?.eventInfo}
@@ -193,7 +193,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 )
             case "deliverables":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <OfferingDetails
                             key={orderDetails?.orderId}
                             orderStatus={orderDetails?.status}
@@ -206,7 +206,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 )
             case "quotation":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <QuotationDetails
                             key={orderDetails?.orderId}
                             orderDetails={orderDetails}
@@ -218,7 +218,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 )
             case "invoice":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <InvoiceDetails
                             key={orderDetails?.orderId}
                             orderDetails={orderDetails}
@@ -228,13 +228,13 @@ const OrderDetails = ({ route, navigation }: Props) => {
                 )
             case "links":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
                     </ScrollView>
                 )
             case "investments":
                 return (
-                    <ScrollView contentContainerStyle={{ padding: 5 }} showsVerticalScrollIndicator={false}>
+                    <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <InvestmentInfo orderId={orderDetails?.orderId} orderStatus={orderDetails?.status} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList} />
                     </ScrollView>
                 )

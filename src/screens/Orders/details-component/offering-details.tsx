@@ -266,10 +266,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                             <Text style={[styles.cellService, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
                                                 Services
                                             </Text>
-                                            <Text style={[styles.cellPrice, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                                Price
-                                            </Text>
-
                                         </View>
 
                                         {/* Rows */}
@@ -285,9 +281,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                 >
                                                     <Text style={[styles.cellService, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
                                                         {item.name} x{item.value}
-                                                    </Text>
-                                                    <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                                        {formatCurrency(item.price)}
                                                     </Text>
                                                 </View>
                                             )}
@@ -319,11 +312,8 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                             <Text style={[styles.cellService, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
                                                 Deliverable
                                             </Text>
-                                            <Text style={[styles.cellPrice, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                                Price
-                                            </Text>
                                             <Text style={[styles.cellStatus, globalStyles.normalBoldText, { color: isDark ? "#fff" : "#111827" }]}>
-                                                Status
+                                                Complete Status
                                             </Text>
                                         </View>
 
@@ -340,9 +330,6 @@ const OfferingDetails = (props: OfferingDetailsProps) => {
                                                 >
                                                     <Text style={[styles.cellService, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
                                                         {item.name} x{item.value}
-                                                    </Text>
-                                                    <Text style={[styles.cellPrice, globalStyles.normalText, { color: isDark ? "#F3F4F6" : "#111827" }]}>
-                                                        {formatCurrency(item.price)}
                                                     </Text>
                                                     <TouchableOpacity style={styles.cellStatus} onPress={() => handleStatusChange(item)}>
                                                         {loading && (

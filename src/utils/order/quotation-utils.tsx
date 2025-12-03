@@ -132,16 +132,12 @@ export const getQuotationFields = (
                              <div class="pricing-row header-row">
                                 <div class="col name heading">Service</div>
                                 <div class="col count heading">Qty</div>
-                                <div class="col price heading">Unit Price</div>
-                                <div class="col total heading">Total</div>
                             </div>
                             ${ orderDetails?.offeringInfo?.services?.map(
                                 (service) => `
                                         <div class="pricing-row">
                                             <div class="col name">${service.name}</div>
                                             <div class="col count">${service.value}</div>
-                                            <div class="col price">₹ ${service.price}</div>
-                                            <div class="col total">₹ ${service.value * (service.price ?? 0)}</div>
                                         </div>
                                         `
                             )
