@@ -14,7 +14,7 @@ import { FormFields } from '@/src/types/common';
 import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { ChevronDownIcon } from "@/components/ui/icon"
 import { BUSINESSTYPE } from '@/src/constant/constants';
-import { getCountries, getStates, isValidGST, isValidPAN, patchState, validateValues } from '@/src/utils/utils';
+import { getCountries, getPaddingBasedOS, getStates, isValidGST, isValidPAN, patchState, validateValues } from '@/src/utils/utils';
 import { Image } from '@/components/ui/image';
 import Logo from '../../assets/images/logo.png'
 import { Country } from 'country-state-city';
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         flex: 1,
+        marginTop: hp("1%"),
     },
     fixedButtonContainer: {
         padding: hp("2%"),
@@ -426,7 +427,7 @@ const UserOnBoarding = () => {
     return (
         <View style={globalStyles.appBackground}>
             {/* Login Card - Aligned to bottom */}
-            <View className="flex justify-center items-center" style={styles.userOnBoardBody}>
+            <View className="flex justify-center items-center" style={{marginTop:getPaddingBasedOS()}}>
                 <SafeAreaView edges={["top"]}>
                     <View className="flex flex-row align-middle items-center">
                         {[0, 1].map((step, index) => (

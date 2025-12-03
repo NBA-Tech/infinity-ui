@@ -60,56 +60,65 @@ const Authentication = () => {
 
   const renderAuthContent = () => (
     <View style={styles.body}>
-      {/* Animation Section */}
-      <SafeAreaView edges={["top"]}>
-        <View style={styles.animationContainer}>
-          <LottieView
-            source={require('../../assets/animations/login.json')}
-            autoPlay
-            loop
-            style={styles.mainAnimation}
-          />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 0, // ✅ removes any ScrollView bottom padding
+        }}
+      >
+        {/* Animation Section */}
+        <SafeAreaView edges={["top"]}>
+          <View style={styles.animationContainer}>
+            <LottieView
+              source={require('../../assets/animations/login.json')}
+              autoPlay
+              loop
+              style={styles.mainAnimation}
+            />
+          </View>
+        </SafeAreaView>
+
+        {/* Header + Auth Form */}
+        <View style={styles.formContainer}>
+          {/* Title Section (Moved here) */}
+          <View style={styles.headingContainer}>
+            <Text
+              style={[
+                globalStyles.headingText,
+                globalStyles.themeTextColor,
+                styles.titleText,
+              ]}
+            >
+              {currScreen === 'login'
+                ? 'Sign in to'
+                : currScreen === 'register'
+                  ? 'Sign up to'
+                  : 'Reset your password for'}
+            </Text>
+
+            <Text
+              style={[
+                globalStyles.headingText,
+                globalStyles.blueTextColor,
+                styles.appName,
+              ]}
+            >
+              INFINITY CRM
+            </Text>
+          </View>
+
+          {/* Auth Card */}
+          {currScreen === 'login' ? (
+            <Login setCurrScreen={setCurrScreen} />
+          ) : currScreen === 'register' ? (
+            <Register setCurrScreen={setCurrScreen} />
+          ) : (
+            <ForgotPassword setCurrScreen={setCurrScreen} />
+          )}
         </View>
-      </SafeAreaView>
-
-      {/* Header + Auth Form */}
-      <View style={styles.formContainer}>
-        {/* Title Section (Moved here) */}
-        <View style={styles.headingContainer}>
-          <Text
-            style={[
-              globalStyles.headingText,
-              globalStyles.themeTextColor,
-              styles.titleText,
-            ]}
-          >
-            {currScreen === 'login'
-              ? 'Sign in to'
-              : currScreen === 'register'
-                ? 'Sign up to'
-                : 'Reset your password for'}
-          </Text>
-
-          <Text
-            style={[
-              globalStyles.headingText,
-              globalStyles.blueTextColor,
-              styles.appName,
-            ]}
-          >
-            INFINITY CRM
-          </Text>
-        </View>
-
-        {/* Auth Card */}
-        {currScreen === 'login' ? (
-          <Login setCurrScreen={setCurrScreen} />
-        ) : currScreen === 'register' ? (
-          <Register setCurrScreen={setCurrScreen} />
-        ) : (
-          <ForgotPassword setCurrScreen={setCurrScreen} />
-        )}
-      </View>
+      </ScrollView>
     </View>
   );
 
@@ -120,16 +129,7 @@ const Authentication = () => {
         globalStyles.appBackground,
       ]}
     >
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingBottom: 0, // ✅ removes any ScrollView bottom padding
-        }}
-      >
-        {renderAuthContent()}
-      </ScrollView>
+      {renderAuthContent()}
     </View>
   );
 };

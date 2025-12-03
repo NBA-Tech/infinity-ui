@@ -852,6 +852,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                         <View>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 1 : orderDetails?.offeringInfo?.services?.length} {orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 'Package' : 'Service'} is selected</Text>
                         </View>
+                        <SafeAreaView edges={["bottom"]} />
                     </View>
 
                 </View>

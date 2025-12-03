@@ -45,7 +45,7 @@ import { createNewNotificationAPI } from '@/src/services/activity/notification-s
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { EventModel } from '@/src/types/event/event-type';
 import { createNewEventAPI } from '@/src/api/event/event-api-service';
-import { Input,InputField } from '@/components/ui/input';
+import { Input, InputField } from '@/components/ui/input';
 
 const styles = StyleSheet.create({
     userOnBoardBody: {
@@ -455,7 +455,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
             });
 
             navigation.navigate("Success", {
-                text: saveNewOrder?.message ?? "Order created successfully",
+                text: "Order created successfully",
             });
 
             setTimeout(() => setCurrStep(0), 2000);
@@ -799,7 +799,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                 </View>
             </ScrollView>
             <Card style={[globalStyles.cardShadowEffect, styles.bottomCard]}>
-                <View style={{ margin: hp("1%") }}>
+                <View style={{ margin: hp("1%"), flex: 1 }}>
                     <View className='flex flex-row justify-between items-center'>
                         <View className="flex flex-row items-center gap-3">
 
@@ -867,7 +867,7 @@ const CreateOrder = ({ navigation, route }: Props) => {
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 1 : orderDetails?.offeringInfo?.services?.length} {orderDetails?.offeringInfo?.orderType == OrderType?.PACKAGE ? 'Package' : 'Service'} is selected</Text>
                         </View>
                     </View>
-
+                    <SafeAreaView edges={["bottom"]} />
                 </View>
             </Card>
         </View>

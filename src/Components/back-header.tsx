@@ -32,7 +32,7 @@ const BackHeader: React.FC<BackHeaderProps> = ({ screenName, children, style }) 
     <View
       style={{
         width: "100%",
-        backgroundColor: isDark ? "#0D162A" : "#E8F0FF", // modern subtle tint
+        backgroundColor: isDark ? "#1A2238" : "#F5F7FB", // modern subtle tint
         paddingTop: getPaddingBasedOS(),                // notch-aware padding
         paddingBottom: hp("2%"),
         paddingHorizontal: wp("4%"),

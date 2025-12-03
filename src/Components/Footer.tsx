@@ -24,8 +24,16 @@ const Footer = (props: FooterProps) => {
 
     if (!props?.state || !props?.state.routes) return null;
 
-    const activeIconColorStart = "#2563EB"; // start of gradient
-    const activeIconColorEnd = "#1372F0";   // end of gradient (underline)
+    /** ACTIVE COLORS FOR BOTH THEMES **/
+    const activeIconColorStart = isDark ? "#3B82F6" : "#2563EB";
+    const activeIconColorEnd   = isDark ? "#0EA5E9" : "#1372F0";
+
+    /** INACTIVE COLORS **/
+    const inactiveIconColor = isDark ? "#CBD5E1" : "#000";
+    const inactiveTextColor = isDark ? "#94A3B8" : "#000";
+
+    /** ACTIVE TEXT COLOR **/
+    const activeTextColor = isDark ? "#38BDF8" : activeIconColorStart;
 
     const iconsMapping: any = {
         home: {
@@ -44,9 +52,10 @@ const Footer = (props: FooterProps) => {
                 </View>
             ),
             inactive: (
-                <Feather name="home" size={hp("3.2%")} color="#000" />
+                <Feather name="home" size={hp("3.2%")} color={inactiveIconColor} />
             ),
         },
+
         customer: {
             active: (
                 <View style={{ alignItems: 'center' }}>
@@ -61,7 +70,6 @@ const Footer = (props: FooterProps) => {
                             backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
-                            alignSelf: "center",
                         }}
                     />
                 </View>
@@ -70,10 +78,11 @@ const Footer = (props: FooterProps) => {
                 <MaterialCommunityIcons
                     name="account-multiple-outline"
                     size={hp("3.2%")}
-                    color="#000"
+                    color={inactiveIconColor}
                 />
             ),
         },
+
         invoice: {
             active: (
                 <View style={{ alignItems: 'center' }}>
@@ -84,13 +93,15 @@ const Footer = (props: FooterProps) => {
                             backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
-                            alignSelf: "center",
                         }}
                     />
                 </View>
             ),
-            inactive: <Ionicons name="receipt-outline" size={hp("3.2%")} color="#000" />,
+            inactive: (
+                <Ionicons name="receipt-outline" size={hp("3.2%")} color={inactiveIconColor} />
+            ),
         },
+
         orders: {
             active: (
                 <View style={{ alignItems: 'center' }}>
@@ -105,7 +116,6 @@ const Footer = (props: FooterProps) => {
                             backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
-                            alignSelf: "center",
                         }}
                     />
                 </View>
@@ -114,67 +124,49 @@ const Footer = (props: FooterProps) => {
                 <MaterialCommunityIcons
                     name="clipboard-text-outline"
                     size={hp("3.2%")}
-                    color="#000"
+                    color={inactiveIconColor}
                 />
             ),
         },
+
         profile: {
             active: (
                 <View style={{ alignItems: 'center' }}>
-                    <Feather
-                        name="user"
-                        size={hp("3%")}
-                        color={activeIconColorStart}
-                    />
+                    <Feather name="user" size={hp("3%")} color={activeIconColorStart} />
                     <Divider
                         style={{
                             marginTop: hp("0.2%"),
                             backgroundColor: activeIconColorEnd,
                             height: 3,
                             width: wp("8%"),
-                            alignSelf: "center",
                         }}
                     />
                 </View>
             ),
             inactive: (
-                <Feather
-                    name="user"
-                    size={hp("3%")}
-                    color="#000"
-                />
+                <Feather name="user" size={hp("3%")} color={inactiveIconColor} />
             ),
         },
+
         quotations: {
             active: (
                 <View style={{ alignItems: 'center' }}>
-                    <Feather
-                        name="file-text"
-                        size={hp("3%")}
-                        color={activeIconColorStart}
-                    />
+                    <Feather name="file-text" size={hp("3%")} color={activeIconColorStart} />
                     <Divider
                         style={{
                             marginTop: hp("0.1%"),
                             backgroundColor: activeIconColorEnd,
                             height: 2,
                             width: wp("7%"),
-                            alignSelf: "center",
                         }}
                     />
                 </View>
             ),
             inactive: (
-                <Feather
-                    name="file-text"
-                    size={hp("3.2%")}
-                    color="#000"
-                />
+                <Feather name="file-text" size={hp("3.2%")} color={inactiveIconColor} />
             ),
         },
     };
-
-
 
 
     return (
@@ -182,10 +174,10 @@ const Footer = (props: FooterProps) => {
             style={[
                 styles.footerContainer,
                 {
-                    backgroundColor: isDark ? '#1A2238' : '#F5F7FB',
-                    borderTopColor: isDark ? '#2E3A57' : '#E5E7EB',
-                    shadowColor: isDark ? '#000' : '#182D53',
+                    backgroundColor: isDark ? "#0F172A" : "#F8FAFC",
+                    borderTopColor: isDark ? "#1E293B" : "#E2E8F0",
                     paddingBottom: insets.bottom,
+                    shadowColor: isDark ? "#000" : "#182D53",
                 },
             ]}
         >
@@ -213,16 +205,17 @@ const Footer = (props: FooterProps) => {
                         style={styles.footerElements}
                     >
                         <View style={{ alignItems: "center" }}>
-                            {iconSet ? (isFocused ? iconSet.active : iconSet.inactive) : null}
+                            {isFocused ? iconSet.active : iconSet.inactive}
 
+                            {/* Updated Text colors */}
                             <Text
                                 style={[
                                     globalStyle.smallText,
                                     {
-                                        color: isFocused ? activeIconColorStart : "#000",
+                                        color: isFocused ? activeTextColor : inactiveTextColor,
                                         marginTop: hp("0.3%"),
-                                        fontFamily:"OpenSans-Bold"
-                                    }
+                                        fontFamily: "OpenSans-Bold",
+                                    },
                                 ]}
                             >
                                 {routeName.charAt(0).toUpperCase() + routeName.slice(1)}
@@ -234,6 +227,7 @@ const Footer = (props: FooterProps) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     footerContainer: {
@@ -250,6 +244,7 @@ const styles = StyleSheet.create({
     footerElements: {
         justifyContent: 'center',
         alignItems: 'center',
+        marginVertical: hp('1%'),
     },
 
     footerText: {

@@ -58,6 +58,7 @@ import {
     formatCurrency,
     formatDate,
     generateRandomStringBasedType,
+    getPaddingBasedOS,
     isAllLoadingFalse,
     patchState,
     validateValues,
@@ -574,6 +575,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     paddingVertical: hp("2%"),
                     paddingHorizontal: wp("4%"),
                     backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
+                    paddingBottom:getPaddingBasedOS()
                 }}
                 className="flex flex-row gap-2 justify-between items-center"
             >
