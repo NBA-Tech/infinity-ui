@@ -701,7 +701,7 @@ export const formatCurrency = (balance: number) => {
 };
 
 export const getPaddingBasedOS = () => {
-  return Platform.OS === 'ios' ? 0 + 8 : StatusBar.currentHeight;
+  return (Platform.OS === 'ios' ? 0 + 8 : StatusBar.currentHeight) || 0;
 }
 
 export const sortBasedOnFields = (array: any[], key: string, order: 'asc' | 'desc') => array.sort((a: any, b: any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);

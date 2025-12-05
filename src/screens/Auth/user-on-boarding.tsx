@@ -31,6 +31,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useUserStore } from '@/src/store/user/user-store';
 import { sendWelcomeEmailAPI } from '@/src/api/auth/auth-api-service';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const styles = StyleSheet.create({
     roundWrapper: {
         borderRadius: wp("50%"),
@@ -471,37 +472,44 @@ const UserOnBoarding = () => {
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
-                        {currStep == 0 && (
-                            <View>
-                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                    Company Logo<Text style={{ color: "red" }}>*</Text>
-                                </Text>
-                                <View className="flex justify-center items-center">
-                                    <TouchableOpacity onPress={openGallery}>
-                                        {businessDetails.userBusinessInfo?.companyLogoURL ? (
-                                            <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
-                                        ) : (
-                                            <View style={styles.imageUploadContainer}>
-                                                <Feather name="upload" size={wp("10%")} color="#d1d5db" />
-                                                <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                    Upload
-                                                </Text>
-                                                <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
-                                                    Size less than 5MB
-                                                </Text>
+                        <KeyboardAwareScrollView
+                            enableOnAndroid
+                            keyboardShouldPersistTaps="handled"
+                            showsVerticalScrollIndicator={false}
+                        >
 
-                                            </View>
-                                        )
+                            {currStep == 0 && (
+                                <View>
+                                    <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
+                                        Company Logo<Text style={{ color: "red" }}>*</Text>
+                                    </Text>
+                                    <View className="flex justify-center items-center">
+                                        <TouchableOpacity onPress={openGallery}>
+                                            {businessDetails.userBusinessInfo?.companyLogoURL ? (
+                                                <Image source={{ uri: businessDetails.userBusinessInfo?.companyLogoURL }} style={styles.image} />
+                                            ) : (
+                                                <View style={styles.imageUploadContainer}>
+                                                    <Feather name="upload" size={wp("10%")} color="#d1d5db" />
+                                                    <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                        Upload
+                                                    </Text>
+                                                    <Text style={[globalStyles.greyTextColor, globalStyles.labelText]}>
+                                                        Size less than 5MB
+                                                    </Text>
 
-                                        }
+                                                </View>
+                                            )
 
-                                    </TouchableOpacity>
+                                            }
+
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
-                        )
+                            )
 
-                        }
-                        <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
+                            }
+                            <CustomFieldsComponent infoFields={currStep == 0 ? businessInfoFields : billingInfoFields} errors={errors} />
+                        </KeyboardAwareScrollView>
 
                     </ScrollView>
                 </View>

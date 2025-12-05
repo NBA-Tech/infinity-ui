@@ -244,7 +244,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                 key: "amountPaid",
                 label: "Amount Paid",
                 placeholder: "Eg: ₹100",
-                icon: <FontAwesome name="money"  size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
+                icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
                 type: "number",
                 isRequired: true,
                 value: invoiceDetails?.amountPaid,
@@ -377,7 +377,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
 
     const handleShareQuotation = async () => {
         try {
-            const html = buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields,"Invoice");
+            const html = buildHtml(invoiceDetails?.invoiceId, formatDate(new Date()), invoiceFields, "Invoice");
             const pdf = await generatePDF({
                 html,
                 fileName: `Quotation_${orderDetails?.eventInfo?.eventTitle || "Invoice"}`,
@@ -509,7 +509,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                     />
                 )}
 
-                {currStep === 1 && <PaymentComponent paymentForm={paymentForm} errors={errors}/>}
+                {currStep === 1 && <PaymentComponent paymentForm={paymentForm} errors={errors} />}
 
                 {currStep === 2 && (
                     <Card style={[globalStyles.cardShadowEffect, { padding: 0 }]}>
@@ -566,55 +566,56 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             </ScrollView>
 
             {/* Footer Buttons */}
-            <View
-                style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    paddingVertical: hp("2%"),
-                    paddingHorizontal: wp("4%"),
-                    backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
-                    paddingBottom:getPaddingBasedOS()
-                }}
-                className="flex flex-row gap-2 justify-between items-center"
-            >
-                {currStep > 0 && (
+            <SafeAreaView edges={["bottom"]}>
+                <View
+                    style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        paddingVertical: hp("2%"),
+                        paddingHorizontal: wp("4%"),
+                        backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
+                    }}
+                    className="flex flex-row gap-2 justify-between items-center"
+                >
+                    {currStep > 0 && (
+                        <Button
+                            size="lg"
+                            variant="solid"
+                            action="primary"
+                            style={[globalStyles.buttonColor, { flex: 1, marginRight: wp("2%") }]}
+                            onPress={handlePrev}
+                        >
+                            <Feather name="arrow-left" size={wp("5%")} color="#fff" />
+                            <ButtonText style={globalStyles.buttonText}>Prev</ButtonText>
+                        </Button>
+                    )}
+
                     <Button
                         size="lg"
                         variant="solid"
                         action="primary"
-                        style={[globalStyles.buttonColor, { flex: 1, marginRight: wp("2%") }]}
-                        onPress={handlePrev}
+                        style={[globalStyles.buttonColor, { flex: 1, marginLeft: wp("2%") }]}
+                        isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
+                        onPress={currStep === 2 ? handleCreateInvoice : handleNext}
                     >
-                        <Feather name="arrow-left" size={wp("5%")} color="#fff" />
-                        <ButtonText style={globalStyles.buttonText}>Prev</ButtonText>
+                        {loadingProvider.saveLoading && (
+                            <ButtonSpinner size={wp("4%")} color="#fff" />
+                        )}
+                        <ButtonText style={globalStyles.buttonText}>
+                            {loadingProvider.saveLoading
+                                ? invoiceId ? "Updating..." : "Creating..."
+                                : currStep === 2
+                                    ? invoiceId ? "Update Invoice" : "Create Invoice"
+                                    : "Next"}
+                        </ButtonText>
+                        {currStep !== 2 && !loadingProvider.saveLoading && (
+                            <Feather name="arrow-right" size={wp("5%")} color="#fff" />
+                        )}
                     </Button>
-                )}
-
-                <Button
-                    size="lg"
-                    variant="solid"
-                    action="primary"
-                    style={[globalStyles.buttonColor, { flex: 1, marginLeft: wp("2%") }]}
-                    isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}
-                    onPress={currStep === 2 ? handleCreateInvoice : handleNext}
-                >
-                    {loadingProvider.saveLoading && (
-                        <ButtonSpinner size={wp("4%")} color="#fff" />
-                    )}
-                    <ButtonText style={globalStyles.buttonText}>
-                        {loadingProvider.saveLoading
-                            ? invoiceId ? "Updating..." : "Creating..."
-                            : currStep === 2
-                                ? invoiceId ? "Update Invoice" : "Create Invoice"
-                                : "Next"}
-                    </ButtonText>
-                    {currStep !== 2 && !loadingProvider.saveLoading && (
-                        <Feather name="arrow-right" size={wp("5%")} color="#fff" />
-                    )}
-                </Button>
-            </View>
+                </View>
+            </SafeAreaView>
         </View>
     );
 };

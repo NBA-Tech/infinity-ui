@@ -23,6 +23,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ACTIVITY_TYPE, UserActivity } from '@/src/types/activity/user-activity-type';
 import { createNewActivityAPI } from '@/src/services/activity/user-activity-service';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -361,63 +362,69 @@ const CreateCustomer = ({ navigation, route }: Props) => {
 
     return (
         <View style={globalStyles.appBackground}>
-                <BackHeader screenName={customerID ? "Update Customer" : "Create Customer"} />
+            <BackHeader screenName={customerID ? "Update Customer" : "Create Customer"} />
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom
                 showsVerticalScrollIndicator={false}
             >
+                <KeyboardAwareScrollView
+                    enableOnAndroid={true}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
 
-                <View>
-                    <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
-                        <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
-                            <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
-                            <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
-                                <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
+                    <View>
+                        <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
+                            <View className='flex justify-start items-start' style={{ margin: wp("2%") }}>
+                                <Text style={[globalStyles.heading2Text, globalStyles.themeTextColor]}>{customerID ? "Update Customer" : "Create Customer"}</Text>
+                                <View style={[{ width: wp('25%') }, globalStyles.glassBackgroundColor]}>
+                                    <Divider style={{ height: hp('0.5%') }} width={wp('0%')} />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    <View >
+                        <View >
 
-                        <Card style={[{ padding: 0 }]}>
-                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
-                                <View className='flex flex-row  items-start justify-start'>
-                                    <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
+                            <Card style={[{ padding: 0 }]}>
+                                <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
+                                    <View className='flex flex-row  items-start justify-start'>
+                                        <Feather name="user" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Basic Information</Text>
 
+                                    </View>
                                 </View>
-                            </View>
-                            <View>
-                                <CustomFieldsComponent infoFields={basicInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
-                            </View>
-
-                        </Card>
-                        <Card style={[{ padding: 0, marginTop: hp('4%') }]}>
-                            <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
-                                <View className='flex flex-row  items-start justify-start'>
-                                    <Feather name="credit-card" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
-
+                                <View>
+                                    <CustomFieldsComponent infoFields={basicInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
                                 </View>
-                            </View>
-                            <View>
-                                <CustomFieldsComponent infoFields={billingInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
-                            </View>
 
-                        </Card>
-                        <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%'), marginTop: hp('4%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
-                            {loadingProvider.saveLoading && (
-                                <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                            )
-                            }
-                            <Feather name="save" size={wp('5%')} color="#fff" />
-                            <ButtonText style={globalStyles.buttonText}>{loadingProvider.saveLoading ? "Saving..." : "Save"}</ButtonText>
-                        </Button>
+                            </Card>
+                            <Card style={[{ padding: 0, marginTop: hp('4%') }]}>
+                                <View style={[styles.accordionHeader, { backgroundColor: isDark ? '#273449' : '#D0E2FF' }]}>
+                                    <View className='flex flex-row  items-start justify-start'>
+                                        <Feather name="credit-card" size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor, { marginLeft: wp('2%') }]}>Billing Information</Text>
 
+                                    </View>
+                                </View>
+                                <View>
+                                    <CustomFieldsComponent infoFields={billingInfoFields} errors={errors} cardStyle={{ padding: wp('2%') }} />
+                                </View>
+
+                            </Card>
+                            <Button size="md" variant="solid" action="primary" style={[globalStyles.buttonColor, { marginHorizontal: wp('2%'), marginTop: hp('4%') }]} onPress={handleSubmit} isDisabled={!isAllLoadingFalse(loadingProvider) || Object.keys(errors).length > 0}>
+                                {loadingProvider.saveLoading && (
+                                    <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                                )
+                                }
+                                <Feather name="save" size={wp('5%')} color="#fff" />
+                                <ButtonText style={globalStyles.buttonText}>{loadingProvider.saveLoading ? "Saving..." : "Save"}</ButtonText>
+                            </Button>
+
+
+                        </View>
 
                     </View>
-
-                </View>
+                </KeyboardAwareScrollView>
             </ScrollView>
         </View >
     );

@@ -103,7 +103,7 @@ const QuotationDetails = (props: QuotationDetailsProps) => {
 
     const loadCustomerData = async () => {
         const userID = getItem("USERID")
-        const metaData = await loadCustomerMetaInfoList(userID, {}, {}, showToast)
+        const metaData = await loadCustomerMetaInfoList(userID,showToast)
         setCustomerList(metaData);
     }
 

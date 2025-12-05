@@ -183,7 +183,7 @@ const Orders = () => {
 
     useEffect(() => {
         const userId = getItem("USERID");
-        loadCustomerMetaInfoList(userId, {}, {}, showToast);
+        loadCustomerMetaInfoList(userId,showToast);
         loadOrdersMetaData(userId);
     }, []);
 
