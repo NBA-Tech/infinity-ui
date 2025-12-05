@@ -17,8 +17,9 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { UserApiResponse } from '@/src/types/user/user-type';
 import { useAuth } from '@/src/context/auth-context/auth-context';
-import { generateRandomString } from '@/src/utils/utils';
+import { generateRandomString, getPaddingBasedOS } from '@/src/utils/utils';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     loginContainer: {
         borderTopLeftRadius: wp("10%"),
@@ -222,13 +223,14 @@ const Login = ({ setCurrScreen }: any) => {
                             </TouchableOpacity>
 
                         </View>
-                        <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
-                            <TouchableOpacity onPress={() => setCurrScreen('register')}>
-                                <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
-                            </TouchableOpacity>
-
-                        </View>
+                        <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS() }}>
+                            <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
+                                <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
+                                <TouchableOpacity onPress={() => setCurrScreen('register')}>
+                                    <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </SafeAreaView>
                     </View>
                 </Card>
             </KeyboardAwareScrollView>

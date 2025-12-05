@@ -131,6 +131,7 @@ export default function SplashScreen() {
         await checkNavigation();
       } else {
         // stay on splash and show retry UI; you can optionally route to an "unlock help" screen
+        await checkNavigation();
       }
     })();
 

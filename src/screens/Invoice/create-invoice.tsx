@@ -566,7 +566,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
             </ScrollView>
 
             {/* Footer Buttons */}
-            <SafeAreaView edges={["bottom"]}>
                 <View
                     style={{
                         position: "absolute",
@@ -576,6 +575,7 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         paddingVertical: hp("2%"),
                         paddingHorizontal: wp("4%"),
                         backgroundColor: isDark ? "#1A2238" : "#F5F7FB",
+                        paddingBottom:getPaddingBasedOS()+hp("1%"),
                     }}
                     className="flex flex-row gap-2 justify-between items-center"
                 >
@@ -615,7 +615,6 @@ const CreateInvoice = ({ navigation, route }: Props) => {
                         )}
                     </Button>
                 </View>
-            </SafeAreaView>
         </View>
     );
 };

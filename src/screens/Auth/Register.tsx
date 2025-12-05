@@ -20,11 +20,12 @@ import { AuthResult, loginWithGoogle } from '@/src/services/auth/auth-service';
 import { useToastMessage } from '@/src/components/toast/toast-message';
 import { AuthModel, AuthResponse } from '@/src/types/auth/auth-type';
 import { getOtpAPI, registerUser } from '@/src/api/auth/auth-api-service';
-import { checkPasswordStrength, checkValidEmail } from '@/src/utils/utils';
+import { checkPasswordStrength, checkValidEmail, getPaddingBasedOS } from '@/src/utils/utils';
 import { useDataStore } from '@/src/providers/data-store/data-store-provider';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
@@ -371,14 +372,14 @@ const Register = ({ setCurrScreen }: any) => {
                         </TouchableOpacity>
 
                     </View>
-
-                    <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
-                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
-                        <TouchableOpacity onPress={() => setCurrScreen('login')}>
-                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
-                        </TouchableOpacity>
-
-                    </View>
+                    <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS()}}>
+                        <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
+                            <TouchableOpacity onPress={() => setCurrScreen('login')}>
+                                <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign In</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
                 </View>
             </Card>
         </KeyboardAwareScrollView>

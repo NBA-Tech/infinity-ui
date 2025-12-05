@@ -30,18 +30,13 @@ import TemplateBuilderComponent from './components/template-builder-component';
 import TemplatePreview from './components/template-preview';
 import Modal from "react-native-modal";
 import { useUserStore } from '@/src/store/user/user-store';
-import { getUserDetailsApi } from '@/src/services/user/user-service';
 import { generatePDF } from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
 import { buildHtml } from './utils/html-builder';
 import { getOrderDetailsAPI, saveNewOrderAPI, updateOrderDetailsAPI } from '@/src/api/order/order-api-service';
 import { EmptyState } from '@/src/components/empty-state-data';
-import { useNavigation } from '@react-navigation/native';
 import { getQuotationFields } from '@/src/utils/order/quotation-utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { createNewActivityAPI } from '@/src/services/activity/user-activity-service';
-import { ACTIVITY_TYPE } from '@/src/types/activity/user-activity-type';
-import { createNewNotificationAPI } from '@/src/services/activity/notification-service';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
 import { EventModel } from '@/src/types/event/event-type';
 import { createNewEventAPI } from '@/src/api/event/event-api-service';
@@ -67,6 +62,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
+        paddingBottom:getPaddingBasedOS()+hp("1%"),
     },
 });
 interface CustomerOption {
@@ -798,7 +794,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
                     </View>
                 </View>
             </ScrollView>
-            <SafeAreaView edges={["bottom"]}>
                 <Card style={[globalStyles.cardShadowEffect, styles.bottomCard]}>
                     <View style={{ margin: hp("1%"), flex: 1 }}>
                         <View className='flex flex-row justify-between items-center'>
@@ -870,7 +865,6 @@ const CreateOrder = ({ navigation, route }: Props) => {
                         </View>
                     </View>
                 </Card>
-            </SafeAreaView>
         </View>
 
     );
