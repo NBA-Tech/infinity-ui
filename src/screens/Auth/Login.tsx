@@ -18,7 +18,6 @@ import { NavigationProp } from '@/src/types/common';
 import { UserApiResponse } from '@/src/types/user/user-type';
 import { useAuth } from '@/src/context/auth-context/auth-context';
 import { generateRandomString, getPaddingBasedOS } from '@/src/utils/utils';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const styles = StyleSheet.create({
     loginContainer: {

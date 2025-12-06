@@ -24,7 +24,6 @@ import { SubscriptionProvider } from './src/providers/subscription/subscription-
 import SubscriptionLockOverlay from './src/components/subscription-overlay';
 import { ConnectivityProvider } from './src/providers/internet-connection/connectivity-provider';
 import NoInternetPopup from './src/components/nointernet-popup';
-import { KeyboardAvoiderProvider } from '@good-react-native/keyboard-avoider';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -41,9 +40,7 @@ function App() {
                     <ConfettiProvider>
                       <NotificationProvider>
                         <SubscriptionProvider>
-                          <KeyboardAvoiderProvider>
                             <Navigation />
-                          </KeyboardAvoiderProvider>
                           <NoInternetPopup />
                         </SubscriptionProvider>
                       </NotificationProvider>

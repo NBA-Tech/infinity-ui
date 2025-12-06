@@ -20,10 +20,7 @@ import { Card } from '@/components/ui/card';
 import BackHeader from '@/src/components/back-header';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ACTIVITY_TYPE, UserActivity } from '@/src/types/activity/user-activity-type';
-import { createNewActivityAPI } from '@/src/services/activity/user-activity-service';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const styles = StyleSheet.create({
 
     accordionHeader: {
@@ -368,11 +365,7 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                 contentContainerStyle={{ paddingBottom: hp("5%") }} // some spacing at bottom
                 showsVerticalScrollIndicator={false}
             >
-                <KeyboardAwareScrollView
-                    enableOnAndroid={true}
-                    keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
-                >
+               
 
                     <View>
                         <View style={{ marginVertical: hp('1%') }} className='flex justify-between items-center flex-row'>
@@ -424,7 +417,6 @@ const CreateCustomer = ({ navigation, route }: Props) => {
                         </View>
 
                     </View>
-                </KeyboardAwareScrollView>
             </ScrollView>
         </View >
     );
