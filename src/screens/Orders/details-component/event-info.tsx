@@ -38,28 +38,27 @@ const EventInfoCard = (props: EventInfoProps) => {
                             <View className='flex flex-row justify-between items-center'>
                                 <View className='flex flex-row gap-2'>
                                     <Feather name="calendar" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{formatDate(props?.eventData?.eventDate ?? "")}</Text>
-                                </View>
-                                <View className='flex flex-row gap-4'>
-                                    <Feather name="clock" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{props?.eventData?.eventTime}</Text>
+                                    <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{formatDate(props?.eventData?.eventDate ?? "")} {props?.eventData?.eventTime}</Text>
                                 </View>
 
                             </View>
                             <View className='flex flex-row justify-start items-center gap-2' style={{ width: wp('60%') }}>
                                 <Feather name="map-pin" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
                                 <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{props?.eventData?.eventLocation}</Text>
-                                <TouchableOpacity onPress={()=>openAddressInMap(props?.eventData?.eventLocation)}>
-                                <Feather name="external-link" size={wp('5%')} color={'#3B82F6'} />
+                                <TouchableOpacity onPress={() => openAddressInMap(props?.eventData?.eventLocation)}>
+                                    <Feather name="external-link" size={wp('5%')} color={'#3B82F6'} />
                                 </TouchableOpacity>
                             </View>
                             <Divider />
 
                             <View className='flex flex-row justify-start items-center gap-3'>
-                                <View className='flex flex-col items-center'>
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{props?.eventData?.numberOfHours}</Text>
-                                    <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Hours</Text>
-                                </View>
+                                {props?.eventData?.numberOfHours && (
+                                    <View className='flex flex-col items-center'>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{props?.eventData?.numberOfHours}</Text>
+                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>Hours</Text>
+                                    </View>
+                                )
+                                }
                                 <View className='flex flex-col items-center'>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.subHeadingText]}>{props?.isPackage ? "1" : props?.serviceLength}</Text>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{props?.isPackage ? "Package" : "Services"}</Text>

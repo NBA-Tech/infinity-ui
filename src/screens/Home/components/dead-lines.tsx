@@ -119,9 +119,6 @@ const DeadLines = (props: DeadLinesProps) => {
                         <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
                             Upcoming Deadlines
                         </Text>
-                        <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                            Deliverables due soon
-                        </Text>
                     </View>
 
                     <Tooltip

@@ -13,17 +13,24 @@ import Tooltip, { Placement } from "react-native-tooltip-2";
 import Feather from "react-native-vector-icons/Feather";
 import Skeleton from "@/components/ui/skeleton";
 import { useUserStore } from "@/src/store/user/user-store";
-import { formatCurrency } from "@/src/utils/utils";
+import { formatCurrency, getPastYears } from "@/src/utils/utils";
+import { Dropdown } from "react-native-element-dropdown";
+import { Divider } from "@/components/ui/divider";
+import { scaleFont } from "@/src/styles/global";
 interface Props {
     invoices: Invoice[];
     investments: InvestmentModel[];
     loading: boolean
+    getInvestmentDetails: (changeKey?: string, startTime?: Date, endTime?: Date) => void
+    getInvoiceDetails: (changeKey?: string, startTime?: Date, endTime?: Date) => void
 }
 
-export default function RevenueTrendLineChart({ invoices = [], investments = [], loading }: Props) {
+export default function RevenueTrendLineChart({ invoices = [], investments = [], loading, getInvestmentDetails, getInvoiceDetails }: Props) {
+    const currentYear = new Date().getFullYear();
     const globalStyles = React.useContext(StyleContext);
     const [markerData, setMarkerData] = useState<any | null>(null);
     const [toolTipVisible, setToolTipVisible] = useState(false);
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
     const { isDark } = useContext(ThemeToggleContext);
     const { userDetails } = useUserStore()
 
@@ -156,14 +163,29 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
         return running;
     }, [openingBeforeRange, monthsInfo, incomeByMonth, outgoingByMonth, invoices, investments, today]);
 
+    const handleYearChange = (year: string) => {
+        const y = parseInt(year);
+
+        const start = new Date(y, 0, 1, 0, 0, 0);        // Jan 1, 00:00:00
+        const end = new Date(y, 11, 31, 23, 59, 59);     // Dec 31, 23:59:59
+
+        setSelectedYear(year);
+
+        getInvestmentDetails("revenueTrendLineChart", start, end);
+        getInvoiceDetails("revenueTrendLineChart", start, end);
+    };
+
+
 
     return (
         <TouchableWithoutFeedback onPress={() => setMarkerData(null)}>
 
             <Card style={{ padding: wp("4%"), marginVertical: hp("2%") }}>
                 <View className="flex flex-row justify-between items-center">
-                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Cash Flow ({today.getFullYear()})</Text>
-                    <View>
+                    <View className="flex flex-row items-center" style={{ gap: wp("2%") }}>
+                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                            Cash Flow
+                        </Text>
                         <Tooltip
                             isVisible={toolTipVisible}
                             content={<Text style={globalStyles.normalText}>This Widget will show you the cash flow in this particular year.</Text>}
@@ -175,8 +197,53 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
 
                         </Tooltip>
 
+
+                    </View>
+
+                    <View>
+                        <Dropdown
+                            style={{
+                                width: wp("26%"),
+                                height: hp("4.8%"),
+                                borderRadius: 10,
+                                paddingHorizontal: wp("2.5%"),
+                                borderWidth: 1.5,
+                                borderColor: isDark ? "#475569" : "#CBD5E1",
+                                backgroundColor: isDark ? "#0F172A" : "#FFFFFF",
+                                justifyContent: "center",
+                            }}
+                            data={getPastYears(6)}
+                            labelField="label"
+                            valueField="value"
+                            value={selectedYear}   // <-- ensure this is NOT empty
+                            placeholder={selectedYear.toString()} // only visible when value = empty
+                            placeholderStyle={{     // << FIXED STYLE
+                                color: isDark ? "#F8FAFC" : "#0F172A",
+                                fontSize: scaleFont(15),
+                                fontFamily: "OpenSans-Bold",
+                            }}
+                            selectedTextStyle={{    // << SELECTED STYLE MATCHES
+                                color: isDark ? "#F8FAFC" : "#0F172A",
+                                fontSize: 15,
+                                fontFamily: "OpenSans-Bold",
+                            }}
+                            itemTextStyle={{
+                                color: isDark ? "#F8FAFC" : "#1E293B",
+                                fontSize: 15,
+                                fontFamily: "OpenSans-Bold",
+                            }}
+                            containerStyle={{
+                                borderRadius: 10,
+                                backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+                                borderWidth: 1.5,
+                                borderColor: isDark ? "#475569" : "#CBD5E1",
+                            }}
+                            onChange={(item) => handleYearChange(item.value)}
+                        />
+
                     </View>
                 </View>
+                <Divider style={{ marginVertical: hp('1.5%') }} />
 
                 {/* Tooltip */}
                 {markerData && (
@@ -299,21 +366,26 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                 {/* Footer summary */}
                 <View style={{ marginTop: hp("4%") }}>
 
-                    <View style={styles.footerRow}>
-                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-                            Cash as on {today.toLocaleDateString()}
-                        </Text>
-                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-                            {formatCurrency(cashAsOnToday)}
-                        </Text>
-                    </View>
+                    {selectedYear == currentYear.toString() && (
+                        <View style={styles.footerRow}>
+                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                                Cash as on {today.toLocaleDateString()}
+                            </Text>
+                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                                {loading ? "Loading..." : formatCurrency(cashAsOnToday)}
+                            </Text>
+                        </View>
+                    )
+
+                    }
+
 
                     <View style={styles.footerRow}>
                         <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
                             + Incoming
                         </Text>
                         <Text style={[globalStyles.heading3Text, { color: "#16A34A" }]}>
-                            {formatCurrency(totalIncome)}
+                            {loading ? "Loading..." : formatCurrency(totalIncome)}
                         </Text>
                     </View>
 
@@ -322,7 +394,7 @@ export default function RevenueTrendLineChart({ invoices = [], investments = [],
                             - Outgoing
                         </Text>
                         <Text style={[globalStyles.heading3Text, { color: "#DC2626" }]}>
-                            {formatCurrency(totalOutgoing)}
+                            {loading ? "Loading..." : formatCurrency(totalOutgoing)}
                         </Text>
                     </View>
 

@@ -1,6 +1,6 @@
 import { TextStyle, ViewStyle } from "react-native";
 
-export type EventPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+export type EventPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT" | "EXPOSING";
 
 export interface EventModel {
   eventId: string;          // maps from @Id
@@ -33,6 +33,10 @@ export const PRIORITY_STYLES: Record<EventPriority, PriorityStyles> = {
     text: { color: "#E65100", fontWeight: "bold" },
   },
   URGENT: {
+    container: { backgroundColor: "#FFCDD2", borderRadius: 8 },  // light red
+    text: { color: "#B71C1C", fontWeight: "bold" },
+  },
+  EXPOSING: {
     container: { backgroundColor: "#FFCDD2", borderRadius: 8 },  // light red
     text: { color: "#B71C1C", fontWeight: "bold" },
   },

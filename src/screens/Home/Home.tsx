@@ -46,89 +46,226 @@ const Home = () => {
     const { reloadCustomer, reloadOrders, reloadInvoices, reloadInvestments, triggerReloadActivity } = useReloadContext()
     const { getItem } = useDataStore();
     const showToast = useToastMessage();
-    const [orderDetails, setOrderDetails] = useState<OrderModel[]>();
-    const [invoiceDetails, setInvoiceDetails] = useState<Invoice[]>([]);
+    const [orderDetails, setOrderDetails] = useState<Record<string, OrderModel[]>>({
+        dashboardStats: [],
+        deadLine: [],
+        heatMap: []
+    });
+    const [invoiceDetails, setInvoiceDetails] = useState<Record<string, Invoice[]>>({
+        homeHeader: [],
+        dashboardStats: [],
+        revenueTrendLineChart: [],
+        revenueBarChart: []
+    });
     const { userDetails, setUserDetails, getUserDetailsUsingID } = useUserStore()
-    const [investmentDataList, setInvestmentDataList] = useState<InvestmentModel[]>([]);
+    const [investmentDataList, setInvestmentDataList] = useState<Record<string, InvestmentModel[]>>({
+        homeHeader: [],
+        dashboardStats: [],
+        revenueTrendLineChart: [],
+        revenueBarChart: []
+    });
     const { setReqPermission } = useContext(NotificationContext)
-    const [loadingProvider, setLoadingProvider] = useState({ allLoading: false, customerLoading: false, invoiceLoading: false, orderLoading: false, investmentLoading: false });
+    const [loadingProvider, setLoadingProvider] = useState(
+        {
+            allLoading: false,
+            customerLoading: false,
+            invoiceLoading: false,
+            orderLoading: false,
+            investmentLoading: false,
+            revenueBarChart: false,
+            revenueTrendLineChart: false,
+            heatMap: false,
+        });
 
-    const getOrderDetails = async (userId: string) => {
-        const payload: SearchQueryRequest = {
-            filters: {
-                userId: userId
-            },
-            getAll: true,
-            requiredFields: ["orderId", "status", "eventInfo.eventDate", "eventInfo.eventTitle", "eventInfo.eventType", "orderBasicInfo.customerID", "approvalStatus", "totalPrice"]
-        }
-        const orderMetaDataResponse: ApiGeneralRespose = await getOrderDataListAPI(payload)
-        if (!orderMetaDataResponse.success) {
-            return showToast({
-                type: "error",
-                title: "Error",
-                message: orderMetaDataResponse.message,
-            })
-        }
-        const normalisedOrders = orderMetaDataResponse?.data?.map((order: OrderModel) => {
-            const { orderBasicInfo, eventInfo, ...rest } = order
-            return {
-                ...rest,
-                ...eventInfo,
-                ...orderBasicInfo
+    const getOrderDetails = async (
+        changeKey?: string,
+        startTime?: Date,
+        endTime?: Date
+    ) => {
+        try {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: true })) : setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
+
+            const now = new Date();
+            const startOfYear = startTime || new Date(now.getFullYear(), 0, 1);
+            const endOfYear = endTime || new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+
+            const payload: SearchQueryRequest = {
+                filters: {
+                    userId: getItem("USERID"),
+                },
+                getAll: true,
+                requiredFields: [
+                    "orderId",
+                    "status",
+                    "eventInfo.eventDate",
+                    "eventInfo.eventTitle",
+                    "eventInfo.eventType",
+                    "orderBasicInfo.customerID",
+                    "approvalStatus",
+                    "totalPrice",
+                ],
+                dateField: "eventInfo.eventDate",
+                startDate: startOfYear,
+                endDate: endOfYear,
             };
-        })
-        setOrderDetails(normalisedOrders)
-    }
 
-    const getInvoiceDetails = async (userId: string) => {
-        const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
-        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-        const payload: SearchQueryRequest = {
-            filters: {
-                userId: userId
-            },
-            getAll: true,
-            requiredFields: ["invoiceId", "amountPaid", "invoiceDate"],
-            dateField: "invoiceDate",
-            startDate: startOfYear,
-            endDate: endOfYear
+            const orderRes: ApiGeneralRespose = await getOrderDataListAPI(payload);
+
+            if (!orderRes.success) {
+                return showToast({
+                    type: "error",
+                    title: "Error",
+                    message: orderRes.message,
+                });
+            }
+
+            const normalizedOrders = orderRes.data.map((order: OrderModel) => {
+                const { orderBasicInfo, eventInfo, ...rest } = order;
+
+                return {
+                    ...rest,
+                    ...eventInfo,
+                    ...orderBasicInfo,
+                };
+            });
+
+            setOrderDetails(prev => ({
+                ...prev,
+                ...(changeKey
+                    ? { [changeKey]: normalizedOrders }
+                    : {
+                        dashboardStats: normalizedOrders,
+                        deadLine: normalizedOrders,
+                        heatMap: normalizedOrders
+                    })
+            }));
         }
-        const orderMetaDataResponse: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(payload)
-        if (!orderMetaDataResponse.success) {
-            return showToast({
+        catch (e) {
+            showToast({
                 type: "error",
                 title: "Error",
-                message: orderMetaDataResponse.message,
-            })
+                message: "Unexpected Error Occurred",
+            });
         }
-        setInvoiceDetails(orderMetaDataResponse?.data)
-    }
+        finally {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: false })) : setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
+        }
+    };
 
-    const getInvestmentDetails = async (userId: string) => {
-        const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0);      // Jan 1, 00:00:00
-        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);   // Dec 31, 23:59:59
 
-        const payload: SearchQueryRequest = {
-            filters: {
-                userId: userId,
-            },
-            getAll: true,
-            requiredFields: ["investmentId", "investedAmount", "investmentDate"],
-            dateField: "investmentDate",
-            startDate: startOfYear,
-            endDate: endOfYear,
-        };
-        const investmentDetails: ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload)
-        if (!investmentDetails.success) {
-            return showToast({
+    const getInvoiceDetails = async (
+        changeKey?: string,
+        startTime?: Date,
+        endTime?: Date
+    ) => {
+        try {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: true })) : setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
+
+            const now = new Date();
+
+            const startOfYear = startTime || new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+            const endOfYear = endTime || new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+
+            const payload: SearchQueryRequest = {
+                filters: {
+                    userId: getItem("USERID"),
+                },
+                getAll: true,
+                requiredFields: ["invoiceId", "amountPaid", "invoiceDate"],
+                dateField: "invoiceDate",
+                startDate: startOfYear,
+                endDate: endOfYear,
+            };
+
+            const invoiceRes: ApiGeneralRespose = await getInvoiceListBasedOnFiltersAPI(payload);
+
+            if (!invoiceRes.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: invoiceRes.message,
+                });
+                return;
+            }
+
+            const data = invoiceRes.data as Invoice[];
+
+            // Update only specific key OR all keys
+            setInvoiceDetails(prev => ({
+                ...prev,
+                ...(changeKey
+                    ? { [changeKey]: data }
+                    : {
+                        homeHeader: data,
+                        dashboardStats: data,
+                        revenueTrendLineChart: data,
+                        revenueBarChart: data,
+                    }),
+            }));
+        }
+        catch (err) {
+            showToast({
                 type: "error",
                 title: "Error",
-                message: investmentDetails.message,
+                message: "Unexpected Error Occurred",
+            });
+        }
+        finally {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: false })) : setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
+        }
+    };
+
+
+    const getInvestmentDetails = async (changeKey?: string, startTime?: Date, endTime?: Date) => {
+        try {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: true })) : setLoadingProvider(prev => ({ ...prev, investmentLoading: true }));
+            const now = new Date();
+            const startOfYear = startTime || new Date(now.getFullYear(), 0, 1, 0, 0, 0);      // Jan 1, 00:00:00
+            const endOfYear = endTime || new Date(now.getFullYear(), 11, 31, 23, 59, 59);   // Dec 31, 23:59:59
+
+            const payload: SearchQueryRequest = {
+                filters: {
+                    userId: getItem("USERID"),
+                },
+                getAll: true,
+                requiredFields: ["investmentId", "investedAmount", "investmentDate"],
+                dateField: "investmentDate",
+                startDate: startOfYear,
+                endDate: endOfYear,
+            };
+            const investmentDetails: ApiGeneralRespose = await getInvestmentDetailsBasedOnFiltersAPI(payload)
+            if (!investmentDetails.success) {
+                showToast({
+                    type: "error",
+                    title: "Error",
+                    message: investmentDetails.message,
+                })
+            }
+            else {
+                const data = investmentDetails?.data as InvestmentModel[];
+                setInvestmentDataList(prev => ({
+                    ...prev,
+                    ...(changeKey
+                        ? { [changeKey]: data }
+                        : {
+                            homeHeader: data,
+                            dashboardStats: data,
+                            revenueTrendLineChart: data,
+                            revenueBarChart: data
+                        })
+                }));
+            }
+        }
+        catch (err) {
+            showToast({
+                type: "error",
+                title: "Error",
+                message: "Unexpected Error Occurred",
             })
         }
-        setInvestmentDataList(investmentDetails?.data as InvestmentModel[])
+        finally {
+            changeKey ? setLoadingProvider(prev => ({ ...prev, [changeKey]: false })) : setLoadingProvider(prev => ({ ...prev, investmentLoading: false }));
+        }
 
     }
 
@@ -171,13 +308,7 @@ const Home = () => {
         const loadOrdersData = async () => {
             const userId = await getItem("USERID");
             if (!userId) return;
-            setLoadingProvider(prev => ({ ...prev, orderLoading: true }));
-            try {
-                await getOrderDetails(userId);
-            } finally {
-                // triggerReloadActivity()
-                setLoadingProvider(prev => ({ ...prev, orderLoading: false }));
-            }
+            await getOrderDetails();
         };
         loadOrdersData();
     }, [reloadOrders]);
@@ -187,13 +318,7 @@ const Home = () => {
         const loadInvoicesData = async () => {
             const userId = await getItem("USERID");
             if (!userId) return;
-            setLoadingProvider(prev => ({ ...prev, invoiceLoading: true }));
-            try {
-                await getInvoiceDetails(userId);
-            } finally {
-                // triggerReloadActivity()
-                setLoadingProvider(prev => ({ ...prev, invoiceLoading: false }));
-            }
+            await getInvoiceDetails();
         };
         loadInvoicesData();
     }, [reloadInvoices]);
@@ -203,13 +328,7 @@ const Home = () => {
         const loadInvestmentsData = async () => {
             const userId = await getItem("USERID");
             if (!userId) return;
-            setLoadingProvider(prev => ({ ...prev, investmentLoading: true }));
-            try {
-                await getInvestmentDetails(userId);
-            } finally {
-                // triggerReloadActivity()
-                setLoadingProvider(prev => ({ ...prev, investmentLoading: false }));
-            }
+            await getInvestmentDetails();
         }
         loadInvestmentsData()
     }, [reloadInvestments])
@@ -222,18 +341,18 @@ const Home = () => {
 
     return (
         <View style={globalStyles.appBackground}>
-            <HomeHeader invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading} />
+            <HomeHeader invoiceDetails={invoiceDetails?.homeHeader} investmentDetails={investmentDataList?.homeHeader} loading={loadingProvider.invoiceLoading} />
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View>
                     <View>
                         <Card style={{ padding: 0, margin: 0 }}>
-                            <DashboardStats investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails} />
+                            <DashboardStats investments={investmentDataList?.dashboardStats} invoices={invoiceDetails?.dashboardStats} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} orders={orderDetails?.dashboardStats} />
                         </Card>
                         <View>
-                            <RevenueTrendLineChart investments={investmentDataList} invoices={invoiceDetails} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
+                            <RevenueTrendLineChart investments={investmentDataList?.revenueTrendLineChart} invoices={invoiceDetails?.revenueTrendLineChart} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading || loadingProvider.revenueTrendLineChart} getInvestmentDetails={getInvestmentDetails} getInvoiceDetails={getInvoiceDetails} />
                         </View>
                         <View>
-                            <RevenueTrendChart invoiceDetails={invoiceDetails} investmentDetails={investmentDataList} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading} />
+                            <RevenueTrendChart invoiceDetails={invoiceDetails?.revenueBarChart} investmentDetails={investmentDataList?.revenueBarChart} loading={loadingProvider.invoiceLoading || loadingProvider.investmentLoading || loadingProvider.revenueBarChart} getInvestmentDetails={getInvestmentDetails} getInvoiceDetails={getInvoiceDetails} />
                         </View>
                         <View style={{ marginBottom: hp('2%') }}>
                             <Card style={{ padding: 0, margin: 0 }}>
@@ -247,13 +366,13 @@ const Home = () => {
 
 
                         <View>
-                            <DeadLines orderDetails={orderDetails?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
+                            <DeadLines orderDetails={orderDetails?.deadLine?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
 
                         </View>
 
 
                         <View>
-                            <HeatmapYear orderDetails={orderDetails?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading} />
+                            <HeatmapYear orderDetails={orderDetails?.heatMap?.filter((order) => order.approvalStatus == ApprovalStatus.ACCEPTED)} isLoading={loadingProvider.orderLoading || loadingProvider.heatMap} getOrderDetails={getOrderDetails}/>
                         </View>
                     </View>
                 </View>

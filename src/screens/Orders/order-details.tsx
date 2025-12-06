@@ -69,7 +69,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
         { key: "deliverables", title: "Deliverables", icon: "package" },
         { key: "quotation", title: "Quotation", icon: "file-text" },
         { key: "invoice", title: "Invoice", icon: "credit-card" },
-        { key: "investments", title: "Investments", icon: "trending-up" },
+        { key: "expenses", title: "Expenses", icon: "trending-up" },
         { key: "links", title: "Links", icon: "link" },
     ]);
     const { triggerConfetti } = useConfetti()
@@ -232,7 +232,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                         <Deliverables orderDetails={orderDetails} setOrderDetails={setOrderDetails} />
                     </ScrollView>
                 )
-            case "investments":
+            case "expenses":
                 return (
                     <ScrollView contentContainerStyle={{ paddingBottom:hp('10%') }} showsVerticalScrollIndicator={false}>
                         <InvestmentInfo orderId={orderDetails?.orderId} orderStatus={orderDetails?.status} investmentDataList={investmentDataList} setInvestmentDataList={setInvestmentDataList} />
@@ -357,7 +357,7 @@ const OrderDetails = ({ route, navigation }: Props) => {
                     <Card
                         style={[globalStyles.cardShadowEffect, { width: wp('28%'), height: hp('10%'), marginHorizontal: wp('2%') }]}>
                         <View className='flex flex-1 justify-center items-center'>
-                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Invested</Text>
+                            <Text style={[globalStyles.normalTextColor, globalStyles.smallText]}>Total Expense</Text>
                             <Text style={[globalStyles.normalTextColor, globalStyles.normalText]}>{loadingProvider.intialLoading ? <Skeleton height={hp('5%')} /> : `${formatCurrency(investmentDataList?.reduce((total, investment) => total + investment?.investedAmount, 0))}`}</Text>
 
                         </View>

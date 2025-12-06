@@ -705,3 +705,14 @@ export const getPaddingBasedOS = () => {
 }
 
 export const sortBasedOnFields = (array: any[], key: string, order: 'asc' | 'desc') => array.sort((a: any, b: any) => order === 'asc' ? a[key] - b[key] : b[key] - a[key]);
+
+
+export const getPastYears = (years: number) => {
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: years }).map((_, i) => {
+    const y = currentYear - i;
+    return { label: y.toString(), value: y };
+  });
+
+  return yearOptions;
+}

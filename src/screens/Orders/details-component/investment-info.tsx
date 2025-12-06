@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 
 type InvestmentInfoProps = {
     orderId: string
-    orderStatus:GlobalStatus
+    orderStatus: GlobalStatus
     investmentDataList: InvestmentModel[]
     setInvestmentDataList: (value: InvestmentModel[]) => void
 }
@@ -57,7 +57,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         investmentName: {
             parentKey: "",
             key: "investmentName",
-            label: "Invest Name",
+            label: "Expense Name",
             placeholder: "Eg: Salary",
             icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
@@ -72,7 +72,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         investedAmount: {
             parentKey: "",
             key: "investedAmount",
-            label: "Invested Amount",
+            label: "Expense Amount",
             placeholder: "Eg: 1000",
             icon: <FontAwesome name="money" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "number",
@@ -87,7 +87,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         investmentDate: {
             parentKey: "",
             key: "investmentDate",
-            label: "Investment Date",
+            label: "Date",
             placeholder: "Eg: 01/01/2023",
             icon: <Feather name="calendar" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "date",
@@ -104,7 +104,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         investmentDescription: {
             parentKey: "",
             key: "investmentDescription",
-            label: "Investment Description",
+            label: "Description",
             placeholder: "Eg: This is for salary",
             icon: <Feather name="briefcase" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
@@ -119,7 +119,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
         investmentType: {
             parentKey: "",
             key: "investmentType",
-            label: "Investment Type",
+            label: "Expense Type",
             placeholder: "Eg: EQUIPMENT",
             icon: <Feather name="briefcase" size={wp("5%")} style={{ paddingRight: wp('3%') }} color={isDark ? "#fff" : "#000"} />,
             type: "select",
@@ -135,7 +135,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 patchState("", "investmentType", value, true, setInvestmentDetails, setErrors);
             },
         }
-    }), [investmentDetails,openDate])
+    }), [investmentDetails, openDate])
 
     const handleCreateOrUpdateInvestment = async () => {
         const validateInput = validateValues(investmentDetails, investmentFormFields)
@@ -227,11 +227,11 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
     }, [editCurrId])
 
     const verifyAndOpenAddModal = () => {
-        if(props?.orderStatus==GlobalStatus.PENDING){
+        if (props?.orderStatus == GlobalStatus.PENDING) {
             return showToast({
                 type: "warning",
                 title: "Oops!!",
-                message: "Please confirm the order before adding investments",
+                message: "Please confirm the order before adding Expenses",
             })
         }
         setOpen(true);
@@ -246,62 +246,97 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                     {
                         borderLeftWidth: 4,
                         borderLeftColor: "#3B82F6",
+                        paddingVertical: hp("1.5%"),
+                        paddingHorizontal: wp("3%"),
                     },
                 ]}
             >
-                <View className="flex flex-col gap-3">
-                    <View className="flex flex-row justify-between items-center">
-                        <View>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Name</Text>
-                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentName}</Text>
-                        </View>
-                        <View>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Date</Text>
-                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{formatDate(investment?.investmentDate)}</Text>
+
+                <View style={{ gap: hp("1.5%") }}>
+
+                    {/* Row 1 */}
+                    <View className="flex flex-row justify-between items-start">
+                        <View style={{ width: "48%" }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Expense Name
+                            </Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                {investment?.investmentName}
+                            </Text>
                         </View>
 
-                    </View>
-                    <View className="flex flex-row justify-between items-center">
-                        <View>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Type</Text>
-                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentType}</Text>
+                        <View style={{ width: "48%", alignItems: "flex-end" }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Expense Date
+                            </Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                {formatDate(investment?.investmentDate)}
+                            </Text>
                         </View>
-                        <View>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Amount</Text>
-                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{getCurrencySymbol(userDetails?.userBillingInfo?.country)} {investment?.investedAmount}</Text>
+                    </View>
+
+                    {/* Row 2 */}
+                    <View className="flex flex-row justify-between items-start">
+                        <View style={{ width: "48%" }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Expense Type
+                            </Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                {investment?.investmentType}
+                            </Text>
                         </View>
 
-                    </View>
-                    <View className="flex flex-row justify-between items-center">
-                        <View>
-                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Investment Description</Text>
-                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>{investment?.investmentDescription}</Text>
+                        <View style={{ width: "48%", alignItems: "flex-end" }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Expense Amount
+                            </Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                {getCurrencySymbol(userDetails?.userBillingInfo?.country)} {investment?.investedAmount}
+                            </Text>
                         </View>
-                        <View className="flex flex-row items-center gap-4">
-                            <TouchableOpacity onPress={() => setEditCurrId(investment?.investmentId)} disabled={loading}>
+                    </View>
+
+                    {/* Row 3 */}
+                    <View className="flex flex-row justify-between items-start">
+                        <View style={{ width: "70%" }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>
+                                Expense Description
+                            </Text>
+                            <Text style={[globalStyles.labelText, globalStyles.greyTextColor]}>
+                                {investment?.investmentDescription}
+                            </Text>
+                        </View>
+
+                        {/* Action Icons */}
+                        <View className="flex flex-row items-center" style={{ gap: wp("4%") }}>
+                            <TouchableOpacity
+                                onPress={() => setEditCurrId(investment?.investmentId)}
+                                disabled={loading}
+                            >
                                 <Feather name="edit" size={wp('5%')} color="#22C55E" />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
-                                setDeleteCurrId(investment?.investmentId)
-                                setDeleteOpen(true)
-                            }}
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setDeleteCurrId(investment?.investmentId)
+                                    setDeleteOpen(true)
+                                }}
                                 disabled={loading}
                             >
                                 <Feather name="trash-2" size={wp('5%')} color="#EF4444" />
                             </TouchableOpacity>
                         </View>
-
                     </View>
 
                 </View>
 
             </Card>
-        )
+        );
+    };
 
-    }
 
     return (
-        <Card style={[globalStyles.cardShadowEffect,globalStyles.appBackground]}>
+        <Card style={[globalStyles.cardShadowEffect, globalStyles.appBackground]}>
             {deleteOpen && <DeleteConfirmation openDelete={deleteOpen} setOpenDelete={setDeleteOpen} loading={loading} handleDelete={deleteInvestment} />}
             <Modal
                 isVisible={open}
@@ -309,8 +344,8 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                 onBackButtonPress={() => setOpen(false)}
 
             >
-                <View style={[styles.modalContainer,globalStyles.formBackGroundColor]}>
-                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Investments</Text>
+                <View style={[styles.modalContainer, globalStyles.formBackGroundColor]}>
+                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Add Expenses</Text>
                     <CustomFieldsComponent infoFields={investmentFormFields} cardStyle={{ padding: hp("2%") }} />
                     <Button
                         size="lg"
@@ -335,7 +370,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                     <View className='flex flex-row justify-between items-center'>
                         <View className='flex flex-row justify-start items-center gap-2'>
                             <Feather name="list" size={wp('7%')} color={'#3B82F6'} />
-                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Investments</Text>
+                            <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Expenses</Text>
                         </View>
                         <View>
                             <Button
@@ -343,7 +378,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                                 variant="solid"
                                 action="primary"
                                 style={globalStyles.buttonColor}
-                                onPress={() =>  {verifyAndOpenAddModal()} }
+                                onPress={() => { verifyAndOpenAddModal() }}
                             >
                                 <Feather name="plus" size={wp('5%')} color={'#fff'} />
                                 <ButtonText style={globalStyles.buttonText}>
@@ -354,7 +389,7 @@ const InvestmentInfo = (props: InvestmentInfoProps) => {
                         </View>
                     </View>
                     {!props?.investmentDataList?.length &&
-                        <EmptyState onAction={() =>  {verifyAndOpenAddModal()} } />
+                        <EmptyState onAction={() => { verifyAndOpenAddModal() }} />
                     }
                     <FlatList
                         scrollEnabled={false}

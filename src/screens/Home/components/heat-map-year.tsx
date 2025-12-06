@@ -8,6 +8,9 @@ import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-nat
 import { OrderModel } from '@/src/types/order/order-type';
 import Skeleton from '@/components/ui/skeleton';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
+import { Dropdown } from 'react-native-element-dropdown';
+import { getPastYears } from '@/src/utils/utils';
+import { scaleFont } from '@/src/styles/global';
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -43,14 +46,15 @@ const months = [
 type HeatMapYearProps = {
   orderDetails: OrderModel[]
   isLoading: boolean
+  getOrderDetails: (changeKey?: string, startTime?: Date, endTime?: Date) => Promise<void>;
 };
 
-const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
+const HeatMapYear = ({ orderDetails, isLoading, getOrderDetails }: HeatMapYearProps) => {
   const globalStyles = useContext(StyleContext);
   const { isDark } = useContext(ThemeToggleContext);
   const [toolTipVisible, setToolTipVisible] = useState(false);
-
   const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
 
   // Calculate counts for each month of current year
   const values = months.map((_, idx) => {
@@ -67,29 +71,82 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
     return `rgba(59, 130, 246, ${0.3 + opacity * 0.7})`; // violet with brightness variation
   };
 
+  const handleYearChange = (year: string) => {
+    const y = parseInt(year);
+
+    const start = new Date(y, 0, 1, 0, 0, 0);        // Jan 1, 00:00:00
+    const end = new Date(y, 11, 31, 23, 59, 59);     // Dec 31, 23:59:59
+
+    setSelectedYear(year);
+    getOrderDetails("heatMap", start, end);
+
+  };
+
+
   return (
     <View>
       <Card style={styles.cardContainer}>
         {/* Header */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View>
+          <View className='flex flex-row gap-2 items-center'>
             <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>
               Booking Heatmap
             </Text>
-            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-              Busiest month of the year
-            </Text>
-          </View>
-          <Tooltip
-            isVisible={toolTipVisible}
-            content={<Text style={globalStyles.normalText}>This Widget displays the busiest month of the year.</Text>}
-            placement={Placement.BOTTOM}
-            onClose={() => setToolTipVisible(false)}>
-            <TouchableOpacity onPress={() => setToolTipVisible(true)}>
-              <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-            </TouchableOpacity>
+            <Tooltip
+              isVisible={toolTipVisible}
+              content={<Text style={globalStyles.normalText}>This Widget displays the busiest month of the year.</Text>}
+              placement={Placement.BOTTOM}
+              onClose={() => setToolTipVisible(false)}>
+              <TouchableOpacity onPress={() => setToolTipVisible(true)}>
+                <Feather name="info" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+              </TouchableOpacity>
 
-          </Tooltip>
+            </Tooltip>
+          </View>
+          <View>
+            <Dropdown
+              style={{
+                width: wp("26%"),
+                height: hp("4.8%"),
+                borderRadius: 10,
+                paddingHorizontal: wp("2.5%"),
+                borderWidth: 1.5,
+                borderColor: isDark ? "#475569" : "#CBD5E1",
+                backgroundColor: isDark ? "#0F172A" : "#FFFFFF",
+                justifyContent: "center",
+              }}
+              data={getPastYears(6)}
+              labelField="label"
+              valueField="value"
+              value={selectedYear}   // <-- ensure this is NOT empty
+              placeholder={selectedYear.toString()} // only visible when value = empty
+              placeholderStyle={{     // << FIXED STYLE
+                color: isDark ? "#F8FAFC" : "#0F172A",
+                fontSize: scaleFont(15),
+                fontFamily: "OpenSans-Bold",
+              }}
+              selectedTextStyle={{    // << SELECTED STYLE MATCHES
+                color: isDark ? "#F8FAFC" : "#0F172A",
+                fontSize: 15,
+                fontFamily: "OpenSans-Bold",
+              }}
+              itemTextStyle={{
+                color: isDark ? "#F8FAFC" : "#1E293B",
+                fontSize: 15,
+                fontFamily: "OpenSans-Bold",
+              }}
+              containerStyle={{
+                borderRadius: 10,
+                backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+                borderWidth: 1.5,
+                borderColor: isDark ? "#475569" : "#CBD5E1",
+              }}
+              onChange={(item) => handleYearChange(item.value)}
+            />
+
+
+          </View>
+
         </View>
 
         {/* Divider */}
@@ -103,7 +160,7 @@ const HeatMapYear = ({ orderDetails, isLoading }: HeatMapYearProps) => {
                 style={[
                   globalStyles.normalText,
                   idx === new Date().getMonth()
-                    ? [globalStyles.blueTextColor,globalStyles.normalBoldText]   // 🔵 highlight current month
+                    ? [globalStyles.blueTextColor, globalStyles.normalBoldText]   // 🔵 highlight current month
                     : globalStyles.normalTextColor
                 ]}
               >

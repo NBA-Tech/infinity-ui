@@ -239,24 +239,12 @@ const InvoiceList = () => {
                         </View>
                     </View>
 
-                    {/* Details */}
-                    <View className="flex flex-row justify-between gap-3">
-                        <View style={{ flex: 1 }}>
-                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Invoice ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]} numberOfLines={1}>#{item?.invoiceId}</Text>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Order ID</Text>
-                            <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827"}]} numberOfLines={1}>#{item?.orderId}</Text>
-                        </View>
-                    </View>
-
-                    <View className="flex flex-row justify-between">
-                        <View style={{ flex: 1 }}>
+                    <View className="flex flex-row justify-between items-center">
+                        <View >
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Customer</Text>
                             <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{item?.billingInfo?.name}</Text>
                         </View>
-                        <View style={{ flex: 1 }}>
+                        <View>
                             <Text style={[globalStyles.normalBoldText, { color: "#6B7280" }]}>Date</Text>
                             <Text style={[globalStyles.normalText, { color: isDark ? "#fff" : "#111827" }]}>{formatDate(item?.invoiceDate ?? "")}</Text>
                         </View>

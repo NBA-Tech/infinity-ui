@@ -332,7 +332,7 @@ const Quotation = () => {
                 {/* Client & Quote Info + Accept/Reject */}
                 <View className='flex flex-row justify-between items-center' style={{ marginBottom: hp('1%') }}>
                     <View>
-                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Client Name: {customerData?.name}</Text>
+                        <Text style={[globalStyles.normalText, globalStyles.themeTextColor, { fontSize: scaleFont(14),width:wp('48%') }]} numberOfLines={1}>Client Name: {customerData?.name}</Text>
                         <Text style={[globalStyles.normalText, globalStyles.themeTextColor, { fontSize: scaleFont(14) }]}>Created On: {formatDate(item?.createdDate)}</Text>
                     </View>
 

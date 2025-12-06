@@ -10,19 +10,24 @@ import Feather from "react-native-vector-icons/Feather";
 import Tooltip, { Placement } from "react-native-tooltip-2";
 import { EmptyState } from "@/src/components/empty-state-data";
 import { useUserStore } from "@/src/store/user/user-store";
-import { formatCurrency } from "@/src/utils/utils";
+import { formatCurrency, getPastYears } from "@/src/utils/utils";
+import { Dropdown } from "react-native-element-dropdown";
+import { scaleFont } from "@/src/styles/global";
 
 type RevenueTrendChartProps = {
     loading: boolean;
     invoiceDetails: any[];
     investmentDetails: any[];
+    getInvestmentDetails: (changeKey?: string, startTime?: Date, endTime?: Date) => void
+    getInvoiceDetails: (changeKey?: string, startTime?: Date, endTime?: Date) => void
 };
 
 export default function RevenueTrendChart(props: RevenueTrendChartProps) {
+    const currentYear = new Date().getFullYear();
     const globalStyles = useContext(StyleContext);
     const { isDark } = useContext(ThemeToggleContext);
     const { userDetails } = useUserStore();
-
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
     const [tooltipData, setTooltipData] = useState<any | null>(null);
     const [barData, setBarData] = useState<any[]>([]);
     const [toolTipVisible, setToolTipVisible] = useState(false);
@@ -62,34 +67,90 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
     }, [props.invoiceDetails, props.investmentDetails]);
 
 
+    const handleYearChange = (year: string) => {
+        const y = parseInt(year);
+
+        const start = new Date(y, 0, 1, 0, 0, 0);        // Jan 1, 00:00:00
+        const end = new Date(y, 11, 31, 23, 59, 59);     // Dec 31, 23:59:59
+
+        setSelectedYear(year);
+
+        props?.getInvestmentDetails("revenueBarChart", start, end);
+        props?.getInvoiceDetails("revenueBarChart", start, end);
+    };
+
     return (
         <Card style={{ padding: wp("3%"), marginVertical: hp("2%") }}>
 
             {/* HEADER */}
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
+                <View className="flex flex-row gap-2 items-center">
+                    <View>
+                        <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
+                            Expenses vs Profit
+                        </Text>
+                    </View>
+                    <Tooltip
+                        isVisible={toolTipVisible}
+                        content={<Text style={globalStyles.normalText}>This chart compares monthly revenue and expenses.</Text>}
+                        placement={Placement.BOTTOM}
+                        onClose={() => setToolTipVisible(false)}
+                    >
+                        <Feather
+                            name="info"
+                            size={wp("5%")}
+                            color={isDark ? "#fff" : "#000"}
+                            onPress={() => setToolTipVisible(true)}
+                        />
+                    </Tooltip>
+                </View>
                 <View>
-                    <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>
-                        Investment vs Profit
-                    </Text>
-                    <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>
-                        Monthly comparison for this year
-                    </Text>
+                    <Dropdown
+                        style={{
+                            width: wp("26%"),
+                            height: hp("4.8%"),
+                            borderRadius: 10,
+                            paddingHorizontal: wp("2.5%"),
+                            borderWidth: 1.5,
+                            borderColor: isDark ? "#475569" : "#CBD5E1",
+                            backgroundColor: isDark ? "#0F172A" : "#FFFFFF",
+                            justifyContent: "center",
+                        }}
+                        data={getPastYears(6)}
+                        labelField="label"
+                        valueField="value"
+                        value={selectedYear}   // <-- ensure this is NOT empty
+                        placeholder={selectedYear.toString()} // only visible when value = empty
+                        placeholderStyle={{     // << FIXED STYLE
+                            color: isDark ? "#F8FAFC" : "#0F172A",
+                            fontSize: scaleFont(15),
+                            fontFamily: "OpenSans-Bold",
+                        }}
+                        selectedTextStyle={{    // << SELECTED STYLE MATCHES
+                            color: isDark ? "#F8FAFC" : "#0F172A",
+                            fontSize: 15,
+                            fontFamily: "OpenSans-Bold",
+                        }}
+                        itemTextStyle={{
+                            color: isDark ? "#F8FAFC" : "#1E293B",
+                            fontSize: 15,
+                            fontFamily: "OpenSans-Bold",
+                        }}
+                        containerStyle={{
+                            borderRadius: 10,
+                            backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+                            borderWidth: 1.5,
+                            borderColor: isDark ? "#475569" : "#CBD5E1",
+                        }}
+                        onChange={(item) => handleYearChange(item.value)}
+                    />
+
+
                 </View>
 
-                <Tooltip
-                    isVisible={toolTipVisible}
-                    content={<Text style={globalStyles.normalText}>This chart compares monthly revenue and expenses.</Text>}
-                    placement={Placement.BOTTOM}
-                    onClose={() => setToolTipVisible(false)}
-                >
-                    <Feather
-                        name="info"
-                        size={wp("5%")}
-                        color={isDark ? "#fff" : "#000"}
-                        onPress={() => setToolTipVisible(true)}
-                    />
-                </Tooltip>
+
             </View>
+            <Divider style={{ marginVertical: hp('1.5%') }} />
 
             {/* TOOLTIP BOX */}
             {tooltipData && (
@@ -274,9 +335,9 @@ export default function RevenueTrendChart(props: RevenueTrendChartProps) {
                             "..."
                         ) : (
                             <>
-                            {formatCurrency(props?.investmentDetails
-                                ?.reduce((t, i) => t + i.investedAmount, 0))
-                            }
+                                {formatCurrency(props?.investmentDetails
+                                    ?.reduce((t, i) => t + i.investedAmount, 0))
+                                }
                             </>
                         )
                         }

@@ -17,6 +17,7 @@ import { TouchableOpacity } from 'react-native';
 import { createNewEventAPI, deleteEventAPI, getEventBasedMonthYearAPI, updateEventAPI } from '@/src/api/event/event-api-service';
 import Tooltip, { Placement } from 'react-native-tooltip-2';
 import { useReloadContext } from '@/src/providers/reload/reload-context';
+import { Divider } from '@/components/ui/divider';
 const styles = StyleSheet.create({
   dot: {
     width: wp('3%'),
@@ -161,7 +162,7 @@ const EventDateKeeper = () => {
       isRequired: true,
       isDisabled: false,
       isLoading: loadingProvider.intialLoading,
-      dropDownItems: [{ label: "HIGH", value: "HIGH" }, { label: "MEDIUM", value: "MEDIUM" }, { label: "LOW", value: "LOW" }, { label: "URGENT", value: "URGENT" }],
+      dropDownItems: [{ label: "HIGH", value: "HIGH" }, { label: "MEDIUM", value: "MEDIUM" }, { label: "LOW", value: "LOW" }, { label: "URGENT", value: "URGENT" },{ label: "EXPOSING", value: "EXPOSING" }],
       value: currEventDetails?.eventPriority ?? "",
       onChange: (value: string) => {
         patchState("", "eventPriority", value, true, setCurrEventDetails, setErrors);
@@ -471,7 +472,6 @@ const EventDateKeeper = () => {
         <View className='flex flex-row justify-between items-center'>
           <View>
             <Text style={[globalStyles.heading3Text, globalStyles.themeTextColor]}>Event Calendar</Text>
-            <Text style={[globalStyles.smallText, globalStyles.themeTextColor]}>Upcoming shoots and meetings</Text>
           </View>
           <View>
             <Tooltip
@@ -487,6 +487,7 @@ const EventDateKeeper = () => {
           </View>
         </View>
       </View>
+      <Divider style={{ marginVertical: hp('1.5%') }} />
 
       {/* Calendar */}
       <View style={[styles.container, { backgroundColor: isDark ? "#0E1628" : "#fff" }]}>

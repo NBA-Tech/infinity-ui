@@ -153,7 +153,7 @@ export const DashboardStats = (props: DashboardStatsProps) => {
 
         {/* Investments */}
         <Text style={[globalStyles.normalBoldText, globalStyles.greyTextColor]}>
-          Total Invested
+          Total Expenses
         </Text>
         <Text
           style={[
