@@ -111,17 +111,22 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                     </View>
 
                                     {/* Email */}
-                                    <View className="flex-1">
-                                        <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
-                                            Email
-                                        </Text>
-                                        <View className="flex-row items-center gap-2 mt-1">
-                                            <Feather name="mail" size={wp("5%")} color="#3B82F6" />
-                                            <Text style={[globalStyles.normalTextColor, globalStyles.labelText]} numberOfLines={2}>
-                                                {props?.customerDetails?.customerBasicInfo?.email}
+                                    {props?.customerDetails?.customerBasicInfo?.email && (
+                                        <View className="flex-1">
+                                            <Text style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>
+                                                Email
                                             </Text>
+                                            <View className="flex-row items-center gap-2 mt-1">
+                                                <Feather name="mail" size={wp("5%")} color="#3B82F6" />
+                                                <Text style={[globalStyles.normalTextColor, globalStyles.labelText]} numberOfLines={2}>
+                                                    {props?.customerDetails?.customerBasicInfo?.email}
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
+                                    )
+
+                                    }
+
                                 </View>
                             </View>
                         )
@@ -236,7 +241,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                 <View className="flex-row justify-between gap-4">
                                     {/* Customer Id */}
                                     <View className="flex-1">
-                                      
+
                                         {props?.isLoading ? (
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (
@@ -272,7 +277,7 @@ export const GeneralInfo = (props: GeneralInfoProps) => {
                                 <View className="flex-row justify-between gap-4">
                                     {/* Customer Id */}
                                     <View className="flex-1">
-                                        
+
                                         {props?.isLoading ? (
                                             <Skeleton width={wp('90%')} height={wp('10%')} />
                                         ) : (

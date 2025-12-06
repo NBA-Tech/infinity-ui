@@ -23,15 +23,11 @@ const TransactionHistory = () => {
   const {userDetails}=useUserStore()
 
   const TransactionCard = ({ item }: { item: PaymentModel }) => {
-    const isSuccess = item.paymentStatus === "SUCCESS";
-    const isPending = item.paymentStatus === "PENDING";
-    const isFailed = item.paymentStatus === "FAILED";
+    const isSuccess = item.paymentStatus === "paid";
   
     // Choose badge color based on status
     const statusColor = isSuccess
       ? "#16A34A" // green
-      : isPending
-      ? "#F59E0B" // yellow
       : "#DC2626"; // red
   
     return (
@@ -101,7 +97,7 @@ const TransactionHistory = () => {
             { marginTop: 8, color: "#6B7280" },
           ]}
         >
-          Payment ID: {item.paymentId}
+          Payment ID: {item.paymentLinkId}
         </Text>
       </Card>
     );

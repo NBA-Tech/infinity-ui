@@ -24,34 +24,37 @@ import { SubscriptionProvider } from './src/providers/subscription/subscription-
 import SubscriptionLockOverlay from './src/components/subscription-overlay';
 import { ConnectivityProvider } from './src/providers/internet-connection/connectivity-provider';
 import NoInternetPopup from './src/components/nointernet-popup';
+import { KeyboardAvoiderProvider } from '@good-react-native/keyboard-avoider';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
-        <GluestackUIProvider mode="light">
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <ConnectivityProvider>
-              <DataStoreProvider>
-                <ReloadProvider>
-                  <AuthProvider>
-                    <GlobalStyleProvider>
-                      <ConfettiProvider>
-                        <NotificationProvider>
-                          <SubscriptionProvider>
+      <GluestackUIProvider mode="light">
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ConnectivityProvider>
+            <DataStoreProvider>
+              <ReloadProvider>
+                <AuthProvider>
+                  <GlobalStyleProvider>
+                    <ConfettiProvider>
+                      <NotificationProvider>
+                        <SubscriptionProvider>
+                          <KeyboardAvoiderProvider>
                             <Navigation />
-                            <NoInternetPopup />
-                          </SubscriptionProvider>
-                        </NotificationProvider>
-                      </ConfettiProvider>
-                    </GlobalStyleProvider>
-                  </AuthProvider>
-                </ReloadProvider>
-              </DataStoreProvider>
-            </ConnectivityProvider>
-          </GestureHandlerRootView>
-        </GluestackUIProvider>
+                          </KeyboardAvoiderProvider>
+                          <NoInternetPopup />
+                        </SubscriptionProvider>
+                      </NotificationProvider>
+                    </ConfettiProvider>
+                  </GlobalStyleProvider>
+                </AuthProvider>
+              </ReloadProvider>
+            </DataStoreProvider>
+          </ConnectivityProvider>
+        </GestureHandlerRootView>
+      </GluestackUIProvider>
     </SafeAreaProvider>
 
   );

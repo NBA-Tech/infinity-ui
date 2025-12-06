@@ -105,12 +105,12 @@ const CreateCustomer = ({ navigation, route }: Props) => {
             icon: <Feather name="mail" size={wp('5%')} color={isDark ? "#fff" : "#000"} />,
             type: "email",
             style: "w-1/2",
-            isRequired: true,
+            isRequired: false,
             isDisabled: false,
             isLoading: loadingProvider.intialLoading,
             value: customerDetails?.customerBasicInfo?.email ?? "",
             onChange: (value: string) => {
-                patchState('customerBasicInfo', 'email', value, true, setCustomerDetails, setErrors)
+                patchState('customerBasicInfo', 'email', value, false, setCustomerDetails, setErrors)
             },
             onBlur: (value: string) => {
                 const isValid = checkValidEmail(value);

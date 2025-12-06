@@ -329,7 +329,7 @@ export const PLAN_DETAILS = {
       planTitle: "$100/year",
       planDescription: "₹299/month — Access all CRM features designed for photographers.",
       durationInDays: 30,
-      price: 30,
+      price: 1,
       featureList: [
         "Full feature access",
         "Unlimited users",

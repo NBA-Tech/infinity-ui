@@ -1,9 +1,5 @@
 export enum PAYMENT_STATUS {
-    INITIATED = "INITIATED",
-    PENDING = "PENDING",
-    SUCCESS = "SUCCESS",
-    FAILED = "FAILED",
-    REFUNDED = "REFUNDED",
+    paid = "paid"
   }
   
   export enum PAYMENT_METHOD {

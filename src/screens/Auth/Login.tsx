@@ -149,91 +149,86 @@ const Login = ({ setCurrScreen }: any) => {
 
     return (
         <View>
-            <KeyboardAwareScrollView
-                enableOnAndroid={true}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-            >
-                <Card style={[styles.loginContainer, globalStyles.cardShadowEffect]}>
-                    {formFields.map((field, index) => (
-                        <FormControl key={index} style={{ marginVertical: hp("1%") }}>
-                            <FormControlLabel>
-                                <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{field?.label}</FormControlLabelText>
-                            </FormControlLabel>
-                            <Input size='lg' variant='rounded'>
-                                <InputSlot style={{ paddingLeft: wp('2%') }}>
-                                    <Feather name={field?.icon} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+
+            <Card style={[styles.loginContainer, globalStyles.cardShadowEffect]}>
+                {formFields.map((field, index) => (
+                    <FormControl key={index} style={{ marginVertical: hp("1%") }}>
+                        <FormControlLabel>
+                            <FormControlLabelText style={[globalStyles.normalTextColor, globalStyles.normalBoldText]}>{field?.label}</FormControlLabelText>
+                        </FormControlLabel>
+                        <Input size='lg' variant='rounded'>
+                            <InputSlot style={{ paddingLeft: wp('2%') }}>
+                                <Feather name={field?.icon} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
+                            </InputSlot>
+                            <InputField
+                                onChangeText={(text) => userLoginRefs.current[field?.key] = text}
+                                type={field.type === 'password' && showPassword ? "text" : field?.type}
+                                placeholder={field?.placeholder}
+                                keyboardType={
+                                    field?.type === "number"
+                                        ? "numeric"
+                                        : field?.type === "email"
+                                            ? "email-address"
+                                            : field?.type === "password"
+                                                ? (showPassword ? "default" : "default") // keyboardType stays same
+                                                : "default"
+                                }
+                                secureTextEntry={field?.type === "password" && !showPassword}
+                            />
+                            {field?.type === 'password' && (
+                                <InputSlot onPress={() => setShowPassword(!showPassword)}>
+                                    <Feather name={showPassword ? "eye" : "eye-off"} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
                                 </InputSlot>
-                                <InputField
-                                    onChangeText={(text) => userLoginRefs.current[field?.key] = text}
-                                    type={field.type === 'password' && showPassword ? "text" : field?.type}
-                                    placeholder={field?.placeholder}
-                                    keyboardType={
-                                        field?.type === "number"
-                                            ? "numeric"
-                                            : field?.type === "email"
-                                                ? "email-address"
-                                                : field?.type === "password"
-                                                    ? (showPassword ? "default" : "default") // keyboardType stays same
-                                                    : "default"
-                                    }
-                                    secureTextEntry={field?.type === "password" && !showPassword}
-                                />
-                                {field?.type === 'password' && (
-                                    <InputSlot onPress={() => setShowPassword(!showPassword)}>
-                                        <Feather name={showPassword ? "eye" : "eye-off"} size={wp('5%')} color={isDark ? "#fff" : "#000"} />
-                                    </InputSlot>
-                                )}
-                            </Input>
-                        </FormControl>
-                    ))}
-                    <View style={styles.forgotPasswordContainer}>
-                        <TouchableOpacity onPress={() => setCurrScreen("forgot")}>
-                            <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor, globalStyles.normalBoldText]}>Forgot Password?</Text>
+                            )}
+                        </Input>
+                    </FormControl>
+                ))}
+                <View style={styles.forgotPasswordContainer}>
+                    <TouchableOpacity onPress={() => setCurrScreen("forgot")}>
+                        <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor, globalStyles.normalBoldText]}>Forgot Password?</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ marginVertical: hp("1%") }}>
+                    <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
+                        {loadingProvider == "email" && (
+                            <ButtonSpinner color={"#fff"} size={wp("4%")} />
+                        )
+                        }
+                        <ButtonText style={globalStyles.buttonText}>Sign In</ButtonText>
+                    </Button>
+                    <View className='flex-row justify-center items-center'>
+                        <Text style={[globalStyles.normalTextColor, { marginVertical: hp("1%") }]}>────── OR ──────</Text>
+                    </View>
+                    <View className='flex-row justify-center items-center gap-2'>
+                        <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleLogin} disabled={loadingProvider != null}>
+                            <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
                         </TouchableOpacity>
-                    </View>
-                    <View style={{ marginVertical: hp("1%") }}>
-                        <Button size="lg" variant="solid" action="primary" style={globalStyles.buttonColor} onPress={handleEmailLogin} isDisabled={loadingProvider != null}>
-                            {loadingProvider == "email" && (
-                                <ButtonSpinner color={"#fff"} size={wp("4%")} />
-                            )
-                            }
-                            <ButtonText style={globalStyles.buttonText}>Sign In</ButtonText>
-                        </Button>
-                        <View className='flex-row justify-center items-center'>
-                            <Text style={[globalStyles.normalTextColor, { marginVertical: hp("1%") }]}>────── OR ──────</Text>
-                        </View>
-                        <View className='flex-row justify-center items-center gap-2'>
-                            <TouchableOpacity style={[styles.circleContainer, { backgroundColor: "#fff" }]} onPress={handleGoogleLogin} disabled={loadingProvider != null}>
-                                <FontAwesome name="google" size={wp('5%')} color="#DB4437" />
-                            </TouchableOpacity>
 
-                            {/* Facebook */}
-                            <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
-                                <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
-                                    <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
-                                </View>
-                            </TouchableOpacity>
-
-                            {/* Instagram */}
-                            <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
-                                <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
-                                    <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
-                                </View>
-                            </TouchableOpacity>
-
-                        </View>
-                        <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS() }}>
-                            <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
-                                <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
-                                <TouchableOpacity onPress={() => setCurrScreen('register')}>
-                                    <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
-                                </TouchableOpacity>
+                        {/* Facebook */}
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#1877F2" }]}>
+                                <FontAwesome name="facebook" size={wp('5%')} color="#fff" />
                             </View>
-                        </SafeAreaView>
+                        </TouchableOpacity>
+
+                        {/* Instagram */}
+                        <TouchableOpacity onPress={underDevelopment} disabled={loadingProvider != null}>
+                            <View style={[styles.circleContainer, { backgroundColor: "#E4405F", }]}>
+                                <FontAwesome name="instagram" size={wp('5%')} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
+
                     </View>
-                </Card>
-            </KeyboardAwareScrollView>
+                    <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS() }}>
+                        <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
+                            <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Don't have an account? </Text>
+                            <TouchableOpacity onPress={() => setCurrScreen('register')}>
+                                <Text style={[globalStyles.underscoreText, globalStyles.themeTextColor]}>Sign Up</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </View>
+            </Card>
         </View>
     );
 };

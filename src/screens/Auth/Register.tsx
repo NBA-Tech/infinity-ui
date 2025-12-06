@@ -26,6 +26,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@/src/types/common';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoiderScrollView, KeyboardAvoiderView } from '@good-react-native/keyboard-avoider';
 const styles = StyleSheet.create({
     registerCardContainer: {
         borderTopLeftRadius: wp("8%"),
@@ -245,11 +246,8 @@ const Register = ({ setCurrScreen }: any) => {
     };
 
     return (
-        <KeyboardAwareScrollView
-            enableOnAndroid={true}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-        >
+        <KeyboardAvoiderScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
             <Card style={[styles.registerCardContainer, globalStyles.cardShadowEffect, { flex: 1 }]}>
                 {formFields.map((field, index) => (
                     <FormControl
@@ -372,7 +370,7 @@ const Register = ({ setCurrScreen }: any) => {
                         </TouchableOpacity>
 
                     </View>
-                    <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS()}}>
+                    <SafeAreaView edges={["bottom"]} style={{ paddingBottom: getPaddingBasedOS() }}>
                         <View className='flex-row justify-center items-center' style={{ marginTop: hp("1%") }}>
                             <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>Already have an account? </Text>
                             <TouchableOpacity onPress={() => setCurrScreen('login')}>
@@ -382,7 +380,7 @@ const Register = ({ setCurrScreen }: any) => {
                     </SafeAreaView>
                 </View>
             </Card>
-        </KeyboardAwareScrollView>
+        </KeyboardAvoiderScrollView>
 
     );
 };

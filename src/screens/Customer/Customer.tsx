@@ -229,7 +229,7 @@ const Customer = () => {
 
             setCustomerData((prev) => {
                 if (reset) return updatedCustomers;
-            
+
                 const existingIds = new Set(prev.map((c) => c.customerID));
                 const newItems = updatedCustomers.filter(
                     (c) => !existingIds.has(c.customerID)
@@ -314,7 +314,7 @@ const Customer = () => {
 
                                 <View style={styles.detailRow}>
                                     <Text style={[globalStyles.normalTextColor, globalStyles.labelText]}>
-                                        Created Date : {formatDate(item?.createdDate)} 
+                                        Created Date : {formatDate(item?.createdDate)}
                                     </Text>
                                 </View>
 
@@ -368,10 +368,12 @@ const Customer = () => {
                         <TouchableOpacity onPress={() => { openWhatsApp(item?.customerBasicInfo?.mobileNumber, "Hi hope you are doing good,") }}>
                             <FontAwesome name="whatsapp" size={wp('5%')} color={isDark ? "#25D366" : "#22C55E"} />
                         </TouchableOpacity>
+                        {item?.customerBasicInfo?.email &&
+                            <TouchableOpacity onPress={() => { openEmailClient(item?.customerBasicInfo?.email) }}>
+                                <Feather name="mail" size={wp('5%')} color={isDark ? "#F87171" : "#EF4444"} />
+                            </TouchableOpacity>
+                        }
 
-                        <TouchableOpacity onPress={() => { openEmailClient(item?.customerBasicInfo?.email) }}>
-                            <Feather name="mail" size={wp('5%')} color={isDark ? "#F87171" : "#EF4444"} />
-                        </TouchableOpacity>
 
                     </View>
                 </View>

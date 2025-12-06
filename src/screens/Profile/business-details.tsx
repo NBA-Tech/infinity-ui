@@ -271,6 +271,7 @@ const BusinessDetails = () => {
             placeholder: "Eg : Terms and Conditions",
             icon: <Feather name="clipboard" size={wp("5%")} color={isDark ? "#fff" : "#000"} />,
             type: "text",
+            extraStyles: { height: hp('10%'), paddingTop: hp('1%') },
             style: "w-full",
             isRequired: false,
             isDisabled: false,

@@ -66,7 +66,7 @@ const CustomerInfo = ({ customerData, loading }: CustomerInfoProps) => {
             >
               {customerData?.name ?? 'N/A'}
             </Text>
-            <Divider style={{ marginVertical: hp('1%'),backgroundColor: isDark ? '#2E3A57' : '#E5E7EB' }} />
+            <Divider style={{ marginVertical: hp('1%'), backgroundColor: isDark ? '#2E3A57' : '#E5E7EB' }} />
           </View>
 
           {/* Phone Section */}
@@ -106,30 +106,35 @@ const CustomerInfo = ({ customerData, loading }: CustomerInfoProps) => {
           </View>
 
           {/* Divider */}
-          <Divider style={{ marginVertical: hp('1%'),backgroundColor: isDark ? '#2E3A57' : '#E5E7EB' }} />
+          <Divider style={{ marginVertical: hp('1%'), backgroundColor: isDark ? '#2E3A57' : '#E5E7EB' }} />
 
           {/* Email Section */}
-          <View className="flex-row justify-between items-center">
-            <View className="flex-row items-center gap-2 flex-shrink">
-              <Feather name="mail" size={wp('5%')} color={isDark ? '#E2E8F0' : '#182D53'} />
-              <Text
-                style={[
-                  globalStyles.labelText,
-                  globalStyles.themeTextColor,
-                  { flexShrink: 1 },
-                ]}
-              >
-                {customerData?.email ?? 'Not provided'}
-              </Text>
-            </View>
+          {customerData?.email && (
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center gap-2 flex-shrink">
+                <Feather name="mail" size={wp('5%')} color={isDark ? '#E2E8F0' : '#182D53'} />
+                <Text
+                  style={[
+                    globalStyles.labelText,
+                    globalStyles.themeTextColor,
+                    { flexShrink: 1 },
+                  ]}
+                >
+                  {customerData?.email ?? 'Not provided'}
+                </Text>
+              </View>
 
-            <TouchableOpacity
-              onPress={() => openEmailClient(customerData?.email)}
-              activeOpacity={0.8}
-            >
-              <Feather name="send" size={wp('5%')} color={'#3B82F6'} />
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={() => openEmailClient(customerData?.email)}
+                activeOpacity={0.8}
+              >
+                <Feather name="send" size={wp('5%')} color={'#3B82F6'} />
+              </TouchableOpacity>
+            </View>
+          )
+
+          }
+
         </View>
       )}
     </Card>

@@ -18,17 +18,9 @@ export const generatePaymentLinkAPI=async (payload:PaymentRequestModel,headers?:
     })
     return generatePaymentLinkResponse
 }
-export const savePaymentTransactionAPI=async(payload:PaymentModel,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
+export const savePaymentTransactionAPI=async(paymentId:string,userId:string,headers?:Record<string,any>):Promise<ApiGeneralRespose>=>{
     const savePaymentTransactionResponse=await fetchWithTimeout({
-        url:`${API_BASE_URI}/payment/save_payment_transaction`,
-        options: {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers
-            },
-            body: JSON.stringify(payload)
-        }
+        url:`${API_BASE_URI}/payment/save_payment_transaction?paymentId=${paymentId}&userId=${userId}`,
     })
     return savePaymentTransactionResponse
 }

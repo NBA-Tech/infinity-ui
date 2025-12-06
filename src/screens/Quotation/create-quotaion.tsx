@@ -803,6 +803,7 @@ const CreateQuotaion = ({ navigation, route }: Props) => {
                                                 setTempTotal(orderDetails?.totalPrice ?? 0);
                                                 setIsEditingTotal(true);
                                             }}
+                                            style={{marginHorizontal: wp("2%")}}
                                         >
                                             <Feather name="edit" size={wp("5%")} color="#3B82F6" />
                                         </TouchableOpacity>

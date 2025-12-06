@@ -52,18 +52,23 @@ const CustomerInfo = (props: CustomerInfoProps) => {
                                 </View>
 
                             </View>
-                            <View className='flex flex-row justify-between items-center'>
-                                <View className='flex flex-row gap-2'>
-                                    <Feather name="mail" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
-                                    <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
-                                </View>
-                                <View className='flex flex-row gap-4'>
-                                    <TouchableOpacity onPress={()=>openEmailClient(props?.customerData?.email)}>
-                                        <Feather name="mail" size={wp('5%')} color={'#3B82F6'} />
-                                    </TouchableOpacity>
-                                </View>
+                            {props?.customerData?.email && (
+                                <View className='flex flex-row justify-between items-center'>
+                                    <View className='flex flex-row gap-2'>
+                                        <Feather name="mail" size={wp('5%')} color={isDark ? '#fff' : '#000'} />
+                                        <Text style={[globalStyles.labelText, globalStyles.themeTextColor]}>{props?.customerData?.email}</Text>
+                                    </View>
+                                    <View className='flex flex-row gap-4'>
+                                        <TouchableOpacity onPress={() => openEmailClient(props?.customerData?.email)}>
+                                            <Feather name="mail" size={wp('5%')} color={'#3B82F6'} />
+                                        </TouchableOpacity>
+                                    </View>
 
-                            </View>
+                                </View>
+                            )
+
+                            }
+
                             <Divider />
                             <View>
                                 <Text style={[globalStyles.normalTextColor, globalStyles.heading3Text]}>Special Instructions</Text>

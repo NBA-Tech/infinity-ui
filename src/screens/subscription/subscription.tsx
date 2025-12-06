@@ -33,27 +33,15 @@ const Subscription = () => {
 
   const generatePaymentPayload = async (planDetails: any): Promise<PaymentRequestModel> => {
     const payload: PaymentRequestModel = {
-      linkId: generateRandomString(20),
-      linkAmount: planDetails.price,
-      linkCurrency: "INR",
-      linkPurpose: planDetails.planDescription,
-      linkExpiryTime: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
-      linkAutoReminders: true,
-      linkPartialPayments: false,
-      linkMinimumPartialAmount: 0,
-      linkNotify: {
-        send_email: true,
-        send_sms: true,
-      },
-      linkMeta: {
-        notify_url: "https://example.com/notify",
-        return_url: "https://example.com/thankyou",
-      },
-      customerDetails: {
-        customer_email: userDetails?.userAuthInfo?.email,
-        customer_name: userDetails?.userAuthInfo?.username,
-        customer_phone: userDetails?.userBusinessInfo?.businessPhoneNumber || "9344262222",
-      },
+      amount: planDetails.price,
+      currency: "INR",
+      referenceId:getItem("USERID"),
+      email: userDetails?.userAuthInfo?.email,
+      phone: userDetails?.userBusinessInfo?.businessPhoneNumber || "9344262222",
+      description: planDetails.planDescription,
+      expiresAt:  new Date(Date.now() + 86400000).toISOString().split("T")[0],
+      notifyUser: true,
+      returnUrl: "https://example.com/thankyou",
     };
     return payload;
   };
@@ -108,7 +96,7 @@ const Subscription = () => {
 
         // ✅ Go to payment page and pass callback for subscription update
         return navigation.navigate("PaymentGateway", {
-          paymentData: linkResponse.data,
+          paymentData: linkResponse?.data,
           successCallBack: async () => {
             payload = {
               userId: userId,
@@ -278,8 +266,7 @@ const Subscription = () => {
           <View
             style={{
               position: "absolute",
-              bottom: 20,
-              width: "100%",
+              bottom: 0,
               alignItems: "center",
               paddingHorizontal: 20,
             }}

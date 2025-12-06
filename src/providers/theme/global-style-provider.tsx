@@ -1,9 +1,10 @@
-import React, { createContext, useState, useMemo } from "react";
+import React, { createContext, useState, useMemo, useEffect } from "react";
 import { useColorScheme } from "react-native";
 import { lightTheme, darkTheme } from "../../styles/global";
-import type { ThemeType } from "../../theme/theme"
+import type { ThemeType } from "../../theme/theme";
+import { useDataStore } from "../data-store/data-store-provider";
 
-// 👇 tell TS what type the context will hold
+// Contexts
 export const StyleContext = createContext<ThemeType>(lightTheme);
 
 export const ThemeToggleContext = createContext({
@@ -12,15 +13,40 @@ export const ThemeToggleContext = createContext({
 });
 
 function GlobalStyleProvider({ children }: { children: React.ReactNode }) {
-  const systemScheme = useColorScheme(); // 'light' or 'dark'
-  console.log("System theme:", systemScheme);
-  const [themeMode, setThemeMode] = useState("light");
+  const systemScheme = useColorScheme(); // "light" | "dark"
+  const { getItem, setItem } = useDataStore();
+
+  const [themeMode, setThemeMode] = useState<"light" | "dark">(systemScheme ?? "light");
 
   const isDark = themeMode === "dark";
+
   const styles = useMemo(() => (isDark ? darkTheme : lightTheme), [isDark]);
 
-  const toggleTheme = () => {
-    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+  // Load stored theme ONCE at app start
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await getItem("THEME_MODE"); // "light", "dark", or null
+        if (savedTheme === "light" || savedTheme === "dark") {
+          setThemeMode(savedTheme);
+        } else {
+          // First time user -> use system theme
+          await setItem("THEME_MODE", systemScheme ?? "light");
+          setThemeMode(systemScheme ?? "light");
+        }
+      } catch (e) {
+        console.log("Error loading theme:", e);
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  // Toggle theme & persist into AsyncStorage
+  const toggleTheme = async () => {
+    const newMode = themeMode === "light" ? "dark" : "light";
+    setThemeMode(newMode);
+    await setItem("THEME_MODE", newMode);
   };
 
   return (

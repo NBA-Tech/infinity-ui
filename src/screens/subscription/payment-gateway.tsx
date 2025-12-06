@@ -10,6 +10,7 @@ import { WebView } from "react-native-webview";
 type Props = NativeStackScreenProps<RootStackParamList, "PaymentGateway">;
 
 const PaymentGateway = ({ navigation, route }: Props) => {
+  console.log(route.params);
   const { paymentData, successCallBack } = route.params;
   const [loading, setLoading] = useState(true);
   const { getItem } = useDataStore();
@@ -27,23 +28,8 @@ const PaymentGateway = ({ navigation, route }: Props) => {
     if (currentUrl.includes("thankyou")) {
       hasHandledPayment.current = true; // stop duplicates
 
-      const payload: PaymentModel = {
-        userId: getItem("USERID"),
-        amount: paymentData?.link_amount,
-        currency: paymentData?.link_currency,
-        linkId: paymentData?.link_id,
-        linkUrl: paymentData?.link_url,
-        cfPaymentId: paymentData?.cf_link_id,
-        paymentStatus: PAYMENT_STATUS.SUCCESS,
-        extraData: {
-          customerName: paymentData?.customerDetails?.customer_name,
-          customerEmail: paymentData?.customerDetails?.customer_email,
-          customerPhone: paymentData?.customerDetails?.customer_phone,
-        },
-      };
-
       try {
-        await savePaymentTransactionAPI(payload);
+        await savePaymentTransactionAPI(paymentData?.payment_links?.payment_link_id, getItem("USERID"));
         successCallBack && successCallBack();
       } catch (err) {
         console.error("Payment save failed:", err);
@@ -60,7 +46,7 @@ const PaymentGateway = ({ navigation, route }: Props) => {
       )}
 
       <WebView
-        source={{ uri: paymentData?.link_url }}
+        source={{ uri: paymentData?.payment_links?.url }}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         onNavigationStateChange={handleNavigationStateChange}
